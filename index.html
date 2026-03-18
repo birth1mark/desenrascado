@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desenrascado | Sobrevivência Urbana em Lisboa</title>
+    <meta name="description" content="Simulador de sobrevivência em Lisboa. Gere rendas, sanidade e tenta ficar milionário.">
+    <link rel="canonical" href="http://desenrascado.birth1mark.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981; --accent: #f59e0b; --bg: #020617; --danger: #ef4444;
+            --glass: rgba(255, 255, 255, 0.03); --text: #f8fafc;
+            --energy-grad: linear-gradient(90deg, #059669, #34d399);
+            --hunger-grad: linear-gradient(90deg, #d97706, #fbbf24);
+            --sanity-grad: linear-gradient(90deg, #6366f1, #a855f7);
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        header { background: rgba(15, 23, 42, 0.95); padding: 15px 20px; display: grid; grid-template-columns: 1fr 75px; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .bars-area { display: flex; flex-direction: column; gap: 8px; }
+        .bar-info { display: flex; justify-content: space-between; font-size: 0.55rem; font-weight: 800; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; }
+        .bar-track { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .bar-fill { height: 100%; transition: width 0.5s ease; }
+        .avatar-box { display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 10px; }
+        #p-avatar { font-size: 2.2rem; }
+        .status-label { font-size: 0.5rem; font-weight: 900; color: var(--accent); margin-top: 3px; text-align: center; text-transform: uppercase; }
+        .info-strip { background: rgba(0,0,0,0.3); padding: 8px 20px; display: flex; justify-content: space-around; font-size: 0.65rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        #msg-box { background: var(--glass); margin: 10px; padding: 12px; border-radius: 12px; border-left: 4px solid var(--accent); font-size: 0.75rem; min-height: 45px; transition: 0.3s; line-height: 1.4; }
+        .warning { border-left-color: var(--danger) !important; background: rgba(239, 68, 68, 0.15); }
+        nav { display: flex; justify-content: space-around; padding: 5px; }
+        nav button { background: none; border: none; color: #64748b; font-weight: 800; padding: 10px; cursor: pointer; font-size: 0.75rem; }
+        nav button.active { color: #fff; border-bottom: 2px solid var(--accent); }
+        #main-content { flex-grow: 1; overflow-y: auto; padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; }
+        .card { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .card:active { transform: scale(0.95); }
+        .card b { display: block; font-size: 0.8rem; margin: 4px 0; color: #fff; }
+        .card small { font-size: 0.6rem; color: #94a3b8; }
+        .locked { opacity: 0.15; filter: grayscale(1); pointer-events: none; }
+        .fab { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: #fff; border-radius: 15px; border: none; font-size: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); cursor: pointer; z-index: 5000; }
+        #setup-screen, #credits-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; overflow-y: auto;}
+        .p-btn { background: var(--glass); padding: 15px; border-radius: 12px; margin: 6px; width: 90%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; text-align: center; font-weight: 700; }
+        .score-list { width: 100%; max-width: 350px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; }
+        .score-item { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 5px 0; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <div id="setup-screen">
+        <h1 style="color:var(--accent); font-weight: 800; margin-bottom: 5px;">DESENRASCADO</h1>
+        <p style="color:#94a3b8; margin-bottom: 25px; font-size: 0.8rem;">Objetivo: 10.000€ antes do colapso.</p>
+        <div class="p-btn" onclick="iniciarJogo('Marreta', 35, 0, 90)"><b>🤓 Marreta do IT</b><br><small>35€. Só quer código e silêncio.</small></div>
+        <div class="p-btn" onclick="iniciarJogo('Betinho', 180, 0, 100)"><b>👔 Herdeiro de Cascais</b><br><small>180€. Vive de aparências e mesada.</small></div>
+        <div class="p-btn" onclick="iniciarJogo('Hustler', 10, 45, 65)"><b>🏃 Sobrevivente do 728</b><br><small>10€. Especialista em desenrasque extremo.</small></div>
+        <p style="color:#64748b; text-decoration: underline; cursor:pointer; font-size: 0.7rem; margin-top: 15px;" onclick="toggleCredits(true)">Recordes e História</p>
+    </div>
+
+    <div id="credits-screen">
+        <h2 style="color:var(--accent);">🏆 Quadro de Honra</h2>
+        <div id="score-container" class="score-list"></div>
+        <h3 style="color:var(--text); margin-top:30px;">A História</h3>
+        <p style="font-size: 0.75rem; color:#94a3b8; line-height: 1.5; max-width:350px;">
+            Desenrascado é uma sátira à sobrevivência em Lisboa. Criado por um aluno de mestrado que sabe o que é viver a café e esperança.
+        </p>
+        <div class="p-btn" onclick="toggleCredits(false)" style="margin-top:20px;">VOLTAR</div>
+    </div>
+
+    <header>
+        <div class="bars-area">
+            <div class="bar-wrapper"><div class="bar-info"><span>⚡ Vigor</span><span id="t-en">18h</span></div><div class="bar-track"><div id="f-en" class="bar-fill" style="background:var(--energy-grad); width:100%"></div></div></div>
+            <div class="bar-wrapper"><div class="bar-info"><span>🥗 Tripa</span><span id="t-hu">100%</span></div><div class="bar-track"><div id="f-hu" class="bar-fill" style="background:var(--hunger-grad); width:100%"></div></div></div>
+            <div class="bar-wrapper"><div class="bar-info"><span>🧠 Juízo</span><span id="t-sa">100%</span></div><div class="bar-track"><div id="f-sa" class="bar-fill" style="background:var(--sanity-grad); width:100%"></div></div></div>
+        </div>
+        <div class="avatar-box"><div id="p-avatar">😐</div><div class="status-label" id="p-dignity">DIGNO</div></div>
+    </header>
+
+    <div class="info-strip">
+        <div>DIA <b id="p-day">1</b></div>
+        <div>CARTEIRA <b id="p-money">0€</b></div>
+        <div>CANUDO <b id="p-ects">0/180</b></div>
+    </div>
+
+    <main id="msg-box"><span id="msg">Inicia a tua jornada...</span></main>
+
+    <nav>
+        <button onclick="mudarTab('jobs', this)" id="defaultTab" class="active">LABUTA</button>
+        <button onclick="mudarTab('uni', this)">TEORIAS</button>
+        <button onclick="mudarTab('life', this)">VIDA</button>
+    </nav>
+
+    <section id="main-content"></section>
+    <button class="fab" onclick="dormir()">💤</button>
+
+<script>
+    let p = { money: 0, hours: 18, ects: 0, humil: 0, fome: 100, sanity: 100, day: 1, major: 'Nenhum', hasHouse: true, streetDays: 0, burnout: false, profile: '' };
+    const RENDA = 250;
+    const LIMITE_MILIONARIO = 10000;
+
+    function toggleCredits(show) { if(show) exibirRecordes(); document.getElementById('credits-screen').style.display = show ? 'flex' : 'none'; }
+
+    function iniciarJogo(t, m, h, f) {
+        p.profile = t; p.money = m; p.humil = h; p.fome = f;
+        document.getElementById('setup-screen').style.display = 'none';
+        mudarTab('jobs', document.getElementById('defaultTab'));
+        atualizarStats();
+    }
+
+    function mudarTab(type, btn) {
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const grid = document.getElementById('main-content'); grid.innerHTML = '';
+        if(type === 'jobs') {
+            addCard("🚲", "Pedala-Precário", "+32€", "-3h", !p.burnout, () => action(32, 3, 5, 15, 10));
+            addCard("🎧", "Fábrica de Gritos", "+75€", "-5h", p.ects >= 45 && !p.burnout, () => action(75, 5, 12, 18, 15));
+            addCard("🦈", "Consultora Elite", "+450€", "-8h", p.ects >= 180 && !p.burnout, () => action(450, 8, 2, 20, 30));
+        } else if(type === 'uni') {
+            if(p.major === 'Nenhum') {
+                addCard("🛠️", "I. S. Tortura", "-120€", "Inscrição", p.money >= 120, () => { p.money-=120; p.major='Tortura'; atualizarStats(); mudarTab('uni', btn); });
+                addCard("🥂", "School of Cunhas", "-300€", "Inscrição", p.money >= 300, () => { p.money-=300; p.major='Cunhas'; atualizarStats(); mudarTab('uni', btn); });
+            } else {
+                addCard("📚", "Moer o Cérebro", "-150€", "+15 ECTS", p.money >= 150 && p.ects < 180 && !p.burnout, () => { p.money-=150; p.hours-=6; p.ects+=15; p.sanity-=22; atualizarStats(); });
+            }
+        } else {
+            if(!p.hasHouse) {
+                addCard("🏠", "T0 com Humidade", "-250€", "Sair da Rua", p.money >= RENDA, () => { p.money-=RENDA; p.hasHouse=true; p.streetDays=0; atualizarStats(); mudarTab('life', btn); });
+                addCard("🥣", "Refeitório Social", "0€", "+15% Tripa", true, () => { p.fome=Math.min(100, p.fome+15); p.humil+=40; atualizarStats(); });
+            }
+            addCard("🍲", "Zé da Tasca", "-12€", "+40% Tripa", p.money >= 12, () => { p.money-=12; p.fome=Math.min(100, p.fome+40); p.sanity=Math.min(100, p.sanity+5); atualizarStats(); });
+            addCard("☕", "Míssil de Máquina", "-1€", "+2h Vigor", p.money >= 1, () => { p.money-=1; p.hours=Math.min(18, p.hours+2); p.fome=Math.max(0, p.fome-5); atualizarStats(); });
+            addCard("🛋️", "Terapia Low-Cost", "-25€", "+45% Juízo", p.money >= 25, () => { p.money-=25; p.sanity=Math.min(100, p.sanity+45); atualizarStats(); });
+            addCard("🌿", "Passeio Belém", "0€", "+10% Juízo", p.hours >= 2, () => { p.hours-=2; p.sanity=Math.min(100, p.sanity+10); atualizarStats(); });
+            addCard("📞", "Pedir aos Velhos", "+35€", "+65 Humil.", true, () => { p.money+=35; p.humil+=65; p.sanity=Math.max(0, p.sanity-15); atualizarStats(); });
+        }
+    }
+
+    function addCard(e, t, g, h, active, fn) {
+        const d = document.createElement('div');
+        d.className = `card ${!active ? 'locked' : ''}`;
+        d.onclick = active ? fn : null;
+        d.innerHTML = `<span style="font-size:1.5rem">${e}</span><b>${t}</b><small>${g} | ${h}</small>`;
+        document.getElementById('main-content').appendChild(d);
+    }
+
+    function action(m, h, hum, f, s) {
+        if(p.hours < h) return avisar("Vigor a zeros.");
+        p.money += m; p.hours -= h; p.fome -= f; p.humil += hum; p.sanity -= s;
+        atualizarStats();
+    }
+
+    function dormir() {
+        if (p.day % 7 === 0 && p.hasHouse) {
+            if (p.money >= RENDA) { p.money -= RENDA; } 
+            else { p.hasHouse = false; p.streetDays = 1; alert("SENHORIO: 'Mudei a fechadura.'"); }
+        } else if (!p.hasHouse) {
+            p.streetDays++; p.sanity -= 25;
+            if (p.streetDays > 7) { finalizarJogo("Lisboa venceu. Morreste no Rossio."); return; }
+        }
+
+        const frases = {
+            rua: ["Banco no Rossio é gélido.", "Pombos a bicar-te os sonhos.", "Noite de Lisboa não perdoa.", "A polícia mandou-te circular.", "Acordaste com brio zero.", "O cheiro a urina no beco foi o teu despertador.", "Sonhaste com teto, acordaste no cimento.", "Frio nos ossos e nada na conta.", "A estátua do D. Pedro IV olhou-te com pena.", "Mais uma noite a contar estrelas e desgraças."],
+            burnout: ["Cérebro em erro 404.", "Juízo ficou na almofada.", "Júlio de Matos mandou saudações.", "A mente é uma sopa de letras.", "Café não salva este vazio.", "Chorar sobre os PDFs é o teu novo hobby.", "Hoje nem o sol brilha para ti.", "Sentes-te um robô avariado.", "O cansaço tem o teu nome.", "Não consegues ler a ementa sem chorar."],
+            rico: ["Dinheiro paga brunch, não paz.", "Elite da precariedade.", "Saldo alto, dignidade média.", "Quase compras um T1 sem bolor.", "Vinho caro no T0 húmido.", "A renda dói menos hoje.", "És o rei do Alojamento Local.", "Comeste abacate sem culpa.", "O teu cartão não treme ao passar.", "Quase te sentes um herdeiro."],
+            pobre: ["Contar moedas de 1 cêntimo.", "Mais pó na conta do que guito.", "Almoço: água e esperança.", "Cartão recusado. O clássico.", "Viste uma bifana e choraste.", "O pequeno-almoço foi o cheiro do café alheio.", "A tua conta bancária é um deserto.", "Contaste trocos para o passe.", "O saldo é um número de telefone... de um dígito.", "Lisboa olha para o teu bolso e ri."],
+            humilhado: ["Profissão: Pedinte Familiar.", "Dignidade no lixo da esquina.", "Status: Desilusão Genealógica.", "Mentiste aos amigos sobre guito.", "Sentiste a pena do vizinho.", "Atendeste os pais e pediste desculpa.", "A tua árvore genealógica quer-te podar.", "Status: Vergonha do clã.", "Comeste sopa da caridade e soube a derrota.", "Mentiste sobre teres jantar."],
+            normal: ["Mais uma facada no lombo.", "Acordaste. As contas também.", "Lisboa cara, tu cansado.", "Metro avariado. O costume.", "24h de luta garantidas.", "O metro avariou. Lisboa sendo Lisboa.", "O sol brilha, o saldo nubla.", "Sobrevivência por um fio.", "Mais um dia no moedor académico.", "Lisboa não perdoa, mas tu continuas aqui."]
+        };
+
+        let cat = 'normal';
+        if (!p.hasHouse) cat = 'rua';
+        else if (p.sanity < 20) cat = 'burnout';
+        else if (p.money > 1000) cat = 'rico';
+        else if (p.money < 30) cat = 'pobre';
+        else if (p.humil > 80) cat = 'humilhado';
+
+        p.day++; p.hours = 18; p.fome -= 12; p.sanity = Math.min(100, p.sanity + 12);
+        p.burnout = p.sanity < 20;
+        avisar(frases[cat][Math.floor(Math.random()*frases[cat].length)]);
+        atualizarStats();
+    }
+
+    function atualizarStats() {
+        document.getElementById('f-en').style.width = (p.hours / 18 * 100) + "%";
+        document.getElementById('f-hu').style.width = Math.max(0, p.fome) + "%";
+        document.getElementById('f-sa').style.width = Math.max(0, p.sanity) + "%";
+        const av = document.getElementById('p-avatar');
+        const lab = document.getElementById('p-dignity');
+        if (!p.hasHouse) { av.innerText = "🏚️"; lab.innerText = "ROSSIO ("+p.streetDays+"/7)"; }
+        else if (p.burnout) { av.innerText = "🧟"; lab.innerText = "BURNOUT"; }
+        else if (p.humil > 80) { av.innerText = "🤡"; lab.innerText = "HUMILHADO"; }
+        else if (p.money >= LIMITE_MILIONARIO) { av.innerText = "👑"; lab.innerText = "TUBARÃO"; }
+        else if (p.money > 1000) { av.innerText = "🤑"; lab.innerText = "ESTÁVEL"; }
+        else { av.innerText = "😐"; lab.innerText = "DIGNO"; }
+
+        document.getElementById('p-money').innerText = p.money + "€";
+        document.getElementById('p-ects').innerText = `${p.ects}/180`;
+        document.getElementById('p-day').innerText = p.day;
+
+        const box = document.getElementById('msg-box');
+        const dR = 7 - (p.day % 7);
+        if(p.hasHouse && (dR <= 3 || p.day % 7 === 0)) {
+            box.classList.add('warning');
+            let m = "";
+            if(dR === 3) m = "⚠️ Senhorio tossiu à porta. 3 dias.";
+            if(dR === 2) m = "⚠️ 2 dias. Vende um rim para os " + RENDA + "€.";
+            if(dR === 1) m = "⚠️ AMANHÃ! Senhorio a polir a chave.";
+            if(dR === 0) m = "⚠️ HOJE! O teu saldo vai evaporar.";
+            if(m) avisar(m);
+        } else if (!p.burnout && p.hasHouse) { box.classList.remove('warning'); }
+        
+        if(p.fome <= 0 && p.money < 12) { finalizarJogo("Morreste de fome."); }
+        if(p.money >= LIMITE_MILIONARIO) { finalizarJogo("MILIONÁRIO! Compraste Arroios. VITÓRIA!"); }
+    }
+
+    function finalizarJogo(msg) { alert(msg); salvarRecorde(); location.reload(); }
+    function salvarRecorde() {
+        let rec = JSON.parse(localStorage.getItem('desenrasca_scores')) || [];
+        rec.push({ d: p.day, e: p.ects, m: p.money, p: p.profile });
+        rec.sort((a,b) => b.m - a.m);
+        localStorage.setItem('desenrasca_scores', JSON.stringify(rec.slice(0, 5)));
+    }
+    function exibirRecordes() {
+        const c = document.getElementById('score-container');
+        let rec = JSON.parse(localStorage.getItem('desenrasca_scores')) || [];
+        if(rec.length === 0) { c.innerHTML = "<p style='font-size:0.7rem'>Nenhuma cicatriz guardada.</p>"; return; }
+        c.innerHTML = rec.map(r => `<div class='score-item'><span>${r.p}</span><b>${r.m}€ | ${r.d} Dias</b></div>`).join('');
+    }
+    function avisar(t) { document.getElementById('msg').innerText = t; }
+</script>
+</body>
+</html>
