@@ -678,20 +678,21 @@ const EVENTOS_LISBOA = [
 
 // Edifícios no Tabuleiro
 const BUILDINGS = [
+    { id: 'senhorio', name: 'Senhorio', x: 65, y: 45, w: 90, h: 72, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠' },
+    { id: 'casa', name: 'O Teu Teto', x: 205, y: 45, w: 90, h: 72, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌' },
+    { id: 'faculdade', name: 'Politec / IST', x: 345, y: 40, w: 90, h: 72, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓' },
+    { id: 'startup', name: 'Startup Hub', x: 485, y: 45, w: 90, h: 72, color: '#065f46', accent: '#10b981', tag: 'TRABALHO / €', icon: '💻' },
     { id: 'tasca', name: 'Tasca Ti Zé', x: 65, y: 195, w: 90, h: 72, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / SANIDADE', icon: '🍲' },
-    { id: 'senhorio', name: 'Senhorio', x: 65, y: 50, w: 90, h: 72, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠' },
-    { id: 'faculdade', name: 'Politec / IST', x: 275, y: 40, w: 90, h: 72, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓' },
-    { id: 'startup', name: 'Startup Hub', x: 485, y: 50, w: 90, h: 72, color: '#065f46', accent: '#10b981', tag: 'TRABALHO / €', icon: '💻' },
-    { id: 'supermercado', name: 'Pingo Doce', x: 190, y: 195, w: 90, h: 72, color: '#15803d', accent: '#86efac', tag: 'DESPENSA', icon: '🛒' },
-    { id: 'banco', name: 'Caixa / Banco', x: 360, y: 195, w: 90, h: 72, color: '#854d0e', accent: '#facc15', tag: 'DEPÓSITOS', icon: '🏦' },
+    { id: 'supermercado', name: 'Pingo Doce', x: 205, y: 195, w: 90, h: 72, color: '#15803d', accent: '#86efac', tag: 'DESPENSA', icon: '🛒' },
+    { id: 'banco', name: 'Caixa / Banco', x: 345, y: 195, w: 90, h: 72, color: '#854d0e', accent: '#facc15', tag: 'DEPÓSITOS', icon: '🏦' },
     { id: 'miradouro', name: 'Miradouro', x: 485, y: 195, w: 90, h: 72, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO', icon: '🌅' }
 ];
 
 // Pombos do Rossio a debicar na calçada
 const PIGEONS = [
-    { x: 220, y: 140, frame: 0, timer: 0 },
-    { x: 380, y: 135, frame: 1, timer: 1.2 },
-    { x: 440, y: 155, frame: 0, timer: 2.1 }
+    { x: 170, y: 140, frame: 0, timer: 0 },
+    { x: 310, y: 135, frame: 1, timer: 1.2 },
+    { x: 450, y: 155, frame: 0, timer: 2.1 }
 ];
 
 // Partículas flutuantes (+15€, -20€, ☕)
@@ -716,10 +717,10 @@ let modalBuilding = null;
 let morningNews = "";
 
 let player = {
-    x: 320,
-    y: 235,
-    targetX: 320,
-    targetY: 235,
+    x: 250,
+    y: 125,
+    targetX: 250,
+    targetY: 125,
     speed: 3.6,
     walking: false,
     frame: 0,
@@ -958,6 +959,15 @@ function endDay(motivo) {
     if (player.day >= 30 && player.houseIndex >= 4 && player.careerIndex >= 3) {
         triggerVictory();
         return;
+    }
+
+    // O jogador recolhe à porta de casa para dormir
+    const casa = BUILDINGS.find(b => b.id === 'casa');
+    if (casa) {
+        player.x = casa.x + casa.w / 2;
+        player.y = casa.y + casa.h + 12;
+        player.targetX = player.x;
+        player.targetY = player.y;
     }
 
     // Sortear evento aleatório lisboeta com impacto real
@@ -1204,10 +1214,144 @@ function renderPigeons() {
     });
 }
 
-// Fachadas dos Edifícios com tipografia ajustada
+// Fachadas dos Edifícios (com Casa Dinâmica e Banco de Jardim)
 function drawBuilding(b) {
     const isHovered = (mouse.x >= b.x && mouse.x <= b.x + b.w && mouse.y >= b.y && mouse.y <= b.y + b.h);
 
+    // RENDERIZAÇÃO ESPECIAL DE 'A TUA CASA'
+    if (b.id === 'casa') {
+        const curHouse = HOUSES[player.houseIndex];
+        b.name = curHouse.name;
+        b.tag = curHouse.qual;
+        b.icon = curHouse.icon;
+
+        if (player.houseIndex === 0) {
+            // NÍVEL 0: BANCO DE JARDIM (Despejado no Rossio)
+            // Sombra
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(b.x + 4, b.y + 20, b.w - 8, b.h - 20);
+
+            // Copa de Árvore Frondosa
+            ctx.fillStyle = '#166534';
+            ctx.beginPath();
+            ctx.arc(b.x + 22, b.y + 24, 20, 0, Math.PI * 2);
+            ctx.arc(b.x + 45, b.y + 18, 18, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(b.x + 20, b.y + 36, 6, 26);
+
+            // Banco de Madeira de Jardim
+            ctx.fillStyle = '#92400e';
+            ctx.fillRect(b.x + 36, b.y + 40, 44, 7);
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(b.x + 40, b.y + 47, 4, 15);
+            ctx.fillRect(b.x + 72, b.y + 47, 4, 15);
+
+            // Saco-cama Azul e Caixa de Cartão
+            ctx.fillStyle = '#0284c7';
+            ctx.fillRect(b.x + 38, b.y + 35, 26, 6);
+            ctx.fillStyle = '#b45309';
+            ctx.fillRect(b.x + 66, b.y + 30, 15, 12);
+            ctx.fillStyle = '#fef08a';
+            ctx.font = '6px "Press Start 2P"';
+            ctx.fillText("T0", b.x + 73, b.y + 39);
+
+            // Letreiro
+            ctx.fillStyle = 'rgba(11, 14, 20, 0.94)';
+            ctx.fillRect(b.x - 6, b.y + b.h + 2, b.w + 12, 17);
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(b.x - 6, b.y + b.h + 2, b.w + 12, 17);
+            ctx.fillStyle = isHovered ? '#ef4444' : '#f87171';
+            ctx.font = 'bold 9.5px "Fira Code"';
+            ctx.textAlign = 'center';
+            ctx.fillText("BANCO ROSSIO", b.x + b.w / 2, b.y + b.h + 14);
+            return;
+        }
+
+        // NÍVEIS 1 a 4: CASA EVOLUTIVA REAL
+        const houseColors = ['#475569', '#312e81', '#065f46', '#854d0e', '#78350f'];
+        const wallColor = houseColors[player.houseIndex] || '#312e81';
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        ctx.fillRect(b.x + 3, b.y + 5, b.w, b.h);
+
+        ctx.fillStyle = wallColor;
+        ctx.fillRect(b.x, b.y, b.w, b.h);
+
+        // Telhado de Terracota
+        ctx.fillStyle = '#c2410c';
+        ctx.beginPath();
+        ctx.moveTo(b.x - 4, b.y);
+        ctx.lineTo(b.x + b.w / 2, b.y - 14);
+        ctx.lineTo(b.x + b.w + 4, b.y);
+        ctx.closePath();
+        ctx.fill();
+
+        // Pormenores específicos de cada nível de habitação:
+        if (player.houseIndex === 1) {
+            // Beliche em Arroios: Estendal com roupa a secar à janela!
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(b.x + 8, b.y + 24);
+            ctx.lineTo(b.x + b.w - 8, b.y + 24);
+            ctx.stroke();
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(b.x + 16, b.y + 24, 7, 7);
+            ctx.fillStyle = '#38bdf8'; ctx.fillRect(b.x + 32, b.y + 24, 8, 9);
+            ctx.fillStyle = '#facc15'; ctx.fillRect(b.x + 50, b.y + 24, 6, 7);
+            ctx.fillStyle = '#10b981'; ctx.fillRect(b.x + 65, b.y + 24, 7, 8);
+        } else if (player.houseIndex === 2) {
+            // Quarto nos Anjos: Portadas verdes fechadas
+            ctx.fillStyle = '#14532d';
+            ctx.fillRect(b.x + 10, b.y + 14, 14, 16);
+            ctx.fillRect(b.x + b.w - 24, b.y + 14, 14, 16);
+        } else if (player.houseIndex === 3) {
+            // Cave em Alfama: Azulejos azuis e vaso de flores
+            ctx.fillStyle = '#38bdf8';
+            for (let ax = b.x + 6; ax < b.x + b.w - 6; ax += 10) {
+                ctx.fillRect(ax, b.y + 8, 4, 4);
+                ctx.fillRect(ax, b.y + 36, 4, 4);
+            }
+            ctx.fillStyle = '#ea580c'; ctx.fillRect(b.x + b.w - 22, b.y + 26, 8, 6);
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(b.x + b.w - 24, b.y + 22, 12, 4);
+        } else if (player.houseIndex === 4) {
+            // T1 Chiado: Molduras douradas e varanda de ferro
+            ctx.strokeStyle = '#facc15';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(b.x + 10, b.y + 10, 16, 20);
+            ctx.strokeRect(b.x + b.w - 26, b.y + 10, 16, 20);
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(b.x + 8, b.y + 24, 20, 6);
+            ctx.fillRect(b.x + b.w - 28, b.y + 24, 20, 6);
+        }
+
+        // Porta e maçaneta
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(b.x + b.w / 2 - 8, b.y + b.h - 22, 16, 22);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(b.x + b.w / 2 + 3, b.y + b.h - 12, 2, 2);
+
+        // Contorno
+        ctx.strokeStyle = isHovered ? '#ffffff' : '#818cf8';
+        ctx.lineWidth = isHovered ? 3 : 2;
+        ctx.strokeRect(b.x, b.y, b.w, b.h);
+
+        // Letreiro
+        ctx.fillStyle = 'rgba(11, 14, 20, 0.94)';
+        ctx.fillRect(b.x - 6, b.y + b.h + 2, b.w + 12, 17);
+        ctx.strokeStyle = '#818cf8';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(b.x - 6, b.y + b.h + 2, b.w + 12, 17);
+
+        ctx.fillStyle = isHovered ? '#f59e0b' : '#c7d2fe';
+        ctx.font = 'bold 9.5px "Fira Code"';
+        ctx.textAlign = 'center';
+        ctx.fillText(b.name, b.x + b.w / 2, b.y + b.h + 14);
+        return;
+    }
+
+    // EDIFÍCIOS REGULARES DO TABULEIRO
     ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
     ctx.fillRect(b.x + 3, b.y + 5, b.w, b.h);
 
@@ -1516,7 +1660,23 @@ function renderBuildingModal() {
 function renderBuildingActions(id, mx, my, mw, mh) {
     let actions = [];
 
-    if (id === 'tasca') {
+    if (id === 'casa') {
+        if (player.houseIndex === 0) {
+            // Despejado no banco de jardim
+            actions = [
+                { label: "Dormitar no Banco de Jardim", cost: 0, timeH: 1, timeM: 0, sanity: 5, desc: "Dorme ao relento. Recupera só +5 Sanidade." },
+                { label: "Comer Atum de Conserva", cost: 0, timeH: 0, timeM: 15, eatHome: true, desc: `Come da lata guardada (${player.groceries} disponíveis). Nutrição +45.` },
+                { label: "Dormir / Passar Noite no Rossio", cost: 0, timeH: 0, timeM: 0, sleepNight: true, desc: "Passa a noite ao relento até à manhã seguinte." }
+            ];
+        } else {
+            actions = [
+                { label: "Sesta Reparadora (1h)", cost: 0, timeH: 1, timeM: 0, sanity: 20, desc: "Descansa no teu beliche/cama. Recupera +20 Sanidade." },
+                { label: "Cozinhar Refeição em Casa", cost: 0, timeH: 0, timeM: 30, eatHome: true, desc: `Come 1 refeição da despensa (${player.groceries} disponíveis). Nutrição +45.` },
+                { label: "Dormir / Terminar o Dia Cedo", cost: 0, timeH: 0, timeM: 0, sleepNight: true, desc: "Vai para a cama em segurança e acorda no dia seguinte." },
+                { label: "Limpar e Arejar a Casa", cost: 0, timeH: 0, timeM: 30, sanity: 10, desc: "Abre a janela para arejar. Recupera +10 Sanidade." }
+            ];
+        }
+    } else if (id === 'tasca') {
         actions = [
             { label: "Bica ao Balcão", cost: 1, timeH: 0, timeM: 15, hunger: 5, sanity: 15, desc: "Recupera +15 Sanidade em 15 minutos." },
             { label: "Prato do Dia (Atum)", cost: 4, timeH: 0, timeM: 30, hunger: 45, sanity: 5, desc: "Nutrição +45. O clássico alfacinha." },
@@ -1913,6 +2073,25 @@ function executeAction(act) {
         }
     }
 
+    if (act.eatHome) {
+        if (player.groceries > 0) {
+            player.groceries--;
+            player.hunger = Math.min(100, player.hunger + 45);
+            showToast("Comeste uma refeição da despensa de casa!");
+            spawnParticle("🍲 +45 Comida", '#10b981');
+        } else {
+            sfxAlert();
+            showToast("A despensa está vazia! Compra mercearias no Pingo Doce.");
+            return;
+        }
+    }
+
+    if (act.sleepNight) {
+        closeModal();
+        endDay(player.houseIndex === 0 ? "Passaste a noite no banco de jardim do Rossio." : "Dormiste na tua casa.");
+        return;
+    }
+
     if (act.upgradeHouse) {
         player.houseIndex = Math.min(HOUSES.length - 1, player.houseIndex + 1);
         showToast(`Mudaste-te para: ${HOUSES[player.houseIndex].name}!`);
@@ -1942,10 +2121,10 @@ function resetGame() {
     player.careerIndex = 0;
     player.daysUntilRent = 7;
     player.hungerDays = 0;
-    player.x = 320;
-    player.y = 235;
-    player.targetX = 320;
-    player.targetY = 235;
+    player.x = 250;
+    player.y = 125;
+    player.targetX = 250;
+    player.targetY = 125;
     player.walking = false;
     particles = [];
     isScoreSubmitted = false;
