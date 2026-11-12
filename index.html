@@ -457,6 +457,117 @@ function playBeep(freq, type, duration, vol = 0.1) {
     } catch(e) {}
 }
 
+
+// ============================================================================
+// NOVO SISTEMA DE PARTÍCULAS DE POEIRA & EFEITOS SONOROS DE LISBOA
+// ============================================================================
+let dustParticles = [];
+
+function spawnDust(x, y) {
+    if (dustParticles.length > 30) dustParticles.shift();
+    dustParticles.push({
+        x: x,
+        y: y,
+        vx: (Math.random() - 0.5) * 0.9,
+        vy: -0.3 - Math.random() * 0.5,
+        size: 1.5 + Math.random() * 2,
+        alpha: 0.65
+    });
+}
+
+function updateDust(dt) {
+    for (let i = dustParticles.length - 1; i >= 0; i--) {
+        const d = dustParticles[i];
+        d.x += d.vx;
+        d.y += d.vy;
+        d.alpha -= dt * 1.6;
+        if (d.alpha <= 0) dustParticles.splice(i, 1);
+    }
+}
+
+function renderDust() {
+    dustParticles.forEach(d => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, d.alpha);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    });
+}
+
+// Sineta Clássica do Elétrico 28 (Ding-Ding!)
+function sfxTramBell() {
+    if (!soundEnabled) return;
+    initAudio();
+    playBeep(880, 'triangle', 0.08, 0.12);
+    setTimeout(() => playBeep(1174.66, 'triangle', 0.14, 0.14), 70);
+    setTimeout(() => playBeep(880, 'triangle', 0.08, 0.09), 160);
+    setTimeout(() => playBeep(1174.66, 'triangle', 0.15, 0.12), 230);
+}
+
+// Apito Grave do Cacilheiro da Transtejo (Fóóó-om!)
+function sfxCacilheiroHorn() {
+    if (!soundEnabled) return;
+    initAudio();
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(110, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(104, audioCtx.currentTime + 0.65);
+        gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.7);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.7);
+    } catch(e){}
+}
+
+// Pombos a esvoaçar
+function sfxPigeon() {
+    if (!soundEnabled) return;
+    initAudio();
+    playBeep(640, 'sine', 0.04, 0.05);
+    setTimeout(() => playBeep(520, 'sine', 0.06, 0.05), 45);
+}
+
+// Vibração Táctil no Telemóvel (Haptic Feedback)
+function triggerHaptic(pattern = [25]) {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        try { navigator.vibrate(pattern); } catch(e){}
+    }
+}
+
+// Roupa Estendida nas Fachadas a Baloiçar ao Vento
+function drawClothesline(x, y, w) {
+    const sway = Math.sin(animTimer * 3.6 + x) * 2.5;
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.quadraticCurveTo(x + w / 2, y + 3 + sway * 0.4, x + w, y);
+    ctx.stroke();
+
+    const items = [
+        { dx: w * 0.18, color: '#fef08a', iw: 7, ih: 8 },  // T-shirt amarela
+        { dx: w * 0.48, color: '#38bdf8', iw: 9, ih: 10 }, // Toalha azul
+        { dx: w * 0.78, color: '#ef4444', iw: 5, ih: 7 }   // Meia encarnada
+    ];
+
+    items.forEach(it => {
+        const ix = x + it.dx;
+        const iy = y + 2 + sway * 0.4;
+        ctx.fillStyle = it.color;
+        ctx.fillRect(ix, iy, it.iw, it.ih);
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(ix + 1, iy - 1, 2, 2);
+    });
+}
+
 function sfxCoin() {
     if (!soundEnabled) return;
     initAudio();
@@ -825,17 +936,29 @@ function gameLoop(now) {
 function update(dt) {
     // Animação dos Pombos
     PIGEONS.forEach(p => {
-        p.timer += dt;
-        if (p.timer > 2.5) {
-            p.frame = (p.frame + 1) % 2;
-            p.timer = 0;
-            if (Math.random() < 0.3) {
-                p.x += (Math.random() - 0.5) * 8;
+        if (p.scaredTimer > 0) {
+            p.scaredTimer -= dt * 2.5;
+            p.frame = (Math.floor(animTimer * 18) % 2);
+        } else {
+            p.timer += dt;
+            if (p.timer > 2.5) {
+                p.frame = (p.frame + 1) % 2;
+                p.timer = 0;
+                if (Math.random() < 0.3) {
+                    p.x += (Math.random() - 0.5) * 8;
+                }
+            }
+            // Susto por proximidade do jogador ao caminhar
+            if (Math.hypot(player.x - p.x, player.y - p.y) < 20 && player.walking) {
+                p.scaredTimer = 0.8;
+                sfxPigeon();
+                spawnDust(p.x, p.y + 4);
             }
         }
     });
 
-    // Partículas
+    // Partículas flutuantes e poeira
+    updateDust(dt);
     for (let i = particles.length - 1; i >= 0; i--) {
         const pt = particles[i];
         pt.y += pt.vy;
@@ -870,6 +993,9 @@ function update(dt) {
                 }
 
                 player.frame = Math.floor(animTimer * 9) % 4;
+                if (Math.random() < 0.3) {
+                    spawnDust(player.x + (Math.random() * 8 - 4), player.y + 12);
+                }
             }
         } else {
             // Idle balão de pensamento cómico ocasional
@@ -1346,15 +1472,26 @@ function renderBoard() {
     drawTram(tramX, 146);
 }
 
-// Pombos do Rossio
+// Pombos do Rossio com sombra e animação de susto
 function renderPigeons() {
     PIGEONS.forEach(p => {
+        let py = p.y;
+        if (p.scaredTimer > 0) {
+            py -= Math.sin(p.scaredTimer * 8) * 9;
+        }
+
+        // Sombra suave sob o pombo
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+        ctx.beginPath();
+        ctx.ellipse(p.x + 3, p.y + 5, 5, 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.fillStyle = '#64748b';
-        ctx.fillRect(p.x, p.y, 6, 4);
+        ctx.fillRect(p.x, py, 6, 4);
         ctx.fillStyle = '#cbd5e1';
-        ctx.fillRect(p.x + (p.frame === 0 ? 4 : 2), p.y - 2, 3, 3);
+        ctx.fillRect(p.x + (p.frame === 0 ? 4 : 2), py - 2, 3, 3);
         ctx.fillStyle = '#ea580c';
-        ctx.fillRect(p.x + (p.frame === 0 ? 7 : 1), p.y - 1, 2, 1);
+        ctx.fillRect(p.x + (p.frame === 0 ? 7 : 1), py - 1, 2, 1);
     });
 }
 
@@ -1498,6 +1635,11 @@ function drawBuilding(b) {
     // EDIFÍCIOS REGULARES DO TABULEIRO
     ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
     ctx.fillRect(b.x + 3, b.y + 5, b.w, b.h);
+
+    // Roupa estendida típica de Lisboa nas fachadas
+    if (b.id === 'senhorio' || b.id === 'tasca') {
+        drawClothesline(b.x + 8, b.y + 30, b.w - 16);
+    }
 
     ctx.fillStyle = b.color;
     ctx.fillRect(b.x, b.y, b.w, b.h);
@@ -1660,14 +1802,23 @@ function renderPlayer() {
     }
 }
 
-// Renderizar partículas flutuantes
+// Renderizar partículas flutuantes e poeira com alto contraste
 function renderParticles() {
+    renderDust();
+
     particles.forEach(pt => {
         ctx.save();
         ctx.globalAlpha = Math.max(0, pt.alpha);
-        ctx.fillStyle = pt.color;
-        ctx.font = 'bold 11px "Fira Code"';
+        ctx.font = 'bold 11.5px "Fira Code"';
         ctx.textAlign = 'center';
+
+        // Contorno negro de alto contraste para visibilidade máxima
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.strokeText(pt.text, pt.x, pt.y);
+
+        // Texto Colorido
+        ctx.fillStyle = pt.color;
         ctx.fillText(pt.text, pt.x, pt.y);
         ctx.restore();
     });
@@ -2492,12 +2643,46 @@ function handleCanvasClick(cx, cy) {
     if (state === 'BOARD') {
         const hy = 295;
         if (cx >= 513 && cx <= 631 && cy >= hy + 8 && cy <= hy + 56) {
+            triggerHaptic([40, 30, 40]);
             endDay("Terminaste o turno voluntariamente para descansar.");
             return;
         }
 
+        // Easter Egg 1: Clicar no Elétrico 28 toca a sineta (Ding-Ding!)
+        const tramX = ((animTimer * 38) % (canvas.width + 140)) - 70;
+        if (cx >= tramX && cx <= tramX + 48 && cy >= 142 && cy <= 168) {
+            sfxTramBell();
+            triggerHaptic([30, 40, 30]);
+            spawnParticle("🔔 Plim-Plim!", "#fde047", tramX + 24, 136);
+            return;
+        }
+
+        // Easter Egg 2: Clicar no Cacilheiro toca o apito grave do barco (Fóóó-om!)
+        const cacilheiroX = canvas.width - ((animTimer * 16) % (canvas.width + 120)) + 30;
+        if (cx >= cacilheiroX && cx <= cacilheiroX + 52 && cy >= 268 && cy <= 295) {
+            sfxCacilheiroHorn();
+            triggerHaptic([80, 50, 100]);
+            spawnParticle("🚢 Fóóó-om!", "#38bdf8", cacilheiroX + 26, 262);
+            return;
+        }
+
+        // Easter Egg 3: Clicar nos Pombos do Rossio fá-los saltar assustados
+        for (let i = 0; i < PIGEONS.length; i++) {
+            const p = PIGEONS[i];
+            if (Math.hypot(cx - p.x, cy - p.y) < 18) {
+                p.scaredTimer = 0.9;
+                p.x += (cx < p.x ? 18 : -18);
+                sfxPigeon();
+                triggerHaptic([20]);
+                spawnDust(p.x, p.y + 4);
+                spawnParticle("🕊️ Pruuu!", "#cbd5e1", p.x, p.y - 12);
+                return;
+            }
+        }
+
         BUILDINGS.forEach(b => {
             if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) {
+                triggerHaptic([20]);
                 walkToBuilding(b);
             }
         });
@@ -2539,6 +2724,7 @@ function executeAction(act) {
     }
 
     sfxCoin();
+    triggerHaptic([25]);
 
     if (act.cost !== undefined) {
         player.wallet -= act.cost;
