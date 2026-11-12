@@ -159,6 +159,188 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+
+        /* Modais Retrô (Leaderboard & Submissão) */
+        .game-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(8, 11, 18, 0.9);
+            backdrop-filter: blur(5px);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .overlay-box {
+            background: #0f172a;
+            border: 2px solid var(--amber);
+            border-radius: 8px;
+            box-shadow: 0 0 35px rgba(245, 158, 11, 0.3), 0 20px 40px rgba(0, 0, 0, 0.9);
+            width: 100%;
+            max-width: 580px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e293b;
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .overlay-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.65rem;
+            color: var(--amber);
+            letter-spacing: -0.5px;
+        }
+
+        .overlay-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            font-family: inherit;
+        }
+        .overlay-close:hover { color: #ef4444; }
+
+        .lb-tagline {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            text-align: center;
+            padding: 10px 16px 6px;
+            text-transform: uppercase;
+            font-weight: 700;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .lb-table-container {
+            max-height: 205px;
+            overflow-y: auto;
+            padding: 0 16px 10px;
+        }
+
+        .lb-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.72rem;
+            text-align: left;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .lb-table th {
+            color: var(--amber);
+            padding: 6px 4px;
+            border-bottom: 1px solid #334155;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.52rem;
+        }
+
+        .lb-table td {
+            padding: 6px 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+        }
+
+        .lb-table tr.highlight {
+            background: rgba(245, 158, 11, 0.18);
+            font-weight: 700;
+        }
+
+        .lb-table tr:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .rank-gold { color: #facc15; font-weight: bold; }
+        .rank-silver { color: #cbd5e1; font-weight: bold; }
+        .rank-bronze { color: #d97706; font-weight: bold; }
+
+        .overlay-actions {
+            padding: 10px 16px;
+            background: #141e30;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .retro-btn {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+            padding: 8px 14px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.56rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.15s ease;
+        }
+        .retro-btn:hover {
+            background: #334155;
+            color: #fff;
+            border-color: #94a3b8;
+        }
+        .retro-btn.btn-amber {
+            background: var(--amber);
+            color: #0b0e14;
+            border-color: #fbbf24;
+            font-weight: 700;
+        }
+        .retro-btn.btn-amber:hover {
+            background: #fbbf24;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+        }
+
+        .submit-desc {
+            font-size: 0.78rem;
+            color: #cbd5e1;
+            padding: 14px 20px 4px;
+            line-height: 1.45;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .submit-form {
+            padding: 10px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .submit-form label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.54rem;
+            color: var(--amber);
+        }
+
+        .submit-form input {
+            background: #020617;
+            border: 1px solid #475569;
+            color: #fff;
+            padding: 10px 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .submit-form input:focus {
+            border-color: var(--amber);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -169,12 +351,63 @@
                 ← <b>pormenores.net</b>
             </a>
             <div style="display: flex; gap: 8px; align-items: center;">
-                <button class="sound-toggle" onclick="toggleAudio()" id="btn-audio">🔊 Áudio: ON</button>
+                <button class="sound-toggle" onclick="openLeaderboard()" id="btn-leaderboard">🏆 Top 10</button>
+                <button class="sound-toggle" onclick="toggleMusic()" id="btn-music">🎵 BGM: ON</button>
+                <button class="sound-toggle" onclick="toggleAudio()" id="btn-audio">🔊 SFX: ON</button>
             </div>
         </div>
 
         <canvas id="gameCanvas" width="640" height="360"></canvas>
         <div id="toast">Notificação</div>
+
+        <!-- Modal: Tabela de Recordes (Hall of Fame) -->
+        <div id="leaderboard-modal" class="game-overlay" style="display: none;">
+            <div class="overlay-box lb-box">
+                <div class="overlay-header">
+                    <span class="overlay-title">🏆 REGISTO NACIONAL DE DESPEJADOS</span>
+                    <button class="overlay-close" onclick="closeLeaderboard()">✕</button>
+                </div>
+                <div class="lb-tagline">OS 10 MAIORES SOBREVIVENTES DO PURGATÓRIO DE LISBOA</div>
+                <div class="lb-table-container">
+                    <table class="lb-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Alcunha</th>
+                                <th>Dias</th>
+                                <th>€ Saldo</th>
+                                <th>Fim da Linha</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lb-table-body">
+                            <tr><td colspan="6" style="text-align:center; padding: 20px; color: #94a3b8;">A carregar recordes de Lisboa...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="overlay-actions">
+                    <button class="retro-btn" onclick="closeLeaderboard()">VOLTAR AO JOGO</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Submeter Recorde -->
+        <div id="submit-score-modal" class="game-overlay" style="display: none;">
+            <div class="overlay-box submit-box">
+                <div class="overlay-header">
+                    <span class="overlay-title">📜 REGISTO OFICIAL DE DESPEJO</span>
+                    <button class="overlay-close" onclick="closeSubmitModal()">✕</button>
+                </div>
+                <p class="submit-desc">
+                    Sobreviveste <b id="sub-days-text" style="color:var(--amber);">0</b> dias na labuta com um património final de <b id="sub-money-text" style="color:#10b981;">0€</b>.
+                </p>
+                <div class="submit-form">
+                    <label for="player-nickname">DIGITA A TUA ALCUNHA / NOME:</label>
+                    <input type="text" id="player-nickname" maxlength="18" placeholder="Ex: Zé do Bitoque" autocomplete="off" />
+                    <button class="retro-btn btn-amber" id="btn-confirm-submit" onclick="submitPlayerScore()">GRAVAR NO HALL OF FAME ➔</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 <script>
@@ -253,6 +486,104 @@ function sfxWin() {
 }
 
 // ============================================================================
+// 1.1 MÚSICA CHIPTUNE PROCEDURAL (Web Audio API)
+// ============================================================================
+let musicEnabled = true;
+let musicInterval = null;
+let musicStep = 0;
+
+const BGM_NOTES = {
+    C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
+    C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+    C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99
+};
+
+const BGM_TRACK = [
+    { lead: BGM_NOTES.C4, bass: BGM_NOTES.C3 },
+    { lead: BGM_NOTES.E4, bass: null },
+    { lead: BGM_NOTES.G4, bass: BGM_NOTES.G3 },
+    { lead: BGM_NOTES.C5, bass: null },
+    { lead: BGM_NOTES.A4, bass: BGM_NOTES.F3 },
+    { lead: BGM_NOTES.G4, bass: null },
+    { lead: BGM_NOTES.E4, bass: BGM_NOTES.C3 },
+    { lead: BGM_NOTES.D4, bass: null },
+    { lead: BGM_NOTES.E4, bass: BGM_NOTES.A3 },
+    { lead: BGM_NOTES.G4, bass: null },
+    { lead: BGM_NOTES.A4, bass: BGM_NOTES.D3 },
+    { lead: BGM_NOTES.G4, bass: null },
+    { lead: BGM_NOTES.E4, bass: BGM_NOTES.G3 },
+    { lead: BGM_NOTES.D4, bass: null },
+    { lead: BGM_NOTES.C4, bass: BGM_NOTES.C3 },
+    { lead: null,           bass: null }
+];
+
+function startBGM() {
+    if (musicInterval || !musicEnabled) return;
+    initAudio();
+    musicStep = 0;
+    musicInterval = setInterval(() => {
+        if (!musicEnabled || !audioCtx || audioCtx.state !== 'running') return;
+        if (state !== 'BOARD' && state !== 'MODAL') return;
+
+        const note = BGM_TRACK[musicStep];
+        const now = audioCtx.currentTime;
+
+        // Lead synth (square wave, filtrado e suave)
+        if (note.lead) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(note.lead, now);
+                gain.gain.setValueAtTime(0.018, now);
+                gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.12);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.12);
+            } catch(e) {}
+        }
+
+        // Bass synth (triangle wave)
+        if (note.bass) {
+            try {
+                const bOsc = audioCtx.createOscillator();
+                const bGain = audioCtx.createGain();
+                bOsc.type = 'triangle';
+                bOsc.frequency.setValueAtTime(note.bass, now);
+                bGain.gain.setValueAtTime(0.035, now);
+                bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                bOsc.connect(bGain);
+                bGain.connect(audioCtx.destination);
+                bOsc.start(now);
+                bOsc.stop(now + 0.18);
+            } catch(e) {}
+        }
+
+        musicStep = (musicStep + 1) % BGM_TRACK.length;
+    }, 145);
+}
+
+function stopBGM() {
+    if (musicInterval) {
+        clearInterval(musicInterval);
+        musicInterval = null;
+    }
+}
+
+function toggleMusic() {
+    initAudio();
+    musicEnabled = !musicEnabled;
+    const btn = document.getElementById('btn-music');
+    if (btn) btn.textContent = musicEnabled ? '🎵 BGM: ON' : '🔇 BGM: OFF';
+    if (musicEnabled) {
+        startBGM();
+    } else {
+        stopBGM();
+    }
+}
+
+// ============================================================================
 // 2. CONSTANTES DE LISBOA & MERCADO DE HABITAÇÃO / EMPREGO
 // ============================================================================
 const HOUSES = [
@@ -270,15 +601,79 @@ const CAREERS = [
     { id: 3, name: "Integration Arch", reqEcts: 120, reqSanity: 60, wagePerHour: 40, hoursPerShift: 6, icon: "🛡️" }
 ];
 
-const NOTICIAS_JORNAL = [
-    "Web Summit em Lisboa: o preço da cerveja duplica até segunda-feira.",
-    "Greve no Metro de Lisboa: caminhar pela calçada gasta mais energia.",
-    "Senhorio instalou cofre de chaves na entrada: vizinhos em fúria.",
-    "Nómadas digitais descobrem a tosta com abacate no teu bairro.",
-    "Chuva torrencial alaga a Baixa: cuidado ao descer para o Cais do Sodré.",
-    "Taxa turística sobe: até o pastel de nata custa mais 20 cêntimos.",
-    "Empresa de entregas corta comissão por viagem: a labuta aperta.",
-    "Dia de sol radioso em Lisboa: miradouros cheios de copos ao entardecer."
+let currentEvent = null;
+
+const EVENTOS_LISBOA = [
+    {
+        title: "Greve Geral no Metro de Lisboa",
+        desc: "A linha azul fechou de surpresa. Tiveste de apanhar um TVDE em tarifa dinâmica na calçada.",
+        effect: (p) => { p.wallet = Math.max(0, p.wallet - 14); p.sanity = Math.max(0, p.sanity - 8); },
+        badge: "IMPACTO: -14€ TVDE | -8 Sanidade",
+        good: false
+    },
+    {
+        title: "Turista Perdido em Santa Luzia",
+        desc: "Explicaste a uns alemães como subir ao Castelo sem serem enganados no elétrico. Deram-te gorjeta!",
+        effect: (p) => { p.wallet += 25; p.sanity = Math.min(100, p.sanity + 6); },
+        badge: "IMPACTO: +25€ Gorjeta | +6 Sanidade",
+        good: true
+    },
+    {
+        title: "Obras no Prédio ao Lado às 07:30",
+        desc: "Um martelo pneumático começou a abrir roços na parede do teu quarto em dia de folga.",
+        effect: (p) => { p.sanity = Math.max(0, p.sanity - 18); },
+        badge: "IMPACTO: -18 Sanidade (Ruído Infernal)",
+        good: false
+    },
+    {
+        title: "Happy Hour de Fino e Tremoços",
+        desc: "O Ti Zé ofereceu uma rodada no balcão porque o clube dele marcou aos 94 minutos.",
+        effect: (p) => { p.sanity = Math.min(100, p.sanity + 15); p.hunger = Math.min(100, p.hunger + 10); },
+        badge: "IMPACTO: +15 Sanidade | +10 Energia",
+        good: true
+    },
+    {
+        title: "Envelope Azul da Autoridade Tributária",
+        desc: "Notificação das Finanças na caixa de correio: era só publicidade ao Débito Direto, mas apanhaste um susto brutal.",
+        effect: (p) => { p.sanity = Math.max(0, p.sanity - 12); },
+        badge: "IMPACTO: -12 Sanidade (Pânico Fiscal)",
+        good: false
+    },
+    {
+        title: "Achado no Jardim da Estrela",
+        desc: "Encontraste uma nota de 20€ esquecida debaixo de uma beata de SG Ventil.",
+        effect: (p) => { p.wallet += 20; },
+        badge: "IMPACTO: +20€ Achados e Perdidos",
+        good: true
+    },
+    {
+        title: "Filmagens da Netflix na tua Rua",
+        desc: "A tua rua foi cortada para filmar uma perseguição de tuk-tuks. Chegaste atrasado ao coworking.",
+        effect: (p) => { p.wallet = Math.max(0, p.wallet - 10); p.sanity = Math.max(0, p.sanity - 5); },
+        badge: "IMPACTO: -10€ Desconto | -5 Sanidade",
+        good: false
+    },
+    {
+        title: "Brisa Dourada do Rio Tejo",
+        desc: "Luz de fim de tarde fantástica sobre o rio. A calçada brilha e a alma lisboeta respira aliviada.",
+        effect: (p) => { p.sanity = Math.min(100, p.sanity + 20); },
+        badge: "IMPACTO: +20 Sanidade Mental",
+        good: true
+    },
+    {
+        title: "Promoção Relâmpago de Atum Bom Petisco",
+        desc: "O supermercado colocou latas de conserva a metade do preço. Despensa reforçada!",
+        effect: (p) => { p.groceries++; p.wallet = Math.max(0, p.wallet - 3); },
+        badge: "IMPACTO: +1 Lata na Despensa (-3€)",
+        good: true
+    },
+    {
+        title: "Inflação da Bica no Balcão",
+        desc: "O café expresso subiu mais 10 cêntimos. O desespero nacional instala-se junto à máquina de café.",
+        effect: (p) => { p.sanity = Math.max(0, p.sanity - 6); },
+        badge: "IMPACTO: -6 Sanidade (Bica a 90 cêntimos)",
+        good: false
+    }
 ];
 
 // Edifícios no Tabuleiro
@@ -565,7 +960,17 @@ function endDay(motivo) {
         return;
     }
 
-    morningNews = NOTICIAS_JORNAL[Math.floor(Math.random() * NOTICIAS_JORNAL.length)];
+    // Sortear evento aleatório lisboeta com impacto real
+    currentEvent = EVENTOS_LISBOA[Math.floor(Math.random() * EVENTOS_LISBOA.length)];
+    currentEvent.effect(player);
+    if (currentEvent.good) {
+        sfxCoin();
+        spawnParticle(currentEvent.badge, '#10b981');
+    } else {
+        sfxAlert();
+        spawnParticle(currentEvent.badge, '#ef4444');
+    }
+
     state = 'NEWS';
 }
 
@@ -661,21 +1066,27 @@ function renderTitleScreen() {
     const pulse = (Math.sin(animTimer * 5) + 1) / 2;
     ctx.fillStyle = pulse > 0.5 ? '#f59e0b' : '#fbbf24';
     ctx.font = '11px "Press Start 2P"';
-    ctx.fillText("[ CLICA PARA COMEÇAR ]", 320, 240);
+    ctx.fillText("[ CLICA PARA COMEÇAR ]", 320, 230);
 
-    ctx.fillStyle = '#94a3b8';
+    // Botão Hall of Fame
+    const isLbHover = (mouse.x >= 180 && mouse.x <= 460 && mouse.y >= 252 && mouse.y <= 278);
+    ctx.fillStyle = isLbHover ? '#38bdf8' : '#94a3b8';
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText("🏆 [ VER TOP 10 RECORDES ]", 320, 265);
+
+    ctx.fillStyle = '#64748b';
     ctx.font = '10px "Fira Code"';
-    ctx.fillText("pormenores.net", 320, 285);
+    ctx.fillText("pormenores.net", 320, 295);
 }
 
-// Ecrã do Jornal Matinal (Sem texto a sair da caixa!)
+// Ecrã do Jornal Matinal com Eventos e Selos de Impacto
 function renderNewsScreen() {
     renderBoard();
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.84)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Folha de Jornal
-    const jx = 75, jy = 30, jw = 490, jh = 245;
+    const jx = 65, jy = 22, jw = 510, jh = 265;
     ctx.fillStyle = '#fef3c7';
     ctx.strokeStyle = '#b45309';
     ctx.lineWidth = 4;
@@ -683,43 +1094,70 @@ function renderNewsScreen() {
     ctx.strokeRect(jx, jy, jw, jh);
 
     ctx.fillStyle = '#1e293b';
-    ctx.font = '14px "Press Start 2P"';
+    ctx.font = '13px "Press Start 2P"';
     ctx.textAlign = 'center';
-    ctx.fillText("O CORREIO DO PURGATÓRIO", jx + jw / 2, jy + 35);
+    ctx.fillText("O CORREIO DO PURGATÓRIO", jx + jw / 2, jy + 32);
 
     ctx.strokeStyle = '#1e293b';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(jx + 20, jy + 48);
-    ctx.lineTo(jx + jw - 20, jy + 48);
+    ctx.moveTo(jx + 20, jy + 44);
+    ctx.lineTo(jx + jw - 20, jy + 44);
     ctx.stroke();
 
     ctx.fillStyle = '#991b1b';
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText(`EDIÇÃO DE LISBOA — DIA ${player.day}`, jx + jw / 2, jy + 72);
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText(`EDIÇÃO DE LISBOA — DIA ${player.day}`, jx + jw / 2, jy + 64);
 
-    // Manchete com quebra de linha garantida
+    const titleText = currentEvent ? currentEvent.title : "Chegada a Lisboa";
+    const descText = currentEvent ? currentEvent.desc : "Começa a tua jornada em Lisboa. Encontra trabalho e não te atrases na renda semanal!";
+
+    // Título da Notícia
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 13px "Fira Code"';
+    ctx.fillText(`📰 ${titleText}`, jx + jw / 2, jy + 92);
+
+    // Corpo da Notícia
     wrapTextCanvas(
         ctx,
-        `"${morningNews}"`,
+        `"${descText}"`,
         jx + jw / 2,
-        jy + 115,
-        jw - 60,
-        22,
-        'bold 13px "Fira Code"',
-        '#0f172a',
+        jy + 116,
+        jw - 50,
+        18,
+        '11.5px "Fira Code"',
+        '#334155',
         'center'
     );
 
+    // Selo de Impacto do Evento
+    if (currentEvent && currentEvent.badge) {
+        const badgeColor = currentEvent.good ? '#15803d' : '#b91c1c';
+        const badgeBg = currentEvent.good ? '#dcfce7' : '#fee2e2';
+        const bw = 350, bh = 24;
+        const bx = jx + (jw - bw) / 2;
+        const by = jy + 165;
+
+        ctx.fillStyle = badgeBg;
+        ctx.fillRect(bx, by, bw, bh);
+        ctx.strokeStyle = badgeColor;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(bx, by, bw, bh);
+
+        ctx.fillStyle = badgeColor;
+        ctx.font = 'bold 10px "Fira Code"';
+        ctx.fillText(currentEvent.badge, jx + jw / 2, by + 16);
+    }
+
     // Aviso de renda
-    ctx.fillStyle = '#991b1b';
-    ctx.font = 'bold 11px "Fira Code"';
-    ctx.fillText(`⚠️ Faltam ${player.daysUntilRent} dias para o Senhorio cobrar ${HOUSES[player.houseIndex].rent}€ de renda.`, jx + jw / 2, jy + 185);
+    ctx.fillStyle = player.daysUntilRent <= 2 ? '#b91c1c' : '#854d0e';
+    ctx.font = 'bold 10.5px "Fira Code"';
+    ctx.fillText(`⚠️ Faltam ${player.daysUntilRent} dias para o Senhorio cobrar ${HOUSES[player.houseIndex].rent}€ de renda.`, jx + jw / 2, jy + 212);
 
     // Botão Continuar
     ctx.fillStyle = '#b45309';
     ctx.font = '9px "Press Start 2P"';
-    ctx.fillText("CLICA PARA SAIR DA CAMA ➔", jx + jw / 2, jy + 225);
+    ctx.fillText("CLICA PARA SAIR DA CAMA ➔", jx + jw / 2, jy + 242);
 }
 
 // Renderizar o Tabuleiro
@@ -1239,10 +1677,11 @@ function renderGameOverScreen() {
     ctx.fillText(`🎓 ECTS: ${player.ects}/180`, gx + 250, gy + 60);
     ctx.fillText(`💸 Rendas: ${stats.totalRentPaid}€`, gx + 250, gy + 82);
 
-    // 3 Botões de Ação Perfeitos
-    drawActionButton(85, 285, 140, 38, "TENTAR NOVO", '#f59e0b', () => resetGame());
-    drawActionButton(235, 285, 135, 38, "COPIAR TEXTO", '#06b6d4', () => shareScorecard());
-    drawActionButton(380, 285, 175, 38, "📸 GERAR STORY", '#ec4899', () => shareImageCard());
+    // 4 Botões de Ação com Leaderboard
+    drawActionButton(45, 278, 125, 36, "NOVO JOGO", '#f59e0b', () => resetGame());
+    drawActionButton(180, 278, 145, 36, isScoreSubmitted ? "🏆 VER RANKING" : "🏆 GRAVAR RECORDE", '#10b981', () => isScoreSubmitted ? openLeaderboard() : openSubmitModal());
+    drawActionButton(335, 278, 130, 36, "COPIAR TEXTO", '#06b6d4', () => shareScorecard());
+    drawActionButton(475, 278, 120, 36, "📸 STORY 9:16", '#ec4899', () => shareImageCard());
 }
 
 // Ecrã de Vitória
@@ -1260,8 +1699,9 @@ function renderVictoryScreen() {
     ctx.fillText("Sobreviveste 30 dias, compraste o teu T1 no Chiado", 320, 115);
     ctx.fillText("e tornaste-te Integration Architect de elite!", 320, 138);
 
-    drawActionButton(140, 250, 170, 42, "COPIAR TEXTO", '#06b6d4', () => shareScorecard());
-    drawActionButton(330, 250, 170, 42, "📸 GERAR STORY", '#10b981', () => shareImageCard());
+    drawActionButton(80, 250, 140, 40, isScoreSubmitted ? "🏆 VER RANKING" : "🏆 GRAVAR RECORDE", '#10b981', () => isScoreSubmitted ? openLeaderboard() : openSubmitModal());
+    drawActionButton(235, 250, 135, 40, "COPIAR TEXTO", '#06b6d4', () => shareScorecard());
+    drawActionButton(385, 250, 175, 40, "📸 GERAR STORY", '#f59e0b', () => shareImageCard());
 }
 
 function drawActionButton(x, y, w, h, label, color, onClick) {
@@ -1307,33 +1747,46 @@ canvas.addEventListener('click', (e) => {
 
 function handleCanvasClick(cx, cy) {
     if (state === 'TITLE') {
+        if (cx >= 180 && cx <= 460 && cy >= 250 && cy <= 280) {
+            sfxAction();
+            openLeaderboard();
+            return;
+        }
         sfxCoin();
         state = 'NEWS';
-        morningNews = "Começa a tua jornada em Lisboa. Encontra trabalho e não te atrases com a renda!";
+        currentEvent = null;
+        startBGM();
         return;
     }
 
     if (state === 'NEWS') {
         sfxAction();
         state = 'BOARD';
+        startBGM();
         return;
     }
 
     if (state === 'GAMEOVER') {
-        if (cx >= 85 && cx <= 225 && cy >= 285 && cy <= 323) {
+        if (cx >= 45 && cx <= 170 && cy >= 278 && cy <= 314) {
             resetGame();
-        } else if (cx >= 235 && cx <= 370 && cy >= 285 && cy <= 323) {
+        } else if (cx >= 180 && cx <= 325 && cy >= 278 && cy <= 314) {
+            if (isScoreSubmitted) openLeaderboard();
+            else openSubmitModal();
+        } else if (cx >= 335 && cx <= 465 && cy >= 278 && cy <= 314) {
             shareScorecard();
-        } else if (cx >= 380 && cx <= 555 && cy >= 285 && cy <= 323) {
+        } else if (cx >= 475 && cx <= 595 && cy >= 278 && cy <= 314) {
             shareImageCard();
         }
         return;
     }
 
     if (state === 'VICTORY') {
-        if (cx >= 140 && cx <= 310 && cy >= 250 && cy <= 292) {
+        if (cx >= 80 && cx <= 220 && cy >= 250 && cy <= 290) {
+            if (isScoreSubmitted) openLeaderboard();
+            else openSubmitModal();
+        } else if (cx >= 235 && cx <= 370 && cy >= 250 && cy <= 290) {
             shareScorecard();
-        } else if (cx >= 330 && cx <= 500 && cy >= 250 && cy <= 292) {
+        } else if (cx >= 385 && cx <= 560 && cy >= 250 && cy <= 290) {
             shareImageCard();
         }
         return;
@@ -1495,6 +1948,8 @@ function resetGame() {
     player.targetY = 235;
     player.walking = false;
     particles = [];
+    isScoreSubmitted = false;
+    currentEvent = null;
 
     stats = {
         totalEarned: 0,
@@ -1802,6 +2257,152 @@ function shareImageCard() {
             showToast("📸 Imagem descarregada! Pronta para o Instagram Stories!");
         }, 'image/png');
     }, 100);
+}
+
+// ============================================================================
+// 9. LEADERBOARD (HALL OF FAME) & API
+// ============================================================================
+let isScoreSubmitted = false;
+
+function openLeaderboard() {
+    const modal = document.getElementById('leaderboard-modal');
+    if (!modal) return;
+    modal.style.display = 'flex';
+    fetchLeaderboard();
+}
+
+function closeLeaderboard() {
+    const modal = document.getElementById('leaderboard-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function openSubmitModal() {
+    if (isScoreSubmitted) {
+        openLeaderboard();
+        return;
+    }
+    const modal = document.getElementById('submit-score-modal');
+    if (!modal) return;
+    document.getElementById('sub-days-text').textContent = stats.daysSurvived;
+    document.getElementById('sub-money-text').textContent = `${player.wallet + player.bank}€`;
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        const input = document.getElementById('player-nickname');
+        if (input) input.focus();
+    }, 100);
+}
+
+function closeSubmitModal() {
+    const modal = document.getElementById('submit-score-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function fetchLeaderboard() {
+    const tbody = document.getElementById('lb-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px; color: #94a3b8;">A carregar recordes de Lisboa...</td></tr>';
+
+    try {
+        const res = await fetch('/api/leaderboard.php');
+        const data = await res.json();
+        if (data.status === 'ok' && Array.isArray(data.scores)) {
+            renderLeaderboardRows(data.scores);
+        } else {
+            throw new Error();
+        }
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px; color: #ef4444;">Não foi possível carregar a tabela de recordes.</td></tr>';
+    }
+}
+
+function renderLeaderboardRows(scores) {
+    const tbody = document.getElementById('lb-table-body');
+    if (!tbody) return;
+    if (scores.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px; color: #94a3b8;">Nenhum recorde registado ainda. Sê o primeiro!</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = scores.map((s, idx) => {
+        const rank = idx + 1;
+        let rankClass = '';
+        let medal = `#${rank}`;
+        if (rank === 1) { rankClass = 'rank-gold'; medal = '🥇 #1'; }
+        else if (rank === 2) { rankClass = 'rank-silver'; medal = '🥈 #2'; }
+        else if (rank === 3) { rankClass = 'rank-bronze'; medal = '🥉 #3'; }
+
+        return `
+            <tr>
+                <td class="${rankClass}">${medal}</td>
+                <td style="font-weight:700;">${escapeHtml(s.name)}</td>
+                <td style="color:#f59e0b; font-weight:700;">${s.days}d</td>
+                <td style="color:#10b981;">${s.money}€</td>
+                <td style="color:#94a3b8; font-size:0.65rem;">${escapeHtml(s.cause || 'Despejado')}</td>
+                <td style="color:#64748b; font-size:0.65rem;">${s.date || ''}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function submitPlayerScore() {
+    const input = document.getElementById('player-nickname');
+    const name = input ? input.value.trim() : '';
+    const btn = document.getElementById('btn-confirm-submit');
+
+    if (!name) {
+        showToast("Por favor digita a tua alcunha!");
+        if (input) input.focus();
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = "A GRAVAR...";
+    }
+
+    try {
+        const payload = {
+            name: name,
+            days: stats.daysSurvived,
+            money: player.wallet + player.bank,
+            cause: player.deathTitle || 'Sobreviveu à Renda'
+        };
+
+        const res = await fetch('/api/leaderboard.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (data.status === 'ok') {
+            isScoreSubmitted = true;
+            closeSubmitModal();
+            showToast(`🏆 Recorde gravado com sucesso! Ficaste em #${data.rank}`);
+            openLeaderboard();
+            if (data.scores) {
+                renderLeaderboardRows(data.scores);
+            }
+        } else {
+            showToast(data.message || "Erro ao gravar recorde.");
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = "GRAVAR NO HALL OF FAME ➔";
+            }
+        }
+    } catch (e) {
+        showToast("Erro de ligação ao servidor.");
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = "GRAVAR NO HALL OF FAME ➔";
+        }
+    }
+}
+
+function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[m]);
 }
 
 function showToast(msg) {
