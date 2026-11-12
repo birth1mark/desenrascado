@@ -2,228 +2,1816 @@
 <html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desenrascado | Sobrevivência Urbana em Lisboa</title>
-    <meta name="description" content="Simulador de sobrevivência em Lisboa. Gere rendas, sanidade e tenta ficar milionário.">
-    <link rel="canonical" href="http://desenrascado.birth1mark.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Desenrascado | O Purgatório de Lisboa — Retro Board Edition</title>
+    <meta name="description" content="Simulador de sobrevivência urbana em Lisboa. Gere o teu tempo, paga a renda a horas e sobrevive ao purgatório da precariedade!">
+    <link rel="canonical" href="https://desenrascado.pormenores.net/">
+    <meta name="author" content="Pedro Ribeiro">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://desenrascado.pormenores.net/">
+    <meta property="og:title" content="Desenrascado | O Purgatório de Lisboa">
+    <meta property="og:description" content="Simulador de vida e sobrevivência em Lisboa em Pixel Art 16-bit. Joga grátis no browser!">
+    <meta property="og:image" content="https://pormenores.net/og-card.jpg?v=1">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://pormenores.net/og-card.jpg?v=1">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐟</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary: #10b981; --accent: #f59e0b; --bg: #020617; --danger: #ef4444;
-            --glass: rgba(255, 255, 255, 0.03); --text: #f8fafc;
-            --energy-grad: linear-gradient(90deg, #059669, #34d399);
-            --hunger-grad: linear-gradient(90deg, #d97706, #fbbf24);
-            --sanity-grad: linear-gradient(90deg, #6366f1, #a855f7);
+            --bg-color: #0b0e14;
+            --amber: #f59e0b;
+            --cyan: #06b6d4;
+            --green: #10b981;
+            --red: #ef4444;
+            --font-pixel: 'Press Start 2P', monospace;
+            --font-mono: 'Fira Code', monospace;
         }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        header { background: rgba(15, 23, 42, 0.95); padding: 15px 20px; display: grid; grid-template-columns: 1fr 75px; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .bars-area { display: flex; flex-direction: column; gap: 8px; }
-        .bar-info { display: flex; justify-content: space-between; font-size: 0.55rem; font-weight: 800; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; }
-        .bar-track { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; transition: width 0.5s ease; }
-        .avatar-box { display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 10px; }
-        #p-avatar { font-size: 2.2rem; }
-        .status-label { font-size: 0.5rem; font-weight: 900; color: var(--accent); margin-top: 3px; text-align: center; text-transform: uppercase; }
-        .info-strip { background: rgba(0,0,0,0.3); padding: 8px 20px; display: flex; justify-content: space-around; font-size: 0.65rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        #msg-box { background: var(--glass); margin: 10px; padding: 12px; border-radius: 12px; border-left: 4px solid var(--accent); font-size: 0.75rem; min-height: 45px; transition: 0.3s; line-height: 1.4; }
-        .warning { border-left-color: var(--danger) !important; background: rgba(239, 68, 68, 0.15); }
-        nav { display: flex; justify-content: space-around; padding: 5px; }
-        nav button { background: none; border: none; color: #64748b; font-weight: 800; padding: 10px; cursor: pointer; font-size: 0.75rem; }
-        nav button.active { color: #fff; border-bottom: 2px solid var(--accent); }
-        #main-content { flex-grow: 1; overflow-y: auto; padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; }
-        .card { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .card:active { transform: scale(0.95); }
-        .card b { display: block; font-size: 0.8rem; margin: 4px 0; color: #fff; }
-        .card small { font-size: 0.6rem; color: #94a3b8; }
-        .locked { opacity: 0.15; filter: grayscale(1); pointer-events: none; }
-        .fab { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: #fff; border-radius: 15px; border: none; font-size: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); cursor: pointer; z-index: 5000; }
-        #setup-screen, #credits-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; overflow-y: auto;}
-        .p-btn { background: var(--glass); padding: 15px; border-radius: 12px; margin: 6px; width: 90%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; text-align: center; font-weight: 700; }
-        .score-list { width: 100%; max-width: 350px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; }
-        .score-item { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 5px 0; color: #94a3b8; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #f1f5f9;
+            font-family: var(--font-mono);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        #game-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 960px;
+            max-height: 540px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            box-shadow: 0 0 45px rgba(0, 0, 0, 0.95), 0 0 20px rgba(245, 158, 11, 0.15);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        @media (min-width: 960px) and (min-height: 540px) {
+            #game-wrapper {
+                border: 2px solid #233148;
+            }
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        #game-wrapper::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            z-index: 10;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        #author-bar {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+            font-size: 0.68rem;
+            pointer-events: auto;
+        }
+
+        #author-bar a {
+            color: #94a3b8;
+            text-decoration: none;
+            background: rgba(11, 14, 20, 0.9);
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.2s ease;
+        }
+
+        #author-bar a:hover {
+            color: var(--amber);
+            border-color: var(--amber);
+        }
+
+        .sound-toggle {
+            cursor: pointer;
+            background: rgba(11, 14, 20, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #94a3b8;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.68rem;
+            font-family: inherit;
+        }
+
+        #toast {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(11, 14, 20, 0.96);
+            border: 1px solid var(--amber);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            z-index: 100;
+            opacity: 0;
+            transition: all 0.25s ease;
+            pointer-events: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
     </style>
 </head>
 <body>
 
-    <div id="setup-screen">
-        <h1 style="color:var(--accent); font-weight: 800; margin-bottom: 5px;">DESENRASCADO</h1>
-        <p style="color:#94a3b8; margin-bottom: 25px; font-size: 0.8rem;">Objetivo: 10.000€ antes do colapso.</p>
-        <div class="p-btn" onclick="iniciarJogo('Marreta', 35, 0, 90)"><b>🤓 Marreta do IT</b><br><small>35€. Só quer código e silêncio.</small></div>
-        <div class="p-btn" onclick="iniciarJogo('Betinho', 180, 0, 100)"><b>👔 Herdeiro de Cascais</b><br><small>180€. Vive de aparências e mesada.</small></div>
-        <div class="p-btn" onclick="iniciarJogo('Hustler', 10, 45, 65)"><b>🏃 Sobrevivente do 728</b><br><small>10€. Especialista em desenrasque extremo.</small></div>
-        <p style="color:#64748b; text-decoration: underline; cursor:pointer; font-size: 0.7rem; margin-top: 15px;" onclick="toggleCredits(true)">Recordes e História</p>
-    </div>
-
-    <div id="credits-screen">
-        <h2 style="color:var(--accent);">🏆 Quadro de Honra</h2>
-        <div id="score-container" class="score-list"></div>
-        <h3 style="color:var(--text); margin-top:30px;">A História</h3>
-        <p style="font-size: 0.75rem; color:#94a3b8; line-height: 1.5; max-width:350px;">
-            Desenrascado é uma sátira à sobrevivência em Lisboa. Criado por um aluno de mestrado que sabe o que é viver a café e esperança.
-        </p>
-        <div class="p-btn" onclick="toggleCredits(false)" style="margin-top:20px;">VOLTAR</div>
-    </div>
-
-    <header>
-        <div class="bars-area">
-            <div class="bar-wrapper"><div class="bar-info"><span>⚡ Vigor</span><span id="t-en">18h</span></div><div class="bar-track"><div id="f-en" class="bar-fill" style="background:var(--energy-grad); width:100%"></div></div></div>
-            <div class="bar-wrapper"><div class="bar-info"><span>🥗 Tripa</span><span id="t-hu">100%</span></div><div class="bar-track"><div id="f-hu" class="bar-fill" style="background:var(--hunger-grad); width:100%"></div></div></div>
-            <div class="bar-wrapper"><div class="bar-info"><span>🧠 Juízo</span><span id="t-sa">100%</span></div><div class="bar-track"><div id="f-sa" class="bar-fill" style="background:var(--sanity-grad); width:100%"></div></div></div>
+    <div id="game-wrapper">
+        <div id="author-bar">
+            <a href="https://pormenores.net/">
+                ← <b>pormenores.net</b>
+            </a>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="sound-toggle" onclick="toggleAudio()" id="btn-audio">🔊 Áudio: ON</button>
+            </div>
         </div>
-        <div class="avatar-box"><div id="p-avatar">😐</div><div class="status-label" id="p-dignity">DIGNO</div></div>
-    </header>
 
-    <div class="info-strip">
-        <div>DIA <b id="p-day">1</b></div>
-        <div>CARTEIRA <b id="p-money">0€</b></div>
-        <div>CANUDO <b id="p-ects">0/180</b></div>
+        <canvas id="gameCanvas" width="640" height="360"></canvas>
+        <div id="toast">Notificação</div>
     </div>
-
-    <main id="msg-box"><span id="msg">Inicia a tua jornada...</span></main>
-
-    <nav>
-        <button onclick="mudarTab('jobs', this)" id="defaultTab" class="active">LABUTA</button>
-        <button onclick="mudarTab('uni', this)">TEORIAS</button>
-        <button onclick="mudarTab('life', this)">VIDA</button>
-    </nav>
-
-    <section id="main-content"></section>
-    <button class="fab" onclick="dormir()">💤</button>
 
 <script>
-    let p = { money: 0, hours: 18, ects: 0, humil: 0, fome: 100, sanity: 100, day: 1, major: 'Nenhum', hasHouse: true, streetDays: 0, burnout: false, profile: '' };
-    const RENDA = 250;
-    const LIMITE_MILIONARIO = 10000;
+/**
+ * DESENRASCADO — O Purgatório de Lisboa (Retro Board Edition)
+ * Jogo de Tabuleiro e Sobrevivência Urbana em Lisboa
+ * Arquitetura: Pure Canvas 2D + State Machine + Web Audio Chiptune
+ * Autor: Pedro Ribeiro (birth1mark) · pormenores.net
+ */
 
-    function toggleCredits(show) { if(show) exibirRecordes(); document.getElementById('credits-screen').style.display = show ? 'flex' : 'none'; }
+// ============================================================================
+// 1. ÁUDIO CHIPTUNE SINTETIZADO (Web Audio API)
+// ============================================================================
+let audioCtx = null;
+let soundEnabled = true;
 
-    function iniciarJogo(t, m, h, f) {
-        p.profile = t; p.money = m; p.humil = h; p.fome = f;
-        document.getElementById('setup-screen').style.display = 'none';
-        mudarTab('jobs', document.getElementById('defaultTab'));
-        atualizarStats();
+function initAudio() {
+    if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function toggleAudio() {
+    initAudio();
+    soundEnabled = !soundEnabled;
+    document.getElementById('btn-audio').textContent = soundEnabled ? '🔊 Áudio: ON' : '🔇 Áudio: OFF';
+}
+
+function playBeep(freq, type, duration, vol = 0.1) {
+    if (!soundEnabled) return;
+    initAudio();
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+}
+
+function sfxCoin() {
+    if (!soundEnabled) return;
+    initAudio();
+    playBeep(987.77, 'square', 0.08, 0.08); // B5
+    setTimeout(() => playBeep(1318.51, 'square', 0.15, 0.08), 70); // E6
+}
+
+function sfxStep() {
+    playBeep(180, 'triangle', 0.04, 0.04);
+}
+
+function sfxAction() {
+    playBeep(523.25, 'sine', 0.1, 0.09);
+    setTimeout(() => playBeep(659.25, 'sine', 0.12, 0.09), 80);
+}
+
+function sfxAlert() {
+    playBeep(330, 'sawtooth', 0.15, 0.1);
+    setTimeout(() => playBeep(260, 'sawtooth', 0.25, 0.12), 120);
+}
+
+function sfxWin() {
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((n, idx) => {
+        setTimeout(() => playBeep(n, 'triangle', 0.2, 0.12), idx * 110);
+    });
+}
+
+// ============================================================================
+// 2. CONSTANTES DE LISBOA & MERCADO DE HABITAÇÃO / EMPREGO
+// ============================================================================
+const HOUSES = [
+    { id: 0, name: "Banco de Jardim", rent: 0, qual: "Sem abrigo (Rossio)", bonusHours: 0, sanityDrain: 15, icon: "🌳" },
+    { id: 1, name: "Beliche Rotativo", rent: 280, qual: "8 pax em Arroios", bonusHours: 0, sanityDrain: 5, icon: "🛌" },
+    { id: 2, name: "Quarto s/ Janela", rent: 550, qual: "Interior nos Anjos", bonusHours: 1, sanityDrain: 0, icon: "📦" },
+    { id: 3, name: "Cave Húmida", rent: 850, qual: "T0 em Alfama", bonusHours: 2, sanityDrain: -5, icon: "💧" },
+    { id: 4, name: "T1 Gentrificado", rent: 1600, qual: "Pombalino Chiado", bonusHours: 3, sanityDrain: -15, icon: "🏛️" }
+];
+
+const CAREERS = [
+    { id: 0, name: "Pedala-Precário", reqEcts: 0, reqSanity: 20, wagePerHour: 8, hoursPerShift: 4, icon: "🚲" },
+    { id: 1, name: "Call Center", reqEcts: 0, reqSanity: 40, wagePerHour: 11, hoursPerShift: 6, icon: "🎧" },
+    { id: 2, name: "Dev Júnior", reqEcts: 60, reqSanity: 50, wagePerHour: 18, hoursPerShift: 6, icon: "💻" },
+    { id: 3, name: "Integration Arch", reqEcts: 120, reqSanity: 60, wagePerHour: 40, hoursPerShift: 6, icon: "🛡️" }
+];
+
+const NOTICIAS_JORNAL = [
+    "Web Summit em Lisboa: o preço da cerveja duplica até segunda-feira.",
+    "Greve no Metro de Lisboa: caminhar pela calçada gasta mais energia.",
+    "Senhorio instalou cofre de chaves na entrada: vizinhos em fúria.",
+    "Nómadas digitais descobrem a tosta com abacate no teu bairro.",
+    "Chuva torrencial alaga a Baixa: cuidado ao descer para o Cais do Sodré.",
+    "Taxa turística sobe: até o pastel de nata custa mais 20 cêntimos.",
+    "Empresa de entregas corta comissão por viagem: a labuta aperta.",
+    "Dia de sol radioso em Lisboa: miradouros cheios de copos ao entardecer."
+];
+
+// Edifícios no Tabuleiro
+const BUILDINGS = [
+    { id: 'tasca', name: 'Tasca Ti Zé', x: 65, y: 195, w: 90, h: 72, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / SANIDADE', icon: '🍲' },
+    { id: 'senhorio', name: 'Senhorio', x: 65, y: 50, w: 90, h: 72, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠' },
+    { id: 'faculdade', name: 'Politec / IST', x: 275, y: 40, w: 90, h: 72, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓' },
+    { id: 'startup', name: 'Startup Hub', x: 485, y: 50, w: 90, h: 72, color: '#065f46', accent: '#10b981', tag: 'TRABALHO / €', icon: '💻' },
+    { id: 'supermercado', name: 'Pingo Doce', x: 190, y: 195, w: 90, h: 72, color: '#15803d', accent: '#86efac', tag: 'DESPENSA', icon: '🛒' },
+    { id: 'banco', name: 'Caixa / Banco', x: 360, y: 195, w: 90, h: 72, color: '#854d0e', accent: '#facc15', tag: 'DEPÓSITOS', icon: '🏦' },
+    { id: 'miradouro', name: 'Miradouro', x: 485, y: 195, w: 90, h: 72, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO', icon: '🌅' }
+];
+
+// Pombos do Rossio a debicar na calçada
+const PIGEONS = [
+    { x: 220, y: 140, frame: 0, timer: 0 },
+    { x: 380, y: 135, frame: 1, timer: 1.2 },
+    { x: 440, y: 155, frame: 0, timer: 2.1 }
+];
+
+// Partículas flutuantes (+15€, -20€, ☕)
+let particles = [];
+
+function spawnParticle(text, color, x, y) {
+    particles.push({
+        text,
+        color,
+        x: x || player.x,
+        y: y || player.y - 20,
+        alpha: 1.0,
+        vy: -1.2
+    });
+}
+
+// ============================================================================
+// 3. ESTADO GLOBAL DO JOGO
+// ============================================================================
+let state = 'TITLE'; // TITLE, NEWS, BOARD, MODAL, GAMEOVER, VICTORY
+let modalBuilding = null;
+let morningNews = "";
+
+let player = {
+    x: 320,
+    y: 235,
+    targetX: 320,
+    targetY: 235,
+    speed: 3.6,
+    walking: false,
+    frame: 0,
+    facing: 'down',
+    destinationBuilding: null,
+    thoughtTimer: 0,
+    thoughtEmoji: null,
+
+    day: 1,
+    timeHour: 8,
+    timeMinute: 0,
+    wallet: 320,
+    bank: 150,
+    hunger: 80,
+    sanity: 90,
+    ects: 0,
+    groceries: 2,
+    houseIndex: 1,
+    careerIndex: 0,
+    daysUntilRent: 7,
+    hungerDays: 0,
+    avatarName: "Pedro",
+    deathTitle: "",
+    deathCause: ""
+};
+
+let stats = {
+    totalEarned: 0,
+    totalRentPaid: 0,
+    daysSurvived: 1
+};
+
+// ============================================================================
+// 4. CANVAS SETUP & PRE-RENDER DA CALÇADA PORTUGUESA
+// ============================================================================
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+// Pre-renderização da Calçada com Ondas de Basalto do Rossio
+const calcadaCanvas = document.createElement('canvas');
+calcadaCanvas.width = 640;
+calcadaCanvas.height = 280;
+const cctx = calcadaCanvas.getContext('2d');
+
+function preRenderCalcada() {
+    // 1. Base Calcário Creme/Marfim
+    cctx.fillStyle = '#f1ebe0';
+    cctx.fillRect(0, 0, 640, 280);
+
+    // 2. Textura de pedras individuais
+    cctx.fillStyle = '#e4dccf';
+    for (let y = 0; y < 280; y += 8) {
+        for (let x = 0; x < 640; x += 8) {
+            if ((x + y) % 16 === 0) {
+                cctx.fillRect(x + 1, y + 1, 6, 6);
+            }
+        }
     }
 
-    function mudarTab(type, btn) {
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const grid = document.getElementById('main-content'); grid.innerHTML = '';
-        if(type === 'jobs') {
-            addCard("🚲", "Pedala-Precário", "+32€", "-3h", !p.burnout, () => action(32, 3, 5, 15, 10));
-            addCard("🎧", "Fábrica de Gritos", "+75€", "-5h", p.ects >= 45 && !p.burnout, () => action(75, 5, 12, 18, 15));
-            addCard("🦈", "Consultora Elite", "+450€", "-8h", p.ects >= 180 && !p.burnout, () => action(450, 8, 2, 20, 30));
-        } else if(type === 'uni') {
-            if(p.major === 'Nenhum') {
-                addCard("🛠️", "I. S. Tortura", "-120€", "Inscrição", p.money >= 120, () => { p.money-=120; p.major='Tortura'; atualizarStats(); mudarTab('uni', btn); });
-                addCard("🥂", "School of Cunhas", "-300€", "Inscrição", p.money >= 300, () => { p.money-=300; p.major='Cunhas'; atualizarStats(); mudarTab('uni', btn); });
+    // 3. Ondas Clássicas de Basalto Negro (Padrão 'Mar Largo' do Rossio)
+    const basaltoCor = '#242b35';
+    for (let y = 4; y < 280; y += 22) {
+        for (let x = 0; x < 640; x += 3) {
+            const wave = Math.sin((x + y * 1.8) * 0.07) * 7.5;
+            const py = y + wave;
+            if (py >= 0 && py < 276) {
+                cctx.fillStyle = basaltoCor;
+                cctx.fillRect(x, Math.round(py), 3, 4);
+                // Pedra com relevo
+                cctx.fillStyle = '#181d24';
+                cctx.fillRect(x + 1, Math.round(py) + 1, 2, 2);
+            }
+        }
+    }
+
+    // 4. Guia / Lancil da Calçada junto ao Tejo
+    cctx.fillStyle = '#cbd5e1';
+    cctx.fillRect(0, 274, 640, 6);
+    cctx.fillStyle = '#94a3b8';
+    cctx.fillRect(0, 278, 640, 2);
+}
+preRenderCalcada();
+
+// ============================================================================
+// 5. ATUALIZAÇÃO DA LÓGICA (UPDATE)
+// ============================================================================
+let lastTime = performance.now();
+let animTimer = 0;
+
+function gameLoop(now) {
+    const dt = (now - lastTime) / 1000;
+    lastTime = now;
+    animTimer += dt;
+
+    update(dt);
+    render();
+
+    requestAnimationFrame(gameLoop);
+}
+
+function update(dt) {
+    // Animação dos Pombos
+    PIGEONS.forEach(p => {
+        p.timer += dt;
+        if (p.timer > 2.5) {
+            p.frame = (p.frame + 1) % 2;
+            p.timer = 0;
+            if (Math.random() < 0.3) {
+                p.x += (Math.random() - 0.5) * 8;
+            }
+        }
+    });
+
+    // Partículas
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const pt = particles[i];
+        pt.y += pt.vy;
+        pt.alpha -= dt * 0.9;
+        if (pt.alpha <= 0) particles.splice(i, 1);
+    }
+
+    // Movimento do Peão
+    if (state === 'BOARD') {
+        if (player.walking) {
+            const dx = player.targetX - player.x;
+            const dy = player.targetY - player.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < player.speed) {
+                player.x = player.targetX;
+                player.y = player.targetY;
+                player.walking = false;
+                
+                if (player.destinationBuilding) {
+                    openBuilding(player.destinationBuilding);
+                    player.destinationBuilding = null;
+                }
             } else {
-                addCard("📚", "Moer o Cérebro", "-150€", "+15 ECTS", p.money >= 150 && p.ects < 180 && !p.burnout, () => { p.money-=150; p.hours-=6; p.ects+=15; p.sanity-=22; atualizarStats(); });
+                player.x += (dx / dist) * player.speed;
+                player.y += (dy / dist) * player.speed;
+                
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    player.facing = dx > 0 ? 'right' : 'left';
+                } else {
+                    player.facing = dy > 0 ? 'down' : 'up';
+                }
+
+                player.frame = Math.floor(animTimer * 9) % 4;
             }
         } else {
-            if(!p.hasHouse) {
-                addCard("🏠", "T0 com Humidade", "-250€", "Sair da Rua", p.money >= RENDA, () => { p.money-=RENDA; p.hasHouse=true; p.streetDays=0; atualizarStats(); mudarTab('life', btn); });
-                addCard("🥣", "Refeitório Social", "0€", "+15% Tripa", true, () => { p.fome=Math.min(100, p.fome+15); p.humil+=40; atualizarStats(); });
+            // Idle balão de pensamento cómico ocasional
+            player.thoughtTimer += dt;
+            if (player.thoughtTimer > 5) {
+                const emojis = ['☕', '🐟', '🏠', '🍺', '💻', '💸'];
+                player.thoughtEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                if (player.thoughtTimer > 7.5) {
+                    player.thoughtTimer = 0;
+                    player.thoughtEmoji = null;
+                }
             }
-            addCard("🍲", "Zé da Tasca", "-12€", "+40% Tripa", p.money >= 12, () => { p.money-=12; p.fome=Math.min(100, p.fome+40); p.sanity=Math.min(100, p.sanity+5); atualizarStats(); });
-            addCard("☕", "Míssil de Máquina", "-1€", "+2h Vigor", p.money >= 1, () => { p.money-=1; p.hours=Math.min(18, p.hours+2); p.fome=Math.max(0, p.fome-5); atualizarStats(); });
-            addCard("🛋️", "Terapia Low-Cost", "-25€", "+45% Juízo", p.money >= 25, () => { p.money-=25; p.sanity=Math.min(100, p.sanity+45); atualizarStats(); });
-            addCard("🌿", "Passeio Belém", "0€", "+10% Juízo", p.hours >= 2, () => { p.hours-=2; p.sanity=Math.min(100, p.sanity+10); atualizarStats(); });
-            addCard("📞", "Pedir aos Velhos", "+35€", "+65 Humil.", true, () => { p.money+=35; p.humil+=65; p.sanity=Math.max(0, p.sanity-15); atualizarStats(); });
+        }
+    }
+}
+
+// Avançar tempo
+function consumeTime(hours, minutes = 0) {
+    player.timeMinute += minutes;
+    while (player.timeMinute >= 60) {
+        player.timeMinute -= 60;
+        player.timeHour += 1;
+    }
+    player.timeHour += hours;
+
+    player.hunger = Math.max(0, player.hunger - (hours * 2));
+    player.sanity = Math.max(0, player.sanity - (hours * 1));
+
+    if (player.timeHour >= 24) {
+        endDay("Meia-noite em Lisboa! O teu corpo desmaiou de sono.");
+    }
+}
+
+// Fim de Turno / Dia
+function endDay(motivo) {
+    sfxAlert();
+    player.day++;
+    stats.daysSurvived = player.day;
+    player.timeHour = 8;
+    player.timeMinute = 0;
+
+    // Renda semanal
+    player.daysUntilRent--;
+    const currentRent = HOUSES[player.houseIndex].rent;
+    if (player.daysUntilRent <= 0) {
+        player.daysUntilRent = 7;
+        if (player.wallet >= currentRent) {
+            player.wallet -= currentRent;
+            stats.totalRentPaid += currentRent;
+            spawnParticle(`- ${currentRent}€ RENDA`, '#ef4444');
+        } else if ((player.wallet + player.bank) >= currentRent) {
+            const rem = currentRent - player.wallet;
+            player.wallet = 0;
+            player.bank -= rem;
+            stats.totalRentPaid += currentRent;
+            spawnParticle(`- ${currentRent}€ RENDA`, '#ef4444');
+        } else {
+            player.houseIndex = 0;
+            player.sanity = Math.max(0, player.sanity - 40);
+            motivo = "DESPEJADO! Não conseguiste pagar a renda de " + currentRent + "€!";
         }
     }
 
-    function addCard(e, t, g, h, active, fn) {
-        const d = document.createElement('div');
-        d.className = `card ${!active ? 'locked' : ''}`;
-        d.onclick = active ? fn : null;
-        d.innerHTML = `<span style="font-size:1.5rem">${e}</span><b>${t}</b><small>${g} | ${h}</small>`;
-        document.getElementById('main-content').appendChild(d);
+    player.hunger = Math.max(0, player.hunger - 18);
+    player.sanity = Math.max(0, Math.min(100, player.sanity - HOUSES[player.houseIndex].sanityDrain));
+
+    // Comer da despensa
+    if (player.hunger < 40 && player.groceries > 0) {
+        player.groceries--;
+        player.hunger = Math.min(100, player.hunger + 45);
+        spawnParticle("+ Atum de Casa", '#10b981');
     }
 
-    function action(m, h, hum, f, s) {
-        if(p.hours < h) return avisar("Vigor a zeros.");
-        p.money += m; p.hours -= h; p.fome -= f; p.humil += hum; p.sanity -= s;
-        atualizarStats();
+    if (player.hunger <= 0) player.hungerDays++;
+    else player.hungerDays = 0;
+
+    if (player.hungerDays >= 3) {
+        triggerGameOver("FALECIMENTO POR INANIÇÃO", "Passaste 3 dias consecutivos sem comer uma única refeição em Lisboa.");
+        return;
+    }
+    if (player.sanity <= 0) {
+        triggerGameOver("BURNOUT EXISTENCIAL", "A pressão das rendas e a exaustão derreteram a tua sanidade mental.");
+        return;
     }
 
-    function dormir() {
-        if (p.day % 7 === 0 && p.hasHouse) {
-            if (p.money >= RENDA) { p.money -= RENDA; } 
-            else { p.hasHouse = false; p.streetDays = 1; alert("SENHORIO: 'Mudei a fechadura.'"); }
-        } else if (!p.hasHouse) {
-            p.streetDays++; p.sanity -= 25;
-            if (p.streetDays > 7) { finalizarJogo("Lisboa venceu. Morreste no Rossio."); return; }
+    // Vitória: Sobreviver 30 dias + T1 no Chiado + Integration Arch
+    if (player.day >= 30 && player.houseIndex >= 4 && player.careerIndex >= 3) {
+        triggerVictory();
+        return;
+    }
+
+    morningNews = NOTICIAS_JORNAL[Math.floor(Math.random() * NOTICIAS_JORNAL.length)];
+    state = 'NEWS';
+}
+
+function triggerGameOver(titulo, causa) {
+    state = 'GAMEOVER';
+    player.deathTitle = titulo;
+    player.deathCause = causa;
+    sfxAlert();
+}
+
+function triggerVictory() {
+    state = 'VICTORY';
+    sfxWin();
+}
+
+// ============================================================================
+// 6. RENDERIZAÇÃO GRÁFICA & RESOLUÇÃO DE OVERFLOW
+// ============================================================================
+function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (state === 'TITLE') {
+        renderTitleScreen();
+    } else if (state === 'NEWS') {
+        renderNewsScreen();
+    } else if (state === 'BOARD' || state === 'MODAL') {
+        renderBoard();
+        renderPigeons();
+        renderPlayer();
+        renderParticles();
+        renderHUD();
+
+        if (state === 'MODAL') {
+            renderBuildingModal();
+        }
+    } else if (state === 'GAMEOVER') {
+        renderGameOverScreen();
+    } else if (state === 'VICTORY') {
+        renderVictoryScreen();
+    }
+}
+
+// Função utilitária de quebra de texto (Word Wrapping com limite rígido)
+function wrapTextCanvas(targetCtx, text, x, y, maxWidth, lineHeight, font, color, align = 'left') {
+    targetCtx.font = font;
+    targetCtx.fillStyle = color;
+    targetCtx.textAlign = align;
+
+    const words = String(text).split(' ');
+    let line = '';
+    let curY = y;
+
+    for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const testWidth = targetCtx.measureText(testLine).width;
+        if (testWidth > maxWidth && n > 0) {
+            targetCtx.fillText(line.trim(), x, curY);
+            line = words[n] + ' ';
+            curY += lineHeight;
+        } else {
+            line = testLine;
+        }
+    }
+    targetCtx.fillText(line.trim(), x, curY);
+    return curY;
+}
+
+// Ecrã Inicial
+function renderTitleScreen() {
+    ctx.drawImage(calcadaCanvas, 0, 0);
+
+    ctx.fillStyle = 'rgba(11, 14, 20, 0.94)';
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(50, 40, 540, 275);
+    ctx.fillRect(50, 40, 540, 275);
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = '20px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("DESENRASCADO", 320, 95);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText("O PURGATÓRIO DE LISBOA", 320, 125);
+
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '12px "Fira Code"';
+    ctx.fillText("O simulador de tabuleiro oficial da precariedade alfacinha.", 320, 160);
+    ctx.fillText("Gere o teu tempo, ganha dinheiro, estuda e não te atrases na renda!", 320, 182);
+
+    // Botão Começar
+    const pulse = (Math.sin(animTimer * 5) + 1) / 2;
+    ctx.fillStyle = pulse > 0.5 ? '#f59e0b' : '#fbbf24';
+    ctx.font = '11px "Press Start 2P"';
+    ctx.fillText("[ CLICA PARA COMEÇAR ]", 320, 240);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '10px "Fira Code"';
+    ctx.fillText("pormenores.net", 320, 285);
+}
+
+// Ecrã do Jornal Matinal (Sem texto a sair da caixa!)
+function renderNewsScreen() {
+    renderBoard();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.84)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Folha de Jornal
+    const jx = 75, jy = 30, jw = 490, jh = 245;
+    ctx.fillStyle = '#fef3c7';
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 4;
+    ctx.fillRect(jx, jy, jw, jh);
+    ctx.strokeRect(jx, jy, jw, jh);
+
+    ctx.fillStyle = '#1e293b';
+    ctx.font = '14px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("O CORREIO DO PURGATÓRIO", jx + jw / 2, jy + 35);
+
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(jx + 20, jy + 48);
+    ctx.lineTo(jx + jw - 20, jy + 48);
+    ctx.stroke();
+
+    ctx.fillStyle = '#991b1b';
+    ctx.font = '10px "Press Start 2P"';
+    ctx.fillText(`EDIÇÃO DE LISBOA — DIA ${player.day}`, jx + jw / 2, jy + 72);
+
+    // Manchete com quebra de linha garantida
+    wrapTextCanvas(
+        ctx,
+        `"${morningNews}"`,
+        jx + jw / 2,
+        jy + 115,
+        jw - 60,
+        22,
+        'bold 13px "Fira Code"',
+        '#0f172a',
+        'center'
+    );
+
+    // Aviso de renda
+    ctx.fillStyle = '#991b1b';
+    ctx.font = 'bold 11px "Fira Code"';
+    ctx.fillText(`⚠️ Faltam ${player.daysUntilRent} dias para o Senhorio cobrar ${HOUSES[player.houseIndex].rent}€ de renda.`, jx + jw / 2, jy + 185);
+
+    // Botão Continuar
+    ctx.fillStyle = '#b45309';
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText("CLICA PARA SAIR DA CAMA ➔", jx + jw / 2, jy + 225);
+}
+
+// Renderizar o Tabuleiro
+function renderBoard() {
+    // 1. Rio Tejo
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(0, 275, canvas.width, 30);
+    ctx.fillStyle = '#38bdf8';
+    for (let x = 0; x < canvas.width; x += 32) {
+        const wave = Math.sin(animTimer * 3 + x) * 2;
+        ctx.fillRect(x, 280 + wave, 18, 3);
+    }
+
+    // 2. Calçada Portuguesa do Rossio (Pre-renderizada e rica)
+    ctx.drawImage(calcadaCanvas, 0, 0);
+
+    // 3. Edifícios
+    BUILDINGS.forEach(b => drawBuilding(b));
+
+    // 4. Carris do Elétrico
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 6]);
+    ctx.beginPath();
+    ctx.moveTo(0, 160);
+    ctx.lineTo(canvas.width, 160);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Elétrico 28
+    const tramX = ((animTimer * 38) % (canvas.width + 140)) - 70;
+    drawTram(tramX, 146);
+}
+
+// Pombos do Rossio
+function renderPigeons() {
+    PIGEONS.forEach(p => {
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(p.x, p.y, 6, 4);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(p.x + (p.frame === 0 ? 4 : 2), p.y - 2, 3, 3);
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(p.x + (p.frame === 0 ? 7 : 1), p.y - 1, 2, 1);
+    });
+}
+
+// Fachadas dos Edifícios com tipografia ajustada
+function drawBuilding(b) {
+    const isHovered = (mouse.x >= b.x && mouse.x <= b.x + b.w && mouse.y >= b.y && mouse.y <= b.y + b.h);
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.fillRect(b.x + 3, b.y + 5, b.w, b.h);
+
+    ctx.fillStyle = b.color;
+    ctx.fillRect(b.x, b.y, b.w, b.h);
+
+    // Telhado de Terracota
+    ctx.fillStyle = '#c2410c';
+    ctx.beginPath();
+    ctx.moveTo(b.x - 4, b.y);
+    ctx.lineTo(b.x + b.w / 2, b.y - 14);
+    ctx.lineTo(b.x + b.w + 4, b.y);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = isHovered ? '#ffffff' : b.accent;
+    ctx.lineWidth = isHovered ? 3 : 2;
+    ctx.strokeRect(b.x, b.y, b.w, b.h);
+
+    // Porta e Janelas
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(b.x + b.w / 2 - 8, b.y + b.h - 22, 16, 22);
+
+    ctx.fillStyle = isHovered ? '#fef08a' : '#94a3b8';
+    ctx.fillRect(b.x + 10, b.y + 14, 12, 15);
+    ctx.fillRect(b.x + b.w - 22, b.y + 14, 12, 15);
+
+    // Letreiro do Edifício
+    ctx.fillStyle = 'rgba(11, 14, 20, 0.94)';
+    ctx.fillRect(b.x - 6, b.y + b.h + 2, b.w + 12, 17);
+    ctx.strokeStyle = b.accent;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(b.x - 6, b.y + b.h + 2, b.w + 12, 17);
+
+    ctx.fillStyle = isHovered ? '#f59e0b' : '#ffffff';
+    ctx.font = 'bold 9.5px "Fira Code"';
+    ctx.textAlign = 'center';
+    ctx.fillText(b.name, b.x + b.w / 2, b.y + b.h + 14);
+}
+
+// Elétrico 28
+function drawTram(x, y) {
+    if (x < -60 || x > canvas.width + 60) return;
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(x, y, 48, 19);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x + 2, y - 3, 44, 4);
+    ctx.fillStyle = '#0f172a';
+    for (let i = 0; i < 4; i++) {
+        ctx.fillRect(x + 5 + i * 10, y + 3, 6, 8);
+    }
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(x + 46, y + 9, 3, 4);
+}
+
+// ============================================================================
+// NOVO AVATAR EXPRESSIVO & CÓMICO (Pedro Ribeiro)
+// ============================================================================
+function renderPlayer() {
+    const px = Math.round(player.x);
+    const py = Math.round(player.y);
+
+    // Sombra
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+    ctx.beginPath();
+    ctx.ellipse(px, py + 12, 10, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Bobbing ao andar
+    const bob = player.walking ? (player.frame % 2 === 0 ? 0 : -3) : (Math.sin(animTimer * 3) * 0.8);
+
+    // Ténis brancos com sola vermelha
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(px - 6, py + 8 + bob, 5, 4);
+    ctx.fillRect(px + 2, py + 8 + bob, 5, 4);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(px - 6, py + 11 + bob, 5, 1);
+    ctx.fillRect(px + 2, py + 11 + bob, 5, 1);
+
+    // Calças escuras
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(px - 6, py + 2 + bob, 4, 7);
+    ctx.fillRect(px + 2, py + 2 + bob, 4, 7);
+
+    // Mochila nas costas saltitante
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(px - 10, py - 6 + bob, 4, 9);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(px - 9, py - 4 + bob, 2, 2); // Autocolante amarelo retro
+
+    // Casaco Tech Azul
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(px - 7, py - 8 + bob, 15, 11);
+    // Fecho éclair amarelo
+    ctx.fillStyle = '#facc15';
+    ctx.fillRect(px, py - 7 + bob, 1, 9);
+
+    // Cabeça Expressiva (Maior e mais cómica)
+    ctx.fillStyle = '#fbcfe8';
+    ctx.fillRect(px - 7, py - 21 + bob, 15, 13);
+
+    // Cabelo curto escuraço / buzzcut
+    ctx.fillStyle = '#1c1917';
+    ctx.fillRect(px - 8, py - 23 + bob, 17, 4);
+
+    // Barba escura aparada
+    ctx.fillStyle = '#292524';
+    ctx.fillRect(px - 7, py - 12 + bob, 15, 4);
+
+    // Óculos Grandes Retro-Chic
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(px - 6, py - 18 + bob, 6, 5);
+    ctx.fillRect(px + 1, py - 18 + bob, 6, 5);
+    ctx.fillRect(px, py - 17 + bob, 1, 2);
+
+    // Olhos Expressivos consoante o estado de Sanidade e Fome!
+    if (player.sanity < 25 || player.hunger <= 0) {
+        // Olhos espiral / tontos
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(px - 4, py - 16 + bob, 2, 2);
+        ctx.fillRect(px + 3, py - 16 + bob, 2, 2);
+        // Olheiras roxas
+        ctx.fillStyle = '#818cf8';
+        ctx.fillRect(px - 6, py - 13 + bob, 5, 2);
+        ctx.fillRect(px + 1, py - 13 + bob, 5, 2);
+    } else {
+        // Olhos atentos com reflexo azul nos óculos
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(px - 5, py - 17 + bob, 4, 3);
+        ctx.fillRect(px + 2, py - 17 + bob, 4, 3);
+        // Pupila
+        ctx.fillStyle = '#0f172a';
+        const lookOffset = player.facing === 'right' ? 2 : (player.facing === 'left' ? 0 : 1);
+        ctx.fillRect(px - 5 + lookOffset, py - 16 + bob, 2, 2);
+        ctx.fillRect(px + 2 + lookOffset, py - 16 + bob, 2, 2);
+        // Reflexo ciano
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(px - 5, py - 17 + bob, 1, 1);
+        ctx.fillRect(px + 2, py - 17 + bob, 1, 1);
+    }
+
+    // Gota de Suor Cómica se a Sanidade estiver abaixo de 40%
+    if (player.sanity < 40) {
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(px + 8, py - 20 + bob, 2, 3);
+    }
+
+    // Balão de Pensamento Cómico (quando parado)
+    if (player.thoughtEmoji && !player.walking) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(px + 10, py - 36, 24, 18);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(px + 10, py - 36, 24, 18);
+        // Pequenos círculos do balão
+        ctx.fillRect(px + 8, py - 22, 3, 3);
+        ctx.fillRect(px + 5, py - 18, 2, 2);
+
+        ctx.font = '11px "Fira Code"';
+        ctx.textAlign = 'center';
+        ctx.fillText(player.thoughtEmoji, px + 22, py - 23);
+    }
+}
+
+// Renderizar partículas flutuantes
+function renderParticles() {
+    particles.forEach(pt => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, pt.alpha);
+        ctx.fillStyle = pt.color;
+        ctx.font = 'bold 11px "Fira Code"';
+        ctx.textAlign = 'center';
+        ctx.fillText(pt.text, pt.x, pt.y);
+        ctx.restore();
+    });
+}
+
+// ============================================================================
+// NOVO HUD PERFEITAMENTE PROPORCIONADO (Zero Overlap de Caixas)
+// ============================================================================
+function renderHUD() {
+    const hy = 295;
+    ctx.fillStyle = '#0b0e14';
+    ctx.fillRect(0, hy, canvas.width, 65);
+    ctx.strokeStyle = '#233148';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(0, hy, canvas.width, 65);
+
+    // Slot 1: Relógio & Dia (x: 8, w: 105)
+    ctx.fillStyle = '#151d2c';
+    ctx.fillRect(8, hy + 8, 105, 48);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(8, hy + 8, 105, 48);
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText(`DIA ${player.day}`, 16, hy + 24);
+
+    const hh = String(player.timeHour).padStart(2, '0');
+    const mm = String(player.timeMinute).padStart(2, '0');
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '13px "Press Start 2P"';
+    ctx.fillText(`${hh}:${mm}`, 16, hy + 46);
+
+    // Slot 2: Finanças (€) (x: 118, w: 130)
+    ctx.fillStyle = '#151d2c';
+    ctx.fillRect(118, hy + 8, 130, 48);
+    ctx.strokeStyle = '#233148';
+    ctx.strokeRect(118, hy + 8, 130, 48);
+
+    ctx.fillStyle = '#10b981';
+    ctx.font = 'bold 11px "Fira Code"';
+    ctx.fillText(`💵 MÃO: ${player.wallet}€`, 126, hy + 26);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`🏦 BANCO: ${player.bank}€`, 126, hy + 46);
+
+    // Slot 3: Habitação (x: 253, w: 135)
+    ctx.fillStyle = '#151d2c';
+    ctx.fillRect(253, hy + 8, 135, 48);
+    ctx.strokeRect(253, hy + 8, 135, 48);
+
+    ctx.fillStyle = '#f1f5f9';
+    ctx.font = 'bold 10px "Fira Code"';
+    ctx.fillText(HOUSES[player.houseIndex].name, 260, hy + 25);
+
+    ctx.fillStyle = player.daysUntilRent <= 2 ? '#ef4444' : '#f59e0b';
+    ctx.font = 'bold 10px "Fira Code"';
+    ctx.fillText(`Renda (${HOUSES[player.houseIndex].rent}€): ${player.daysUntilRent}d`, 260, hy + 45);
+
+    // Slot 4: Barras de Fome e Sanidade (x: 393, w: 115)
+    ctx.fillStyle = '#151d2c';
+    ctx.fillRect(393, hy + 8, 115, 48);
+    ctx.strokeRect(393, hy + 8, 115, 48);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'bold 9px "Fira Code"';
+    ctx.fillText(`FOME ${player.hunger}%`, 398, hy + 22);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(455, hy + 14, 48, 8);
+    ctx.fillStyle = player.hunger > 30 ? '#f59e0b' : '#ef4444';
+    ctx.fillRect(455, hy + 14, (player.hunger / 100) * 48, 8);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText(`SANID ${player.sanity}%`, 398, hy + 44);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(455, hy + 36, 48, 8);
+    ctx.fillStyle = player.sanity > 30 ? '#06b6d4' : '#ef4444';
+    ctx.fillRect(455, hy + 36, (player.sanity / 100) * 48, 8);
+
+    // Slot 5: Botão Dormir (x: 513, w: 118)
+    const btnDormirX = 513;
+    const isHoverBtn = (mouse.x >= btnDormirX && mouse.x <= btnDormirX + 118 && mouse.y >= hy + 8 && mouse.y <= hy + 56);
+    ctx.fillStyle = isHoverBtn ? '#ea580c' : '#c2410c';
+    ctx.fillRect(btnDormirX, hy + 8, 118, 48);
+    ctx.strokeStyle = '#f97316';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(btnDormirX, hy + 8, 118, 48);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("💤 DORMIR", btnDormirX + 59, hy + 28);
+    ctx.font = 'bold 9px "Fira Code"';
+    ctx.fillText("Avançar Dia", btnDormirX + 59, hy + 44);
+}
+
+// ============================================================================
+// MODAL DE AÇÕES COM DESIGN BLINDADO (Sem textos a sair das caixas)
+// ============================================================================
+function renderBuildingModal() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.78)';
+    ctx.fillRect(0, 0, canvas.width, 295);
+
+    const mx = 70;
+    const my = 22;
+    const mw = 500;
+    const mh = 255;
+
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = modalBuilding.accent;
+    ctx.lineWidth = 3;
+    ctx.fillRect(mx, my, mw, mh);
+    ctx.strokeRect(mx, my, mw, mh);
+
+    // Cabeçalho da Loja
+    ctx.fillStyle = modalBuilding.color;
+    ctx.fillRect(mx, my, mw, 36);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '9px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText(`${modalBuilding.icon} ${modalBuilding.name.toUpperCase()} — ${modalBuilding.tag}`, mx + 16, my + 23);
+
+    // Botão Fechar X
+    const isHoverX = (mouse.x >= mx + mw - 32 && mouse.x <= mx + mw - 6 && mouse.y >= my + 4 && mouse.y <= my + 32);
+    ctx.fillStyle = isHoverX ? '#fca5a5' : '#ef4444';
+    ctx.font = 'bold 16px "Fira Code"';
+    ctx.textAlign = 'center';
+    ctx.fillText("✕", mx + mw - 18, my + 24);
+
+    renderBuildingActions(modalBuilding.id, mx, my, mw, mh);
+}
+
+function renderBuildingActions(id, mx, my, mw, mh) {
+    let actions = [];
+
+    if (id === 'tasca') {
+        actions = [
+            { label: "Bica ao Balcão", cost: 1, timeH: 0, timeM: 15, hunger: 5, sanity: 15, desc: "Recupera +15 Sanidade em 15 minutos." },
+            { label: "Prato do Dia (Atum)", cost: 4, timeH: 0, timeM: 30, hunger: 45, sanity: 5, desc: "Nutrição +45. O clássico alfacinha." },
+            { label: "Bitoque c/ Ovo a Cavalo", cost: 9, timeH: 1, timeM: 0, hunger: 85, sanity: 25, desc: "Nutrição +85, Sanidade +25." }
+        ];
+    } else if (id === 'senhorio') {
+        const nextHouse = HOUSES[Math.min(HOUSES.length - 1, player.houseIndex + 1)];
+        actions = [
+            { label: "Pagar Renda Semanal", cost: HOUSES[player.houseIndex].rent, timeH: 0, timeM: 30, desc: `Renda: ${HOUSES[player.houseIndex].rent}€ (${HOUSES[player.houseIndex].name})` },
+            { label: `Mudar: ${nextHouse.name}`, cost: nextHouse.rent, timeH: 1, timeM: 0, upgradeHouse: true, desc: `Renda: ${nextHouse.rent}€/semana · ${nextHouse.qual}` }
+        ];
+    } else if (id === 'startup') {
+        const curJob = CAREERS[player.careerIndex];
+        const nextJob = CAREERS[Math.min(CAREERS.length - 1, player.careerIndex + 1)];
+        actions = [
+            { label: `Turno: ${curJob.name}`, gain: curJob.wagePerHour * curJob.hoursPerShift, timeH: curJob.hoursPerShift, timeM: 0, desc: `Trabalha ${curJob.hoursPerShift}h e recebe ${curJob.wagePerHour * curJob.hoursPerShift}€ em cash.` },
+            { label: `Promover: ${nextJob.name}`, reqEcts: nextJob.reqEcts, promoteJob: true, desc: `Requer ${nextJob.reqEcts} ECTS · Paga ${nextJob.wagePerHour}€/hora.` }
+        ];
+    } else if (id === 'faculdade') {
+        actions = [
+            { label: "Cadeira Teórica (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "Ganha +15 ECTS para desbloquear profissões." },
+            { label: "Maratona de Exame (8h)", cost: 45, timeH: 8, timeM: 0, ects: 35, desc: "Ganha +35 ECTS intensivos." }
+        ];
+    } else if (id === 'supermercado') {
+        actions = [
+            { label: "Saco de Mercearia (2 Refeições)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições económicas para comer em casa." },
+            { label: "Cabaz Económico (5 Refeições)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para a despensa." }
+        ];
+    } else if (id === 'banco') {
+        actions = [
+            { label: "Depositar 50€ no Banco", deposit: 50, timeH: 0, timeM: 15, desc: "Protege o dinheiro de assaltos noturnos." },
+            { label: "Levantar 50€ da Conta", withdraw: 50, timeH: 0, timeM: 15, desc: "Põe dinheiro na mão para compras imediatas." }
+        ];
+    } else if (id === 'miradouro') {
+        actions = [
+            { label: "Ver o Tejo ao Pôr-do-Sol", cost: 0, timeH: 1, timeM: 0, sanity: 25, desc: "Ar fresco. Recupera +25 de Sanidade mental." },
+            { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Socializar. Recupera +50 de Sanidade." }
+        ];
+    }
+
+    // Desenhar Ações com layout compacto de 2 colunas horizontais
+    const cardH = 58;
+    actions.forEach((act, idx) => {
+        const ay = my + 46 + idx * (cardH + 8);
+        const cardW = mw - 30;
+        const isHover = (mouse.x >= mx + 15 && mouse.x <= mx + 15 + cardW && mouse.y >= ay && mouse.y <= ay + cardH);
+
+        ctx.fillStyle = isHover ? '#1e293b' : '#141d2f';
+        ctx.fillRect(mx + 15, ay, cardW, cardH);
+        ctx.strokeStyle = isHover ? '#f59e0b' : '#233148';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(mx + 15, ay, cardW, cardH);
+
+        // Título da Ação
+        ctx.fillStyle = isHover ? '#f59e0b' : '#ffffff';
+        ctx.font = 'bold 12px "Fira Code"';
+        ctx.textAlign = 'left';
+        ctx.fillText(act.label, mx + 25, ay + 22);
+
+        // Descrição
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10.5px "Fira Code"';
+        ctx.fillText(act.desc, mx + 25, ay + 44);
+
+        // Botão de Preço / Ganho no Lado Direito
+        const btnW = 100;
+        const btnH = 32;
+        const btnX = mx + cardW - btnW - 5;
+        const btnY = ay + (cardH - btnH) / 2;
+
+        let btnText = "";
+        let btnColor = "#10b981";
+        let isAffordable = true;
+
+        if (act.cost !== undefined) {
+            btnText = `${act.cost}€`;
+            if (player.wallet < act.cost) {
+                isAffordable = false;
+                btnColor = "#64748b";
+            }
+        } else if (act.gain !== undefined) {
+            btnText = `+${act.gain}€`;
+            btnColor = "#10b981";
+        } else if (act.deposit !== undefined) {
+            btnText = "DEP 50€";
+            btnColor = "#38bdf8";
+        } else if (act.withdraw !== undefined) {
+            btnText = "LEV 50€";
+            btnColor = "#facc15";
         }
 
-        const frases = {
-            rua: ["Banco no Rossio é gélido.", "Pombos a bicar-te os sonhos.", "Noite de Lisboa não perdoa.", "A polícia mandou-te circular.", "Acordaste com brio zero.", "O cheiro a urina no beco foi o teu despertador.", "Sonhaste com teto, acordaste no cimento.", "Frio nos ossos e nada na conta.", "A estátua do D. Pedro IV olhou-te com pena.", "Mais uma noite a contar estrelas e desgraças."],
-            burnout: ["Cérebro em erro 404.", "Juízo ficou na almofada.", "Júlio de Matos mandou saudações.", "A mente é uma sopa de letras.", "Café não salva este vazio.", "Chorar sobre os PDFs é o teu novo hobby.", "Hoje nem o sol brilha para ti.", "Sentes-te um robô avariado.", "O cansaço tem o teu nome.", "Não consegues ler a ementa sem chorar."],
-            rico: ["Dinheiro paga brunch, não paz.", "Elite da precariedade.", "Saldo alto, dignidade média.", "Quase compras um T1 sem bolor.", "Vinho caro no T0 húmido.", "A renda dói menos hoje.", "És o rei do Alojamento Local.", "Comeste abacate sem culpa.", "O teu cartão não treme ao passar.", "Quase te sentes um herdeiro."],
-            pobre: ["Contar moedas de 1 cêntimo.", "Mais pó na conta do que guito.", "Almoço: água e esperança.", "Cartão recusado. O clássico.", "Viste uma bifana e choraste.", "O pequeno-almoço foi o cheiro do café alheio.", "A tua conta bancária é um deserto.", "Contaste trocos para o passe.", "O saldo é um número de telefone... de um dígito.", "Lisboa olha para o teu bolso e ri."],
-            humilhado: ["Profissão: Pedinte Familiar.", "Dignidade no lixo da esquina.", "Status: Desilusão Genealógica.", "Mentiste aos amigos sobre guito.", "Sentiste a pena do vizinho.", "Atendeste os pais e pediste desculpa.", "A tua árvore genealógica quer-te podar.", "Status: Vergonha do clã.", "Comeste sopa da caridade e soube a derrota.", "Mentiste sobre teres jantar."],
-            normal: ["Mais uma facada no lombo.", "Acordaste. As contas também.", "Lisboa cara, tu cansado.", "Metro avariado. O costume.", "24h de luta garantidas.", "O metro avariou. Lisboa sendo Lisboa.", "O sol brilha, o saldo nubla.", "Sobrevivência por um fio.", "Mais um dia no moedor académico.", "Lisboa não perdoa, mas tu continuas aqui."]
-        };
+        if (act.reqEcts !== undefined && player.ects < act.reqEcts) {
+            isAffordable = false;
+            btnText = `${act.reqEcts} ECTS`;
+            btnColor = "#64748b";
+        }
 
-        let cat = 'normal';
-        if (!p.hasHouse) cat = 'rua';
-        else if (p.sanity < 20) cat = 'burnout';
-        else if (p.money > 1000) cat = 'rico';
-        else if (p.money < 30) cat = 'pobre';
-        else if (p.humil > 80) cat = 'humilhado';
+        ctx.fillStyle = isAffordable ? btnColor : '#1e293b';
+        ctx.fillRect(btnX, btnY, btnW, btnH);
+        ctx.strokeStyle = isAffordable ? '#ffffff' : '#334155';
+        ctx.strokeRect(btnX, btnY, btnW, btnH);
 
-        p.day++; p.hours = 18; p.fome -= 12; p.sanity = Math.min(100, p.sanity + 12);
-        p.burnout = p.sanity < 20;
-        avisar(frases[cat][Math.floor(Math.random()*frases[cat].length)]);
-        atualizarStats();
+        ctx.fillStyle = isAffordable ? '#0b0e14' : '#64748b';
+        ctx.font = 'bold 11px "Fira Code"';
+        ctx.textAlign = 'center';
+        ctx.fillText(btnText, btnX + btnW / 2, btnY + 20);
+    });
+
+    modalBuilding.currentActions = actions;
+}
+
+// ============================================================================
+// ECRÃ DE DERROTA (Sem Textos a Sair dos Limites)
+// ============================================================================
+function renderGameOverScreen() {
+    ctx.fillStyle = 'rgba(11, 14, 20, 0.96)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#ef4444';
+    ctx.font = '14px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("⚰️ JAZ AQUI NO PURGATÓRIO", 320, 50);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '10px "Press Start 2P"';
+    ctx.fillText(player.deathTitle, 320, 78);
+
+    // Causa da Morte com quebra de linha segura
+    wrapTextCanvas(
+        ctx,
+        player.deathCause,
+        320,
+        106,
+        480,
+        18,
+        '12px "Fira Code"',
+        '#94a3b8',
+        'center'
+    );
+
+    // Cartão de Estatísticas em Grelha
+    const gx = 100, gy = 145, gw = 440, gh = 115;
+    ctx.fillStyle = '#182234';
+    ctx.strokeStyle = '#233148';
+    ctx.lineWidth = 1;
+    ctx.fillRect(gx, gy, gw, gh);
+    ctx.strokeRect(gx, gy, gw, gh);
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText(`📅 SOBREVIVESTE: ${stats.daysSurvived} DIAS`, 320, gy + 28);
+
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '12px "Fira Code"';
+    ctx.textAlign = 'left';
+    ctx.fillText(`🏠 Teto: ${HOUSES[player.houseIndex].name}`, gx + 25, gy + 60);
+    ctx.fillText(`💼 Trabalho: ${CAREERS[player.careerIndex].name}`, gx + 25, gy + 82);
+    ctx.fillText(`🎓 ECTS: ${player.ects}/180`, gx + 250, gy + 60);
+    ctx.fillText(`💸 Rendas: ${stats.totalRentPaid}€`, gx + 250, gy + 82);
+
+    // 3 Botões de Ação Perfeitos
+    drawActionButton(85, 285, 140, 38, "TENTAR NOVO", '#f59e0b', () => resetGame());
+    drawActionButton(235, 285, 135, 38, "COPIAR TEXTO", '#06b6d4', () => shareScorecard());
+    drawActionButton(380, 285, 175, 38, "📸 GERAR STORY", '#ec4899', () => shareImageCard());
+}
+
+// Ecrã de Vitória
+function renderVictoryScreen() {
+    ctx.fillStyle = 'rgba(11, 14, 20, 0.96)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#10b981';
+    ctx.font = '15px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("🏆 VENCESTE O PURGATÓRIO!", 320, 75);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '13px "Fira Code"';
+    ctx.fillText("Sobreviveste 30 dias, compraste o teu T1 no Chiado", 320, 115);
+    ctx.fillText("e tornaste-te Integration Architect de elite!", 320, 138);
+
+    drawActionButton(140, 250, 170, 42, "COPIAR TEXTO", '#06b6d4', () => shareScorecard());
+    drawActionButton(330, 250, 170, 42, "📸 GERAR STORY", '#10b981', () => shareImageCard());
+}
+
+function drawActionButton(x, y, w, h, label, color, onClick) {
+    const isHover = (mouse.x >= x && mouse.x <= x + w && mouse.y >= y && mouse.y <= y + h);
+    ctx.fillStyle = isHover ? color : '#1e293b';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, w, h);
+
+    ctx.fillStyle = isHover ? '#0b0e14' : '#ffffff';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, x + w / 2, y + h / 2 + 3);
+}
+
+// ============================================================================
+// 7. INTERAÇÃO E CLIQUES DO UTILIZADOR
+// ============================================================================
+const mouse = { x: 0, y: 0 };
+
+function getCanvasCoords(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+    };
+}
+
+canvas.addEventListener('mousemove', (e) => {
+    const c = getCanvasCoords(e);
+    mouse.x = c.x;
+    mouse.y = c.y;
+});
+
+canvas.addEventListener('click', (e) => {
+    initAudio();
+    const c = getCanvasCoords(e);
+    handleCanvasClick(c.x, c.y);
+});
+
+function handleCanvasClick(cx, cy) {
+    if (state === 'TITLE') {
+        sfxCoin();
+        state = 'NEWS';
+        morningNews = "Começa a tua jornada em Lisboa. Encontra trabalho e não te atrases com a renda!";
+        return;
     }
 
-    function atualizarStats() {
-        document.getElementById('f-en').style.width = (p.hours / 18 * 100) + "%";
-        document.getElementById('f-hu').style.width = Math.max(0, p.fome) + "%";
-        document.getElementById('f-sa').style.width = Math.max(0, p.sanity) + "%";
-        const av = document.getElementById('p-avatar');
-        const lab = document.getElementById('p-dignity');
-        if (!p.hasHouse) { av.innerText = "🏚️"; lab.innerText = "ROSSIO ("+p.streetDays+"/7)"; }
-        else if (p.burnout) { av.innerText = "🧟"; lab.innerText = "BURNOUT"; }
-        else if (p.humil > 80) { av.innerText = "🤡"; lab.innerText = "HUMILHADO"; }
-        else if (p.money >= LIMITE_MILIONARIO) { av.innerText = "👑"; lab.innerText = "TUBARÃO"; }
-        else if (p.money > 1000) { av.innerText = "🤑"; lab.innerText = "ESTÁVEL"; }
-        else { av.innerText = "😐"; lab.innerText = "DIGNO"; }
-
-        document.getElementById('p-money').innerText = p.money + "€";
-        document.getElementById('p-ects').innerText = `${p.ects}/180`;
-        document.getElementById('p-day').innerText = p.day;
-
-        const box = document.getElementById('msg-box');
-        const dR = 7 - (p.day % 7);
-        if(p.hasHouse && (dR <= 3 || p.day % 7 === 0)) {
-            box.classList.add('warning');
-            let m = "";
-            if(dR === 3) m = "⚠️ Senhorio tossiu à porta. 3 dias.";
-            if(dR === 2) m = "⚠️ 2 dias. Vende um rim para os " + RENDA + "€.";
-            if(dR === 1) m = "⚠️ AMANHÃ! Senhorio a polir a chave.";
-            if(dR === 0) m = "⚠️ HOJE! O teu saldo vai evaporar.";
-            if(m) avisar(m);
-        } else if (!p.burnout && p.hasHouse) { box.classList.remove('warning'); }
-        
-        if(p.fome <= 0 && p.money < 12) { finalizarJogo("Morreste de fome."); }
-        if(p.money >= LIMITE_MILIONARIO) { finalizarJogo("MILIONÁRIO! Compraste Arroios. VITÓRIA!"); }
+    if (state === 'NEWS') {
+        sfxAction();
+        state = 'BOARD';
+        return;
     }
 
-    function finalizarJogo(msg) { alert(msg); salvarRecorde(); location.reload(); }
-    function salvarRecorde() {
-        let rec = JSON.parse(localStorage.getItem('desenrasca_scores')) || [];
-        rec.push({ d: p.day, e: p.ects, m: p.money, p: p.profile });
-        rec.sort((a,b) => b.m - a.m);
-        localStorage.setItem('desenrasca_scores', JSON.stringify(rec.slice(0, 5)));
+    if (state === 'GAMEOVER') {
+        if (cx >= 85 && cx <= 225 && cy >= 285 && cy <= 323) {
+            resetGame();
+        } else if (cx >= 235 && cx <= 370 && cy >= 285 && cy <= 323) {
+            shareScorecard();
+        } else if (cx >= 380 && cx <= 555 && cy >= 285 && cy <= 323) {
+            shareImageCard();
+        }
+        return;
     }
-    function exibirRecordes() {
-        const c = document.getElementById('score-container');
-        let rec = JSON.parse(localStorage.getItem('desenrasca_scores')) || [];
-        if(rec.length === 0) { c.innerHTML = "<p style='font-size:0.7rem'>Nenhuma cicatriz guardada.</p>"; return; }
-        c.innerHTML = rec.map(r => `<div class='score-item'><span>${r.p}</span><b>${r.m}€ | ${r.d} Dias</b></div>`).join('');
+
+    if (state === 'VICTORY') {
+        if (cx >= 140 && cx <= 310 && cy >= 250 && cy <= 292) {
+            shareScorecard();
+        } else if (cx >= 330 && cx <= 500 && cy >= 250 && cy <= 292) {
+            shareImageCard();
+        }
+        return;
     }
-    function avisar(t) { document.getElementById('msg').innerText = t; }
+
+    if (state === 'MODAL') {
+        const mx = 70, my = 22, mw = 500, mh = 255;
+        // Fechar no botão X ou fora
+        if ((cx >= mx + mw - 35 && cx <= mx + mw && cy >= my && cy <= my + 35) ||
+            (cx < mx || cx > mx + mw || cy < my || cy > my + mh)) {
+            closeModal();
+            return;
+        }
+
+        // Clicar numa Ação da Loja
+        if (modalBuilding && modalBuilding.currentActions) {
+            const cardH = 58;
+            modalBuilding.currentActions.forEach((act, idx) => {
+                const ay = my + 46 + idx * (cardH + 8);
+                if (cx >= mx + 15 && cx <= mx + mw - 15 && cy >= ay && cy <= ay + cardH) {
+                    executeAction(act);
+                }
+            });
+        }
+        return;
+    }
+
+    if (state === 'BOARD') {
+        const hy = 295;
+        if (cx >= 513 && cx <= 631 && cy >= hy + 8 && cy <= hy + 56) {
+            endDay("Terminaste o turno voluntariamente para descansar.");
+            return;
+        }
+
+        BUILDINGS.forEach(b => {
+            if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) {
+                walkToBuilding(b);
+            }
+        });
+    }
+}
+
+function walkToBuilding(b) {
+    if (player.walking) return;
+    sfxStep();
+    player.targetX = b.x + b.w / 2;
+    player.targetY = b.y + b.h + 10;
+    player.walking = true;
+    player.destinationBuilding = b;
+    consumeTime(0, 15);
+}
+
+function openBuilding(b) {
+    sfxAction();
+    modalBuilding = b;
+    state = 'MODAL';
+}
+
+function closeModal() {
+    modalBuilding = null;
+    state = 'BOARD';
+}
+
+function executeAction(act) {
+    if (act.cost !== undefined && player.wallet < act.cost) {
+        sfxAlert();
+        showToast("Dinheiro insuficiente na carteira!");
+        return;
+    }
+
+    if (act.reqEcts !== undefined && player.ects < act.reqEcts) {
+        sfxAlert();
+        showToast(`Precisas de ${act.reqEcts} ECTS na Faculdade!`);
+        return;
+    }
+
+    sfxCoin();
+
+    if (act.cost !== undefined) {
+        player.wallet -= act.cost;
+        spawnParticle(`- ${act.cost}€`, '#ef4444');
+    }
+    if (act.gain !== undefined) {
+        player.wallet += act.gain;
+        stats.totalEarned += act.gain;
+        spawnParticle(`+ ${act.gain}€`, '#10b981');
+    }
+
+    if (act.hunger !== undefined) {
+        player.hunger = Math.min(100, player.hunger + act.hunger);
+        spawnParticle("🍲 +Comida", '#f59e0b');
+    }
+    if (act.sanity !== undefined) {
+        player.sanity = Math.min(100, player.sanity + act.sanity);
+        spawnParticle("✨ +Sanidade", '#06b6d4');
+    }
+    if (act.ects !== undefined) {
+        player.ects = Math.min(180, player.ects + act.ects);
+        spawnParticle(`+${act.ects} ECTS`, '#38bdf8');
+    }
+    if (act.groceries !== undefined) {
+        player.groceries += act.groceries;
+        spawnParticle("🛒 Despensa", '#10b981');
+    }
+
+    if (act.deposit !== undefined) {
+        if (player.wallet >= act.deposit) {
+            player.wallet -= act.deposit;
+            player.bank += act.deposit;
+            spawnParticle(`🏦 Depósito 50€`, '#38bdf8');
+        } else {
+            showToast("Não tens 50€ na carteira!");
+            return;
+        }
+    }
+    if (act.withdraw !== undefined) {
+        if (player.bank >= act.withdraw) {
+            player.bank -= act.withdraw;
+            player.wallet += act.withdraw;
+            spawnParticle(`💵 Levantado 50€`, '#10b981');
+        } else {
+            showToast("Saldo bancário insuficiente!");
+            return;
+        }
+    }
+
+    if (act.upgradeHouse) {
+        player.houseIndex = Math.min(HOUSES.length - 1, player.houseIndex + 1);
+        showToast(`Mudaste-te para: ${HOUSES[player.houseIndex].name}!`);
+        spawnParticle("🏠 Nova Casa!", '#f59e0b');
+    }
+
+    if (act.promoteJob) {
+        player.careerIndex = Math.min(CAREERS.length - 1, player.careerIndex + 1);
+        showToast(`Promovido a: ${CAREERS[player.careerIndex].name}!`);
+        spawnParticle("⭐ Promoção!", '#10b981');
+    }
+
+    consumeTime(act.timeH, act.timeM);
+}
+
+function resetGame() {
+    player.day = 1;
+    player.timeHour = 8;
+    player.timeMinute = 0;
+    player.wallet = 320;
+    player.bank = 150;
+    player.hunger = 80;
+    player.sanity = 90;
+    player.ects = 0;
+    player.groceries = 2;
+    player.houseIndex = 1;
+    player.careerIndex = 0;
+    player.daysUntilRent = 7;
+    player.hungerDays = 0;
+    player.x = 320;
+    player.y = 235;
+    player.targetX = 320;
+    player.targetY = 235;
+    player.walking = false;
+    particles = [];
+
+    stats = {
+        totalEarned: 0,
+        totalRentPaid: 0,
+        daysSurvived: 1
+    };
+
+    state = 'TITLE';
+}
+
+// ============================================================================
+// 8. SCORECARD VIRAL & GERAÇÃO DE IMAGEM PARA INSTAGRAM STORIES (1080x1920)
+// ============================================================================
+function shareScorecard() {
+    const text = `🐟 Desenrascado | O Purgatório de Lisboa
+📅 Sobrevivi: ${stats.daysSurvived} Dias
+🏠 Casa: ${HOUSES[player.houseIndex].name}
+💼 Emprego: ${CAREERS[player.careerIndex].name} (ECTS: ${player.ects})
+💰 Rendas Pagas: ${stats.totalRentPaid}€
+👉 Consegues bater o meu recorde? Joga em: https://desenrascado.pormenores.net`;
+
+    navigator.clipboard.writeText(text).then(() => {
+        showToast("Scorecard copiado! Cola no Twitter, LinkedIn ou WhatsApp!");
+    });
+}
+
+function getMordantRoast() {
+    if (player.hungerDays >= 3) {
+        return "Faleceu por insistir que a massa com atum supria todas as necessidades biológicas da pirâmide dos alimentos. O saldo bancário não aguentou uma tosta mista no snack-bar da esquina.";
+    }
+    if (player.sanity <= 0) {
+        return "Entrou em combustão espontânea após ver uma cave húmida em Marvila anunciada como 'Studio Minimalista com Luz Indireta' por 1350€ sem fiador.";
+    }
+    if (player.houseIndex === 0) {
+        return "Despejado às 07:00 da manhã para o beliche dar lugar a dois nómadas digitais alemães de sandálias e meias que pagam o triplo em criptomoeda.";
+    }
+    if (player.day >= 30) {
+        return "Milagre de Fátima! Sobreviveu 30 dias na labuta e comprou um T1 pombalino no Chiado. O senhorio agora pede-lhe a bênção antes de aumentar as rendas aos outros.";
+    }
+    return "Vencido pela inflação da bica, pela precariedade contratual e pela teimosia em recusar emigrar para a Suíça.";
+}
+
+function getPrecarityRank(days) {
+    if (days < 5) return "TURISTA DESAVISADO (Nem o passe soube tirar)";
+    if (days < 12) return "ESTAGIÁRIO PRECÁRIO (Viciado em massa com atum)";
+    if (days < 20) return "SOBREVIVENTE DA CALÇADA (Dorme ao som de tuk-tuks)";
+    if (days < 30) return "GUERREIRO DO RENDIMENTO (Candidato a herdeiro)";
+    return "D. SEBASTIÃO DO IMOBILIÁRIO (Bateu o mercado e o senhorio!)";
+}
+
+function drawHazardTape(ctx, x, y, w, h, text) {
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = '#000000';
+    const stripeW = 24;
+    for (let sx = x; sx < x + w + h; sx += stripeW * 2) {
+        ctx.beginPath();
+        ctx.moveTo(sx, y);
+        ctx.lineTo(sx - h, y + h);
+        ctx.lineTo(sx - h + stripeW, y + h);
+        ctx.lineTo(sx + stripeW, y);
+        ctx.closePath();
+        ctx.fill();
+    }
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.88)';
+    ctx.fillRect(x + w / 2 - 300, y + 4, 600, h - 8);
+    ctx.fillStyle = '#eab308';
+    ctx.font = 'bold 20px "Fira Code", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(text, x + w / 2, y + h / 2 + 7);
+}
+
+function drawStoryPixelAvatar(sctx, px, py, scale) {
+    sctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    sctx.beginPath();
+    sctx.ellipse(px, py + 14 * scale, 8 * scale, 4 * scale, 0, 0, Math.PI * 2);
+    sctx.fill();
+
+    sctx.fillStyle = '#1e293b';
+    sctx.fillRect(px - 5 * scale, py + 4 * scale, 4 * scale, 8 * scale);
+    sctx.fillRect(px + 1 * scale, py + 4 * scale, 4 * scale, 8 * scale);
+
+    sctx.fillStyle = '#0284c7';
+    sctx.fillRect(px - 7 * scale, py - 6 * scale, 14 * scale, 11 * scale);
+
+    sctx.fillStyle = '#fbcfe8';
+    sctx.fillRect(px - 5 * scale, py - 16 * scale, 10 * scale, 10 * scale);
+
+    sctx.fillStyle = '#1c1917';
+    sctx.fillRect(px - 6 * scale, py - 18 * scale, 12 * scale, 4 * scale);
+
+    sctx.fillStyle = '#292524';
+    sctx.fillRect(px - 5 * scale, py - 10 * scale, 10 * scale, 4 * scale);
+
+    sctx.fillStyle = '#0f172a';
+    sctx.fillRect(px - 5 * scale, py - 14 * scale, 4 * scale, 3 * scale);
+    sctx.fillRect(px + 1 * scale, py - 14 * scale, 4 * scale, 3 * scale);
+
+    // Olhos com X vermelhos (mordaz - morreu no jogo)
+    sctx.fillStyle = '#ef4444';
+    sctx.fillRect(px - 4 * scale, py - 13 * scale, 2 * scale, 2 * scale);
+    sctx.fillRect(px + 2 * scale, py - 13 * scale, 2 * scale, 2 * scale);
+}
+
+function generateStoryCanvas() {
+    const sc = document.createElement('canvas');
+    sc.width = 1080;
+    sc.height = 1920;
+    const sctx = sc.getContext('2d');
+    sctx.imageSmoothingEnabled = false;
+
+    // Fundo Obsidian
+    sctx.fillStyle = '#0b0e14';
+    sctx.fillRect(0, 0, sc.width, sc.height);
+
+    // Grelha de calçada
+    sctx.fillStyle = '#172033';
+    for (let py = 0; py < sc.height; py += 32) {
+        for (let px = 0; px < sc.width; px += 32) {
+            if ((Math.floor(px / 32) + Math.floor(py / 32)) % 3 === 0) {
+                sctx.fillRect(px, py, 10, 10);
+            }
+        }
+    }
+
+    const rad = sctx.createRadialGradient(sc.width / 2, 700, 200, sc.width / 2, 700, 950);
+    rad.addColorStop(0, 'rgba(239, 68, 68, 0.22)');
+    rad.addColorStop(0.6, 'rgba(11, 14, 20, 0.7)');
+    rad.addColorStop(1, '#05070a');
+    sctx.fillStyle = rad;
+    sctx.fillRect(0, 0, sc.width, sc.height);
+
+    // Fitas de Perigo
+    drawHazardTape(sctx, 0, 60, sc.width, 42, "⚠️ REPÚBLICA PRECÁRIA DE LISBOA ⚠️");
+    drawHazardTape(sctx, 0, sc.height - 102, sc.width, 42, "⚠️ DESENRASCADO · O PURGATÓRIO ⚠️");
+
+    // Moldura Âmbar
+    sctx.strokeStyle = '#f59e0b';
+    sctx.lineWidth = 6;
+    sctx.strokeRect(60, 130, sc.width - 120, sc.height - 260);
+
+    sctx.strokeStyle = '#233148';
+    sctx.lineWidth = 2;
+    sctx.strokeRect(74, 144, sc.width - 148, sc.height - 288);
+
+    // Cabeçalho Oficial
+    sctx.fillStyle = '#ef4444';
+    sctx.font = 'bold 48px "Fira Code", monospace';
+    sctx.textAlign = 'center';
+    sctx.fillText("CERTIDÃO DE ÓBITO / DESPEJO", sc.width / 2, 225);
+
+    sctx.fillStyle = '#38bdf8';
+    sctx.font = 'bold 20px "Fira Code", monospace';
+    sctx.fillText("DIRECÇÃO-GERAL DA PRECARIEDADE & HABITAÇÃO IMPOSSÍVEL", sc.width / 2, 270);
+
+    // Carimbo Vermelho em Ângulo Rotativo
+    sctx.save();
+    sctx.translate(sc.width - 240, 310);
+    sctx.rotate(-15 * Math.PI / 180);
+    sctx.strokeStyle = '#ef4444';
+    sctx.lineWidth = 6;
+    sctx.strokeRect(-160, -40, 320, 80);
+    sctx.fillStyle = 'rgba(239, 68, 68, 0.88)';
+    sctx.font = '900 28px "Fira Code", monospace';
+    sctx.textAlign = 'center';
+    sctx.fillText("DESPEJADO", 0, -5);
+    sctx.font = '16px "Fira Code", monospace';
+    sctx.fillText("HOMOLOGADO PELO SENHORIO", 0, 22);
+    sctx.restore();
+
+    // Foto Pixel Art (10x Zoom)
+    const photoX = 110;
+    const photoY = 320;
+    const photoW = 280;
+    const photoH = 340;
+
+    sctx.fillStyle = '#1e293b';
+    sctx.fillRect(photoX, photoY, photoW, photoH);
+    sctx.strokeStyle = '#ef4444';
+    sctx.lineWidth = 4;
+    sctx.strokeRect(photoX, photoY, photoW, photoH);
+
+    drawStoryPixelAvatar(sctx, photoX + photoW / 2, photoY + photoH / 2 - 20, 10);
+
+    sctx.fillStyle = '#f59e0b';
+    sctx.font = 'bold 18px "Fira Code", monospace';
+    sctx.textAlign = 'center';
+    sctx.fillText("CIDADÃO PRECÁRIO", photoX + photoW / 2, photoY + photoH - 24);
+
+    // Dados Forenses do Cidadão
+    const infoX = 430;
+    const infoY = 340;
+
+    sctx.textAlign = 'left';
+    const infoRows = [
+        ["TEMPO SOBREVIVIDO:", `${stats.daysSurvived} DIAS`],
+        ["ÚLTIMO ABRIGO:", HOUSES[player.houseIndex].name],
+        ["OCUPAÇÃO:", CAREERS[player.careerIndex].name],
+        ["ECTS ACUMULADOS:", `${player.ects} / 180`],
+        ["RENDA TOTAL DOADA:", `${stats.totalRentPaid} €`],
+        ["SALDO RESTANTE:", `${player.wallet + player.bank} €`],
+        ["DIETA BASE:", "88% Atum · 12% Bica"]
+    ];
+
+    infoRows.forEach(([lbl, val], idx) => {
+        const ry = infoY + idx * 46;
+        sctx.fillStyle = '#94a3b8';
+        sctx.font = 'bold 18px "Fira Code", monospace';
+        sctx.fillText(lbl, infoX, ry);
+
+        sctx.fillStyle = '#ffffff';
+        sctx.font = '22px "Fira Code", monospace';
+        sctx.fillText(val, infoX + 260, ry);
+    });
+
+    // Caixa de Diagnóstico Mordaz
+    const roastBoxY = 700;
+    sctx.fillStyle = '#131b2e';
+    sctx.strokeStyle = '#38bdf8';
+    sctx.lineWidth = 3;
+    sctx.fillRect(110, roastBoxY, sc.width - 220, 310);
+    sctx.strokeRect(110, roastBoxY, sc.width - 220, 310);
+
+    sctx.fillStyle = '#38bdf8';
+    sctx.font = 'bold 24px "Fira Code", monospace';
+    sctx.textAlign = 'left';
+    sctx.fillText("📋 RELATÓRIO FORENSE / AUTO DA MORTE:", 140, roastBoxY + 50);
+
+    const roastText = getMordantRoast();
+    wrapTextCanvas(sctx, roastText, 140, roastBoxY + 105, sc.width - 280, 38, '24px "Fira Code", monospace', '#f8fafc');
+
+    // Nível de Precariedade
+    const rankY = 1060;
+    sctx.fillStyle = '#182234';
+    sctx.strokeStyle = '#f59e0b';
+    sctx.lineWidth = 3;
+    sctx.fillRect(110, rankY, sc.width - 220, 160);
+    sctx.strokeRect(110, rankY, sc.width - 220, 160);
+
+    sctx.fillStyle = '#f59e0b';
+    sctx.font = 'bold 20px "Fira Code", monospace';
+    sctx.fillText("🏆 ESCALÃO OFICIAL DE PRECARIEDADE:", 140, rankY + 45);
+
+    const rankText = getPrecarityRank(stats.daysSurvived);
+    sctx.fillStyle = '#10b981';
+    sctx.font = 'bold 26px "Fira Code", monospace';
+    sctx.fillText(rankText, 140, rankY + 95);
+
+    // Call to Action Inferior
+    const ctaY = 1290;
+    sctx.fillStyle = 'rgba(239, 68, 68, 0.15)';
+    sctx.strokeStyle = '#ef4444';
+    sctx.lineWidth = 2;
+    sctx.fillRect(110, ctaY, sc.width - 220, 180);
+    sctx.strokeRect(110, ctaY, sc.width - 220, 180);
+
+    sctx.fillStyle = '#ffffff';
+    sctx.font = 'bold 28px "Fira Code", monospace';
+    sctx.textAlign = 'center';
+    sctx.fillText("ACHAS QUE AGUENTAS MAIS TEMPO EM LISBOA?", sc.width / 2, ctaY + 55);
+
+    sctx.fillStyle = '#f59e0b';
+    sctx.font = 'bold 36px "Fira Code", monospace';
+    sctx.fillText("desenrascado.pormenores.net", sc.width / 2, ctaY + 110);
+
+    sctx.fillStyle = '#94a3b8';
+    sctx.font = '20px "Fira Code", monospace';
+    sctx.fillText("Joga grátis no browser · Sem instalações nem tretas", sc.width / 2, ctaY + 148);
+
+    // Assinatura Final no Rodapé
+    sctx.fillStyle = '#64748b';
+    sctx.font = '20px "Fira Code", monospace';
+    sctx.fillText("pormenores.net", sc.width / 2, sc.height - 135);
+
+    return sc;
+}
+
+function shareImageCard() {
+    showToast("A gerar Certidão Oficial de Despejo...");
+    setTimeout(() => {
+        const sc = generateStoryCanvas();
+        sc.toBlob(async (blob) => {
+            const file = new File([blob], `desenrascado-obito-dia-${stats.daysSurvived}.png`, { type: 'image/png' });
+            
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Desenrascado | O Purgatório de Lisboa',
+                        text: `Sobrevivi ${stats.daysSurvived} dias no Purgatório de Lisboa antes de ser despejado! Consegues bater o meu recorde? https://desenrascado.pormenores.net`
+                    });
+                    showToast("Partilhado com sucesso!");
+                    return;
+                } catch (e) {
+                    if (e.name !== 'AbortError') {
+                        console.log("Fallback download:", e);
+                    }
+                }
+            }
+
+            const a = document.createElement('a');
+            a.download = `desenrascado-obito-dia-${stats.daysSurvived}.png`;
+            a.href = sc.toDataURL('image/png');
+            a.click();
+            showToast("📸 Imagem descarregada! Pronta para o Instagram Stories!");
+        }, 'image/png');
+    }, 100);
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+requestAnimationFrame(gameLoop);
 </script>
 </body>
 </html>
