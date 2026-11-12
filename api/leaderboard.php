@@ -1,31 +1,55 @@
 <?php
 /**
  * DESENRASCADO — Registo Nacional de Despejados (API de Leaderboard)
- * Backend SQLite3 ultra-leve, sem dependências externas.
+ * Backend blindado com SQLite3 isolado, sem dependências externas.
  */
+
+// Desativar exibição de erros para não expor caminhos internos
+ini_set('display_errors', '0');
+error_reporting(0);
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('Referrer-Policy: strict-origin-when-cross-origin');
 
-// Permitir CORS local e no próprio domínio
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
-header("Access-Control-Allow-Origin: $origin");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+// 1. Validação Estrita de CORS (Apenas origens autorizadas)
+$allowedOrigins = [
+    'https://desenrascado.pormenores.net',
+    'https://pormenores.net',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080'
+];
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type");
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-$dbPath = __DIR__ . '/../data/leaderboard.sqlite';
+// 2. Base de Dados Isolada Fora da Raiz Web (Impossível de descarregar via HTTP)
+$serverDbDir = '/home/pedrori1/desenrascado_data';
+if (is_dir($serverDbDir)) {
+    $dbPath = $serverDbDir . '/leaderboard.sqlite';
+} else {
+    // Ambiente local de desenvolvimento
+    $localDir = __DIR__ . '/../data';
+    if (!is_dir($localDir)) @mkdir($localDir, 0755, true);
+    $dbPath = $localDir . '/leaderboard.sqlite';
+}
 
 try {
     $db = new PDO("sqlite:$dbPath");
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
-    // Criar tabela se não existir
+    // Schema seguro com índices
     $db->exec("
         CREATE TABLE IF NOT EXISTS leaderboard (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,7 +63,7 @@ try {
         CREATE INDEX IF NOT EXISTS idx_score ON leaderboard (days DESC, money DESC);
     ");
 
-    // Verificar se a tabela está vazia e preencher com registos fictícios históricos de Lisboa
+    // Seed inicial seguro se a tabela estiver vazia
     $count = $db->query("SELECT COUNT(*) FROM leaderboard")->fetchColumn();
     if ($count == 0) {
         $seedStmt = $db->prepare("INSERT INTO leaderboard (name, days, money, cause, created_at) VALUES (?, ?, ?, ?, datetime('now', ?))");
@@ -55,6 +79,7 @@ try {
         }
     }
 
+    // Leitura: GET (Cache amigável, apenas top 10)
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $stmt = $db->query("
             SELECT name, days, money, cause, strftime('%d/%m/%Y', created_at) as date
@@ -67,56 +92,96 @@ try {
         exit;
     }
 
+    // Escrita: POST (Validação estrita)
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $raw = file_get_contents('php://input');
-        $data = json_decode($raw, true);
+        // Limitar tamanho máximo do pedido a 4 KB
+        if (isset($_SERVER['CONTENT_LENGTH']) && (int)$_SERVER['CONTENT_LENGTH'] > 4096) {
+            http_response_code(413);
+            echo json_encode(['status' => 'error', 'message' => 'Pedido demasiado grande']);
+            exit;
+        }
 
+        $raw = file_get_contents('php://input');
+        if (strlen($raw) > 4096) {
+            http_response_code(413);
+            echo json_encode(['status' => 'error', 'message' => 'Payload excedeu o limite']);
+            exit;
+        }
+
+        $data = json_decode($raw, true);
         if (!$data || !is_array($data)) {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => 'JSON inválido']);
             exit;
         }
 
-        // Sanitização e validação
-        $name = trim(strip_tags($data['name'] ?? ''));
-        if (empty($name)) {
-            $name = 'Cidadão Anónimo';
-        }
-        $name = mb_substr($name, 0, 18, 'UTF-8');
-
-        $days = (int)($data['days'] ?? 1);
-        if ($days < 1) $days = 1;
-        if ($days > 999) $days = 999;
-
-        $money = (int)($data['money'] ?? 0);
-        if ($money < 0) $money = 0;
-        if ($money > 999999) $money = 999999;
-
-        $cause = trim(strip_tags($data['cause'] ?? 'Despejado pelo Senhorio'));
-        $cause = mb_substr($cause, 0, 36, 'UTF-8');
-
-        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-        $ipHash = hash('sha256', $ip . 'desenrascado_salt_2026');
-
-        // Rate limiting: máximo 1 submissão a cada 15 segundos por IP
-        $rateCheck = $db->prepare("SELECT COUNT(*) FROM leaderboard WHERE ip_hash = ? AND created_at > datetime('now', '-15 seconds')");
-        $rateCheck->execute([$ipHash]);
-        if ($rateCheck->fetchColumn() > 0) {
-            http_response_code(429);
-            echo json_encode(['status' => 'error', 'message' => 'Calma! Aguarda alguns segundos antes de submeter outro recorde.']);
+        // Honeypot anti-bot
+        if (!empty($data['website']) || !empty($data['email'])) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Pedido rejeitado']);
             exit;
         }
 
-        // Inserir pontuação
-        $insert = $db->prepare("INSERT INTO leaderboard (name, days, money, cause, ip_hash) VALUES (?, ?, ?, ?, ?)");
-        $insert->execute([$name, $days, $money, $cause, $ipHash]);
+        // 3. Sanitização e Validação Estrita Anti-XSS & Anti-Injeção
+        // Permitir apenas caracteres alfanuméricos, espaços, pontos, hífens
+        $rawName = $data['name'] ?? '';
+        $cleanName = preg_replace('/[^\p{L}\p{N}\s\.\-_]/u', '', (string)$rawName);
+        $cleanName = trim(preg_replace('/\s+/', ' ', $cleanName));
+
+        if (empty($cleanName)) {
+            $cleanName = 'Cidadão Anónimo';
+        }
+        $name = mb_substr($cleanName, 0, 16, 'UTF-8');
+
+        // Validação numérica rígida
+        $days = filter_var($data['days'] ?? 1, FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 1, 'max_range' => 999, 'default' => 1]
+        ]);
+
+        $money = filter_var($data['money'] ?? 0, FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 0, 'max_range' => 999999, 'default' => 0]
+        ]);
+
+        $rawCause = $data['cause'] ?? 'Despejado pelo Senhorio';
+        $cleanCause = preg_replace('/[^\p{L}\p{N}\s\.\-_]/u', '', (string)$rawCause);
+        $cleanCause = trim(preg_replace('/\s+/', ' ', $cleanCause));
+        $cause = mb_substr($cleanCause, 0, 32, 'UTF-8');
+
+        // 4. Rate-Limiting por IP Hash
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $ipHash = hash('sha256', $ip . 'desenrascado_salt_v3_2026');
+
+        $rateCheck = $db->prepare("SELECT COUNT(*) FROM leaderboard WHERE ip_hash = :ip AND created_at > datetime('now', '-20 seconds')");
+        $rateCheck->bindValue(':ip', $ipHash, PDO::PARAM_STR);
+        $rateCheck->execute();
+
+        if ($rateCheck->fetchColumn() > 0) {
+            http_response_code(429);
+            echo json_encode(['status' => 'error', 'message' => 'Aguarde 20 segundos antes de enviar novo recorde.']);
+            exit;
+        }
+
+        // 5. Inserção Segura com Parâmetros Tipados
+        $insert = $db->prepare("INSERT INTO leaderboard (name, days, money, cause, ip_hash) VALUES (:name, :days, :money, :cause, :ip)");
+        $insert->bindValue(':name', $name, PDO::PARAM_STR);
+        $insert->bindValue(':days', $days, PDO::PARAM_INT);
+        $insert->bindValue(':money', $money, PDO::PARAM_INT);
+        $insert->bindValue(':cause', $cause, PDO::PARAM_STR);
+        $insert->bindValue(':ip', $ipHash, PDO::PARAM_STR);
+        $insert->execute();
+
+        // 6. Prevenção de Esgotamento de Disco (Auto-pruning)
+        // Mantém apenas os 100 melhores registos de sempre (ficheiro nunca ultrapassa ~30 KB)
+        $db->exec("DELETE FROM leaderboard WHERE id NOT IN (SELECT id FROM leaderboard ORDER BY days DESC, money DESC LIMIT 100)");
 
         // Calcular posição no ranking
-        $rankStmt = $db->prepare("SELECT COUNT(*) + 1 as rank FROM leaderboard WHERE days > ? OR (days = ? AND money > ?)");
-        $rankStmt->execute([$days, $days, $money]);
+        $rankStmt = $db->prepare("SELECT COUNT(*) + 1 as rank FROM leaderboard WHERE days > :days OR (days = :days AND money > :money)");
+        $rankStmt->bindValue(':days', $days, PDO::PARAM_INT);
+        $rankStmt->bindValue(':money', $money, PDO::PARAM_INT);
+        $rankStmt->execute();
         $rank = (int)$rankStmt->fetchColumn();
 
-        // Devolver ranking atualizado
+        // Devolver top 10
         $topStmt = $db->query("
             SELECT name, days, money, cause, strftime('%d/%m/%Y', created_at) as date
             FROM leaderboard
@@ -137,7 +202,7 @@ try {
     http_response_code(405);
     echo json_encode(['status' => 'error', 'message' => 'Método não permitido']);
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
     http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'Erro interno ao processar a tabela de recordes']);
+    echo json_encode(['status' => 'error', 'message' => 'Erro interno ao processar']);
 }
