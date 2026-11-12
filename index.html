@@ -789,14 +789,14 @@ const EVENTOS_LISBOA = [
 
 // Edifícios no Tabuleiro
 const BUILDINGS = [
-    { id: 'senhorio', name: 'Senhorio', x: 65, y: 45, w: 90, h: 72, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠' },
-    { id: 'casa', name: 'O Teu Teto', x: 205, y: 45, w: 90, h: 72, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌' },
-    { id: 'faculdade', name: 'Politec / IST', x: 345, y: 40, w: 90, h: 72, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓' },
-    { id: 'startup', name: 'Startup Hub', x: 485, y: 45, w: 90, h: 72, color: '#065f46', accent: '#10b981', tag: 'TRABALHO / €', icon: '💻' },
-    { id: 'tasca', name: 'Tasca Ti Zé', x: 65, y: 195, w: 90, h: 72, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / SANIDADE', icon: '🍲' },
-    { id: 'supermercado', name: 'Pingo Doce', x: 205, y: 195, w: 90, h: 72, color: '#15803d', accent: '#86efac', tag: 'DESPENSA', icon: '🛒' },
-    { id: 'banco', name: 'Caixa / Banco', x: 345, y: 195, w: 90, h: 72, color: '#854d0e', accent: '#facc15', tag: 'DEPÓSITOS', icon: '🏦' },
-    { id: 'miradouro', name: 'Miradouro', x: 485, y: 195, w: 90, h: 72, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO', icon: '🌅' }
+    { id: 'senhorio', name: 'Senhorio', x: 45, y: 38, w: 105, h: 77, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 97, doorY: 125, desc: 'Sr. Jerónimo — Rendas e contratos de habitação.' },
+    { id: 'casa', name: 'O Teu Teto', x: 185, y: 38, w: 105, h: 77, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 237, doorY: 125, desc: 'Dorme para recuperar sanidade, fome e energia.' },
+    { id: 'faculdade', name: 'Politec / IST', x: 330, y: 34, w: 105, h: 81, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 382, doorY: 125, desc: 'Prof. Leitão — Aulas e exames para o canudo.' },
+    { id: 'startup', name: 'Startup Hub', x: 475, y: 38, w: 105, h: 77, color: '#065f46', accent: '#10b981', tag: 'TRABALHO / €', icon: '💻', doorX: 527, doorY: 125, desc: 'Mariana — Projetos urgentes e empregos tech.' },
+    { id: 'tasca', name: 'Tasca Ti Zé', x: 45, y: 155, w: 105, h: 77, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / SANIDADE', icon: '🍲', doorX: 97, doorY: 248, desc: 'Ti Zé — Prato do dia, bitoque e imperial.' },
+    { id: 'supermercado', name: 'Pingo Doce', x: 185, y: 155, w: 105, h: 77, color: '#15803d', accent: '#86efac', tag: 'DESPENSA', icon: '🛒', doorX: 237, doorY: 248, desc: 'D. Maria — Mantimentos e atum para poupar.' },
+    { id: 'banco', name: 'Caixa / Banco', x: 330, y: 155, w: 105, h: 77, color: '#854d0e', accent: '#facc15', tag: 'DEPÓSITOS', icon: '🏦', doorX: 382, doorY: 248, desc: 'Dr. Alcoviteiro — Poupança a salvo de assaltos.' },
+    { id: 'miradouro', name: 'Miradouro', x: 475, y: 155, w: 105, h: 77, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO', icon: '🌅', doorX: 527, doorY: 248, desc: 'O Boémio — Vista sobre o Rio Tejo ao pôr-do-sol.' }
 ];
 
 // Pombos do Rossio a debicar na calçada
@@ -870,6 +870,18 @@ let stats = {
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
+
+// ============================================================================
+// 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
+// ============================================================================
+const boardImg = new Image();
+boardImg.src = 'assets/board.png';
+
+const zeSheetImg = new Image();
+zeSheetImg.src = 'assets/ze_spritesheet.png';
+
+const portraitsSheetImg = new Image();
+portraitsSheetImg.src = 'assets/portraits_sheet.png';
 
 // Pre-renderização da Calçada com Ondas de Basalto do Rossio
 const calcadaCanvas = document.createElement('canvas');
@@ -992,9 +1004,15 @@ function update(dt) {
                     player.facing = dy > 0 ? 'down' : 'up';
                 }
 
-                player.frame = Math.floor(animTimer * 9) % 4;
-                if (Math.random() < 0.3) {
-                    spawnDust(player.x + (Math.random() * 8 - 4), player.y + 12);
+                player.frame = Math.floor(animTimer * 10) % 4;
+
+                // Restrição rígida: Zé Desenrasca caminha apenas na calçada e cais de pedra!
+                // NUNCA entra na água do Rio Tejo (o rio fica em y >= 274, limite seguro y <= 255)
+                player.x = Math.max(30, Math.min(610, player.x));
+                player.y = Math.max(120, Math.min(255, player.y));
+
+                if (Math.random() < 0.35) {
+                    spawnDust(player.x + (Math.random() * 6 - 3), player.y + 2);
                 }
             }
         } else {
@@ -1430,52 +1448,142 @@ function renderBoard() {
     const isSunset = (hr >= 17 && hr <= 19);
     const isNight = (hr >= 20 || hr < 7);
 
-    // 1. Rio Tejo (Cor dinâmica com a luz)
-    ctx.fillStyle = isSunset ? '#b45309' : (isNight ? '#0369a1' : '#0284c7');
-    ctx.fillRect(0, 275, canvas.width, 30);
-
-    // Ondas do Tejo
-    ctx.fillStyle = isSunset ? '#fbbf24' : (isNight ? '#38bdf8' : '#7dd3fc');
-    for (let x = 0; x < canvas.width; x += 32) {
-        const wave = Math.sin(animTimer * 3 + x) * 2;
-        ctx.fillRect(x, 280 + wave, 18, 3);
+    // 1. Render do Tabuleiro Bitmapped em Pixel Art Artesanal de 16-Bit (Estilo Stardew Valley / Eastward)
+    if (boardImg.complete && boardImg.naturalWidth > 0) {
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(boardImg, 0, 0, canvas.width, 295);
+    } else {
+        // Fallback procedural clássico enquanto a imagem carrega
+        drawLisbonSkyline();
+        ctx.drawImage(calcadaCanvas, 0, 0);
+        BUILDINGS.forEach(b => drawBuilding(b));
     }
 
-    // Cacilheiro Laranja da Transtejo a navegar
-    const cacilheiroX = canvas.width - ((animTimer * 16) % (canvas.width + 120)) + 30;
-    drawCacilheiro(cacilheiroX, 274);
+    // 2. Ondas e Brilhos Animados do Rio Tejo (y=274..295)
+    ctx.fillStyle = isSunset ? 'rgba(251, 191, 36, 0.45)' : (isNight ? 'rgba(56, 189, 248, 0.28)' : 'rgba(255, 255, 255, 0.38)');
+    for (let x = 6; x < canvas.width; x += 34) {
+        const wave = Math.sin(animTimer * 3 + x * 0.15) * 2;
+        ctx.fillRect(x, 278 + wave, 16, 2.5);
+        const wave2 = Math.cos(animTimer * 2.5 + x * 0.12) * 2;
+        ctx.fillRect(x + 18, 286 + wave2, 12, 2);
+    }
 
-    // Gaivotas sobre o Tejo
+    // 3. Cacilheiro Laranja da Transtejo a navegar no Rio Tejo
+    const cacilheiroX = canvas.width - ((animTimer * 16) % (canvas.width + 120)) + 30;
+    drawCacilheiro(cacilheiroX, 276);
+
+    // 4. Gaivotas sobre o Tejo
     drawSeagulls(animTimer);
 
-    // 1.1 Skyline de Lisboa ao Fundo (Castelo de São Jorge & Telhados de Alfama)
-    drawLisbonSkyline();
+    // 5. Elétrico 28 cruzando o bairro nos carris (y=138)
+    const tramX = ((animTimer * 38) % (canvas.width + 140)) - 70;
+    drawTram(tramX, 134);
 
-    // 2. Calçada Portuguesa do Rossio
-    ctx.drawImage(calcadaCanvas, 0, 0);
+    // 6. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
+    renderBuildingOverlays();
 
-    // 2.1 Mobiliário Urbano de Lisboa (Marco CTT, Papeleira CML, Tampas)
-    drawStreetFurniture();
-
-    // 3. Edifícios
-    BUILDINGS.forEach(b => drawBuilding(b));
-
-    // 4. Candeeiros de Lisboa com Luz Dinâmica
+    // 7. Candeeiros Históricos de Lisboa com Luz Dinâmica
     drawLanterns(isNight);
 
-    // 5. Carris do Elétrico
-    ctx.strokeStyle = '#64748b';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([8, 6]);
-    ctx.beginPath();
-    ctx.moveTo(0, 160);
-    ctx.lineTo(canvas.width, 160);
-    ctx.stroke();
-    ctx.setLineDash([]);
+    // 8. Iluminação Dinâmica de Lisboa (Pôr-do-sol Dourado e Noite Alfacinha)
+    if (isSunset) {
+        ctx.fillStyle = 'rgba(249, 115, 22, 0.14)';
+        ctx.fillRect(0, 0, canvas.width, 295);
+    } else if (isNight) {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.42)';
+        ctx.fillRect(0, 0, canvas.width, 295);
+    }
+}
 
-    // Elétrico 28
-    const tramX = ((animTimer * 38) % (canvas.width + 140)) - 70;
-    drawTram(tramX, 146);
+// Placas, Efeitos de Destaque e Tooltips Stardew Valley sobre os Edifícios
+function renderBuildingOverlays() {
+    let hoveredBuilding = null;
+
+    BUILDINGS.forEach(b => {
+        const isHovered = (mouse.x >= b.x && mouse.x <= b.x + b.w && mouse.y >= b.y && mouse.y <= b.y + b.h);
+        if (isHovered) hoveredBuilding = b;
+
+        // Placa de Madeira / Azulejo suspensa sobre a entrada
+        const signW = 86;
+        const signH = 18;
+        const signX = (b.doorX || (b.x + b.w / 2)) - signW / 2;
+        const signY = (b.doorY || (b.y + b.h)) - 32;
+
+        // Sombra da placa
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        ctx.fillRect(signX + 2, signY + 2, signW, signH);
+
+        // Fundo da placa (Madeira escura / Ardósia com moldura colorida)
+        ctx.fillStyle = isHovered ? '#1e293b' : '#0f172a';
+        ctx.fillRect(signX, signY, signW, signH);
+        ctx.strokeStyle = isHovered ? '#fbbf24' : b.accent;
+        ctx.lineWidth = isHovered ? 2 : 1;
+        ctx.strokeRect(signX, signY, signW, signH);
+
+        // Texto da placa
+        ctx.fillStyle = isHovered ? '#fbbf24' : '#f8fafc';
+        ctx.font = 'bold 7.5px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${b.icon} ${b.name}`, signX + signW / 2, signY + 12);
+
+        // Se hovered: aura dourada em redor do edifício e seta animada Stardew Valley
+        if (isHovered) {
+            ctx.strokeStyle = 'rgba(251, 191, 36, 0.85)';
+            ctx.lineWidth = 2.5;
+            ctx.strokeRect(b.x - 2, b.y - 2, b.w + 4, b.h + 4);
+
+            // Seta saltitante estilo Stardew Valley
+            const arrowBob = Math.sin(animTimer * 8) * 3;
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = '10px "Press Start 2P"';
+            ctx.textAlign = 'center';
+            ctx.fillText("▼", signX + signW / 2, signY - 4 + arrowBob);
+        }
+    });
+
+    // Tooltip Stardew Valley com moldura de madeira quando o rato passa por um edifício
+    if (hoveredBuilding && state === 'BOARD') {
+        const b = hoveredBuilding;
+        const ttW = 200;
+        const ttH = 48;
+        let ttX = mouse.x + 12;
+        let ttY = mouse.y - 54;
+
+        if (ttX + ttW > canvas.width - 10) ttX = mouse.x - ttW - 12;
+        if (ttY < 10) ttY = mouse.y + 20;
+
+        // Sombra
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(ttX + 3, ttY + 3, ttW, ttH);
+
+        // Caixa de Madeira Stardew Valley
+        ctx.fillStyle = '#1e1b18';
+        ctx.fillRect(ttX, ttY, ttW, ttH);
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(ttX, ttY, ttW, ttH);
+
+        // Borda dourada interior
+        ctx.strokeStyle = '#fef3c7';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(ttX + 2, ttY + 2, ttW - 4, ttH - 4);
+
+        // Título
+        ctx.fillStyle = '#fde68a';
+        ctx.font = 'bold 8.5px "Press Start 2P"';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${b.icon} ${b.name}`, ttX + 8, ttY + 14);
+
+        // Tag / Ação
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '9px "Fira Code"';
+        ctx.fillText(b.tag, ttX + 8, ttY + 28);
+
+        // Dica
+        ctx.fillStyle = '#10b981';
+        ctx.font = 'bold 7.5px "Press Start 2P"';
+        ctx.fillText("▶ CLIQUE P/ ENTRAR", ttX + 8, ttY + 41);
+    }
 }
 
 // Pombos do Rossio com sombra e animação de susto
@@ -2212,19 +2320,80 @@ function drawTram(x, y) {
 }
 
 // ============================================================================
-// 16-BIT AVATAR ARTESANAL: ZÉ DESENRASCA
+// 16-BIT AVATAR ARTESANAL: ZÉ DESENRASCA (ESTILO STARDEW VALLEY / EASTWARD)
 // ============================================================================
 function renderPlayer() {
     const px = Math.round(player.x);
     const py = Math.round(player.y);
 
-    // Sombra
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+    // Sombra suave sob as botas
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
     ctx.beginPath();
-    ctx.ellipse(px, py + 12, 10, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(px, py + 1, 9, 4, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Bobbing ao andar
+    if (zeSheetImg.complete && zeSheetImg.naturalWidth > 0) {
+        let dirRow = 0; // Down (facing south)
+        if (player.facing === 'up') dirRow = 1;
+        else if (player.facing === 'right') dirRow = 2;
+        else if (player.facing === 'left') dirRow = 3;
+
+        let frame = 0;
+        if (player.walking) {
+            frame = Math.floor(animTimer * 10) % 4;
+        } else {
+            if (player.thoughtEmoji === '☕') {
+                dirRow = 4; frame = 1; // Café bica
+            } else if (player.thoughtEmoji === '🐟' || player.thoughtEmoji === '🥪') {
+                dirRow = 4; frame = 2; // Pastel de nata
+            } else if (player.thoughtEmoji === '💸' || player.thoughtEmoji === '🍺') {
+                dirRow = 4; frame = 3; // Thumbs up
+            } else {
+                frame = 0; // Idle
+            }
+        }
+
+        // Bobbing subtil ao andar ou respirar
+        const bob = (!player.walking && dirRow < 4) ? (Math.sin(animTimer * 3.5) > 0.5 ? -1 : 0) : 0;
+
+        ctx.imageSmoothingEnabled = false;
+        // Cada frame tem 32x40, centrado em px com pés em py
+        ctx.drawImage(
+            zeSheetImg,
+            frame * 32, dirRow * 40, 32, 40,
+            px - 16, py - 38 + bob, 32, 40
+        );
+
+        // Gota de Suor Cómica se a Sanidade estiver abaixo de 40%
+        if (player.sanity < 40) {
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(px + 9, py - 34 + bob, 2, 3);
+            ctx.fillRect(px + 8, py - 32 + bob, 4, 2);
+        }
+    } else {
+        // Fallback procedural clássico enquanto a spritesheet carrega
+        drawProceduralPlayer(px, py);
+    }
+
+    // Balão de Pensamento Cómico (quando parado)
+    if (player.thoughtEmoji && !player.walking) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(px + 10, py - 46, 26, 18);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(px + 10, py - 46, 26, 18);
+        // Pequenos círculos do balão
+        ctx.fillRect(px + 7, py - 30, 3, 3);
+        ctx.fillRect(px + 4, py - 26, 2, 2);
+
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(player.thoughtEmoji, px + 23, py - 32);
+    }
+}
+
+// Fallback procedural clássico do jogador
+function drawProceduralPlayer(px, py) {
     const bob = player.walking ? (player.frame % 2 === 0 ? 0 : -3) : (Math.sin(animTimer * 3) * 0.8);
 
     // Ténis brancos com sola vermelha
@@ -2244,80 +2413,24 @@ function renderPlayer() {
     ctx.fillStyle = '#334155';
     ctx.fillRect(px - 10, py - 6 + bob, 4, 9);
     ctx.fillStyle = '#f59e0b';
-    ctx.fillRect(px - 9, py - 4 + bob, 2, 2); // Autocolante amarelo retro
+    ctx.fillRect(px - 9, py - 4 + bob, 2, 2);
 
     // Casaco Tech Azul
     ctx.fillStyle = '#0284c7';
     ctx.fillRect(px - 7, py - 8 + bob, 15, 11);
-    // Fecho éclair amarelo
     ctx.fillStyle = '#facc15';
     ctx.fillRect(px, py - 7 + bob, 1, 9);
 
-    // Cabeça Expressiva (Maior e mais cómica)
+    // Cabeça Expressiva
     ctx.fillStyle = '#fbcfe8';
     ctx.fillRect(px - 7, py - 21 + bob, 15, 13);
-
-    // Cabelo curto escuraço / buzzcut
     ctx.fillStyle = '#1c1917';
     ctx.fillRect(px - 8, py - 23 + bob, 17, 4);
-
-    // Barba escura aparada
     ctx.fillStyle = '#292524';
     ctx.fillRect(px - 7, py - 12 + bob, 15, 4);
-
-    // Óculos Grandes Retro-Chic
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(px - 6, py - 18 + bob, 6, 5);
     ctx.fillRect(px + 1, py - 18 + bob, 6, 5);
-    ctx.fillRect(px, py - 17 + bob, 1, 2);
-
-    // Olhos Expressivos consoante o estado de Sanidade e Fome!
-    if (player.sanity < 25 || player.hunger <= 0) {
-        // Olhos espiral / tontos
-        ctx.fillStyle = '#ef4444';
-        ctx.fillRect(px - 4, py - 16 + bob, 2, 2);
-        ctx.fillRect(px + 3, py - 16 + bob, 2, 2);
-        // Olheiras roxas
-        ctx.fillStyle = '#818cf8';
-        ctx.fillRect(px - 6, py - 13 + bob, 5, 2);
-        ctx.fillRect(px + 1, py - 13 + bob, 5, 2);
-    } else {
-        // Olhos atentos com reflexo azul nos óculos
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(px - 5, py - 17 + bob, 4, 3);
-        ctx.fillRect(px + 2, py - 17 + bob, 4, 3);
-        // Pupila
-        ctx.fillStyle = '#0f172a';
-        const lookOffset = player.facing === 'right' ? 2 : (player.facing === 'left' ? 0 : 1);
-        ctx.fillRect(px - 5 + lookOffset, py - 16 + bob, 2, 2);
-        ctx.fillRect(px + 2 + lookOffset, py - 16 + bob, 2, 2);
-        // Reflexo ciano
-        ctx.fillStyle = '#38bdf8';
-        ctx.fillRect(px - 5, py - 17 + bob, 1, 1);
-        ctx.fillRect(px + 2, py - 17 + bob, 1, 1);
-    }
-
-    // Gota de Suor Cómica se a Sanidade estiver abaixo de 40%
-    if (player.sanity < 40) {
-        ctx.fillStyle = '#38bdf8';
-        ctx.fillRect(px + 8, py - 20 + bob, 2, 3);
-    }
-
-    // Balão de Pensamento Cómico (quando parado)
-    if (player.thoughtEmoji && !player.walking) {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(px + 10, py - 36, 24, 18);
-        ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(px + 10, py - 36, 24, 18);
-        // Pequenos círculos do balão
-        ctx.fillRect(px + 8, py - 22, 3, 3);
-        ctx.fillRect(px + 5, py - 18, 2, 2);
-
-        ctx.font = '11px "Fira Code"';
-        ctx.textAlign = 'center';
-        ctx.fillText(player.thoughtEmoji, px + 22, py - 23);
-    }
 }
 
 // Renderizar partículas flutuantes e poeira com alto contraste
@@ -2460,15 +2573,15 @@ const NPC_INFO = {
         color: "#312e81"
     },
     faculdade: {
-        name: "Prof. Doutor Catedrático",
+        name: "Prof. Leitão",
         role: "Politécnico / IST",
         quote: "O saber não ocupa lugar, mas o ECTS custa suor. Sem canudo não há promoção!",
         color: "#1e3a8a"
     },
     startup: {
-        name: "Gonçalo (Tech Lead)",
+        name: "Mariana (Tech Lead)",
         role: "IT Consulting & Hub",
-        quote: "Procuramos um rockstar dev para vestir a camisola num projeto para ontem!",
+        quote: "Procuramos um rockstar dev para vestir a camisola num projeto urgente para ontem!",
         color: "#065f46"
     },
     tasca: {
@@ -2497,16 +2610,40 @@ const NPC_INFO = {
     }
 };
 
-// Renderizador Procedural de Retratos em Pixel Art 16-Bit
+// Renderizador de Retratos em Pixel Art 16-Bit (Estilo Stardew Valley / Eastward)
 function drawNpcPortrait(id, x, y, size) {
-    // Moldura Dourada / Azulejo
+    // Moldura Dourada & Caixa de Retrato Estilo Stardew Valley
     ctx.fillStyle = '#0b0f19';
     ctx.fillRect(x, y, size, size);
     ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.strokeRect(x, y, size, size);
 
-    // Fundo Temático do Retrato
+    const npcCoords = {
+        senhorio: { col: 0, row: 0 },
+        tasca: { col: 1, row: 0 },
+        startup: { col: 2, row: 0 },
+        supermercado: { col: 3, row: 0 },
+        banco: { col: 0, row: 1 },
+        faculdade: { col: 1, row: 1 },
+        miradouro: { col: 2, row: 1 },
+        casa: { col: 3, row: 1 }
+    };
+
+    const coord = npcCoords[id] || npcCoords.senhorio;
+
+    if (portraitsSheetImg.complete && portraitsSheetImg.naturalWidth > 0) {
+        ctx.imageSmoothingEnabled = false;
+        // Cada retrato na portraits_sheet.png tem 128x128
+        ctx.drawImage(
+            portraitsSheetImg,
+            coord.col * 128, coord.row * 128, 128, 128,
+            x + 2, y + 2, size - 4, size - 4
+        );
+        return;
+    }
+
+    // Fundo Temático do Retrato (Fallback procedural enquanto carrega)
     const npc = NPC_INFO[id] || NPC_INFO.senhorio;
     ctx.fillStyle = npc.color + '44';
     ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
@@ -3077,6 +3214,13 @@ canvas.addEventListener('mousemove', (e) => {
     const c = getCanvasCoords(e);
     mouse.x = c.x;
     mouse.y = c.y;
+
+    if (state === 'BOARD') {
+        const isHover = BUILDINGS.some(b => c.x >= b.x && c.x <= b.x + b.w && c.y >= b.y && c.y <= b.y + b.h);
+        canvas.style.cursor = isHover ? 'pointer' : 'default';
+    } else {
+        canvas.style.cursor = 'default';
+    }
 });
 
 canvas.addEventListener('click', (e) => {
@@ -3210,8 +3354,10 @@ function handleCanvasClick(cx, cy) {
 function walkToBuilding(b) {
     if (player.walking) return;
     sfxStep();
-    player.targetX = b.x + b.w / 2;
-    player.targetY = b.y + b.h + 10;
+    player.targetX = b.doorX || (b.x + b.w / 2);
+    // Portas superiores: y=125 na calçada alta do Rossio
+    // Portas inferiores: y=248 no cais de pedra ribeirinho (o Tejo fica em y>=274, longe da água!)
+    player.targetY = b.doorY || (b.y > 150 ? 248 : 125);
     player.walking = true;
     player.destinationBuilding = b;
     consumeTime(0, 15);
