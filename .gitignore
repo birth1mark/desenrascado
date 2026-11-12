@@ -1,0 +1,21 @@
+# Databases & SQLite (Nunca comitar bases de dados)
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+data/
+
+# Environment & Credentials
+.env*
+*.key
+*.pem
+
+# Backups & Temporary files
+*.bak
+*.bak_*
+*.sql
+*.tar.gz
+*.log
+.DS_Store
+Thumbs.db
