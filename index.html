@@ -1011,6 +1011,7 @@ function render() {
         renderPigeons();
         renderPlayer();
         renderParticles();
+        renderLisbonLight();
         renderHUD();
 
         if (state === 'MODAL') {
@@ -1170,24 +1171,167 @@ function renderNewsScreen() {
     ctx.fillText("CLICA PARA SAIR DA CAMA ➔", jx + jw / 2, jy + 242);
 }
 
-// Renderizar o Tabuleiro
-function renderBoard() {
-    // 1. Rio Tejo
+
+// ============================================================================
+// A LUZ DE LISBOA & CENOGRAFIA ALFACINHA (Ciclo Dinâmico de Luz & Tejo)
+// ============================================================================
+
+// Candeeiros de ferro forjado de Lisboa
+const LANTERNS = [
+    { x: 175, y: 156 },
+    { x: 315, y: 156 },
+    { x: 455, y: 156 }
+];
+
+function drawLanterns(isNight) {
+    LANTERNS.forEach(l => {
+        // Base e poste de ferro negro
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(l.x - 1, l.y, 3, 20);
+        ctx.fillRect(l.x - 4, l.y + 18, 9, 2);
+        // Braço ornamental e lanterna hexagonal
+        ctx.fillRect(l.x - 5, l.y - 3, 11, 3);
+        ctx.fillRect(l.x - 3, l.y, 7, 5);
+
+        if (isNight) {
+            // Vidro amarelo âmbar reluzente
+            ctx.fillStyle = '#fef08a';
+            ctx.fillRect(l.x - 2, l.y + 1, 5, 4);
+
+            // Cone de luz suave na calçada portuguesa
+            const grad = ctx.createRadialGradient(l.x, l.y + 6, 2, l.x, l.y + 16, 32);
+            grad.addColorStop(0, 'rgba(254, 240, 138, 0.55)');
+            grad.addColorStop(0.4, 'rgba(245, 158, 11, 0.22)');
+            grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(l.x, l.y + 16, 32, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            ctx.fillStyle = '#475569';
+            ctx.fillRect(l.x - 2, l.y + 1, 5, 4);
+        }
+    });
+}
+
+// Cacilheiro Laranja da Transtejo a navegar no Rio Tejo
+function drawCacilheiro(x, y) {
+    if (x < -80 || x > canvas.width + 80) return;
+
+    // Casco Laranja icónico
+    ctx.fillStyle = '#ea580c';
+    ctx.beginPath();
+    ctx.moveTo(x, y + 14);
+    ctx.lineTo(x + 50, y + 14);
+    ctx.lineTo(x + 44, y + 22);
+    ctx.lineTo(x + 6, y + 22);
+    ctx.closePath();
+    ctx.fill();
+
+    // Faixa Branca
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x + 4, y + 8, 42, 6);
+
+    // Cabine Superior & Janelas
+    ctx.fillStyle = '#f1f5f9';
+    ctx.fillRect(x + 10, y + 2, 28, 6);
     ctx.fillStyle = '#0284c7';
+    ctx.fillRect(x + 13, y + 4, 4, 3);
+    ctx.fillRect(x + 19, y + 4, 4, 3);
+    ctx.fillRect(x + 25, y + 4, 4, 3);
+    ctx.fillRect(x + 31, y + 4, 4, 3);
+
+    // Chaminé Preta
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(x + 22, y - 3, 5, 5);
+
+    // Nuvem de Fumo a subir e dissipar
+    const puff = (animTimer * 3.5) % 1;
+    ctx.fillStyle = 'rgba(255, 255, 255, ' + (0.65 - puff * 0.55) + ')';
+    ctx.beginPath();
+    ctx.arc(x + 24 - puff * 8, y - 5 - puff * 6, 3 + puff * 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Onda de proa na água do Tejo
+    ctx.fillStyle = '#e0f2fe';
+    ctx.fillRect(x - 2, y + 18, 6, 2);
+}
+
+// Gaivotas sobre o Rio Tejo
+function drawSeagulls(time) {
+    const seagulls = [
+        { x: (time * 26 + 60) % (canvas.width + 60) - 30, y: 268 + Math.sin(time * 2.5) * 4 },
+        { x: (time * 20 + 320) % (canvas.width + 60) - 30, y: 272 + Math.cos(time * 2.2) * 3 }
+    ];
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    seagulls.forEach((sg, idx) => {
+        const flap = Math.sin(time * 9 + idx * 3) > 0 ? 2 : -2;
+        ctx.beginPath();
+        ctx.moveTo(sg.x - 5, sg.y + flap);
+        ctx.lineTo(sg.x, sg.y);
+        ctx.lineTo(sg.x + 5, sg.y + flap);
+        ctx.stroke();
+    });
+}
+
+// Luz de Lisboa em tempo real de acordo com as horas
+function renderLisbonLight() {
+    const hr = player.timeHour;
+    let overlayColor = null;
+
+    if (hr >= 17 && hr <= 19) {
+        // Entardecer Dourado de Lisboa (Golden Hour)
+        const factor = (hr - 17 + player.timeMinute / 60) / 3;
+        overlayColor = `rgba(245, 158, 11, ${0.08 + factor * 0.12})`;
+    } else if (hr >= 20 && hr <= 21) {
+        // Crepúsculo / Hora Azul
+        overlayColor = 'rgba(99, 102, 241, 0.18)';
+    } else if (hr >= 22 || hr < 7) {
+        // Noite Alfacinha
+        overlayColor = 'rgba(11, 15, 26, 0.42)';
+    }
+
+    if (overlayColor) {
+        ctx.fillStyle = overlayColor;
+        ctx.fillRect(0, 0, canvas.width, 295);
+    }
+}
+
+// Renderizar o Tabuleiro com a Luz de Lisboa
+function renderBoard() {
+    const hr = player.timeHour;
+    const isSunset = (hr >= 17 && hr <= 19);
+    const isNight = (hr >= 20 || hr < 7);
+
+    // 1. Rio Tejo (Cor dinâmica com a luz)
+    ctx.fillStyle = isSunset ? '#b45309' : (isNight ? '#0369a1' : '#0284c7');
     ctx.fillRect(0, 275, canvas.width, 30);
-    ctx.fillStyle = '#38bdf8';
+
+    // Ondas do Tejo
+    ctx.fillStyle = isSunset ? '#fbbf24' : (isNight ? '#38bdf8' : '#7dd3fc');
     for (let x = 0; x < canvas.width; x += 32) {
         const wave = Math.sin(animTimer * 3 + x) * 2;
         ctx.fillRect(x, 280 + wave, 18, 3);
     }
 
-    // 2. Calçada Portuguesa do Rossio (Pre-renderizada e rica)
+    // Cacilheiro Laranja da Transtejo a navegar
+    const cacilheiroX = canvas.width - ((animTimer * 16) % (canvas.width + 120)) + 30;
+    drawCacilheiro(cacilheiroX, 274);
+
+    // Gaivotas sobre o Tejo
+    drawSeagulls(animTimer);
+
+    // 2. Calçada Portuguesa do Rossio
     ctx.drawImage(calcadaCanvas, 0, 0);
 
     // 3. Edifícios
     BUILDINGS.forEach(b => drawBuilding(b));
 
-    // 4. Carris do Elétrico
+    // 4. Candeeiros de Lisboa com Luz Dinâmica
+    drawLanterns(isNight);
+
+    // 5. Carris do Elétrico
     ctx.strokeStyle = '#64748b';
     ctx.lineWidth = 2;
     ctx.setLineDash([8, 6]);
@@ -1623,37 +1767,401 @@ function renderHUD() {
 // ============================================================================
 // MODAL DE AÇÕES COM DESIGN BLINDADO (Sem textos a sair das caixas)
 // ============================================================================
+
+// ============================================================================
+// SISTEMA DE RETRATOS PIXEL ART & DIÁLOGOS SATÍRICOS (LucasArts / RPG Style)
+// ============================================================================
+const NPC_INFO = {
+    senhorio: {
+        name: "Sr. Jerónimo",
+        role: "Senhorio Implacável",
+        quote: "A renda não espera por ninguém. Dia 1 cá estou à porta com o livro de recibos!",
+        color: "#991b1b"
+    },
+    casa: {
+        name: "Pedro",
+        role: "O Teu Teto",
+        getQuote: () => {
+            if (player.houseIndex === 0) return "O chão do Rossio é duro... preciso de me desenrascar e alugar um quarto.";
+            if (player.houseIndex === 1) return "Pelo menos tenho um beliche e um teto para não apanhar chuva em Lisboa.";
+            if (player.houseIndex === 2) return "Quarto com janela em Arroios. Já se consegue respirar e estudar em paz.";
+            if (player.houseIndex === 3) return "T0 em Alfama! Azulejos típicos e cheiro a sardinha assada à porta.";
+            return "Pombalino no Chiado! Venci a crise da habitação alfacinha!";
+        },
+        color: "#312e81"
+    },
+    faculdade: {
+        name: "Prof. Doutor Catedrático",
+        role: "Politécnico / IST",
+        quote: "O saber não ocupa lugar, mas o ECTS custa suor. Sem canudo não há promoção!",
+        color: "#1e3a8a"
+    },
+    startup: {
+        name: "Gonçalo (Tech Lead)",
+        role: "IT Consulting & Hub",
+        quote: "Procuramos um rockstar dev para vestir a camisola num projeto para ontem!",
+        color: "#065f46"
+    },
+    tasca: {
+        name: "Ti Zé do Balcão",
+        role: "Tasca Tradicional",
+        quote: "Sai uma imperial bem gelada e um bitoque a estalar com ovo a cavalo!",
+        color: "#9a3412"
+    },
+    supermercado: {
+        name: "D. Maria da Caixa",
+        role: "Pingo Doce de Bairro",
+        quote: "Sabe bem pagar tão pouco! Leva atum e ovos que rendem o mês inteiro!",
+        color: "#15803d"
+    },
+    banco: {
+        name: "Dr. Alcoviteiro",
+        role: "Gestor de Poupança",
+        quote: "Guarde o seu dinheiro no cofre. A noite de Lisboa tem muitos perigos.",
+        color: "#854d0e"
+    },
+    miradouro: {
+        name: "O Boémio de Alfama",
+        role: "Músico de Rua",
+        quote: "Respira fundo e olha o Tejo. Há coisas na vida que o dinheiro não compra.",
+        color: "#0369a1"
+    }
+};
+
+// Renderizador Procedural de Retratos em Pixel Art 16-Bit
+function drawNpcPortrait(id, x, y, size) {
+    // Moldura Dourada / Azulejo
+    ctx.fillStyle = '#0b0f19';
+    ctx.fillRect(x, y, size, size);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, size, size);
+
+    // Fundo Temático do Retrato
+    const npc = NPC_INFO[id] || NPC_INFO.senhorio;
+    ctx.fillStyle = npc.color + '44';
+    ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+
+    const cx = x + size / 2;
+    const cy = y + size / 2;
+
+    if (id === 'senhorio') {
+        // Sr. Jerónimo (Senhorio austero de bigode e boina)
+        // Casaco Castanho
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(cx - 8, y + size - 26, 16, 10); // Colarinho
+
+        // Rosto e Orelhas
+        ctx.fillStyle = '#fed7aa';
+        ctx.fillRect(cx - 16, cy - 14, 32, 28);
+        ctx.fillRect(cx - 20, cy - 6, 4, 10);
+        ctx.fillRect(cx + 16, cy - 6, 4, 10);
+
+        // Boina Clássica de Lisboa (Flat Cap)
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(cx - 20, cy - 26, 40, 14);
+        ctx.fillRect(cx - 24, cy - 14, 48, 5);
+
+        // Óculos de Meia-Lua
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - 12, cy - 7, 9, 6);
+        ctx.strokeRect(cx + 3, cy - 7, 9, 6);
+        ctx.beginPath(); ctx.moveTo(cx - 3, cy - 4); ctx.lineTo(cx + 3, cy - 4); ctx.stroke();
+
+        // Olhos severos
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx - 8, cy - 5, 3, 3);
+        ctx.fillRect(cx + 6, cy - 5, 3, 3);
+
+        // Bigodaça Farfalhuda Portuguesa
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(cx - 14, cy + 3, 28, 8);
+        ctx.fillRect(cx - 10, cy + 11, 20, 3);
+
+        // Chave de Latão no Canto
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(x + size - 16, y + size - 22, 10, 3);
+        ctx.fillRect(x + size - 14, y + size - 24, 6, 8);
+    } else if (id === 'tasca') {
+        // Ti Zé do Balcão (Avental, palito no dente e imperial)
+        // Avental de Tasca com Nódoa de Tinto
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
+        ctx.fillStyle = '#991b1b';
+        ctx.beginPath(); ctx.arc(cx - 8, y + size - 14, 5, 0, Math.PI * 2); ctx.fill(); // Nódoa vinho
+
+        // Rosto redondo e bronzeado
+        ctx.fillStyle = '#fdba74';
+        ctx.fillRect(cx - 18, cy - 12, 36, 26);
+
+        // Cabelo preto nas têmporas (calvo em cima)
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx - 20, cy - 20, 7, 18);
+        ctx.fillRect(cx + 13, cy - 20, 7, 18);
+        ctx.fillRect(cx - 16, cy - 22, 32, 6);
+
+        // Olhos amigáveis
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx - 9, cy - 5, 4, 3);
+        ctx.fillRect(cx + 5, cy - 5, 4, 3);
+
+        // Bigode Típico do Ti Zé
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx - 14, cy + 3, 28, 7);
+
+        // Palito de madeira nos dentes!
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(cx + 8, cy + 6, 9, 2);
+
+        // Mini / Imperial Verde na mão
+        ctx.fillStyle = '#15803d';
+        ctx.fillRect(x + 6, y + size - 22, 7, 16);
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(x + 7, y + size - 16, 5, 6); // Rótulo
+    } else if (id === 'startup') {
+        // Gonçalo Tech Lead (Corporate Chic, AirPods e Café)
+        // Camisa Oxford Azul Claro
+        ctx.fillStyle = '#93c5fd';
+        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(cx - 5, y + size - 26, 10, 8); // T-shirt interior
+
+        // Rosto esbelto
+        ctx.fillStyle = '#fed7aa';
+        ctx.fillRect(cx - 15, cy - 14, 30, 26);
+
+        // Cabelo penteado com gel moderno
+        ctx.fillStyle = '#451a03';
+        ctx.fillRect(cx - 16, cy - 26, 32, 14);
+        ctx.fillRect(cx - 12, cy - 29, 20, 5);
+
+        // AirPod Branco no ouvido esquerdo
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(cx - 19, cy - 6, 4, 8);
+
+        // Olhos focados
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx - 8, cy - 5, 4, 3);
+        ctx.fillRect(cx + 4, cy - 5, 4, 3);
+
+        // Sorriso corporativo
+        ctx.fillStyle = '#b91c1c';
+        ctx.fillRect(cx - 6, cy + 6, 12, 3);
+
+        // Caneca Vermelha de Café
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(x + size - 18, y + size - 20, 12, 14);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x + size - 16, y + size - 23, 8, 2); // Espuma/Vapor
+    } else if (id === 'faculdade') {
+        // Prof. Catedrático (Cabelo branco desalinhado e óculos)
+        // Beca Académica Preta com Laço
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(cx - 4, y + size - 24, 8, 5); // Laço amarelo
+
+        // Rosto com rugas de sabedoria
+        ctx.fillStyle = '#fed7aa';
+        ctx.fillRect(cx - 15, cy - 14, 30, 26);
+
+        // Cabelo Branco à Einstein
+        ctx.fillStyle = '#f1f5f9';
+        ctx.fillRect(cx - 22, cy - 26, 44, 15);
+        ctx.fillRect(cx - 24, cy - 16, 8, 18);
+        ctx.fillRect(cx + 16, cy - 16, 8, 18);
+
+        // Barba Branca Farta
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(cx - 12, cy + 4, 24, 14);
+
+        // Óculos Redondos de Catedrático
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(cx - 6, cy - 4, 5, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx + 6, cy - 4, 5, 0, Math.PI * 2); ctx.stroke();
+    } else if (id === 'supermercado') {
+        // D. Maria (Pingo Doce - Colete verde e sorriso amável)
+        // Polo Verde do Pingo Doce
+        ctx.fillStyle = '#15803d';
+        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(cx - 6, y + size - 26, 12, 6); // Gola Laranja
+
+        // Rosto sorridente
+        ctx.fillStyle = '#fed7aa';
+        ctx.fillRect(cx - 15, cy - 14, 30, 26);
+
+        // Cabelo Castanho com Touca/Bandana
+        ctx.fillStyle = '#451a03';
+        ctx.fillRect(cx - 18, cy - 24, 36, 14);
+        ctx.fillStyle = '#16a34a';
+        ctx.fillRect(cx - 16, cy - 26, 32, 5); // Fita verde
+
+        // Bochechas rosadas e sorriso
+        ctx.fillStyle = '#fca5a5';
+        ctx.fillRect(cx - 12, cy, 4, 3);
+        ctx.fillRect(cx + 8, cy, 4, 3);
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(cx - 5, cy + 5, 10, 3);
+    } else if (id === 'banco') {
+        // Dr. Alcoviteiro (Gerente sério com fato risca de giz)
+        // Fato Executivo Azul Marinho
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(cx - 7, y + size - 26, 14, 12);
+        ctx.fillStyle = '#b91c1c';
+        ctx.fillRect(cx - 3, y + size - 22, 6, 16); // Gravata vermelha
+
+        // Rosto severo e impecável
+        ctx.fillStyle = '#fed7aa';
+        ctx.fillRect(cx - 15, cy - 14, 30, 26);
+
+        // Cabelo Grisalho Penteado para Trás
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(cx - 17, cy - 26, 34, 14);
+
+        // Sobrancelhas franzidas
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(cx - 9, cy - 8, 7, 2);
+        ctx.fillRect(cx + 2, cy - 8, 7, 2);
+
+        // Caneta de Ouro no Bolso
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(x + 10, y + size - 18, 3, 8);
+    } else if (id === 'miradouro') {
+        // Boémio de Alfama (Óculos escuros e boina boémia)
+        // Camisola às riscas náuticas
+        ctx.fillStyle = '#1e3a8a';
+        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(cx - 24, y + size - 20, 48, 4);
+        ctx.fillRect(cx - 24, y + size - 10, 48, 4);
+
+        // Rosto moreno com barba de 3 dias
+        ctx.fillStyle = '#fdba74';
+        ctx.fillRect(cx - 15, cy - 14, 30, 26);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+        ctx.fillRect(cx - 13, cy + 2, 26, 10); // Barba sombreada
+
+        // Boina Boémia Inclinada
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx - 22, cy - 26, 44, 14);
+
+        // Óculos de Sol Negros
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(cx - 12, cy - 6, 10, 7);
+        ctx.fillRect(cx + 2, cy - 6, 10, 7);
+        ctx.fillRect(cx - 2, cy - 4, 4, 2);
+    } else if (id === 'casa') {
+        // Pedro / O Teu Teto (O protagonista alfacinha)
+        // Roupa Confortável / Hoodie
+        ctx.fillStyle = player.houseIndex === 0 ? '#1e3a8a' : '#1e293b';
+        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
+
+        // Rosto
+        ctx.fillStyle = '#fed7aa';
+        ctx.fillRect(cx - 15, cy - 14, 30, 26);
+
+        if (player.houseIndex === 0) {
+            // Despejado no banco de jardim: Gorro de lã azul e cara com frio
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(cx - 17, cy - 26, 34, 14);
+            ctx.fillStyle = '#93c5fd';
+            ctx.fillRect(cx - 19, cy - 14, 38, 4);
+            // Gotas de frio
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(cx + 12, cy - 4, 2, 4);
+        } else {
+            // Cabelo castanho penteado e barba aparada
+            ctx.fillStyle = '#451a03';
+            ctx.fillRect(cx - 17, cy - 24, 34, 12);
+            ctx.fillStyle = '#451a03';
+            ctx.fillRect(cx - 12, cy + 6, 24, 5); // Barba
+        }
+
+        // Olhos
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx - 8, cy - 5, 4, 3);
+        ctx.fillRect(cx + 4, cy - 5, 4, 3);
+    }
+}
+
 function renderBuildingModal() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.78)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.82)';
     ctx.fillRect(0, 0, canvas.width, 295);
 
-    const mx = 70;
-    const my = 22;
-    const mw = 500;
-    const mh = 255;
+    const mx = 50;
+    const my = 16;
+    const mw = 540;
+    const mh = 265;
 
+    // Caixa Principal
     ctx.fillStyle = '#0f172a';
     ctx.strokeStyle = modalBuilding.accent;
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 2.5;
     ctx.fillRect(mx, my, mw, mh);
     ctx.strokeRect(mx, my, mw, mh);
 
     // Cabeçalho da Loja
     ctx.fillStyle = modalBuilding.color;
-    ctx.fillRect(mx, my, mw, 36);
+    ctx.fillRect(mx, my, mw, 34);
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '9px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(`${modalBuilding.icon} ${modalBuilding.name.toUpperCase()} — ${modalBuilding.tag}`, mx + 16, my + 23);
+    ctx.fillText(`${modalBuilding.icon} ${modalBuilding.name.toUpperCase()} — ${modalBuilding.tag}`, mx + 14, my + 22);
 
     // Botão Fechar X
-    const isHoverX = (mouse.x >= mx + mw - 32 && mouse.x <= mx + mw - 6 && mouse.y >= my + 4 && mouse.y <= my + 32);
+    const isHoverX = (mouse.x >= mx + mw - 32 && mouse.x <= mx + mw - 6 && mouse.y >= my + 4 && mouse.y <= my + 30);
     ctx.fillStyle = isHoverX ? '#fca5a5' : '#ef4444';
     ctx.font = 'bold 16px "Fira Code"';
     ctx.textAlign = 'center';
-    ctx.fillText("✕", mx + mw - 18, my + 24);
+    ctx.fillText("✕", mx + mw - 18, my + 23);
 
+    // 1. COLUNA ESQUERDA: RETRATO PIXEL ART & DIÁLOGO SATÍRICO
+    const px = mx + 14;
+    const py = my + 44;
+    const pSize = 104;
+
+    drawNpcPortrait(modalBuilding.id, px, py, pSize);
+
+    // Nome & Papel do NPC abaixo do retrato
+    const npc = NPC_INFO[modalBuilding.id] || NPC_INFO.senhorio;
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = 'bold 10px "Fira Code"';
+    ctx.textAlign = 'center';
+    ctx.fillText(npc.name, px + pSize / 2, py + pSize + 14);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '8.5px "Fira Code"';
+    ctx.fillText(npc.role, px + pSize / 2, py + pSize + 27);
+
+    // Balão de Diálogo Satírico
+    const quoteY = py + pSize + 36;
+    const quoteW = pSize + 8;
+    const quoteH = 64;
+
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(px - 4, quoteY, quoteW, quoteH);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(px - 4, quoteY, quoteW, quoteH);
+
+    // Aspas decorativas
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = 'bold 14px "Fira Code"';
+    ctx.textAlign = 'left';
+    ctx.fillText("“", px, quoteY + 14);
+
+    const quoteText = (typeof npc.quote === 'function') ? npc.quote() : (npc.getQuote ? npc.getQuote() : npc.quote);
+    wrapTextCanvas(ctx, quoteText, px + 10, quoteY + 14, quoteW - 14, 11, 'italic 8.5px "Fira Code"', '#e2e8f0', 'left');
+
+    // 2. COLUNA DIREITA: CARTÕES DE AÇÃO INTERATIVOS
     renderBuildingActions(modalBuilding.id, mx, my, mw, mh);
 }
 
@@ -1717,34 +2225,37 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         ];
     }
 
-    // Desenhar Ações com layout compacto de 2 colunas horizontais
-    const cardH = 58;
+    // Desenhar Ações na Coluna Direita (ax: mx + 138, aw: mw - 150)
+    const ax = mx + 138;
+    const aw = mw - 152;
+    const cardH = 49;
+    const cardGap = 5;
+
     actions.forEach((act, idx) => {
-        const ay = my + 46 + idx * (cardH + 8);
-        const cardW = mw - 30;
-        const isHover = (mouse.x >= mx + 15 && mouse.x <= mx + 15 + cardW && mouse.y >= ay && mouse.y <= ay + cardH);
+        const ay = my + 44 + idx * (cardH + cardGap);
+        const isHover = (mouse.x >= ax && mouse.x <= ax + aw && mouse.y >= ay && mouse.y <= ay + cardH);
 
         ctx.fillStyle = isHover ? '#1e293b' : '#141d2f';
-        ctx.fillRect(mx + 15, ay, cardW, cardH);
+        ctx.fillRect(ax, ay, aw, cardH);
         ctx.strokeStyle = isHover ? '#f59e0b' : '#233148';
         ctx.lineWidth = 1;
-        ctx.strokeRect(mx + 15, ay, cardW, cardH);
+        ctx.strokeRect(ax, ay, aw, cardH);
 
         // Título da Ação
         ctx.fillStyle = isHover ? '#f59e0b' : '#ffffff';
-        ctx.font = 'bold 12px "Fira Code"';
+        ctx.font = 'bold 11px "Fira Code"';
         ctx.textAlign = 'left';
-        ctx.fillText(act.label, mx + 25, ay + 22);
+        ctx.fillText(act.label, ax + 12, ay + 19);
 
         // Descrição
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '10.5px "Fira Code"';
-        ctx.fillText(act.desc, mx + 25, ay + 44);
+        ctx.font = '9.5px "Fira Code"';
+        ctx.fillText(act.desc, ax + 12, ay + 37);
 
         // Botão de Preço / Ganho no Lado Direito
-        const btnW = 100;
-        const btnH = 32;
-        const btnX = mx + cardW - btnW - 5;
+        const btnW = 86;
+        const btnH = 28;
+        const btnX = ax + aw - btnW - 8;
         const btnY = ay + (cardH - btnH) / 2;
 
         let btnText = "";
@@ -1780,9 +2291,9 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         ctx.strokeRect(btnX, btnY, btnW, btnH);
 
         ctx.fillStyle = isAffordable ? '#0b0e14' : '#64748b';
-        ctx.font = 'bold 11px "Fira Code"';
+        ctx.font = 'bold 10px "Fira Code"';
         ctx.textAlign = 'center';
-        ctx.fillText(btnText, btnX + btnW / 2, btnY + 20);
+        ctx.fillText(btnText, btnX + btnW / 2, btnY + 18);
     });
 
     modalBuilding.currentActions = actions;
@@ -1953,20 +2464,24 @@ function handleCanvasClick(cx, cy) {
     }
 
     if (state === 'MODAL') {
-        const mx = 70, my = 22, mw = 500, mh = 255;
-        // Fechar no botão X ou fora
+        const mx = 50, my = 16, mw = 540, mh = 265;
+        // Fechar no botão X ou fora da caixa
         if ((cx >= mx + mw - 35 && cx <= mx + mw && cy >= my && cy <= my + 35) ||
             (cx < mx || cx > mx + mw || cy < my || cy > my + mh)) {
             closeModal();
             return;
         }
 
-        // Clicar numa Ação da Loja
+        // Clicar numa Ação da Loja na Coluna Direita (ax: mx + 138, aw: mw - 152)
         if (modalBuilding && modalBuilding.currentActions) {
-            const cardH = 58;
+            const ax = mx + 138;
+            const aw = mw - 152;
+            const cardH = 49;
+            const cardGap = 5;
+
             modalBuilding.currentActions.forEach((act, idx) => {
-                const ay = my + 46 + idx * (cardH + 8);
-                if (cx >= mx + 15 && cx <= mx + mw - 15 && cy >= ay && cy <= ay + cardH) {
+                const ay = my + 44 + idx * (cardH + cardGap);
+                if (cx >= ax && cx <= ax + aw && cy >= ay && cy <= ay + cardH) {
                     executeAction(act);
                 }
             });
