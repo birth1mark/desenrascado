@@ -835,6 +835,7 @@ let player = {
     speed: 3.6,
     walking: false,
     frame: 0,
+    walkAnimTimer: 0,
     facing: 'down',
     destinationBuilding: null,
     thoughtTimer: 0,
@@ -989,6 +990,8 @@ function update(dt) {
                 player.x = player.targetX;
                 player.y = player.targetY;
                 player.walking = false;
+                player.frame = 0;
+                player.walkAnimTimer = 0;
                 
                 if (player.destinationBuilding) {
                     openBuilding(player.destinationBuilding);
@@ -1004,7 +1007,8 @@ function update(dt) {
                     player.facing = dy > 0 ? 'down' : 'up';
                 }
 
-                player.frame = Math.floor(animTimer * 10) % 4;
+                player.walkAnimTimer = (player.walkAnimTimer || 0) + dt;
+                player.frame = Math.floor(player.walkAnimTimer * 8) % 4;
 
                 // Restrição rígida: Zé Desenrasca caminha apenas na calçada e cais de pedra!
                 // NUNCA entra na água do Rio Tejo (o rio fica em y >= 274, limite seguro y <= 255)
@@ -1016,12 +1020,18 @@ function update(dt) {
                 }
             }
         } else {
-            // Idle balão de pensamento cómico ocasional
+            // Parado: sem movimento nem animação de passos (estável e firme no chão)
+            player.frame = 0;
+            player.walkAnimTimer = 0;
+
+            // Balão de pensamento cómico ocasional (uma única escolha por ciclo)
             player.thoughtTimer += dt;
-            if (player.thoughtTimer > 5) {
-                const emojis = ['☕', '🐟', '🏠', '🍺', '💻', '💸'];
-                player.thoughtEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-                if (player.thoughtTimer > 7.5) {
+            if (player.thoughtTimer > 8.0) {
+                if (!player.thoughtEmoji) {
+                    const emojis = ['☕', '🐟', '🏠', '🍺', '💻', '💸', '🥪'];
+                    player.thoughtEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                }
+                if (player.thoughtTimer > 10.5) {
                     player.thoughtTimer = 0;
                     player.thoughtEmoji = null;
                 }
@@ -1442,13 +1452,12 @@ function renderLisbonLight() {
     }
 }
 
-// Renderizar o Tabuleiro com a Luz de Lisboa
+// Renderizar o Tabuleiro com Qualidade Gráfica 16-Bit Artesanal (Stardew Valley / Eastward)
 function renderBoard() {
     const hr = player.timeHour;
-    const isSunset = (hr >= 17 && hr <= 19);
     const isNight = (hr >= 20 || hr < 7);
 
-    // 1. Render do Tabuleiro Bitmapped em Pixel Art Artesanal de 16-Bit (Estilo Stardew Valley / Eastward)
+    // 1. Render do Tabuleiro Bitmapped em Pixel Art Artesanal de 16-Bit
     if (boardImg.complete && boardImg.naturalWidth > 0) {
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(boardImg, 0, 0, canvas.width, 295);
@@ -1459,39 +1468,21 @@ function renderBoard() {
         BUILDINGS.forEach(b => drawBuilding(b));
     }
 
-    // 2. Ondas e Brilhos Animados do Rio Tejo (y=274..295)
-    ctx.fillStyle = isSunset ? 'rgba(251, 191, 36, 0.45)' : (isNight ? 'rgba(56, 189, 248, 0.28)' : 'rgba(255, 255, 255, 0.38)');
-    for (let x = 6; x < canvas.width; x += 34) {
-        const wave = Math.sin(animTimer * 3 + x * 0.15) * 2;
-        ctx.fillRect(x, 278 + wave, 16, 2.5);
-        const wave2 = Math.cos(animTimer * 2.5 + x * 0.12) * 2;
-        ctx.fillRect(x + 18, 286 + wave2, 12, 2);
-    }
-
-    // 3. Cacilheiro Laranja da Transtejo a navegar no Rio Tejo
-    const cacilheiroX = canvas.width - ((animTimer * 16) % (canvas.width + 120)) + 30;
-    drawCacilheiro(cacilheiroX, 276);
-
-    // 4. Gaivotas sobre o Tejo
-    drawSeagulls(animTimer);
-
-    // 5. Elétrico 28 cruzando o bairro nos carris (y=138)
-    const tramX = ((animTimer * 38) % (canvas.width + 140)) - 70;
-    drawTram(tramX, 134);
-
-    // 6. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
+    // 2. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
     renderBuildingOverlays();
 
-    // 7. Candeeiros Históricos de Lisboa com Luz Dinâmica
-    drawLanterns(isNight);
-
-    // 8. Iluminação Dinâmica de Lisboa (Pôr-do-sol Dourado e Noite Alfacinha)
-    if (isSunset) {
-        ctx.fillStyle = 'rgba(249, 115, 22, 0.14)';
-        ctx.fillRect(0, 0, canvas.width, 295);
-    } else if (isNight) {
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.42)';
-        ctx.fillRect(0, 0, canvas.width, 295);
+    // 3. Halos de Luz dos Candeeiros Históricos à Noite na Calçada
+    if (isNight) {
+        LANTERNS.forEach(l => {
+            const grad = ctx.createRadialGradient(l.x, l.y + 6, 2, l.x, l.y + 16, 28);
+            grad.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
+            grad.addColorStop(0.5, 'rgba(245, 158, 11, 0.15)');
+            grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(l.x, l.y + 16, 28, 0, Math.PI * 2);
+            ctx.fill();
+        });
     }
 }
 
@@ -2338,37 +2329,23 @@ function renderPlayer() {
         else if (player.facing === 'right') dirRow = 2;
         else if (player.facing === 'left') dirRow = 3;
 
-        let frame = 0;
-        if (player.walking) {
-            frame = Math.floor(animTimer * 10) % 4;
-        } else {
-            if (player.thoughtEmoji === '☕') {
-                dirRow = 4; frame = 1; // Café bica
-            } else if (player.thoughtEmoji === '🐟' || player.thoughtEmoji === '🥪') {
-                dirRow = 4; frame = 2; // Pastel de nata
-            } else if (player.thoughtEmoji === '💸' || player.thoughtEmoji === '🍺') {
-                dirRow = 4; frame = 3; // Thumbs up
-            } else {
-                frame = 0; // Idle
-            }
-        }
-
-        // Bobbing subtil ao andar ou respirar
-        const bob = (!player.walking && dirRow < 4) ? (Math.sin(animTimer * 3.5) > 0.5 ? -1 : 0) : 0;
+        // Se parado, o frame é estritamente 0 (pose de pé estável, sem jitter nem alternância)
+        // Se a andar, usa o ciclo player.frame (0..3)
+        const frame = player.walking ? (player.frame % 4) : 0;
 
         ctx.imageSmoothingEnabled = false;
-        // Cada frame tem 32x40, centrado em px com pés em py
+        // Cada frame tem 32x40, centrado em px com pés exatamente em py (sem bob jitter quando parado!)
         ctx.drawImage(
             zeSheetImg,
             frame * 32, dirRow * 40, 32, 40,
-            px - 16, py - 38 + bob, 32, 40
+            px - 16, py - 38, 32, 40
         );
 
         // Gota de Suor Cómica se a Sanidade estiver abaixo de 40%
         if (player.sanity < 40) {
             ctx.fillStyle = '#38bdf8';
-            ctx.fillRect(px + 9, py - 34 + bob, 2, 3);
-            ctx.fillRect(px + 8, py - 32 + bob, 4, 2);
+            ctx.fillRect(px + 9, py - 34, 2, 3);
+            ctx.fillRect(px + 8, py - 32, 4, 2);
         }
     } else {
         // Fallback procedural clássico enquanto a spritesheet carrega
@@ -3491,6 +3468,10 @@ function resetGame() {
     player.targetX = 250;
     player.targetY = 125;
     player.walking = false;
+    player.frame = 0;
+    player.walkAnimTimer = 0;
+    player.thoughtEmoji = null;
+    player.thoughtTimer = 0;
     particles = [];
     isScoreSubmitted = false;
     currentEvent = null;
