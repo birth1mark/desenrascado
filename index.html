@@ -42,10 +42,13 @@
         }
 
         body {
-            background-color: #060913;
+            background-color: #060810;
             background-image: 
-                radial-gradient(circle at 50% 30%, rgba(30, 58, 138, 0.45) 0%, rgba(15, 23, 42, 0.85) 60%, #030712 100%),
-                url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M24 0l12 12-12 12L12 12zM0 24l12 12-12 12-12-12zM48 24l12 12-12 12-12-12zM24 48l12 12-12 12-12-12z' fill='%231e3a8a' fill-opacity='0.14'/%3E%3Ccircle cx='24' cy='24' r='4' fill='%2338bdf8' fill-opacity='0.16'/%3E%3C/svg%3E");
+                radial-gradient(circle at 50% 45%, rgba(10, 14, 26, 0.28) 0%, rgba(3, 5, 12, 0.82) 100%),
+                url("assets/lucasarts_bg.jpg?v=2.4");
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
             color: #f1f5f9;
             font-family: var(--font-mono);
             min-height: 100vh;
@@ -53,42 +56,43 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 12px 8px;
+            padding: 14px 10px;
             overflow-x: hidden;
             touch-action: manipulation;
         }
 
-        /* Gabinete / Bezel Retrô de Lisboa */
+        /* Gabinete / Bezel Estilo Aventura Gráfica LucasArts (SCUMM Engine) */
         #arcade-cabinet {
             width: 100%;
             max-width: 970px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: linear-gradient(180deg, #1c140d 0%, #100b07 100%);
-            border: 4px solid #78350f;
-            border-radius: 12px;
+            background: linear-gradient(180deg, #22150c 0%, #120b06 100%);
+            border: 4px solid #5c2d12;
+            border-radius: 8px;
             box-shadow: 
-                0 0 0 2px #b45309,
-                0 25px 50px rgba(0, 0, 0, 0.95),
-                0 0 35px rgba(245, 158, 11, 0.2);
+                0 0 0 2px #d97706,
+                0 0 0 4px #291104,
+                0 30px 60px rgba(0, 0, 0, 0.98),
+                0 0 40px rgba(245, 158, 11, 0.25);
             padding: 8px;
             position: relative;
             box-sizing: border-box;
         }
 
-        /* Marquee Superior Iluminado */
+        /* Marquee / Cabeçalho de Aventura Gráfica LucasArts */
         #arcade-marquee {
             width: 100%;
-            background: linear-gradient(180deg, #1e1b18 0%, #0c0a09 100%);
-            border: 2px solid #b45309;
-            border-radius: 6px;
-            padding: 8px 14px;
+            background: linear-gradient(180deg, #2a180d 0%, #0d0704 100%);
+            border: 2px solid #d97706;
+            border-radius: 4px;
+            padding: 9px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 6px;
-            box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.15);
+            box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.22);
             box-sizing: border-box;
         }
 
@@ -101,24 +105,29 @@
             font-family: 'Press Start 2P', monospace;
             font-size: 0.46rem;
             color: #38bdf8;
-            letter-spacing: 1px;
-            margin-bottom: 2px;
+            letter-spacing: 1.5px;
+            margin-bottom: 3px;
+            text-transform: uppercase;
         }
 
         .marquee-title {
             font-family: 'Press Start 2P', monospace;
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             color: #fbbf24;
-            text-shadow: 0 0 12px rgba(245, 158, 11, 0.6), 2px 2px 0 #78350f;
-            letter-spacing: 1px;
+            text-shadow: 
+                0 0 16px rgba(245, 158, 11, 0.7),
+                2px 2px 0 #78350f,
+                3px 3px 0 #291104;
+            letter-spacing: 2px;
             margin: 2px 0;
         }
 
         .marquee-subtitle {
             font-family: 'Fira Code', monospace;
             font-size: 0.68rem;
-            color: #94a3b8;
+            color: #cbd5e1;
             font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .marquee-decor {
@@ -164,29 +173,30 @@
         }
 
         .arcade-btn {
-            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid #475569;
-            color: #e2e8f0;
-            padding: 5px 9px;
-            border-radius: 4px;
+            background: linear-gradient(180deg, #1e2433 0%, #0c101a 100%);
+            border: 1px solid #78350f;
+            color: #fbbf24;
+            padding: 6px 10px;
+            border-radius: 3px;
             font-family: 'Press Start 2P', monospace;
             font-size: 0.50rem;
             cursor: pointer;
             transition: all 0.15s ease;
-            box-shadow: 0 2px 0 #020617;
+            box-shadow: 0 2px 0 #020617, inset 0 1px 0 rgba(251, 191, 36, 0.15);
         }
         .arcade-btn:hover {
-            border-color: #f59e0b;
-            color: #fbbf24;
+            border-color: #fbbf24;
+            color: #ffffff;
+            background: linear-gradient(180deg, #2d374d 0%, #141c2c 100%);
             transform: translateY(-1px);
-            box-shadow: 0 3px 6px rgba(245, 158, 11, 0.25);
+            box-shadow: 0 3px 8px rgba(245, 158, 11, 0.35);
         }
         .arcade-btn:active {
             transform: translateY(1px);
             box-shadow: 0 0 0;
         }
         .arcade-btn.btn-acampada {
-            border-color: #ef4444;
+            border-color: #dc2626;
             color: #fca5a5;
         }
         .arcade-btn.btn-acampada:hover {
@@ -194,7 +204,7 @@
             color: #fff;
         }
         .arcade-btn.btn-roupa {
-            border-color: #ec4899;
+            border-color: #db2777;
             color: #fbcfe8;
         }
         .arcade-btn.btn-roupa:hover {
@@ -244,27 +254,27 @@
         /* Placa Toponímica Tradicional de Lisboa */
         #arcade-plaque {
             width: 100%;
-            background: #090d16;
-            border: 2px solid #1e3a8a;
-            border-radius: 6px;
-            padding: 6px 14px;
+            background: linear-gradient(180deg, #1f140e 0%, #100a06 100%);
+            border: 2px solid #b45309;
+            border-radius: 4px;
+            padding: 8px 14px;
             margin-top: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 0.68rem;
-            color: #94a3b8;
-            box-shadow: inset 0 0 10px rgba(30, 58, 138, 0.25);
+            color: #f1f5f9;
+            box-shadow: inset 0 0 15px rgba(180, 83, 9, 0.22);
             box-sizing: border-box;
         }
         .plaque-badge {
             font-family: 'Press Start 2P', monospace;
             font-size: 0.50rem;
-            color: #38bdf8;
-            background: rgba(30, 58, 138, 0.35);
+            color: #fbbf24;
+            background: rgba(180, 83, 9, 0.35);
             padding: 3px 8px;
             border-radius: 3px;
-            border: 1px solid rgba(56, 189, 248, 0.35);
+            border: 1px solid rgba(245, 158, 11, 0.4);
         }
 
         @media (max-width: 640px) {
@@ -491,9 +501,9 @@
         <div id="arcade-marquee">
             <div class="marquee-decor">✦</div>
             <div class="marquee-center">
-                <div class="marquee-badge">🇵🇹 EDIÇÃO RETRO 16-BIT · LISBOA</div>
+                <div class="marquee-badge">🇵🇹 AVENTURA GRÁFICA RETRO · LISBOA</div>
                 <h1 class="marquee-title">DESENRASCADO</h1>
-                <div class="marquee-subtitle">O PURGATÓRIO DA HABITAÇÃO, EMPREGO & SOBREVIVÊNCIA</div>
+                <div class="marquee-subtitle">« O PURGATÓRIO DE LISBOA » · EDIÇÃO RETRO DE AVENTURA GRÁFICA</div>
             </div>
             <div class="marquee-decor">✦</div>
         </div>
@@ -568,7 +578,7 @@
         <!-- Placa Toponímica Tradicional Alfacinha -->
         <div id="arcade-plaque">
             <span class="plaque-badge">LARGO DO DESENRASCO</span>
-            <span>Baixa, Rossio & Chiado · Sobrevive ao Purgatório Urbano · Autor: <b>Pedro Ribeiro</b> (birth1mark)</span>
+            <span>« És o Zé Desenrasca, estás em Lisboa sem um tostão. O que vais fazer? » · <b>Pedro Ribeiro</b> (birth1mark)</span>
             <span style="font-size:0.6rem; color:#f59e0b;">🇵🇹 LISBOA 2026</span>
         </div>
     </div>
@@ -1509,264 +1519,233 @@ function spawnParticle(text, color, x, y) {
 }
 
 // ============================================================================
-// SISTEMA DINÂMICO DE PEÕES & NPCS DE RUA EM LISBOA (Com Entrada e Saída)
+// SISTEMA DE PERSONAGENS VIVAS & MICRO-ANIMAÇÕES DO TABULEIRO DE LISBOA
+// (Dá vida orgânica aos habitantes já desenhados na arte original do tabuleiro)
 // ============================================================================
-let streetNpcs = [];
-let npcSpawnTimer = 0;
-let speechBubbles = [];
-
-const STREET_NPC_ARCHETYPES = [
+const LIVING_NPCS = [
     {
-        type: 'estudante',
+        id: 'tasca_fregueses',
+        name: 'Ti Zé & Fregueses',
+        x: 588, y: 168, radius: 18,
+        quotes: [
+            "Mais um fino bem gelado e um pires de caracóis, Ti Zé!",
+            "Hoje o Sporting joga às oito, guarda-me a mesa da frente!",
+            "O segredo do bitoque à casa é o molho com cerveja e alho!"
+        ]
+    },
+    {
+        id: 'boemio_miradouro',
+        name: 'O Boémio do Miradouro',
+        x: 72, y: 242, radius: 16,
+        quotes: [
+            "A luz de Lisboa ao entardecer é a única renda que ninguém nos cobra.",
+            "Fico aqui a ver os cacilheiros cruzar o Tejo e quase esqueço a Euribor.",
+            "Um café, um fado na rádio e a brisa do rio... Não há terra como esta."
+        ]
+    },
+    {
+        id: 'cliente_banco',
+        name: 'Cliente da Caixa',
+        x: 342, y: 174, radius: 15,
+        quotes: [
+            "Vim ver o saldo... e acho que o Multibanco começou a chorar comigo.",
+            "Comissão de manutenção de 6,50€?! Nem o Rei cobrava tanto dízimo!",
+            "Espero que o sistema não engula o cartão outra vez, preciso pagar a renda!"
+        ]
+    },
+    {
+        id: 'estudante_ist',
         name: 'Estudante do IST',
-        speed: 1.8,
-        hairColor: '#facc15',
-        skinColor: '#fed7aa',
-        shirtColor: '#2563eb',
-        pantsColor: '#1e293b',
-        accType: 'backpack',
-        accColor: '#ea580c',
-        targetBuilding: 'faculdade',
-        quote: "Tenho exame de Álgebra às duas da tarde, estou tramado!"
+        x: 108, y: 156, radius: 16,
+        quotes: [
+            "Tenho frequência de Álgebra amanhã e só sei que nada sei...",
+            "Passei a noite na biblioteca da Alameda à base de café e desespero.",
+            "Se chumbar a Análise Matemática outra vez, perco a bolsa de estudo!"
+        ]
     },
     {
-        type: 'turista',
-        name: 'Turista Estrangeiro',
-        speed: 1.4,
-        hairColor: '#78350f',
-        skinColor: '#fde047',
-        shirtColor: '#06b6d4',
-        pantsColor: '#d97706',
-        accType: 'camera',
-        accColor: '#18181b',
-        targetBuilding: 'miradouro',
-        quote: "Excuse me, where is the famous Tram 28 and Pastel de Nata?!"
+        id: 'cliente_pingo_doce',
+        name: 'Cliente do Pingo Doce',
+        x: 452, y: 177, radius: 15,
+        quotes: [
+            "O azeite está a preço de ouro! Vim só buscar pão e gastei uma fortuna.",
+            "As promoções da D. Maria salvam qualquer fim de mês em Lisboa."
+        ]
     },
     {
-        type: 'banqueiro',
-        name: 'Banqueiro da Caixa',
-        speed: 1.9,
-        hairColor: '#475569',
-        skinColor: '#fed7aa',
-        shirtColor: '#0f172a',
-        pantsColor: '#0f172a',
-        accType: 'briefcase',
-        accColor: '#78350f',
-        targetBuilding: 'banco',
-        quote: "O Banco Central Europeu não dá tréguas às taxas Euribor..."
-    },
-    {
-        type: 'velhinha',
-        name: 'D. Gracinda',
-        speed: 1.1,
-        hairColor: '#cbd5e1',
-        skinColor: '#fed7aa',
-        shirtColor: '#7c3aed',
-        pantsColor: '#581c87',
-        accType: 'basket',
-        accColor: '#15803d',
-        targetBuilding: 'supermercado',
-        quote: "No meu tempo um quarto em Lisboa custava três contos de réis!"
-    },
-    {
-        type: 'fadista',
-        name: 'Fadista da Mouraria',
-        speed: 1.5,
-        hairColor: '#18181b',
-        skinColor: '#fed7aa',
-        shirtColor: '#18181b',
-        pantsColor: '#18181b',
-        accType: 'guitar',
-        accColor: '#92400e',
-        targetBuilding: 'tasca',
-        quote: "Lisboa cheira a fado, a saudade e a sardinha assada à luz da lua..."
-    },
-    {
-        type: 'ativista',
-        name: 'Ativista da Habitação',
-        speed: 2.0,
-        hairColor: '#b45309',
-        skinColor: '#fed7aa',
-        shirtColor: '#dc2626',
-        pantsColor: '#1e293b',
-        accType: 'megaphone',
-        accColor: '#facc15',
-        targetBuilding: 'acampada',
-        quote: "Habitação é um direito consagrado no Artigo 65º da Constituição!"
+        id: 'ines_acampada',
+        name: 'Inês (Acampada)',
+        x: 195, y: 248, radius: 18,
+        quotes: [
+            "Habitação é um direito, não é um privilégio de fundos abutres!",
+            "Junta-te à nossa vigília noturna: partilhamos sopa quente e coragem.",
+            "Nenhum despejo sem alternativa digna em Lisboa!"
+        ]
     }
 ];
 
-function spawnStreetNpc() {
-    const arch = STREET_NPC_ARCHETYPES[Math.floor(Math.random() * STREET_NPC_ARCHETYPES.length)];
-    const fromDoor = Math.random() < 0.45;
-    let startX, startY, targetX, targetY;
-    let destBuilding = null;
+function renderBoardLivingCharacters(ctx, animTimer) {
+    ctx.save();
 
-    if (fromDoor) {
-        // Sai de uma porta de edifício existente
-        const srcB = BUILDINGS[Math.floor(Math.random() * BUILDINGS.length)];
-        startX = srcB.doorX || (srcB.x + srcB.w / 2);
-        startY = srcB.doorY || (srcB.y + srcB.h);
-        if (Math.random() < 0.5) {
-            targetX = Math.random() < 0.5 ? -20 : 660;
-            targetY = 205 + Math.random() * 45;
-        } else {
-            const destB = BUILDINGS.find(b => b.id === arch.targetBuilding) || BUILDINGS[0];
-            targetX = destB.doorX || (destB.x + destB.w / 2);
-            targetY = destB.doorY || (destB.y + destB.h);
-            destBuilding = destB;
+    // 1. ESPLANADA DA TASCA DO TI ZÉ (x: 575 a 605, y: 160 a 178)
+    const drinkCycle = animTimer % 4.8;
+    const px1 = 580;
+    const py1 = 166;
+    
+    // Vapor / Fumo aromático do bitoque e petiscos no centro da mesa
+    const steamX = 589;
+    const steamY = 171;
+    for (let s = 0; s < 3; s++) {
+        const sProg = ((animTimer * 1.8 + s * 1.4) % 3.0) / 3.0;
+        const sx = steamX + Math.sin(animTimer * 3 + s * 2) * 2;
+        const sy = steamY - sProg * 12;
+        const sAlpha = Math.sin(sProg * Math.PI) * 0.45;
+        ctx.fillStyle = `rgba(255, 255, 255, ${sAlpha.toFixed(2)})`;
+        ctx.fillRect(Math.round(sx), Math.round(sy), 2, 2);
+    }
+
+    // Copo de imperial e braço do cliente
+    if (drinkCycle > 1.4 && drinkCycle < 3.2) {
+        const liftProg = drinkCycle < 2.0 ? (drinkCycle - 1.4) / 0.6 : (drinkCycle > 2.6 ? (3.2 - drinkCycle) / 0.6 : 1.0);
+        const glassY = py1 - 2 - Math.round(liftProg * 4);
+        
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(px1 + 4, glassY, 3, 4);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(px1 + 4, glassY - 1, 3, 1);
+        
+        if (liftProg > 0.7) {
+            ctx.fillStyle = '#fed7aa';
+            ctx.fillRect(px1, py1 - 5, 2, 1);
         }
     } else {
-        // Entra no jogo pelos cantos da rua
-        const fromLeft = Math.random() < 0.5;
-        startX = fromLeft ? -15 : 655;
-        startY = 205 + Math.random() * 45;
-        const destB = BUILDINGS.find(b => b.id === arch.targetBuilding) || BUILDINGS[Math.floor(Math.random() * BUILDINGS.length)];
-        targetX = destB.doorX || (destB.x + destB.w / 2);
-        targetY = destB.doorY || (destB.y + destB.h);
-        destBuilding = destB;
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(px1 + 4, py1 + 2, 3, 3);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(px1 + 4, py1 + 1, 3, 1);
     }
 
-    streetNpcs.push({
-        ...arch,
-        id: Math.random().toString(36).substr(2, 9),
-        x: startX,
-        y: startY,
-        targetX: targetX,
-        targetY: targetY,
-        destBuilding: destBuilding,
-        walkAnimTimer: Math.random() * 5,
-        walkFrame: 0,
-        facing: targetX > startX ? 'right' : 'left',
-        opacity: 1.0,
-        entering: false
-    });
-}
-
-function updateStreetNpcs(dt) {
-    npcSpawnTimer += dt;
-    if (streetNpcs.length < 5 && npcSpawnTimer > 3.0) {
-        spawnStreetNpc();
-        npcSpawnTimer = 0;
+    // Cliente da direita a conversar / gesticular
+    const px2 = 600;
+    const py2 = 166;
+    const talkBob = Math.sin(animTimer * 5.2) * 1.0;
+    const handWave = Math.sin(animTimer * 3.5) * 1.5;
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(px2 - 3, py2 + 1 + Math.round(handWave), 2, 2);
+    if (Math.sin(animTimer * 2.5) > 0.3) {
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(px2, py2 - 6 + Math.round(talkBob * 0.5), 4, 2);
     }
 
-    for (let i = streetNpcs.length - 1; i >= 0; i--) {
-        const npc = streetNpcs[i];
-        const dx = npc.targetX - npc.x;
-        const dy = npc.targetY - npc.y;
-        const dist = Math.hypot(dx, dy);
+    // 2. MIRADOURO SOBRE O TEJO (O Boémio na Balaustrada, x: 72, y: 242)
+    const mx = 72;
+    const my = 242;
+    const scarfFlutter = Math.sin(animTimer * 5.0) * 1.8;
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(mx - 3, my - 8, 3, 3);
+    ctx.fillRect(mx - 4, my - 6, 2, 3 + Math.round(scarfFlutter));
 
-        if (npc.entering) {
-            npc.opacity -= dt * 2.5;
-            if (npc.opacity <= 0) {
-                streetNpcs.splice(i, 1);
-                continue;
+    for (let f = 0; f < 2; f++) {
+        const fProg = ((animTimer * 1.4 + f * 1.5) % 2.8) / 2.8;
+        const fx = (mx + 3) + fProg * 6 + Math.sin(animTimer * 2.5 + f) * 2;
+        const fy = (my - 14) - fProg * 14;
+        const fAlpha = Math.sin(fProg * Math.PI) * 0.35;
+        ctx.fillStyle = `rgba(226, 232, 240, ${fAlpha.toFixed(2)})`;
+        ctx.fillRect(Math.round(fx), Math.round(fy), 2, 2);
+    }
+
+    // 3. CAIXA GERAL / MULTIBANCO (Cidadão na Fila / ATM, x: 342, y: 174)
+    const bx = 342;
+    const by = 174;
+    const watchCycle = animTimer % 5.0;
+    const slipWave = Math.sin(animTimer * 7.0) * 1.2;
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(bx + 4, by - 6 + Math.round(slipWave), 3, 2);
+
+    if (watchCycle > 2.8 && watchCycle < 4.2) {
+        ctx.fillStyle = '#fed7aa';
+        ctx.fillRect(bx - 3, by - 8, 2, 2);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(bx - 2, by - 8, 1, 1);
+    }
+
+    // 4. DEGRAUS DO IST / UNIVERSIDADE (Estudante com Sebenta, x: 108, y: 156)
+    const sx = 108;
+    const sy = 156;
+    const pageCycle = animTimer % 6.0;
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(sx + 7, sy + 3, 2, 3);
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(sx + 7, sy + 2, 2, 1);
+
+    if (pageCycle > 4.5 && pageCycle < 5.6) {
+        const pageProg = (pageCycle - 4.5) / 1.1;
+        const turnX = sx - 1 + Math.round((1 - pageProg) * 4);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(turnX, sy - 3 - Math.round(Math.sin(pageProg * Math.PI) * 2), 3, 4);
+    } else {
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(sx - 1, sy - 2, 5, 3);
+        ctx.fillStyle = '#3b82f6';
+        ctx.fillRect(sx - 2, sy - 2, 1, 3);
+    }
+
+    // 5. PINGO DOCE (Freguesa com o Saco das Compras, x: 452, y: 177)
+    const gx = 452;
+    const gy = 177;
+    const bagSway = Math.sin(animTimer * 2.8) * 1.5;
+    ctx.fillStyle = '#16a34a';
+    ctx.fillRect(gx + 3, gy - 2 + Math.round(bagSway), 4, 5);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(gx + 4, gy + Math.round(bagSway), 2, 2);
+
+    // 6. ACAMPADA DO ROSSIO (Ativista a Tocar Guitarra à Fogueira, x: 195, y: 248)
+    const ax = 195;
+    const ay = 248;
+    const strum = Math.sin(animTimer * 9.0) * 1.5;
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(ax - 2, ay - 6, 6, 4);
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(ax + 1, ay - 6 + Math.round(strum), 2, 2);
+
+    const noteProg = (animTimer * 0.9) % 2.5;
+    if (noteProg < 2.0) {
+        const nx = ax + 4 + Math.sin(noteProg * 4) * 3;
+        const ny = ay - 10 - noteProg * 8;
+        const nAlpha = (1 - noteProg / 2.0) * 0.8;
+        ctx.fillStyle = `rgba(251, 191, 36, ${nAlpha.toFixed(2)})`;
+        ctx.font = '7px "Press Start 2P"';
+        ctx.fillText("♪", Math.round(nx), Math.round(ny));
+    }
+
+    // 7. EFEITO DE HOVER RETRO SOBRE AS PERSONAGENS VIVAS (Estilo Aventura LucasArts)
+    if (state === 'BOARD') {
+        LIVING_NPCS.forEach(n => {
+            if (Math.hypot(mouse.x - n.x, mouse.y - n.y) < n.radius) {
+                // Brilho dourado no pavimento
+                const hGrad = ctx.createRadialGradient(n.x, n.y, 2, n.x, n.y, n.radius);
+                hGrad.addColorStop(0, 'rgba(251, 191, 36, 0.40)');
+                hGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
+                ctx.fillStyle = hGrad;
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Indicador retro saltitante de conversa "💬"
+                const chatBob = Math.sin(animTimer * 7) * 1.5;
+                ctx.font = '9px "Press Start 2P"';
+                ctx.fillStyle = '#fbbf24';
+                ctx.textAlign = 'center';
+                ctx.fillText("💬", n.x, n.y - n.radius - 2 + chatBob);
             }
-        } else if (dist < 5) {
-            if (npc.destBuilding) {
-                npc.entering = true;
-                spawnDust(npc.x, npc.y + 2);
-            } else {
-                streetNpcs.splice(i, 1);
-                continue;
-            }
-        } else {
-            const step = npc.speed * 42 * dt;
-            npc.x += (dx / dist) * step;
-            npc.y += (dy / dist) * step;
-            npc.facing = dx >= 0 ? 'right' : 'left';
-            npc.walkAnimTimer += dt * 6 * npc.speed;
-            npc.walkFrame = Math.floor(npc.walkAnimTimer) % 2;
-        }
+        });
     }
+
+    ctx.restore();
 }
 
-function renderStreetNpcs() {
-    streetNpcs.forEach(npc => {
-        ctx.save();
-        ctx.globalAlpha = Math.max(0, Math.min(1, npc.opacity));
-
-        const nx = Math.round(npc.x);
-        const ny = Math.round(npc.y);
-        const bob = npc.walkFrame === 1 ? -1 : 0;
-        const isFacingLeft = npc.facing === 'left';
-
-        // 1. Sombra Suave no Pavimento
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-        ctx.beginPath();
-        ctx.ellipse(nx, ny + 1, 6, 2.5, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 2. Pernas / Calças
-        ctx.fillStyle = npc.pantsColor;
-        if (npc.walkFrame === 0) {
-            ctx.fillRect(nx - 4, ny - 6 + bob, 3, 6);
-            ctx.fillRect(nx + 1, ny - 6 + bob, 3, 6);
-        } else {
-            ctx.fillRect(nx - 5, ny - 6 + bob, 3, 6);
-            ctx.fillRect(nx + 2, ny - 5 + bob, 3, 5);
-        }
-
-        // Sapatos
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(nx - 4, ny, 3, 2);
-        ctx.fillRect(nx + 1, ny, 3, 2);
-
-        // 3. Tronco / Camisola
-        ctx.fillStyle = npc.shirtColor;
-        ctx.fillRect(nx - 5, ny - 16 + bob, 10, 10);
-
-        // Acessórios específicos
-        if (npc.accType === 'backpack') {
-            ctx.fillStyle = npc.accColor;
-            ctx.fillRect(isFacingLeft ? nx + 3 : nx - 7, ny - 15 + bob, 4, 7);
-        } else if (npc.accType === 'camera') {
-            ctx.fillStyle = npc.accColor;
-            ctx.fillRect(nx - 2, ny - 12 + bob, 4, 3);
-            ctx.fillStyle = '#cbd5e1';
-            ctx.fillRect(nx - 1, ny - 11 + bob, 2, 1);
-        } else if (npc.accType === 'briefcase') {
-            ctx.fillStyle = npc.accColor;
-            ctx.fillRect(isFacingLeft ? nx - 8 : nx + 5, ny - 10 + bob, 4, 5);
-        } else if (npc.accType === 'basket') {
-            ctx.fillStyle = '#92400e';
-            ctx.fillRect(isFacingLeft ? nx - 7 : nx + 4, ny - 11 + bob, 4, 5);
-            ctx.fillStyle = npc.accColor;
-            ctx.fillRect(isFacingLeft ? nx - 6 : nx + 5, ny - 13 + bob, 2, 2);
-        } else if (npc.accType === 'guitar') {
-            ctx.fillStyle = npc.accColor;
-            ctx.fillRect(isFacingLeft ? nx + 3 : nx - 6, ny - 19 + bob, 3, 10);
-        } else if (npc.accType === 'megaphone') {
-            ctx.fillStyle = npc.accColor;
-            ctx.fillRect(isFacingLeft ? nx - 8 : nx + 5, ny - 13 + bob, 4, 3);
-            ctx.fillStyle = '#ef4444';
-            ctx.fillRect(isFacingLeft ? nx - 9 : nx + 8, ny - 14 + bob, 2, 5);
-        }
-
-        // 4. Cabeça e Rosto
-        ctx.fillStyle = npc.skinColor;
-        ctx.fillRect(nx - 4, ny - 24 + bob, 8, 8);
-
-        // Olhos
-        ctx.fillStyle = '#0f172a';
-        if (isFacingLeft) {
-            ctx.fillRect(nx - 3, ny - 21 + bob, 2, 2);
-        } else {
-            ctx.fillRect(nx + 1, ny - 21 + bob, 2, 2);
-        }
-
-        // Cabelo / Penteado / Chapéu
-        ctx.fillStyle = npc.hairColor;
-        ctx.fillRect(nx - 5, ny - 26 + bob, 10, 4);
-        if (isFacingLeft) {
-            ctx.fillRect(nx + 2, ny - 24 + bob, 3, 4);
-        } else {
-            ctx.fillRect(nx - 5, ny - 24 + bob, 3, 4);
-        }
-
-        ctx.restore();
-    });
-}
+let speechBubbles = [];
 
 function updateSpeechBubbles(dt) {
     for (let i = speechBubbles.length - 1; i >= 0; i--) {
@@ -2063,8 +2042,7 @@ function update(dt) {
         if (pt.alpha <= 0) particles.splice(i, 1);
     }
 
-    // Peões e NPCs de Rua de Lisboa & Balões de Diálogo
-    updateStreetNpcs(dt);
+    // Balões de Diálogo
     updateSpeechBubbles(dt);
 
     // Movimento do Peão
@@ -2277,7 +2255,6 @@ function render() {
         } else {
             renderBoard();
             renderPigeons();
-            renderStreetNpcs();
             renderPlayer();
             renderSpeechBubbles();
             renderParticles();
@@ -2848,7 +2825,10 @@ function renderBoard() {
     renderAcampadaVisual();
     renderLojaRoupaVisual();
 
-    // 3. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
+    // 3. Personagens Nativas e Vivas de Lisboa Integradas no Tabuleiro
+    renderBoardLivingCharacters(ctx, animTimer);
+
+    // 4. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
     renderBuildingOverlays();
 
     // 4. Halos de Luz dos Candeeiros Históricos à Noite na Calçada
@@ -5767,7 +5747,7 @@ canvas.addEventListener('mousemove', (e) => {
 
     if (state === 'BOARD') {
         const isHover = BUILDINGS.some(b => c.x >= b.x && c.x <= b.x + b.w && c.y >= b.y && c.y <= b.y + b.h);
-        const isNpcHover = streetNpcs.some(n => Math.hypot(c.x - n.x, c.y - (n.y - 12)) < 16);
+        const isNpcHover = LIVING_NPCS.some(n => Math.hypot(c.x - n.x, c.y - n.y) < n.radius);
         canvas.style.cursor = (isHover || isNpcHover) ? 'pointer' : 'default';
     } else {
         canvas.style.cursor = 'default';
@@ -5879,13 +5859,14 @@ function handleCanvasClick(cx, cy) {
             return;
         }
 
-        // Clicar num Peão / NPC de Rua para falar (Balão de Diálogo)
-        for (let i = 0; i < streetNpcs.length; i++) {
-            const n = streetNpcs[i];
-            if (Math.hypot(cx - n.x, cy - (n.y - 12)) < 16) {
+        // Clicar numa Personagem Viva do Tabuleiro (Balão de Diálogo Estilo Aventura Gráfica)
+        for (let i = 0; i < LIVING_NPCS.length; i++) {
+            const n = LIVING_NPCS[i];
+            if (Math.hypot(cx - n.x, cy - n.y) < n.radius) {
                 triggerHaptic([20]);
                 sfxAction();
-                spawnSpeechBubble(n.x, n.y - 28, n.quote, n.name);
+                const q = n.quotes[Math.floor(Math.random() * n.quotes.length)];
+                spawnSpeechBubble(n.x, n.y - 14, q, n.name);
                 return;
             }
         }
