@@ -705,12 +705,96 @@ const HOUSES = [
     { id: 4, name: "T1 Gentrificado", rent: 1600, qual: "Pombalino Chiado", bonusHours: 3, sanityDrain: -15, icon: "🏛️" }
 ];
 
-const CAREERS = [
-    { id: 0, name: "Pedala-Precário", reqEcts: 0, reqSanity: 20, wagePerHour: 8, hoursPerShift: 4, icon: "🚲" },
-    { id: 1, name: "Call Center", reqEcts: 0, reqSanity: 40, wagePerHour: 11, hoursPerShift: 6, icon: "🎧" },
-    { id: 2, name: "Dev Júnior", reqEcts: 60, reqSanity: 50, wagePerHour: 18, hoursPerShift: 6, icon: "💻" },
-    { id: 3, name: "Integration Arch", reqEcts: 120, reqSanity: 60, wagePerHour: 40, hoursPerShift: 6, icon: "🛡️" }
-];
+const WORKPLACES = {
+    pingo_doce: {
+        id: 'pingo_doce',
+        buildingId: 'supermercado',
+        name: 'Pingo Doce',
+        shortName: 'Pingo Doce',
+        tag: 'RETALHO & SUPERMERCADO',
+        boss: 'D. Maria',
+        icon: '🛒',
+        color: '#15803d',
+        careers: [
+            { id: 0, title: "Repositor de Prateleiras", reqEcts: 0, reqShifts: 0, wagePerHour: 7, hoursPerShift: 4, desc: "Arrumar latas de atum e caixas de leite nos corredores." },
+            { id: 1, title: "Operador de Caixa", reqEcts: 15, reqShifts: 3, wagePerHour: 9, hoursPerShift: 5, desc: "Registar compras e perguntar pelo cartão Poupa Mais." },
+            { id: 2, title: "Chefe de Secção & Frescos", reqEcts: 40, reqShifts: 7, wagePerHour: 13, hoursPerShift: 6, desc: "Gerir stocks de frescos e encomendas de armazém." },
+            { id: 3, title: "Gerente de Supermercado", reqEcts: 80, reqShifts: 12, wagePerHour: 20, hoursPerShift: 6, desc: "Gestão executiva da loja de bairro em Lisboa." }
+        ]
+    },
+    tasca: {
+        id: 'tasca',
+        buildingId: 'tasca',
+        name: 'Tasca Ti Zé',
+        shortName: 'Tasca Ti Zé',
+        tag: 'RESTAURAÇÃO & COMIDA',
+        boss: 'Ti Zé',
+        icon: '🍲',
+        color: '#9a3412',
+        careers: [
+            { id: 0, title: "Copeiro / Apanha-Copos", reqEcts: 0, reqShifts: 0, wagePerHour: 6, hoursPerShift: 4, mealHunger: 25, desc: "Lavar loiça e levar imperiais às mesas (+25 Comida grátis)." },
+            { id: 1, title: "Empregado de Mesa", reqEcts: 10, reqShifts: 3, wagePerHour: 8.5, hoursPerShift: 5, mealHunger: 35, desc: "Atender fregueses e servir caracóis frescos (+35 Comida grátis)." },
+            { id: 2, title: "Mestre dos Bitoques", reqEcts: 35, reqShifts: 7, wagePerHour: 12.5, hoursPerShift: 6, mealHunger: 50, desc: "Grelhar bifes e fritar batatas caseiras lendárias (+50 Comida grátis)." },
+            { id: 3, title: "Sócio do Balcão", reqEcts: 70, reqShifts: 12, wagePerHour: 19, hoursPerShift: 6, mealHunger: 65, desc: "Partilhar lucros e mandar fechar a tasca às 02h (+65 Comida grátis)." }
+        ]
+    },
+    banco: {
+        id: 'banco',
+        buildingId: 'banco',
+        name: 'Caixa / Banco',
+        shortName: 'Banco',
+        tag: 'BANCA & FINANÇAS',
+        boss: 'Dr. Alcoviteiro',
+        icon: '🏦',
+        color: '#854d0e',
+        careers: [
+            { id: 0, title: "Assistente de Balcão", reqEcts: 20, reqShifts: 0, wagePerHour: 10, hoursPerShift: 4, desc: "Atender senhas e carimbar talões no Rossio." },
+            { id: 1, title: "Técnico de Crédito", reqEcts: 45, reqShifts: 3, wagePerHour: 15, hoursPerShift: 5, desc: "Analisar folhas salariais e verificar fiadores em Lisboa." },
+            { id: 2, title: "Gestor de Carteiras", reqEcts: 85, reqShifts: 7, wagePerHour: 22, hoursPerShift: 6, desc: "Aconselhar investimentos pomposos e poupanças VIP." },
+            { id: 3, title: "Diretor de Agência", reqEcts: 130, reqShifts: 12, wagePerHour: 32, hoursPerShift: 6, desc: "Gabinete nobre, fatos caros e aprovação de hipotecas." }
+        ]
+    },
+    startup: {
+        id: 'startup',
+        buildingId: 'startup',
+        name: 'Startup Tech Hub',
+        shortName: 'Tech Hub',
+        tag: 'TECNOLOGIA & IT',
+        boss: 'Mariana',
+        icon: '💻',
+        color: '#065f46',
+        careers: [
+            { id: 0, title: "Estagiário Café & Bugs", reqEcts: 15, reqShifts: 0, wagePerHour: 8, hoursPerShift: 4, desc: "Resolver bugs de CSS e ouvir piadas de sprint." },
+            { id: 1, title: "Dev Júnior Fullstack", reqEcts: 50, reqShifts: 3, wagePerHour: 16, hoursPerShift: 5, desc: "Criar endpoints REST em Node e componentes React." },
+            { id: 2, title: "Engenheiro Cloud & DevOps", reqEcts: 95, reqShifts: 7, wagePerHour: 25, hoursPerShift: 6, desc: "Clusters Kubernetes e pipelines de deploy contínuo." },
+            { id: 3, title: "Tech Lead / CTO", reqEcts: 150, reqShifts: 12, wagePerHour: 38, hoursPerShift: 6, desc: "Arquitetura global de sistemas e reuniões com VCs." }
+        ]
+    }
+};
+
+function getPlayerJob(workplaceKey = player.currentWorkplace) {
+    const wp = WORKPLACES[workplaceKey] || WORKPLACES.pingo_doce;
+    const rank = (player.careerRanks && player.careerRanks[workplaceKey]) || 0;
+    return wp.careers[Math.min(wp.careers.length - 1, rank)];
+}
+
+function getNextJob(workplaceKey = player.currentWorkplace) {
+    const wp = WORKPLACES[workplaceKey] || WORKPLACES.pingo_doce;
+    const rank = (player.careerRanks && player.careerRanks[workplaceKey]) || 0;
+    if (rank >= wp.careers.length - 1) return null;
+    return wp.careers[rank + 1];
+}
+
+function getCurriculumDegree() {
+    if (player.ects >= 150) return "Mestrado / Canudo de Ouro";
+    if (player.ects >= 120) return "Licenciado (Politec / IST)";
+    if (player.ects >= 60) return "Frequência Universitária";
+    if (player.ects >= 20) return "1º Ano de Engenharia";
+    return "Ensino Secundário";
+}
+
+// Compatibilidade retroativa para rotinas legadas
+const CAREERS = WORKPLACES.startup.careers;
 
 let currentEvent = null;
 
@@ -792,11 +876,11 @@ const BUILDINGS = [
     { id: 'senhorio', name: 'Senhorio', x: 45, y: 38, w: 105, h: 77, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 97, doorY: 125, desc: 'Sr. Jerónimo — Rendas e contratos de habitação.' },
     { id: 'casa', name: 'O Teu Teto', x: 185, y: 38, w: 105, h: 77, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 237, doorY: 125, desc: 'Dorme para recuperar sanidade, fome e energia.' },
     { id: 'faculdade', name: 'Politec / IST', x: 330, y: 34, w: 105, h: 81, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 382, doorY: 125, desc: 'Prof. Leitão — Aulas e exames para o canudo.' },
-    { id: 'startup', name: 'Startup Hub', x: 475, y: 38, w: 105, h: 77, color: '#065f46', accent: '#10b981', tag: 'TRABALHO / €', icon: '💻', doorX: 527, doorY: 125, desc: 'Mariana — Projetos urgentes e empregos tech.' },
-    { id: 'tasca', name: 'Tasca Ti Zé', x: 45, y: 155, w: 105, h: 77, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / SANIDADE', icon: '🍲', doorX: 97, doorY: 248, desc: 'Ti Zé — Prato do dia, bitoque e imperial.' },
-    { id: 'supermercado', name: 'Pingo Doce', x: 185, y: 155, w: 105, h: 77, color: '#15803d', accent: '#86efac', tag: 'DESPENSA', icon: '🛒', doorX: 237, doorY: 248, desc: 'D. Maria — Mantimentos e atum para poupar.' },
-    { id: 'banco', name: 'Caixa / Banco', x: 330, y: 155, w: 105, h: 77, color: '#854d0e', accent: '#facc15', tag: 'DEPÓSITOS', icon: '🏦', doorX: 382, doorY: 248, desc: 'Dr. Alcoviteiro — Poupança a salvo de assaltos.' },
-    { id: 'miradouro', name: 'Miradouro', x: 475, y: 155, w: 105, h: 77, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO', icon: '🌅', doorX: 527, doorY: 248, desc: 'O Boémio — Vista sobre o Rio Tejo ao pôr-do-sol.' }
+    { id: 'startup', name: 'Agência Emprego', x: 475, y: 38, w: 105, h: 77, color: '#065f46', accent: '#10b981', tag: 'EMPREGO & HUB', icon: '💼', doorX: 527, doorY: 125, desc: 'Mariana — IEFP, Gestão de Carreiras e Tech Hub.' },
+    { id: 'tasca', name: 'Tasca Ti Zé', x: 45, y: 155, w: 105, h: 77, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 97, doorY: 248, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
+    { id: 'supermercado', name: 'Pingo Doce', x: 185, y: 155, w: 105, h: 77, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 237, doorY: 248, desc: 'D. Maria — Mantimentos e carreiras de supermercado.' },
+    { id: 'banco', name: 'Caixa / Banco', x: 330, y: 155, w: 105, h: 77, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 382, doorY: 248, desc: 'Dr. Alcoviteiro — Poupança e carreiras financeiras.' },
+    { id: 'miradouro', name: 'Miradouro', x: 475, y: 155, w: 105, h: 77, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 527, doorY: 248, desc: 'O Boémio — Vista sobre o Tejo e tertúlias.' }
 ];
 
 // Pombos do Rossio a debicar na calçada
@@ -852,6 +936,20 @@ let player = {
     groceries: 2,
     houseIndex: 1,
     careerIndex: 0,
+    currentWorkplace: 'pingo_doce',
+    careerRanks: {
+        pingo_doce: 0,
+        tasca: 0,
+        banco: 0,
+        startup: 0
+    },
+    careerShifts: {
+        pingo_doce: 0,
+        tasca: 0,
+        banco: 0,
+        startup: 0
+    },
+    totalShiftsWorked: 0,
     daysUntilRent: 7,
     hungerDays: 0,
     avatarName: "Zé Desenrasca",
@@ -1066,24 +1164,32 @@ function endDay(motivo) {
     player.timeMinute = 0;
 
     // Renda semanal
-    player.daysUntilRent--;
-    const currentRent = HOUSES[player.houseIndex].rent;
-    if (player.daysUntilRent <= 0) {
-        player.daysUntilRent = 7;
-        if (player.wallet >= currentRent) {
-            player.wallet -= currentRent;
-            stats.totalRentPaid += currentRent;
-            spawnParticle(`- ${currentRent}€ RENDA`, '#ef4444');
-        } else if ((player.wallet + player.bank) >= currentRent) {
-            const rem = currentRent - player.wallet;
-            player.wallet = 0;
-            player.bank -= rem;
-            stats.totalRentPaid += currentRent;
-            spawnParticle(`- ${currentRent}€ RENDA`, '#ef4444');
-        } else {
-            player.houseIndex = 0;
-            player.sanity = Math.max(0, player.sanity - 40);
-            motivo = "DESPEJADO! Não conseguiste pagar a renda de " + currentRent + "€!";
+    if (player.houseIndex === 0) {
+        player.daysUntilRent = 0;
+    } else {
+        player.daysUntilRent--;
+        const currentRent = HOUSES[player.houseIndex].rent;
+        if (player.daysUntilRent <= 0) {
+            if (player.wallet >= currentRent) {
+                player.wallet -= currentRent;
+                player.daysUntilRent = 7;
+                stats.totalRentPaid += currentRent;
+                spawnParticle(`- ${currentRent}€ RENDA`, '#ef4444');
+                showToast("Renda semanal regularizada automaticamente da carteira.");
+            } else if ((player.wallet + player.bank) >= currentRent) {
+                const rem = currentRent - player.wallet;
+                player.wallet = 0;
+                player.bank -= rem;
+                player.daysUntilRent = 7;
+                stats.totalRentPaid += currentRent;
+                spawnParticle(`- ${currentRent}€ RENDA`, '#ef4444');
+                showToast("Renda semanal debitada da conta bancária.");
+            } else {
+                player.houseIndex = 0;
+                player.daysUntilRent = 0;
+                player.sanity = Math.max(0, player.sanity - 40);
+                motivo = "DESPEJADO! Não conseguiste pagar a renda de " + currentRent + "€!";
+            }
         }
     }
 
@@ -1109,8 +1215,9 @@ function endDay(motivo) {
         return;
     }
 
-    // Vitória: Sobreviver 30 dias + T1 no Chiado + Integration Arch
-    if (player.day >= 30 && player.houseIndex >= 4 && player.careerIndex >= 3) {
+    // Vitória: Sobreviver 30 dias + T1 no Chiado + Topo de uma Carreira (Rank 3)
+    const hasTopCareer = Object.values(player.careerRanks || {}).some(r => r >= 3) || player.careerIndex >= 3;
+    if (player.day >= 30 && player.houseIndex >= 4 && hasTopCareer) {
         triggerVictory();
         return;
     }
@@ -2445,84 +2552,118 @@ function renderHUD() {
     ctx.lineWidth = 2;
     ctx.strokeRect(0, hy, canvas.width, 65);
 
-    // Slot 1: Relógio & Dia (x: 8, w: 105)
+    // Slot 1: Relógio & Dia (x: 8, w: 84)
     ctx.fillStyle = '#151d2c';
-    ctx.fillRect(8, hy + 8, 105, 48);
+    ctx.fillRect(8, hy + 8, 84, 48);
     ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 1;
-    ctx.strokeRect(8, hy + 8, 105, 48);
+    ctx.strokeRect(8, hy + 8, 84, 48);
 
     ctx.fillStyle = '#f59e0b';
     ctx.font = '8px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(`DIA ${player.day}`, 16, hy + 24);
+    ctx.fillText(`DIA ${player.day}`, 14, hy + 24);
 
     const hh = String(player.timeHour).padStart(2, '0');
     const mm = String(player.timeMinute).padStart(2, '0');
     ctx.fillStyle = '#ffffff';
     ctx.font = '13px "Press Start 2P"';
-    ctx.fillText(`${hh}:${mm}`, 16, hy + 46);
+    ctx.fillText(`${hh}:${mm}`, 14, hy + 46);
 
-    // Slot 2: Finanças (€) (x: 118, w: 130)
+    // Slot 2: Finanças (€) (x: 97, w: 110)
     ctx.fillStyle = '#151d2c';
-    ctx.fillRect(118, hy + 8, 130, 48);
+    ctx.fillRect(97, hy + 8, 110, 48);
     ctx.strokeStyle = '#233148';
-    ctx.strokeRect(118, hy + 8, 130, 48);
+    ctx.strokeRect(97, hy + 8, 110, 48);
 
     ctx.fillStyle = '#10b981';
-    ctx.font = 'bold 11px "Fira Code"';
-    ctx.fillText(`💵 MÃO: ${player.wallet}€`, 126, hy + 26);
+    ctx.font = 'bold 10.5px "Fira Code"';
+    ctx.fillText(`💵 MÃO: ${player.wallet}€`, 104, hy + 26);
     ctx.fillStyle = '#38bdf8';
-    ctx.fillText(`🏦 BANCO: ${player.bank}€`, 126, hy + 46);
+    ctx.fillText(`🏦 BANCO: ${player.bank}€`, 104, hy + 46);
 
-    // Slot 3: Habitação (x: 253, w: 135)
+    // Slot 3: Habitação & Renda (x: 212, w: 125)
     ctx.fillStyle = '#151d2c';
-    ctx.fillRect(253, hy + 8, 135, 48);
-    ctx.strokeRect(253, hy + 8, 135, 48);
+    ctx.fillRect(212, hy + 8, 125, 48);
+    ctx.strokeStyle = '#233148';
+    ctx.strokeRect(212, hy + 8, 125, 48);
 
     ctx.fillStyle = '#f1f5f9';
-    ctx.font = 'bold 10px "Fira Code"';
-    ctx.fillText(HOUSES[player.houseIndex].name, 260, hy + 25);
+    ctx.font = 'bold 9.5px "Fira Code"';
+    ctx.fillText(HOUSES[player.houseIndex].name, 218, hy + 25);
 
-    ctx.fillStyle = player.daysUntilRent <= 2 ? '#ef4444' : '#f59e0b';
-    ctx.font = 'bold 10px "Fira Code"';
-    ctx.fillText(`Renda (${HOUSES[player.houseIndex].rent}€): ${player.daysUntilRent}d`, 260, hy + 45);
+    if (player.houseIndex === 0) {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 8.5px "Fira Code"';
+        ctx.fillText("Sem Renda (Rossio)", 218, hy + 45);
+    } else {
+        const rentColor = player.daysUntilRent <= 2 ? '#ef4444' : (player.daysUntilRent <= 3 ? '#f59e0b' : '#10b981');
+        ctx.fillStyle = rentColor;
+        ctx.font = 'bold 9px "Fira Code"';
+        ctx.fillText(`Renda (${HOUSES[player.houseIndex].rent}€): ${player.daysUntilRent}d`, 218, hy + 45);
+    }
 
-    // Slot 4: Barras de Fome e Sanidade (x: 393, w: 115)
-    ctx.fillStyle = '#151d2c';
-    ctx.fillRect(393, hy + 8, 115, 48);
-    ctx.strokeRect(393, hy + 8, 115, 48);
+    // Slot 4: Emprego Atual & Estudos (x: 342, w: 138) - Interativo / Clicável!
+    const curJob = getPlayerJob();
+    const curWp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
+    const isHoverJob = (mouse.x >= 342 && mouse.x <= 480 && mouse.y >= hy + 8 && mouse.y <= hy + 56 && state === 'BOARD');
 
-    ctx.fillStyle = '#94a3b8';
+    ctx.fillStyle = isHoverJob ? '#1e293b' : '#151d2c';
+    ctx.fillRect(342, hy + 8, 138, 48);
+    ctx.strokeStyle = isHoverJob ? '#38bdf8' : '#233148';
+    ctx.strokeRect(342, hy + 8, 138, 48);
+
+    ctx.fillStyle = isHoverJob ? '#ffffff' : '#facc15';
     ctx.font = 'bold 9px "Fira Code"';
-    ctx.fillText(`FOME ${player.hunger}%`, 398, hy + 22);
-    ctx.fillStyle = '#334155';
-    ctx.fillRect(455, hy + 14, 48, 8);
-    ctx.fillStyle = player.hunger > 30 ? '#f59e0b' : '#ef4444';
-    ctx.fillRect(455, hy + 14, (player.hunger / 100) * 48, 8);
+    let jobTitleShort = `${curWp.icon} ${curJob.title}`;
+    if (ctx.measureText(jobTitleShort).width > 126) {
+        while (ctx.measureText(jobTitleShort + '..').width > 126 && jobTitleShort.length > 4) {
+            jobTitleShort = jobTitleShort.slice(0, -1);
+        }
+        jobTitleShort += '..';
+    }
+    ctx.fillText(jobTitleShort, 348, hy + 25);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 8.5px "Fira Code"';
+    ctx.fillText(`🎓 ${player.ects}/180 ECTS`, 348, hy + 45);
+
+    // Slot 5: Fome & Sanidade (x: 485, w: 78)
+    ctx.fillStyle = '#151d2c';
+    ctx.fillRect(485, hy + 8, 78, 48);
+    ctx.strokeStyle = '#233148';
+    ctx.strokeRect(485, hy + 8, 78, 48);
 
     ctx.fillStyle = '#94a3b8';
-    ctx.fillText(`SANID ${player.sanity}%`, 398, hy + 44);
+    ctx.font = 'bold 7.5px "Fira Code"';
+    ctx.fillText("FOME", 489, hy + 21);
     ctx.fillStyle = '#334155';
-    ctx.fillRect(455, hy + 36, 48, 8);
-    ctx.fillStyle = player.sanity > 30 ? '#06b6d4' : '#ef4444';
-    ctx.fillRect(455, hy + 36, (player.sanity / 100) * 48, 8);
+    ctx.fillRect(518, hy + 14, 38, 8);
+    ctx.fillStyle = player.hunger > 30 ? '#f59e0b' : '#ef4444';
+    ctx.fillRect(518, hy + 14, (player.hunger / 100) * 38, 8);
 
-    // Slot 5: Botão Dormir (x: 513, w: 118)
-    const btnDormirX = 513;
-    const isHoverBtn = (mouse.x >= btnDormirX && mouse.x <= btnDormirX + 118 && mouse.y >= hy + 8 && mouse.y <= hy + 56);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText("SAN", 489, hy + 43);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(518, hy + 36, 38, 8);
+    ctx.fillStyle = player.sanity > 30 ? '#06b6d4' : '#ef4444';
+    ctx.fillRect(518, hy + 36, (player.sanity / 100) * 38, 8);
+
+    // Slot 6: Botão Dormir / Terminar Turno (x: 568, w: 64)
+    const btnDormirX = 568;
+    const isHoverBtn = (mouse.x >= btnDormirX && mouse.x <= btnDormirX + 64 && mouse.y >= hy + 8 && mouse.y <= hy + 56);
     ctx.fillStyle = isHoverBtn ? '#ea580c' : '#c2410c';
-    ctx.fillRect(btnDormirX, hy + 8, 118, 48);
+    ctx.fillRect(btnDormirX, hy + 8, 64, 48);
     ctx.strokeStyle = '#f97316';
     ctx.lineWidth = 1;
-    ctx.strokeRect(btnDormirX, hy + 8, 118, 48);
+    ctx.strokeRect(btnDormirX, hy + 8, 64, 48);
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = '8px "Press Start 2P"';
+    ctx.font = '7.5px "Press Start 2P"';
     ctx.textAlign = 'center';
-    ctx.fillText("💤 DORMIR", btnDormirX + 59, hy + 28);
-    ctx.font = 'bold 9px "Fira Code"';
-    ctx.fillText("Avançar Dia", btnDormirX + 59, hy + 44);
+    ctx.fillText("💤 DIA", btnDormirX + 32, hy + 26);
+    ctx.font = 'bold 8.5px "Fira Code"';
+    ctx.fillText("SEGUINTE", btnDormirX + 32, hy + 42);
 }
 
 // ============================================================================
@@ -2536,7 +2677,21 @@ const NPC_INFO = {
     senhorio: {
         name: "Sr. Jerónimo",
         role: "Senhorio Implacável",
-        quote: "A renda não espera por ninguém. Dia 1 cá estou à porta com o livro de recibos!",
+        quote: () => {
+            if (player.houseIndex === 0) {
+                return "Estás a dormir no banco de jardim? Arruma a tua vida e aluga um beliche em Arroios!";
+            }
+            if (player.daysUntilRent > 3) {
+                return `A tua renda está em dia, Zé! Faltam ${player.daysUntilRent} dias. Volta cá só quando o prazo apertar!`;
+            }
+            if (player.daysUntilRent > 1) {
+                return `Atenção, Zé! Faltam apenas ${player.daysUntilRent} dias para a renda de ${HOUSES[player.houseIndex].rent}€. Não te atrases!`;
+            }
+            if (player.daysUntilRent === 1) {
+                return `É amanhã, Zé! Amanhã quero os ${HOUSES[player.houseIndex].rent}€ na mão sem desculpas nem conversa fiada!`;
+            }
+            return `O prazo da renda acabou HOJE! Ou pagas os ${HOUSES[player.houseIndex].rent}€ já ou mando os teus sacos para a rua!`;
+        },
         color: "#991b1b"
     },
     casa: {
@@ -2558,27 +2713,52 @@ const NPC_INFO = {
         color: "#1e3a8a"
     },
     startup: {
-        name: "Mariana (Tech Lead)",
-        role: "IT Consulting & Hub",
-        quote: "Procuramos um rockstar dev para vestir a camisola num projeto urgente para ontem!",
+        name: "Mariana (Recrutamento)",
+        role: "Agência Emprego & Hub",
+        quote: () => {
+            const curComp = (WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce).name;
+            const job = getPlayerJob();
+            return `IEFP & Tech Hub! Currículo: ${getCurriculumDegree()} (${player.ects} ECTS). Contrato ativo: ${curComp} (${job.title}).`;
+        },
         color: "#065f46"
     },
     tasca: {
         name: "Ti Zé do Balcão",
         role: "Tasca Tradicional",
-        quote: "Sai uma imperial bem gelada e um bitoque a estalar com ovo a cavalo!",
+        quote: () => {
+            const job = WORKPLACES.tasca.careers[player.careerRanks.tasca || 0];
+            if (player.currentWorkplace === 'tasca') {
+                return `Ó Zé, mete o avental! Como ${job.title} tens direito a almoço reforçado por conta da casa hoje!`;
+            }
+            return "Sai uma imperial bem gelada e um bitoque a estalar! E se quiseres dar uma mão no balcão, o tacho está pronto!";
+        },
         color: "#9a3412"
     },
     supermercado: {
         name: "D. Maria da Caixa",
         role: "Pingo Doce de Bairro",
-        quote: "Sabe bem pagar tão pouco! Leva atum e ovos que rendem o mês inteiro!",
+        quote: () => {
+            const job = WORKPLACES.pingo_doce.careers[player.careerRanks.pingo_doce || 0];
+            if (player.currentWorkplace === 'pingo_doce') {
+                return `Olá Zé! Como ${job.title}, o teu turno faz a diferença no corredor. Sabe bem trabalhar em equipa!`;
+            }
+            return "Sabe bem pagar tão pouco! Leva atum e ovos para a despensa, ou candidata-te à nossa equipa!";
+        },
         color: "#15803d"
     },
     banco: {
         name: "Dr. Alcoviteiro",
         role: "Gestor de Poupança",
-        quote: "Guarde o seu dinheiro no cofre. A noite de Lisboa tem muitos perigos.",
+        quote: () => {
+            const job = WORKPLACES.banco.careers[player.careerRanks.banco || 0];
+            if (player.currentWorkplace === 'banco') {
+                return `Bem-vindo à agência, colega. Como ${job.title}, o rigor financeiro é a nossa imagem de marca.`;
+            }
+            if (player.ects < 20) {
+                return "Para estagiar na Caixa exigimos pelo menos 20 ECTS universitários. Estuda no Politec/IST e volta cá!";
+            }
+            return "O cofre da agência é o local mais seguro de Lisboa. Deposite o seu dinheiro a salvo de assaltos.";
+        },
         color: "#854d0e"
     },
     miradouro: {
@@ -2969,51 +3149,222 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                 { label: "Limpar e Arejar a Casa", cost: 0, timeH: 0, timeM: 30, sanity: 10, desc: "Abre a janela. +10 Sanidade." }
             ];
         }
-    } else if (id === 'tasca') {
-        actions = [
-            { label: "Bica ao Balcão", cost: 1, timeH: 0, timeM: 15, hunger: 5, sanity: 15, desc: "+15 Sanidade em 15 minutos." },
-            { label: "Prato do Dia (Atum)", cost: 4, timeH: 0, timeM: 30, hunger: 45, sanity: 5, desc: "+45 Nutrição. Prato clássico." },
-            { label: "Bitoque c/ Ovo a Cavalo", cost: 9, timeH: 1, timeM: 0, hunger: 85, sanity: 25, desc: "+85 Nutrição e +25 Sanidade." }
-        ];
     } else if (id === 'senhorio') {
         const nextHouse = HOUSES[Math.min(HOUSES.length - 1, player.houseIndex + 1)];
-        actions = [
-            { label: "Pagar Renda Semanal", cost: HOUSES[player.houseIndex].rent, timeH: 0, timeM: 30, desc: `${HOUSES[player.houseIndex].rent}€/sem · ${HOUSES[player.houseIndex].name}` },
-            { label: `Mudar: ${nextHouse.name}`, cost: nextHouse.rent, timeH: 1, timeM: 0, upgradeHouse: true, desc: `${nextHouse.rent}€/sem · ${nextHouse.qual}` }
-        ];
-    } else if (id === 'startup') {
-        const curJob = CAREERS[player.careerIndex];
-        const nextJob = CAREERS[Math.min(CAREERS.length - 1, player.careerIndex + 1)];
-        actions = [
-            { label: `Turno: ${curJob.name}`, gain: curJob.wagePerHour * curJob.hoursPerShift, timeH: curJob.hoursPerShift, timeM: 0, desc: `${curJob.hoursPerShift}h trabalho · +${curJob.wagePerHour * curJob.hoursPerShift}€ em cash` },
-            { label: `Promover: ${nextJob.name}`, reqEcts: nextJob.reqEcts, promoteJob: true, desc: `Requer ${nextJob.reqEcts} ECTS · Paga ${nextJob.wagePerHour}€/h` }
-        ];
-    } else if (id === 'faculdade') {
-        actions = [
-            { label: "Cadeira Teórica (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS para carreira IT." },
-            { label: "Maratona de Exame (8h)", cost: 45, timeH: 8, timeM: 0, ects: 35, desc: "+35 ECTS intensivos." }
-        ];
+        const currentRent = HOUSES[player.houseIndex].rent;
+
+        if (player.houseIndex === 0) {
+            actions = [
+                { label: `Alugar: ${nextHouse.name}`, cost: nextHouse.rent, timeH: 1, timeM: 0, upgradeHouse: true, desc: `${nextHouse.rent}€/sem · ${nextHouse.qual}` }
+            ];
+        } else {
+            if (player.daysUntilRent > 3) {
+                actions.push({
+                    label: "Renda em Dia (✓)",
+                    rentPaid: true,
+                    desc: `Faltam ${player.daysUntilRent} dias para o próximo vencimento. Tudo regularizado!`
+                });
+            } else {
+                actions.push({
+                    label: `Pagar Renda (${currentRent}€)`,
+                    cost: currentRent,
+                    payRent: true,
+                    timeH: 0,
+                    timeM: 15,
+                    desc: `Vence em ${player.daysUntilRent} dia(s) · Renova o contrato por 7 dias.`
+                });
+            }
+
+            if (player.houseIndex < HOUSES.length - 1) {
+                actions.push({
+                    label: `Mudar: ${nextHouse.name}`,
+                    cost: nextHouse.rent,
+                    timeH: 1,
+                    timeM: 0,
+                    upgradeHouse: true,
+                    desc: `${nextHouse.rent}€/sem · ${nextHouse.qual}`
+                });
+            } else {
+                actions.push({
+                    label: "T1 no Chiado (Topo)",
+                    rentPaid: true,
+                    desc: "Atingiste o topo da habitação de Lisboa! Parabéns!"
+                });
+            }
+        }
     } else if (id === 'supermercado') {
+        const curJob = WORKPLACES.pingo_doce.careers[player.careerRanks.pingo_doce || 0];
+        const nextJob = getNextJob('pingo_doce');
+        const shifts = (player.careerShifts && player.careerShifts.pingo_doce) || 0;
+
         actions = [
             { label: "Saco de Mercearia (2 Ref.)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições para a despensa." },
-            { label: "Cabaz Económico (5 Ref.)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para poupar." }
+            { label: "Cabaz Económico (5 Ref.)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para poupar." },
+            {
+                label: `Turno: ${curJob.title}`,
+                workShift: 'pingo_doce',
+                gain: curJob.wagePerHour * curJob.hoursPerShift,
+                timeH: curJob.hoursPerShift,
+                timeM: 0,
+                desc: `${curJob.hoursPerShift}h de turno · +${curJob.wagePerHour * curJob.hoursPerShift}€ em mão (Turnos: ${shifts})`
+            }
         ];
+
+        if (nextJob) {
+            actions.push({
+                label: `Promover: ${nextJob.title}`,
+                promoteCareer: 'pingo_doce',
+                reqEcts: nextJob.reqEcts,
+                reqShifts: nextJob.reqShifts,
+                desc: `Requer ${nextJob.reqEcts} ECTS e ${nextJob.reqShifts} turnos · ${nextJob.wagePerHour}€/h`
+            });
+        }
+    } else if (id === 'tasca') {
+        const curJob = WORKPLACES.tasca.careers[player.careerRanks.tasca || 0];
+        const nextJob = getNextJob('tasca');
+        const shifts = (player.careerShifts && player.careerShifts.tasca) || 0;
+
+        actions = [
+            { label: "Bica ao Balcão", cost: 1, timeH: 0, timeM: 15, hunger: 5, sanity: 15, desc: "+15 Sanidade em 15 minutos." },
+            { label: "Bitoque c/ Ovo a Cavalo", cost: 9, timeH: 1, timeM: 0, hunger: 85, sanity: 25, desc: "+85 Nutrição e +25 Sanidade." },
+            {
+                label: `Turno: ${curJob.title}`,
+                workShift: 'tasca',
+                mealHunger: curJob.mealHunger,
+                gain: Math.round(curJob.wagePerHour * curJob.hoursPerShift),
+                timeH: curJob.hoursPerShift,
+                timeM: 0,
+                desc: `${curJob.hoursPerShift}h · +${Math.round(curJob.wagePerHour * curJob.hoursPerShift)}€ + Almoço Grátis (+${curJob.mealHunger} Comida)`
+            }
+        ];
+
+        if (nextJob) {
+            actions.push({
+                label: `Promover: ${nextJob.title}`,
+                promoteCareer: 'tasca',
+                reqEcts: nextJob.reqEcts,
+                reqShifts: nextJob.reqShifts,
+                desc: `Requer ${nextJob.reqEcts} ECTS e ${nextJob.reqShifts} turnos · ${nextJob.wagePerHour}€/h`
+            });
+        }
     } else if (id === 'banco') {
+        const curJob = WORKPLACES.banco.careers[player.careerRanks.banco || 0];
+        const nextJob = getNextJob('banco');
+        const shifts = (player.careerShifts && player.careerShifts.banco) || 0;
+
         actions = [
             { label: "Depositar 50€ no Banco", deposit: 50, timeH: 0, timeM: 15, desc: "Protege contra assaltos noturnos." },
             { label: "Levantar 50€ da Conta", withdraw: 50, timeH: 0, timeM: 15, desc: "Dinheiro na mão para compras." }
         ];
+
+        if (player.ects < 20 && (player.careerRanks.banco || 0) === 0 && shifts === 0) {
+            actions.push({
+                label: `Candidatura: ${curJob.title}`,
+                reqEcts: 20,
+                desc: "Requer 20 ECTS universitários do Politec/IST para estagiar."
+            });
+        } else {
+            actions.push({
+                label: `Turno: ${curJob.title}`,
+                workShift: 'banco',
+                gain: curJob.wagePerHour * curJob.hoursPerShift,
+                timeH: curJob.hoursPerShift,
+                timeM: 0,
+                desc: `${curJob.hoursPerShift}h no balcão · +${curJob.wagePerHour * curJob.hoursPerShift}€ em mão (Turnos: ${shifts})`
+            });
+
+            if (nextJob) {
+                actions.push({
+                    label: `Promover: ${nextJob.title}`,
+                    promoteCareer: 'banco',
+                    reqEcts: nextJob.reqEcts,
+                    reqShifts: nextJob.reqShifts,
+                    desc: `Requer ${nextJob.reqEcts} ECTS e ${nextJob.reqShifts} turnos · ${nextJob.wagePerHour}€/h`
+                });
+            }
+        }
+    } else if (id === 'startup') {
+        const curTech = WORKPLACES.startup.careers[player.careerRanks.startup || 0];
+        const nextTech = getNextJob('startup');
+        const techShifts = (player.careerShifts && player.careerShifts.startup) || 0;
+        const curActive = getPlayerJob();
+        const curWp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
+
+        if (player.ects < 15 && (player.careerRanks.startup || 0) === 0 && techShifts === 0) {
+            actions.push({
+                label: `Estágio: ${curTech.title}`,
+                reqEcts: 15,
+                desc: "Requer 15 ECTS de programação no Politec/IST."
+            });
+        } else {
+            actions.push({
+                label: `Turno Tech: ${curTech.title}`,
+                workShift: 'startup',
+                gain: curTech.wagePerHour * curTech.hoursPerShift,
+                timeH: curTech.hoursPerShift,
+                timeM: 0,
+                desc: `${curTech.hoursPerShift}h código · +${curTech.wagePerHour * curTech.hoursPerShift}€ (Turnos: ${techShifts})`
+            });
+        }
+
+        if (nextTech) {
+            actions.push({
+                label: `Promover Tech: ${nextTech.title}`,
+                promoteCareer: 'startup',
+                reqEcts: nextTech.reqEcts,
+                reqShifts: nextTech.reqShifts,
+                desc: `Requer ${nextTech.reqEcts} ECTS e ${nextTech.reqShifts} turnos · ${nextTech.wagePerHour}€/h`
+            });
+        }
+
+        actions.push({
+            label: "IEFP: Trocar Empregador Ativo",
+            cycleWorkplace: true,
+            desc: `Atual: ${curWp.name} (${curActive.title}). Clica para alternar empresa!`
+        });
+
+        actions.push({
+            label: "Orientação de CV & Mercado (1h)",
+            reviewCv: true,
+            timeH: 1,
+            timeM: 0,
+            sanity: 15,
+            desc: `Grau: ${getCurriculumDegree()} · ${player.totalShiftsWorked || 0} turnos totais · +15 Sanidade`
+        });
+    } else if (id === 'faculdade') {
+        actions = [
+            { label: "Cadeira Teórica (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS para carreira académica e técnica." },
+            { label: "Maratona de Exame (8h)", cost: 45, timeH: 8, timeM: 0, ects: 35, desc: "+35 ECTS intensivos para subir no canudo." }
+        ];
+
+        if (player.ects >= 50) {
+            actions.push({
+                label: "Monitor de Álgebra (3h)",
+                gain: 30,
+                ects: 5,
+                timeH: 3,
+                timeM: 0,
+                desc: "Aulas de apoio a caloiros do IST. +30€ e +5 ECTS."
+            });
+        } else {
+            actions.push({
+                label: "Monitor de Álgebra (3h)",
+                reqEcts: 50,
+                desc: "Requer 50 ECTS para dar explicações remuneradas aos caloiros."
+            });
+        }
     } else if (id === 'miradouro') {
         actions = [
             { label: "Ver o Tejo ao Pôr-do-Sol", cost: 0, timeH: 1, timeM: 0, sanity: 25, desc: "Ar fresco. +25 Sanidade mental." },
-            { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Socializar. +50 Sanidade." }
+            { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Socializar. +50 Sanidade." },
+            { label: "Tocar Guitarra Portuguesa (2h)", gain: 15, timeH: 2, timeM: 0, sanity: 10, desc: "Tocar fado com chapéu na calçada. +15€ e +10 Sanidade." }
         ];
     }
 
     // Desenhar Ações na Coluna Direita (ax: mx + 138, aw: mw - 152)
     const ax = mx + 138;
     const aw = mw - 152;
-    const cardH = 50;
+    const cardH = 48;
     const cardGap = 5;
 
     actions.forEach((act, idx) => {
@@ -3035,13 +3386,13 @@ function renderBuildingActions(id, mx, my, mw, mh) {
 
         // Título da Ação em branco de alto contraste
         ctx.fillStyle = isHover ? '#ffffff' : '#e2e8f0';
-        ctx.font = 'bold 10.5px "Fira Code"';
+        ctx.font = 'bold 10px "Fira Code"';
         ctx.textAlign = 'left';
-        ctx.fillText(act.label, ax + 14, ay + 19);
+        ctx.fillText(act.label, ax + 14, ay + 18);
 
         // Botão de Preço / Ganho no Lado Direito
         const btnW = 86;
-        const btnH = 28;
+        const btnH = 26;
         const btnX = ax + aw - btnW - 8;
         const btnY = ay + (cardH - btnH) / 2;
 
@@ -3057,7 +3408,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             }
             descText += '...';
         }
-        ctx.fillText(descText, ax + 14, ay + 37);
+        ctx.fillText(descText, ax + 14, ay + 36);
 
         let btnText = "";
         let btnColor = "#10b981";
@@ -3078,12 +3429,36 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         } else if (act.withdraw !== undefined) {
             btnText = "LEV 50€";
             btnColor = "#38bdf8";
+        } else if (act.rentPaid) {
+            btnText = "✓ EM DIA";
+            btnColor = "#10b981";
+            isAffordable = true;
+        } else if (act.cycleWorkplace) {
+            btnText = "TROCAR";
+            btnColor = "#38bdf8";
+        } else if (act.reviewCv) {
+            btnText = "VER CV";
+            btnColor = "#38bdf8";
+        }
+
+        if (act.promoteCareer) {
+            btnText = "PROMOVER";
+            btnColor = "#f59e0b";
         }
 
         if (act.reqEcts !== undefined && player.ects < act.reqEcts) {
             isAffordable = false;
             btnText = `${act.reqEcts} ECTS`;
             btnColor = "#64748b";
+        }
+
+        if (act.reqShifts !== undefined && act.promoteCareer) {
+            const curShifts = (player.careerShifts && player.careerShifts[act.promoteCareer]) || 0;
+            if (curShifts < act.reqShifts) {
+                isAffordable = false;
+                btnText = `${act.reqShifts} TURNOS`;
+                btnColor = "#64748b";
+            }
         }
 
         ctx.fillStyle = isAffordable ? btnColor : '#1e293b';
@@ -3093,9 +3468,9 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         ctx.strokeRect(btnX, btnY, btnW, btnH);
 
         ctx.fillStyle = isAffordable ? '#0b0e14' : '#64748b';
-        ctx.font = 'bold 10px "Fira Code"';
+        ctx.font = 'bold 9.5px "Fira Code"';
         ctx.textAlign = 'center';
-        ctx.fillText(btnText, btnX + btnW / 2, btnY + 18);
+        ctx.fillText(btnText, btnX + btnW / 2, btnY + 17);
     });
 
     modalBuilding.currentActions = actions;
@@ -3146,7 +3521,9 @@ function renderGameOverScreen() {
     ctx.font = '12px "Fira Code"';
     ctx.textAlign = 'left';
     ctx.fillText(`🏠 Teto: ${HOUSES[player.houseIndex].name}`, gx + 25, gy + 60);
-    ctx.fillText(`💼 Trabalho: ${CAREERS[player.careerIndex].name}`, gx + 25, gy + 82);
+    const curEndJob = getPlayerJob();
+    const curEndWp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
+    ctx.fillText(`💼 Trabalho: ${curEndJob.title} (${curEndWp.shortName})`, gx + 25, gy + 82);
     ctx.fillText(`🎓 ECTS: ${player.ects}/180`, gx + 250, gy + 60);
     ctx.fillText(`💸 Rendas: ${stats.totalRentPaid}€`, gx + 250, gy + 82);
 
@@ -3167,10 +3544,12 @@ function renderVictoryScreen() {
     ctx.textAlign = 'center';
     ctx.fillText("🏆 VENCESTE O PURGATÓRIO!", 320, 75);
 
+    const curVicJob = getPlayerJob();
+    const curVicWp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
     ctx.fillStyle = '#ffffff';
-    ctx.font = '13px "Fira Code"';
-    ctx.fillText("Sobreviveste 30 dias, compraste o teu T1 no Chiado", 320, 115);
-    ctx.fillText("e tornaste-te Integration Architect de elite!", 320, 138);
+    ctx.font = '12px "Fira Code"';
+    ctx.fillText("Sobreviveste 30 dias com casa pombalina no Chiado,", 320, 115);
+    ctx.fillText(`e alcançaste o topo como ${curVicJob.title} no ${curVicWp.name}!`, 320, 138);
 
     drawActionButton(80, 250, 140, 40, isScoreSubmitted ? "🏆 VER RANKING" : "🏆 GRAVAR RECORDE", '#10b981', () => isScoreSubmitted ? openLeaderboard() : openSubmitModal());
     drawActionButton(235, 250, 135, 40, "COPIAR TEXTO", '#06b6d4', () => shareScorecard());
@@ -3300,9 +3679,17 @@ function handleCanvasClick(cx, cy) {
 
     if (state === 'BOARD') {
         const hy = 295;
-        if (cx >= 513 && cx <= 631 && cy >= hy + 8 && cy <= hy + 56) {
+        // Clicar no botão Dormir (Slot 6: x de 568 a 634)
+        if (cx >= 568 && cx <= 634 && cy >= hy + 8 && cy <= hy + 56) {
             triggerHaptic([40, 30, 40]);
             endDay("Terminaste o turno voluntariamente para descansar.");
+            return;
+        }
+
+        // Clicar no Slot 4 de Emprego & ECTS (x de 342 a 480) -> Caminha para a Agência de Emprego
+        if (cx >= 342 && cx <= 480 && cy >= hy + 8 && cy <= hy + 56) {
+            triggerHaptic([25]);
+            walkToBuilding(BUILDINGS.find(b => b.id === 'startup'));
             return;
         }
 
@@ -3371,6 +3758,11 @@ function closeModal() {
 }
 
 function executeAction(act) {
+    if (act.rentPaid) {
+        showToast(`A renda já está em dia! Faltam ${player.daysUntilRent} dias.`);
+        return;
+    }
+
     if (act.cost !== undefined && player.wallet < act.cost) {
         sfxAlert();
         showToast("Dinheiro insuficiente na carteira!");
@@ -3379,8 +3771,17 @@ function executeAction(act) {
 
     if (act.reqEcts !== undefined && player.ects < act.reqEcts) {
         sfxAlert();
-        showToast(`Precisas de ${act.reqEcts} ECTS na Faculdade!`);
+        showToast(`Precisas de ${act.reqEcts} ECTS no Politec / IST (tens ${player.ects})!`);
         return;
+    }
+
+    if (act.reqShifts !== undefined && act.promoteCareer) {
+        const shifts = (player.careerShifts && player.careerShifts[act.promoteCareer]) || 0;
+        if (shifts < act.reqShifts) {
+            sfxAlert();
+            showToast(`Precisas de ${act.reqShifts} turnos no ${WORKPLACES[act.promoteCareer].name} (fizeste ${shifts})!`);
+            return;
+        }
     }
 
     sfxCoin();
@@ -3394,6 +3795,13 @@ function executeAction(act) {
         player.wallet += act.gain;
         stats.totalEarned += act.gain;
         spawnParticle(`+ ${act.gain}€`, '#10b981');
+    }
+
+    if (act.payRent) {
+        stats.totalRentPaid += act.cost;
+        player.daysUntilRent = 7;
+        showToast("Renda semanal regularizada com sucesso! Recibo do Sr. Jerónimo.");
+        spawnParticle("✓ Renda Paga!", '#10b981');
     }
 
     if (act.hunger !== undefined) {
@@ -3411,6 +3819,42 @@ function executeAction(act) {
     if (act.groceries !== undefined) {
         player.groceries += act.groceries;
         spawnParticle("🛒 Despensa", '#10b981');
+    }
+
+    if (act.workShift) {
+        const wpKey = act.workShift;
+        player.currentWorkplace = wpKey;
+        player.careerShifts[wpKey] = (player.careerShifts[wpKey] || 0) + 1;
+        player.totalShiftsWorked = (player.totalShiftsWorked || 0) + 1;
+        if (act.mealHunger) {
+            player.hunger = Math.min(100, player.hunger + act.mealHunger);
+            spawnParticle(`🍲 +${act.mealHunger} Comida`, '#10b981');
+        }
+        showToast(`Turno concluído no ${WORKPLACES[wpKey].name}! (+${act.gain}€)`);
+    }
+
+    if (act.promoteCareer) {
+        const wpKey = act.promoteCareer;
+        player.careerRanks[wpKey] = Math.min(WORKPLACES[wpKey].careers.length - 1, (player.careerRanks[wpKey] || 0) + 1);
+        player.currentWorkplace = wpKey;
+        const newJob = WORKPLACES[wpKey].careers[player.careerRanks[wpKey]];
+        showToast(`⭐ Promovido a ${newJob.title} no ${WORKPLACES[wpKey].name}!`);
+        spawnParticle("⭐ Promoção!", '#10b981');
+    }
+
+    if (act.cycleWorkplace) {
+        const keys = ['pingo_doce', 'tasca', 'banco', 'startup'];
+        const idx = keys.indexOf(player.currentWorkplace);
+        const nextKey = keys[(idx + 1) % keys.length];
+        player.currentWorkplace = nextKey;
+        const job = getPlayerJob(nextKey);
+        showToast(`Contrato ativo alterado para: ${WORKPLACES[nextKey].name} (${job.title})!`);
+        spawnParticle(`💼 ${WORKPLACES[nextKey].shortName}`, '#38bdf8');
+    }
+
+    if (act.reviewCv) {
+        showToast(`CV Analisado: ${getCurriculumDegree()} · ${player.totalShiftsWorked || 0} turnos totais realizados.`);
+        spawnParticle("📄 CV Atualizado", '#38bdf8');
     }
 
     if (act.deposit !== undefined) {
@@ -3454,18 +3898,14 @@ function executeAction(act) {
     }
 
     if (act.upgradeHouse) {
+        stats.totalRentPaid += act.cost;
         player.houseIndex = Math.min(HOUSES.length - 1, player.houseIndex + 1);
-        showToast(`Mudaste-te para: ${HOUSES[player.houseIndex].name}!`);
+        player.daysUntilRent = 7;
+        showToast(`Mudaste-te para: ${HOUSES[player.houseIndex].name}! Contrato de 7 dias.`);
         spawnParticle("🏠 Nova Casa!", '#f59e0b');
     }
 
-    if (act.promoteJob) {
-        player.careerIndex = Math.min(CAREERS.length - 1, player.careerIndex + 1);
-        showToast(`Promovido a: ${CAREERS[player.careerIndex].name}!`);
-        spawnParticle("⭐ Promoção!", '#10b981');
-    }
-
-    consumeTime(act.timeH, act.timeM);
+    consumeTime(act.timeH || 0, act.timeM || 0);
 }
 
 function resetGame() {
@@ -3480,6 +3920,20 @@ function resetGame() {
     player.groceries = 2;
     player.houseIndex = 1;
     player.careerIndex = 0;
+    player.currentWorkplace = 'pingo_doce';
+    player.careerRanks = {
+        pingo_doce: 0,
+        tasca: 0,
+        banco: 0,
+        startup: 0
+    };
+    player.careerShifts = {
+        pingo_doce: 0,
+        tasca: 0,
+        banco: 0,
+        startup: 0
+    };
+    player.totalShiftsWorked = 0;
     player.daysUntilRent = 7;
     player.hungerDays = 0;
     player.x = 250;
@@ -3508,10 +3962,12 @@ function resetGame() {
 // 8. SCORECARD VIRAL & GERAÇÃO DE IMAGEM PARA INSTAGRAM STORIES (1080x1920)
 // ============================================================================
 function shareScorecard() {
+    const curJob = getPlayerJob();
+    const wp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
     const text = `🐟 Desenrascado | O Purgatório de Lisboa
 📅 Sobrevivi: ${stats.daysSurvived} Dias
 🏠 Casa: ${HOUSES[player.houseIndex].name}
-💼 Emprego: ${CAREERS[player.careerIndex].name} (ECTS: ${player.ects})
+💼 Emprego: ${curJob.title} (${wp.shortName} · ECTS: ${player.ects})
 💰 Rendas Pagas: ${stats.totalRentPaid}€
 👉 Consegues bater o meu recorde? Joga em: https://desenrascado.pormenores.net`;
 
@@ -3688,10 +4144,12 @@ function generateStoryCanvas() {
     const infoY = 340;
 
     sctx.textAlign = 'left';
+    const curStoryJob = getPlayerJob();
+    const curStoryWp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
     const infoRows = [
         ["TEMPO SOBREVIVIDO:", `${stats.daysSurvived} DIAS`],
         ["ÚLTIMO ABRIGO:", HOUSES[player.houseIndex].name],
-        ["OCUPAÇÃO:", CAREERS[player.careerIndex].name],
+        ["OCUPAÇÃO:", `${curStoryJob.title} (${curStoryWp.shortName})`],
         ["ECTS ACUMULADOS:", `${player.ects} / 180`],
         ["RENDA TOTAL DOADA:", `${stats.totalRentPaid} €`],
         ["SALDO RESTANTE:", `${player.wallet + player.bank} €`],
