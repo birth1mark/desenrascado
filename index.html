@@ -1179,7 +1179,7 @@ function render() {
 }
 
 // Função utilitária de quebra de texto (Word Wrapping com limite rígido)
-function wrapTextCanvas(targetCtx, text, x, y, maxWidth, lineHeight, font, color, align = 'left') {
+function wrapTextCanvas(targetCtx, text, x, y, maxWidth, lineHeight, font, color, align = 'left', maxY = null) {
     targetCtx.font = font;
     targetCtx.fillStyle = color;
     targetCtx.textAlign = align;
@@ -1192,6 +1192,14 @@ function wrapTextCanvas(targetCtx, text, x, y, maxWidth, lineHeight, font, color
         const testLine = line + words[n] + ' ';
         const testWidth = targetCtx.measureText(testLine).width;
         if (testWidth > maxWidth && n > 0) {
+            if (maxY && (curY + lineHeight > maxY)) {
+                let clipped = line.trim();
+                while (targetCtx.measureText(clipped + '...').width > maxWidth && clipped.length > 3) {
+                    clipped = clipped.slice(0, -4);
+                }
+                targetCtx.fillText(clipped + '...', x, curY);
+                return curY;
+            }
             targetCtx.fillText(line.trim(), x, curY);
             line = words[n] + ' ';
             curY += lineHeight;
@@ -1199,7 +1207,9 @@ function wrapTextCanvas(targetCtx, text, x, y, maxWidth, lineHeight, font, color
             line = testLine;
         }
     }
-    targetCtx.fillText(line.trim(), x, curY);
+    if (!maxY || (curY <= maxY)) {
+        targetCtx.fillText(line.trim(), x, curY);
+    }
     return curY;
 }
 
@@ -1486,7 +1496,7 @@ function renderBoard() {
     }
 }
 
-// Placas, Efeitos de Destaque e Tooltips Stardew Valley sobre os Edifícios
+// Placas e Efeitos Interativos dos Edifícios no Tabuleiro (Sem molduras amarelas invasivas)
 function renderBuildingOverlays() {
     let hoveredBuilding = null;
 
@@ -1494,86 +1504,78 @@ function renderBuildingOverlays() {
         const isHovered = (mouse.x >= b.x && mouse.x <= b.x + b.w && mouse.y >= b.y && mouse.y <= b.y + b.h);
         if (isHovered) hoveredBuilding = b;
 
-        // Placa de Madeira / Azulejo suspensa sobre a entrada
-        const signW = 86;
-        const signH = 18;
+        // Medição dinâmica da largura para o texto nunca transbordar
+        ctx.font = 'bold 8.5px "Fira Code"';
+        const label = `${b.icon} ${b.name}`;
+        const tw = ctx.measureText(label).width;
+        const signW = Math.max(90, Math.round(tw + 16));
+        const signH = 19;
         const signX = (b.doorX || (b.x + b.w / 2)) - signW / 2;
-        const signY = (b.doorY || (b.y + b.h)) - 32;
+        const signY = (b.doorY || (b.y + b.h)) - 30;
 
-        // Sombra da placa
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        // Sombra suave sob a placa
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
         ctx.fillRect(signX + 2, signY + 2, signW, signH);
 
-        // Fundo da placa (Madeira escura / Ardósia com moldura colorida)
-        ctx.fillStyle = isHovered ? '#1e293b' : '#0f172a';
+        // Fundo da placa (Ardósia escura com rebordo subtil)
+        ctx.fillStyle = isHovered ? '#1e293b' : '#090d16';
         ctx.fillRect(signX, signY, signW, signH);
-        ctx.strokeStyle = isHovered ? '#fbbf24' : b.accent;
-        ctx.lineWidth = isHovered ? 2 : 1;
+        ctx.strokeStyle = isHovered ? '#38bdf8' : 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = isHovered ? 1.5 : 1;
         ctx.strokeRect(signX, signY, signW, signH);
 
-        // Texto da placa
-        ctx.fillStyle = isHovered ? '#fbbf24' : '#f8fafc';
-        ctx.font = 'bold 7.5px "Press Start 2P"';
+        // Texto da placa perfeitamente centrado
+        ctx.fillStyle = isHovered ? '#ffffff' : '#e2e8f0';
         ctx.textAlign = 'center';
-        ctx.fillText(`${b.icon} ${b.name}`, signX + signW / 2, signY + 12);
+        ctx.fillText(label, signX + signW / 2, signY + 13);
 
-        // Se hovered: aura dourada em redor do edifício e seta animada Stardew Valley
+        // Indicador elegante saltitante quando hovered (substitui a moldura amarela berrante)
         if (isHovered) {
-            ctx.strokeStyle = 'rgba(251, 191, 36, 0.85)';
-            ctx.lineWidth = 2.5;
-            ctx.strokeRect(b.x - 2, b.y - 2, b.w + 4, b.h + 4);
-
-            // Seta saltitante estilo Stardew Valley
-            const arrowBob = Math.sin(animTimer * 8) * 3;
-            ctx.fillStyle = '#fbbf24';
-            ctx.font = '10px "Press Start 2P"';
+            const arrowBob = Math.sin(animTimer * 7) * 2.5;
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = '9px "Press Start 2P"';
             ctx.textAlign = 'center';
             ctx.fillText("▼", signX + signW / 2, signY - 4 + arrowBob);
         }
     });
 
-    // Tooltip Stardew Valley com moldura de madeira quando o rato passa por um edifício
+    // Tooltip refinada em ardósia/vidro escuro (sem molduras amarelas)
     if (hoveredBuilding && state === 'BOARD') {
         const b = hoveredBuilding;
-        const ttW = 200;
-        const ttH = 48;
+        const ttW = 210;
+        const ttH = 46;
         let ttX = mouse.x + 12;
-        let ttY = mouse.y - 54;
+        let ttY = mouse.y - 52;
 
         if (ttX + ttW > canvas.width - 10) ttX = mouse.x - ttW - 12;
         if (ttY < 10) ttY = mouse.y + 20;
 
         // Sombra
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
         ctx.fillRect(ttX + 3, ttY + 3, ttW, ttH);
 
-        // Caixa de Madeira Stardew Valley
-        ctx.fillStyle = '#1e1b18';
+        // Caixa de ardósia escura
+        ctx.fillStyle = '#0f172a';
         ctx.fillRect(ttX, ttY, ttW, ttH);
-        ctx.strokeStyle = '#d97706';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1.5;
         ctx.strokeRect(ttX, ttY, ttW, ttH);
 
-        // Borda dourada interior
-        ctx.strokeStyle = '#fef3c7';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(ttX + 2, ttY + 2, ttW - 4, ttH - 4);
-
         // Título
-        ctx.fillStyle = '#fde68a';
-        ctx.font = 'bold 8.5px "Press Start 2P"';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9px "Press Start 2P"';
         ctx.textAlign = 'left';
-        ctx.fillText(`${b.icon} ${b.name}`, ttX + 8, ttY + 14);
+        ctx.fillText(`${b.icon} ${b.name}`, ttX + 10, ttY + 14);
 
         // Tag / Ação
-        ctx.fillStyle = '#cbd5e1';
-        ctx.font = '9px "Fira Code"';
-        ctx.fillText(b.tag, ttX + 8, ttY + 28);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '8.5px "Fira Code"';
+        ctx.fillText(b.tag, ttX + 10, ttY + 28);
 
         // Dica
-        ctx.fillStyle = '#10b981';
+        ctx.fillStyle = '#34d399';
         ctx.font = 'bold 7.5px "Press Start 2P"';
-        ctx.fillText("▶ CLIQUE P/ ENTRAR", ttX + 8, ttY + 41);
+        ctx.fillText("▶ CLIQUE P/ ENTRAR", ttX + 10, ttY + 40);
     }
 }
 
@@ -2589,12 +2591,12 @@ const NPC_INFO = {
 
 // Renderizador de Retratos em Pixel Art 16-Bit (Estilo Stardew Valley / Eastward)
 function drawNpcPortrait(id, x, y, size) {
-    // Moldura Dourada & Caixa de Retrato Estilo Stardew Valley
-    ctx.fillStyle = '#0b0f19';
-    ctx.fillRect(x, y, size, size);
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 2.5;
-    ctx.strokeRect(x, y, size, size);
+    // Moldura Elegante em Ardósia e Ébano
+    ctx.fillStyle = '#090d16';
+    ctx.fillRect(x - 2, y - 2, size + 4, size + 4);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x - 2, y - 2, size + 4, size + 4);
 
     const npcCoords = {
         senhorio: { col: 0, row: 0 },
@@ -2885,8 +2887,8 @@ function renderBuildingModal() {
 
     // Caixa Principal
     ctx.fillStyle = '#0f172a';
-    ctx.strokeStyle = modalBuilding.accent;
-    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1.5;
     ctx.fillRect(mx, my, mw, mh);
     ctx.strokeRect(mx, my, mw, mh);
 
@@ -2915,7 +2917,7 @@ function renderBuildingModal() {
 
     // Nome & Papel do NPC abaixo do retrato
     const npc = NPC_INFO[modalBuilding.id] || NPC_INFO.senhorio;
-    ctx.fillStyle = '#f59e0b';
+    ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 10px "Fira Code"';
     ctx.textAlign = 'center';
     ctx.fillText(npc.name, px + pSize / 2, py + pSize + 14);
@@ -2924,25 +2926,25 @@ function renderBuildingModal() {
     ctx.font = '8.5px "Fira Code"';
     ctx.fillText(npc.role, px + pSize / 2, py + pSize + 27);
 
-    // Balão de Diálogo Satírico
+    // Balão de Diálogo Satírico com limite rígido (nunca transborda a caixa)
     const quoteY = py + pSize + 36;
-    const quoteW = pSize + 8;
+    const quoteW = pSize + 12;
     const quoteH = 64;
 
-    ctx.fillStyle = '#1e293b';
+    ctx.fillStyle = '#090d16';
     ctx.fillRect(px - 4, quoteY, quoteW, quoteH);
     ctx.strokeStyle = '#334155';
     ctx.lineWidth = 1;
     ctx.strokeRect(px - 4, quoteY, quoteW, quoteH);
 
-    // Aspas decorativas
-    ctx.fillStyle = '#f59e0b';
-    ctx.font = 'bold 14px "Fira Code"';
+    // Aspas decorativas discretas
+    ctx.fillStyle = '#64748b';
+    ctx.font = 'bold 12px "Fira Code"';
     ctx.textAlign = 'left';
-    ctx.fillText("“", px, quoteY + 14);
+    ctx.fillText("“", px, quoteY + 13);
 
     const quoteText = (typeof npc.quote === 'function') ? npc.quote() : (npc.getQuote ? npc.getQuote() : npc.quote);
-    wrapTextCanvas(ctx, quoteText, px + 10, quoteY + 14, quoteW - 14, 11, 'italic 8.5px "Fira Code"', '#e2e8f0', 'left');
+    wrapTextCanvas(ctx, quoteText, px + 8, quoteY + 14, quoteW - 14, 11, 'italic 8px "Fira Code"', '#cbd5e1', 'left', quoteY + quoteH - 6);
 
     // 2. COLUNA DIREITA: CARTÕES DE AÇÃO INTERATIVOS
     renderBuildingActions(modalBuilding.id, mx, my, mw, mh);
@@ -2955,91 +2957,107 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         if (player.houseIndex === 0) {
             // Despejado no banco de jardim
             actions = [
-                { label: "Dormitar no Banco de Jardim", cost: 0, timeH: 1, timeM: 0, sanity: 5, desc: "Dorme ao relento. Recupera só +5 Sanidade." },
-                { label: "Comer Atum de Conserva", cost: 0, timeH: 0, timeM: 15, eatHome: true, desc: `Come da lata guardada (${player.groceries} disponíveis). Nutrição +45.` },
-                { label: "Dormir / Passar Noite no Rossio", cost: 0, timeH: 0, timeM: 0, sleepNight: true, desc: "Passa a noite ao relento até à manhã seguinte." }
+                { label: "Dormitar no Banco", cost: 0, timeH: 1, timeM: 0, sanity: 5, desc: "Descanso leve ao relento. +5 Sanidade." },
+                { label: "Comer Atum de Conserva", cost: 0, timeH: 0, timeM: 15, eatHome: true, desc: `${player.groceries} latas na despensa. +45 Nutrição.` },
+                { label: "Passar Noite no Rossio", cost: 0, timeH: 0, timeM: 0, sleepNight: true, desc: "Passa a noite ao relento até amanhã." }
             ];
         } else {
             actions = [
-                { label: "Sesta Reparadora (1h)", cost: 0, timeH: 1, timeM: 0, sanity: 20, desc: "Descansa no teu beliche/cama. Recupera +20 Sanidade." },
-                { label: "Cozinhar Refeição em Casa", cost: 0, timeH: 0, timeM: 30, eatHome: true, desc: `Come 1 refeição da despensa (${player.groceries} disponíveis). Nutrição +45.` },
-                { label: "Dormir / Terminar o Dia Cedo", cost: 0, timeH: 0, timeM: 0, sleepNight: true, desc: "Vai para a cama em segurança e acorda no dia seguinte." },
-                { label: "Limpar e Arejar a Casa", cost: 0, timeH: 0, timeM: 30, sanity: 10, desc: "Abre a janela para arejar. Recupera +10 Sanidade." }
+                { label: "Sesta Reparadora (1h)", cost: 0, timeH: 1, timeM: 0, sanity: 20, desc: "Descansa na cama. +20 Sanidade." },
+                { label: "Cozinhar Refeição", cost: 0, timeH: 0, timeM: 30, eatHome: true, desc: `${player.groceries} disponíveis. +45 Nutrição.` },
+                { label: "Dormir / Terminar o Dia", cost: 0, timeH: 0, timeM: 0, sleepNight: true, desc: "Dorme em paz até à manhã seguinte." },
+                { label: "Limpar e Arejar a Casa", cost: 0, timeH: 0, timeM: 30, sanity: 10, desc: "Abre a janela. +10 Sanidade." }
             ];
         }
     } else if (id === 'tasca') {
         actions = [
-            { label: "Bica ao Balcão", cost: 1, timeH: 0, timeM: 15, hunger: 5, sanity: 15, desc: "Recupera +15 Sanidade em 15 minutos." },
-            { label: "Prato do Dia (Atum)", cost: 4, timeH: 0, timeM: 30, hunger: 45, sanity: 5, desc: "Nutrição +45. O clássico alfacinha." },
-            { label: "Bitoque c/ Ovo a Cavalo", cost: 9, timeH: 1, timeM: 0, hunger: 85, sanity: 25, desc: "Nutrição +85, Sanidade +25." }
+            { label: "Bica ao Balcão", cost: 1, timeH: 0, timeM: 15, hunger: 5, sanity: 15, desc: "+15 Sanidade em 15 minutos." },
+            { label: "Prato do Dia (Atum)", cost: 4, timeH: 0, timeM: 30, hunger: 45, sanity: 5, desc: "+45 Nutrição. Prato clássico." },
+            { label: "Bitoque c/ Ovo a Cavalo", cost: 9, timeH: 1, timeM: 0, hunger: 85, sanity: 25, desc: "+85 Nutrição e +25 Sanidade." }
         ];
     } else if (id === 'senhorio') {
         const nextHouse = HOUSES[Math.min(HOUSES.length - 1, player.houseIndex + 1)];
         actions = [
-            { label: "Pagar Renda Semanal", cost: HOUSES[player.houseIndex].rent, timeH: 0, timeM: 30, desc: `Renda: ${HOUSES[player.houseIndex].rent}€ (${HOUSES[player.houseIndex].name})` },
-            { label: `Mudar: ${nextHouse.name}`, cost: nextHouse.rent, timeH: 1, timeM: 0, upgradeHouse: true, desc: `Renda: ${nextHouse.rent}€/semana · ${nextHouse.qual}` }
+            { label: "Pagar Renda Semanal", cost: HOUSES[player.houseIndex].rent, timeH: 0, timeM: 30, desc: `${HOUSES[player.houseIndex].rent}€/sem · ${HOUSES[player.houseIndex].name}` },
+            { label: `Mudar: ${nextHouse.name}`, cost: nextHouse.rent, timeH: 1, timeM: 0, upgradeHouse: true, desc: `${nextHouse.rent}€/sem · ${nextHouse.qual}` }
         ];
     } else if (id === 'startup') {
         const curJob = CAREERS[player.careerIndex];
         const nextJob = CAREERS[Math.min(CAREERS.length - 1, player.careerIndex + 1)];
         actions = [
-            { label: `Turno: ${curJob.name}`, gain: curJob.wagePerHour * curJob.hoursPerShift, timeH: curJob.hoursPerShift, timeM: 0, desc: `Trabalha ${curJob.hoursPerShift}h e recebe ${curJob.wagePerHour * curJob.hoursPerShift}€ em cash.` },
-            { label: `Promover: ${nextJob.name}`, reqEcts: nextJob.reqEcts, promoteJob: true, desc: `Requer ${nextJob.reqEcts} ECTS · Paga ${nextJob.wagePerHour}€/hora.` }
+            { label: `Turno: ${curJob.name}`, gain: curJob.wagePerHour * curJob.hoursPerShift, timeH: curJob.hoursPerShift, timeM: 0, desc: `${curJob.hoursPerShift}h trabalho · +${curJob.wagePerHour * curJob.hoursPerShift}€ em cash` },
+            { label: `Promover: ${nextJob.name}`, reqEcts: nextJob.reqEcts, promoteJob: true, desc: `Requer ${nextJob.reqEcts} ECTS · Paga ${nextJob.wagePerHour}€/h` }
         ];
     } else if (id === 'faculdade') {
         actions = [
-            { label: "Cadeira Teórica (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "Ganha +15 ECTS para desbloquear profissões." },
-            { label: "Maratona de Exame (8h)", cost: 45, timeH: 8, timeM: 0, ects: 35, desc: "Ganha +35 ECTS intensivos." }
+            { label: "Cadeira Teórica (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS para carreira IT." },
+            { label: "Maratona de Exame (8h)", cost: 45, timeH: 8, timeM: 0, ects: 35, desc: "+35 ECTS intensivos." }
         ];
     } else if (id === 'supermercado') {
         actions = [
-            { label: "Saco de Mercearia (2 Refeições)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições económicas para comer em casa." },
-            { label: "Cabaz Económico (5 Refeições)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para a despensa." }
+            { label: "Saco de Mercearia (2 Ref.)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições para a despensa." },
+            { label: "Cabaz Económico (5 Ref.)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para poupar." }
         ];
     } else if (id === 'banco') {
         actions = [
-            { label: "Depositar 50€ no Banco", deposit: 50, timeH: 0, timeM: 15, desc: "Protege o dinheiro de assaltos noturnos." },
-            { label: "Levantar 50€ da Conta", withdraw: 50, timeH: 0, timeM: 15, desc: "Põe dinheiro na mão para compras imediatas." }
+            { label: "Depositar 50€ no Banco", deposit: 50, timeH: 0, timeM: 15, desc: "Protege contra assaltos noturnos." },
+            { label: "Levantar 50€ da Conta", withdraw: 50, timeH: 0, timeM: 15, desc: "Dinheiro na mão para compras." }
         ];
     } else if (id === 'miradouro') {
         actions = [
-            { label: "Ver o Tejo ao Pôr-do-Sol", cost: 0, timeH: 1, timeM: 0, sanity: 25, desc: "Ar fresco. Recupera +25 de Sanidade mental." },
-            { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Socializar. Recupera +50 de Sanidade." }
+            { label: "Ver o Tejo ao Pôr-do-Sol", cost: 0, timeH: 1, timeM: 0, sanity: 25, desc: "Ar fresco. +25 Sanidade mental." },
+            { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Socializar. +50 Sanidade." }
         ];
     }
 
-    // Desenhar Ações na Coluna Direita (ax: mx + 138, aw: mw - 150)
+    // Desenhar Ações na Coluna Direita (ax: mx + 138, aw: mw - 152)
     const ax = mx + 138;
     const aw = mw - 152;
-    const cardH = 49;
+    const cardH = 50;
     const cardGap = 5;
 
     actions.forEach((act, idx) => {
         const ay = my + 44 + idx * (cardH + cardGap);
         const isHover = (mouse.x >= ax && mouse.x <= ax + aw && mouse.y >= ay && mouse.y <= ay + cardH);
 
-        ctx.fillStyle = isHover ? '#1e293b' : '#141d2f';
+        // Fundo do cartão de ação em ardósia escura (sem moldura amarela)
+        ctx.fillStyle = isHover ? '#1e293b' : '#0f172a';
         ctx.fillRect(ax, ay, aw, cardH);
-        ctx.strokeStyle = isHover ? '#f59e0b' : '#233148';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = isHover ? '#38bdf8' : '#1e293b';
+        ctx.lineWidth = isHover ? 1.5 : 1;
         ctx.strokeRect(ax, ay, aw, cardH);
 
-        // Título da Ação
-        ctx.fillStyle = isHover ? '#f59e0b' : '#ffffff';
-        ctx.font = 'bold 11px "Fira Code"';
-        ctx.textAlign = 'left';
-        ctx.fillText(act.label, ax + 12, ay + 19);
+        // Barra lateral de realce no cartão hovered
+        if (isHover) {
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(ax, ay, 3, cardH);
+        }
 
-        // Descrição
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '9.5px "Fira Code"';
-        ctx.fillText(act.desc, ax + 12, ay + 37);
+        // Título da Ação em branco de alto contraste
+        ctx.fillStyle = isHover ? '#ffffff' : '#e2e8f0';
+        ctx.font = 'bold 10.5px "Fira Code"';
+        ctx.textAlign = 'left';
+        ctx.fillText(act.label, ax + 14, ay + 19);
 
         // Botão de Preço / Ganho no Lado Direito
         const btnW = 86;
         const btnH = 28;
         const btnX = ax + aw - btnW - 8;
         const btnY = ay + (cardH - btnH) / 2;
+
+        // Descrição com largura máxima garantida (nunca colide com o botão nem sai da caixa!)
+        const maxDescW = btnX - ax - 22;
+        ctx.font = '8.5px "Fira Code"';
+        ctx.fillStyle = '#94a3b8';
+
+        let descText = act.desc;
+        if (ctx.measureText(descText).width > maxDescW) {
+            while (ctx.measureText(descText + '...').width > maxDescW && descText.length > 3) {
+                descText = descText.slice(0, -4);
+            }
+            descText += '...';
+        }
+        ctx.fillText(descText, ax + 14, ay + 37);
 
         let btnText = "";
         let btnColor = "#10b981";
@@ -3059,7 +3077,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             btnColor = "#38bdf8";
         } else if (act.withdraw !== undefined) {
             btnText = "LEV 50€";
-            btnColor = "#facc15";
+            btnColor = "#38bdf8";
         }
 
         if (act.reqEcts !== undefined && player.ects < act.reqEcts) {
@@ -3070,7 +3088,8 @@ function renderBuildingActions(id, mx, my, mw, mh) {
 
         ctx.fillStyle = isAffordable ? btnColor : '#1e293b';
         ctx.fillRect(btnX, btnY, btnW, btnH);
-        ctx.strokeStyle = isAffordable ? '#ffffff' : '#334155';
+        ctx.strokeStyle = isAffordable ? (isHover ? '#ffffff' : 'rgba(255, 255, 255, 0.35)') : '#334155';
+        ctx.lineWidth = 1;
         ctx.strokeRect(btnX, btnY, btnW, btnH);
 
         ctx.fillStyle = isAffordable ? '#0b0e14' : '#64748b';
