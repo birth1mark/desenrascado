@@ -183,6 +183,13 @@
             cursor: pointer;
             transition: all 0.15s ease;
             box-shadow: 0 2px 0 #020617, inset 0 1px 0 rgba(251, 191, 36, 0.15);
+            box-sizing: border-box;
+            text-align: center;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 28px;
         }
         .arcade-btn:hover {
             border-color: #fbbf24;
@@ -195,9 +202,15 @@
             transform: translateY(1px);
             box-shadow: 0 0 0;
         }
+        #btn-music { min-width: 114px; }
+        #btn-audio { min-width: 114px; }
+        #btn-crt { min-width: 110px; }
+        #btn-leaderboard { min-width: 90px; }
+        #btn-curriculum { min-width: 114px; }
         .arcade-btn.btn-acampada {
             border-color: #dc2626;
             color: #fca5a5;
+            min-width: 110px;
         }
         .arcade-btn.btn-acampada:hover {
             background: #991b1b;
@@ -206,9 +219,18 @@
         .arcade-btn.btn-roupa {
             border-color: #db2777;
             color: #fbcfe8;
+            min-width: 124px;
         }
         .arcade-btn.btn-roupa:hover {
             background: #be185d;
+            color: #fff;
+        }
+        .arcade-btn.btn-curriculum {
+            border-color: #3b82f6;
+            color: #93c5fd;
+        }
+        .arcade-btn.btn-curriculum:hover {
+            background: #1d4ed8;
             color: #fff;
         }
 
@@ -492,6 +514,98 @@
             border-color: var(--amber);
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
         }
+
+        /* Modal do Dossier Curricular (Estilo LucasArts SCUMM / Pergaminho de Lisboa) */
+        .cv-box {
+            max-width: 610px;
+            max-height: 88vh;
+            background: #0f172a;
+            border: 2px solid #d97706;
+            box-shadow: 0 0 35px rgba(217, 119, 6, 0.35), 0 20px 50px rgba(0, 0, 0, 0.95);
+        }
+        .cv-tagline {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.44rem;
+            color: #f59e0b;
+            padding: 6px 16px;
+            background: rgba(217, 119, 6, 0.12);
+            border-bottom: 1px solid rgba(217, 119, 6, 0.25);
+            letter-spacing: 0.5px;
+        }
+        .cv-container {
+            padding: 12px 16px;
+            overflow-y: auto;
+            max-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.72rem;
+            color: #cbd5e1;
+        }
+        .cv-section {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 10px 12px;
+        }
+        .cv-section-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.52rem;
+            color: #fbbf24;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+            padding-bottom: 4px;
+        }
+        .cv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+        }
+        .cv-chip {
+            background: #090d16;
+            border: 1px solid #334155;
+            border-radius: 3px;
+            padding: 6px 8px;
+        }
+        .cv-chip-label {
+            font-size: 0.60rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+        .cv-chip-val {
+            font-weight: 700;
+            color: #f8fafc;
+            margin-top: 2px;
+        }
+        .cv-course-card {
+            background: #090d16;
+            border: 1px solid #1e3a8a;
+            border-radius: 4px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+        }
+        .cv-course-card.concluded {
+            border-color: #16a34a;
+            background: rgba(22, 163, 74, 0.08);
+        }
+        .cv-subject-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+            font-size: 0.68rem;
+        }
+        .cv-badge-done {
+            color: #4ade80;
+            font-weight: bold;
+        }
+        .cv-badge-todo {
+            color: #94a3b8;
+        }
     </style>
 </head>
 <body>
@@ -514,6 +628,7 @@
             <div class="arcade-actions">
                 <button class="arcade-btn btn-acampada" onclick="quickVisit('acampada')">⛺ Acampada</button>
                 <button class="arcade-btn btn-roupa" onclick="quickVisit('loja_roupa')">👗 Loja de Roupa</button>
+                <button class="arcade-btn btn-curriculum" onclick="openCurriculumModal()" id="btn-curriculum">📜 Currículo</button>
                 <button class="arcade-btn" onclick="openLeaderboard()" id="btn-leaderboard">🏆 Top 10</button>
                 <button class="arcade-btn" onclick="toggleMusic()" id="btn-music">🎵 BGM: ON</button>
                 <button class="arcade-btn" onclick="toggleAudio()" id="btn-audio">🔊 SFX: ON</button>
@@ -524,6 +639,23 @@
         <div id="game-wrapper" class="crt-active">
             <canvas id="gameCanvas" width="640" height="360"></canvas>
             <div id="toast">Notificação</div>
+
+            <!-- Modal: Dossier Curricular do Jogador (LucasArts SCUMM Dossier) -->
+            <div id="curriculum-modal" class="game-overlay" style="display: none;">
+                <div class="overlay-box cv-box">
+                    <div class="overlay-header">
+                        <span class="overlay-title">📜 DOSSIER CURRICULAR · ZÉ DESENRASCA</span>
+                        <button class="overlay-close" onclick="closeCurriculumModal()">✕</button>
+                    </div>
+                    <div class="cv-tagline">REGISTO ACADÉMICO, CARREIRAS & TALENTOS NO PURGATÓRIO DE LISBOA</div>
+                    <div class="cv-container" id="cv-content">
+                        <!-- Conteúdo curricular gerado dinamicamente via JS -->
+                    </div>
+                    <div class="overlay-actions">
+                        <button class="retro-btn" onclick="closeCurriculumModal()">FECHAR DOSSIER [ESC]</button>
+                    </div>
+                </div>
+            </div>
 
             <!-- Modal: Tabela de Recordes (Hall of Fame) -->
             <div id="leaderboard-modal" class="game-overlay" style="display: none;">
@@ -734,6 +866,45 @@ function sfxCacilheiroHorn() {
     } catch(e){}
 }
 
+// Trompete Solene Académico do IST (Canudo Obtido / Fanfarra Gaudeamus)
+function sfxAcademicTrumpet() {
+    if (!soundEnabled) return;
+    initAudio();
+    const notes = [
+        { f: 523.25, t: 0, d: 0.16 },   // C5
+        { f: 659.25, t: 140, d: 0.16 }, // E5
+        { f: 783.99, t: 280, d: 0.20 }, // G5
+        { f: 1046.50, t: 460, d: 0.45 } // C6
+    ];
+    notes.forEach(n => {
+        setTimeout(() => playBeep(n.f, 'triangle', n.d, 0.16), n.t);
+    });
+}
+
+// Acorde Desafinado de Caloiro (Guitarra áspera desafinada no Miradouro)
+function sfxGuitarBad() {
+    if (!soundEnabled) return;
+    initAudio();
+    playBeep(215, 'sawtooth', 0.12, 0.10);
+    setTimeout(() => playBeep(228, 'sawtooth', 0.15, 0.12), 40);
+    setTimeout(() => playBeep(205, 'sawtooth', 0.18, 0.09), 90);
+}
+
+// Dedilhado de Fado de Lisboa (Guitarra Portuguesa em Lá Menor)
+function sfxGuitarGood(tier = 1) {
+    if (!soundEnabled) return;
+    initAudio();
+    const arpeggios = {
+        1: [ { f: 220, t: 0 }, { f: 261.63, t: 70 }, { f: 329.63, t: 140 }, { f: 440, t: 220 } ],
+        2: [ { f: 220, t: 0 }, { f: 261.63, t: 55 }, { f: 329.63, t: 110 }, { f: 440, t: 170 }, { f: 493.88, t: 230 }, { f: 523.25, t: 300 } ],
+        3: [ { f: 220, t: 0 }, { f: 261.63, t: 45 }, { f: 329.63, t: 90 }, { f: 440, t: 135 }, { f: 523.25, t: 180 }, { f: 659.25, t: 230 }, { f: 880, t: 300 } ]
+    };
+    const seq = arpeggios[tier] || arpeggios[1];
+    seq.forEach(n => {
+        setTimeout(() => playBeep(n.f, 'triangle', 0.16, 0.14), n.t);
+    });
+}
+
 // Pombos a esvoaçar
 function sfxPigeon() {
     if (!soundEnabled) return;
@@ -914,6 +1085,7 @@ const HOUSES = [
 
 // ============================================================================
 // SISTEMA DE CURSOS UNIVERSITÁRIOS (IST - Alameda & Politécnico)
+// 4 Cadeiras Sequenciais por Curso com Tese e Obtenção de Canudo
 // ============================================================================
 const COURSES = {
     informatica: {
@@ -924,9 +1096,10 @@ const COURSES = {
         faculty: 'IST - Alameda',
         desc: 'Programação, Cloud, Algoritmos e Sistemas. Exigido para Tech Hub & Startups.',
         subjects: [
-            { name: "Programação & Algoritmos (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS em Informática" },
-            { name: "Sistemas Cloud & DevOps (6h)", cost: 40, timeH: 6, timeM: 0, ects: 25, desc: "+25 ECTS em Informática" },
-            { name: "Projeto de Licenciatura / Tese (8h)", cost: 60, timeH: 8, timeM: 0, ects: 40, desc: "+40 ECTS para Canudo de Informática" }
+            { id: 'ip', name: "Introdução à Programação (IP)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "Ponteiros em C, algoritmos e terminais no IST." },
+            { id: 'aed', name: "Algoritmos e Estruturas de Dados (AED)", cost: 35, timeH: 5, timeM: 0, ects: 20, desc: "Árvores binárias e complexidade no anfiteatro." },
+            { id: 'sd', name: "Sistemas Distribuídos & Cloud (SD)", cost: 45, timeH: 6, timeM: 0, ects: 25, desc: "Docker, Kubernetes e concorrência sem deadlocks." },
+            { id: 'tese_inf', name: "Tese Final & Licenciatura em Informática", cost: 65, timeH: 8, timeM: 0, ects: 30, desc: "Defesa pública no Salão Nobre do IST. OBTÉM O CANUDO!", isFinal: true }
         ],
         targetWorkplace: 'startup'
     },
@@ -938,9 +1111,10 @@ const COURSES = {
         faculty: 'IST / ISEG',
         desc: 'Mercados, Risco de Crédito e Contabilidade. Exigido para Caixa Geral / Banco.',
         subjects: [
-            { name: "Contabilidade & Balanços (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS em Finanças" },
-            { name: "Análise de Risco & Crédito (6h)", cost: 40, timeH: 6, timeM: 0, ects: 25, desc: "+25 ECTS em Finanças" },
-            { name: "Mercados Financeiros & Fusões (8h)", cost: 60, timeH: 8, timeM: 0, ects: 40, desc: "+40 ECTS para Canudo Bancário" }
+            { id: 'micro', name: "Introdução à Microeconomia", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "Curvas de oferta, procura e a inflação lisboeta." },
+            { id: 'contab', name: "Contabilidade Geral & Balanços", cost: 35, timeH: 5, timeM: 0, ects: 20, desc: "Débito, crédito e fluxos de caixa pombalinos." },
+            { id: 'risco', name: "Análise de Risco & Crédito Bancário", cost: 45, timeH: 6, timeM: 0, ects: 25, desc: "Avaliação de risco, spread e garantias da Caixa." },
+            { id: 'tese_eco', name: "Tese Final de Finanças & Banca", cost: 65, timeH: 8, timeM: 0, ects: 30, desc: "Defesa de portfólio de capitais. OBTÉM O CANUDO BANCÁRIO!", isFinal: true }
         ],
         targetWorkplace: 'banco'
     },
@@ -952,9 +1126,10 @@ const COURSES = {
         faculty: 'IST - Departamento de Matemática',
         desc: 'Álgebra Linear, Cálculo e Análise. Exigido para Monitor de Álgebra e Docência no IST.',
         subjects: [
-            { name: "Álgebra Linear & Matrizes (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS em Matemática" },
-            { name: "Cálculo Diferencial & Análise (6h)", cost: 40, timeH: 6, timeM: 0, ects: 25, desc: "+25 ECTS em Matemática" },
-            { name: "Equações Diferenciais Avançadas (8h)", cost: 60, timeH: 8, timeM: 0, ects: 40, desc: "+40 ECTS para Canudo de Matemática" }
+            { id: 'al', name: "Álgebra Linear & Matrizes (AL)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "Espaços vetoriais e matrizes com o Prof. Leitão." },
+            { id: 'cdi', name: "Cálculo Diferencial e Integral (CDI)", cost: 35, timeH: 5, timeM: 0, ects: 20, desc: "Integrais duplos, séries e teoremas de convergência." },
+            { id: 'anacomp', name: "Análise Complexa & Equações Diferenciais", cost: 45, timeH: 6, timeM: 0, ects: 25, desc: "Transformadas de Fourier e equações diferenciais." },
+            { id: 'tese_mat', name: "Tese Final de Matemática Aplicada", cost: 65, timeH: 8, timeM: 0, ects: 30, desc: "Investigação pura e prova pública. OBTÉM O CANUDO DO IST!", isFinal: true }
         ],
         targetWorkplace: 'faculdade'
     },
@@ -966,9 +1141,10 @@ const COURSES = {
         faculty: 'IST / DEG',
         desc: 'Cadeias de Abastecimento e Retalho. Exigido para Chefia e Gerência no Pingo Doce.',
         subjects: [
-            { name: "Gestão de Stocks & Retalho (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS em Logística" },
-            { name: "Logística e Distribuição Moderna (6h)", cost: 40, timeH: 6, timeM: 0, ects: 25, desc: "+25 ECTS em Logística" },
-            { name: "Direção Estratégica de Loja (8h)", cost: 60, timeH: 8, timeM: 0, ects: 40, desc: "+40 ECTS para Grau de Gerente" }
+            { id: 'retalho', name: "Gestão das Cadeias de Retalho", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "Fluxos de mercadorias da horta às prateleiras." },
+            { id: 'stocks', name: "Logística & Controlo de Inventários", cost: 35, timeH: 5, timeM: 0, ects: 20, desc: "Just-in-time e quebras de supermercado." },
+            { id: 'chefia', name: "Estratégia Empresarial & Gestão de Pessoal", cost: 45, timeH: 6, timeM: 0, ects: 25, desc: "Escalas de pessoal e liderança de equipas." },
+            { id: 'tese_gest', name: "Projeto Final de Direção de Loja", cost: 65, timeH: 8, timeM: 0, ects: 30, desc: "Defesa executiva de retalho. OBTÉM O CANUDO DE GERENTE!", isFinal: true }
         ],
         targetWorkplace: 'pingo_doce'
     }
@@ -1100,10 +1276,26 @@ const WORKPLACES = {
         icon: '🎓',
         color: '#1e3a8a',
         careers: [
-            { id: 0, title: "Monitor de Álgebra Linear", reqShifts: 0, minFormality: 2, reqCourse: 'matematica', minCourseEcts: 45, wagePerHour: 12, hoursPerShift: 3, ectsBonus: 5, desc: "Aulas de apoio aos caloiros do IST. Requer Matemática e min 45 ECTS!" },
-            { id: 1, title: "Assistente Convidado", reqShifts: 4, minFormality: 3, reqCourse: 'matematica', minCourseEcts: 90, wagePerHour: 18, hoursPerShift: 4, ectsBonus: 8, desc: "Lecionar turmas práticas. Requer Licenciatura (90 ECTS em Matemática) e 4 turnos." },
-            { id: 2, title: "Professor Auxiliar", reqShifts: 8, minFormality: 3, reqCourse: 'matematica', minCourseEcts: 140, wagePerHour: 28, hoursPerShift: 5, ectsBonus: 10, desc: "Aulas teóricas e investigação. Requer Mestrado (140 ECTS) e 8 turnos." },
-            { id: 3, title: "Professor Catedrático / Regente", reqShifts: 14, minFormality: 3, reqCourse: 'matematica', minCourseEcts: 180, wagePerHour: 42, hoursPerShift: 6, ectsBonus: 12, desc: "Regência máxima da cadeira no IST. Requer Doutoramento (180 ECTS) e 14 turnos." }
+            { id: 0, title: "Monitor de Álgebra Linear", reqShifts: 0, minFormality: 2, reqCourse: 'matematica', minCourseEcts: 35, wagePerHour: 12, hoursPerShift: 3, ectsBonus: 5, desc: "Aulas de apoio aos caloiros do IST. Requer Matemática e min 35 ECTS!" },
+            { id: 1, title: "Assistente Convidado", reqShifts: 4, minFormality: 3, reqCourse: 'matematica', minCourseEcts: 60, wagePerHour: 18, hoursPerShift: 4, ectsBonus: 8, desc: "Lecionar turmas práticas. Requer Licenciatura (60+ ECTS em Matemática) e 4 turnos." },
+            { id: 2, title: "Professor Auxiliar", reqShifts: 8, minFormality: 3, reqCourse: 'matematica', minCourseEcts: 90, wagePerHour: 28, hoursPerShift: 5, ectsBonus: 10, desc: "Aulas teóricas e investigação. Requer Mestrado (90+ ECTS) e 8 turnos." },
+            { id: 3, title: "Professor Catedrático / Regente", reqShifts: 14, minFormality: 3, reqCourse: 'matematica', minCourseEcts: 120, wagePerHour: 42, hoursPerShift: 6, ectsBonus: 12, desc: "Regência máxima da cadeira no IST. Requer Doutoramento (120+ ECTS) e 14 turnos." }
+        ]
+    },
+    loja_roupa: {
+        id: 'loja_roupa',
+        buildingId: 'loja_roupa',
+        name: 'Modas Chiado (Alfaiataria)',
+        shortName: 'Modas Chiado',
+        tag: 'ALFAIATARIA & ALTA COSTURA',
+        boss: 'D. Zulmira',
+        icon: '👗',
+        color: '#db2777',
+        careers: [
+            { id: 0, title: "Ajudante de Alfaiataria", reqShifts: 0, minFormality: 1, reqCourse: null, minCourseEcts: 0, wagePerHour: 7.5, hoursPerShift: 4, desc: "Engomar tecidos e arrumar tesouras no ateliê." },
+            { id: 1, title: "Atendente de Balcão e Cortes", reqShifts: 3, minFormality: 2, reqCourse: null, minCourseEcts: 0, wagePerHour: 10.0, hoursPerShift: 5, desc: "Medir bainhas e atender clientes distintas no Chiado." },
+            { id: 2, title: "Oficial Alfaiate Pombalino", reqShifts: 7, minFormality: 2, reqCourse: null, minCourseEcts: 0, minTotalEcts: 25, wagePerHour: 15.0, hoursPerShift: 6, desc: "Corte e costura de fatos nobres e trajes académicos." },
+            { id: 3, title: "Mestre Estilista do Chiado", reqShifts: 12, minFormality: 3, reqCourse: null, minCourseEcts: 0, minTotalEcts: 60, wagePerHour: 23.0, hoursPerShift: 6, desc: "Direção artística da alfaiataria mais nobre de Lisboa!" }
         ]
     }
 };
@@ -1129,17 +1321,19 @@ function checkJobPrerequisites(wpKey, rank) {
         }
     }
 
-    // 3. Verificação de Curso Universitário Específico
+    // 3. Verificação de Curso Universitário Específico (Aceita frequência ou curso já concluído!)
     if (job.reqCourse) {
-        if (player.enrolledCourse !== job.reqCourse) {
+        const isEnrolled = player.enrolledCourse === job.reqCourse;
+        const isConcluded = player.completedCourses && player.completedCourses.includes(job.reqCourse);
+        if (!isEnrolled && !isConcluded) {
             const reqCourseName = COURSES[job.reqCourse].name;
             if (wpKey === 'faculdade' && rank === 0) {
                 return { ok: false, reason: "Monitor de álgebra sem curso de Matemática é fodido! Matricula-te em Matemática Aplicada no IST." };
             }
-            return { ok: false, reason: `Exige matrícula no curso de ${reqCourseName} no IST!` };
+            return { ok: false, reason: `Exige matrícula ou canudo no curso de ${reqCourseName} no IST!` };
         }
         const courseEcts = (player.courseEcts && player.courseEcts[job.reqCourse]) || 0;
-        if (courseEcts < job.minCourseEcts) {
+        if (!isConcluded && courseEcts < job.minCourseEcts) {
             return { ok: false, reason: `Precisas de pelo menos ${job.minCourseEcts} ECTS no curso de ${COURSES[job.reqCourse].shortName} (tens ${courseEcts} ECTS)!` };
         }
     }
@@ -1483,18 +1677,18 @@ function generateMorningEvent(p) {
 
 const EVENTOS_LISBOA = []; // Alias de compatibilidade retroativa
 
-// Edifícios no Tabuleiro
+// Edifícios no Tabuleiro (Posições Físicas Exatas & Coordenadas Separadas Sem Sobreposição)
 const BUILDINGS = [
-    { id: 'miradouro', name: 'Miradouro', x: 0, y: 220, w: 140, h: 75, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 65, doorY: 245, desc: 'O Boémio — Vista sobre o Tejo, descanso e tertúlias.' },
-    { id: 'faculdade', name: 'Politec / IST', x: 0, y: 15, w: 146, h: 180, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 72, doorY: 185, desc: 'Prof. Leitão — Aulas e exames para o canudo no campus do IST.' },
-    { id: 'acampada', name: 'Acampada Rossio', x: 128, y: 168, w: 116, h: 54, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 186, doorY: 215, desc: 'Inês — Vigília popular e assembleia pelo direito à habitação e emprego digno.' },
-    { id: 'startup', name: 'Agência Emprego', x: 146, y: 45, w: 76, h: 145, color: '#065f46', accent: '#10b981', tag: 'EMPREGO & HUB', icon: '💼', doorX: 186, doorY: 175, desc: 'Mariana — IEFP, Gestão de Carreiras e Tech Hub.' },
+    { id: 'miradouro', name: 'Miradouro', x: 0, y: 220, w: 140, h: 75, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 65, doorY: 245, desc: 'O Boémio — Vista sobre o Tejo, descanso, fado à guitarra e tertúlias.' },
+    { id: 'faculdade', name: 'Politec / IST', x: 0, y: 15, w: 146, h: 180, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 72, doorY: 185, desc: 'Prof. Leitão — Aulas, cadeiras sequenciais e exames para o canudo no IST.' },
+    { id: 'startup', name: 'IEFP / Emprego', x: 148, y: 35, w: 74, h: 130, color: '#065f46', accent: '#10b981', tag: 'IEFP & CARREIRAS', icon: '💼', doorX: 185, doorY: 165, desc: 'D. Mariana (IEFP, 45 anos) — Centro de Emprego, Orientação e Dossier Curricular.' },
+    { id: 'acampada', name: 'Acampada Rossio', x: 126, y: 172, w: 116, h: 50, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 184, doorY: 218, desc: 'Inês — Vigília popular e assembleia pelo direito à habitação e turnos solidários.' },
     { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 185, desc: 'Dr. Alcoviteiro — Poupança, Multibanco e carreiras financeiras.' },
-    { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 185, desc: 'D. Zulmira — Fatos de gala, polos, trajes e arranjos de costura.' },
+    { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 185, desc: 'D. Zulmira — Fatos de gala, alfaiataria, trajes académicos e ateliê de costura.' },
     { id: 'supermercado', name: 'Pingo Doce', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 478, doorY: 185, desc: 'D. Maria — Mantimentos e carreiras de supermercado.' },
     { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 70, w: 110, h: 125, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 185, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
     { id: 'casa', name: 'O Teu Teto', x: 340, y: 15, w: 120, h: 65, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 376, doorY: 185, desc: 'Dorme para recuperar sanidade, fome e energia.' },
-    { id: 'senhorio', name: 'Senhorio', x: 530, y: 15, w: 110, h: 65, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 585, doorY: 185, desc: 'Sr. Jerónimo — Rendas e contratos de habitação.' }
+    { id: 'senhorio', name: 'Senhorio', x: 530, y: 15, w: 110, h: 65, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 585, doorY: 185, desc: 'Sr. Jerónimo — Rendas, contratos de habitação e biscates de manutenção.' }
 ];
 
 // Pombos do Rossio a debicar na calçada
@@ -1650,60 +1844,152 @@ function renderBoardLivingCharacters(ctx, animTimer) {
     // 2. MIRADOURO SOBRE O TEJO (O Boémio na Balaustrada, x: 65, y: 248)
     const mx = 65;
     const my = 248;
-    const scarfFlutter = Math.sin(animTimer * 5.0) * 1.8;
+    // Sombra do boémio
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.fillRect(mx - 6, my + 6, 14, 3);
+    // Pernas e botas
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(mx - 3, my, 4, 7);
+    ctx.fillRect(mx + 2, my, 4, 7);
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(mx - 4, my + 6, 5, 2);
+    ctx.fillRect(mx + 2, my + 6, 5, 2);
+    // Sobretudo longo escuro
+    const mBreathe = Math.sin(animTimer * 2.4) * 0.5;
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(mx - 4, my - 8 + Math.round(mBreathe), 9, 10);
+    // Cachecol vermelho pombalino a esvoaçar com a brisa do Tejo
+    const scarfFlutter = Math.sin(animTimer * 4.8) * 2.2;
     ctx.fillStyle = '#dc2626';
-    ctx.fillRect(mx - 3, my - 8, 3, 3);
-    ctx.fillRect(mx - 4, my - 6, 2, 3 + Math.round(scarfFlutter));
-
-    for (let f = 0; f < 2; f++) {
-        const fProg = ((animTimer * 1.4 + f * 1.5) % 2.8) / 2.8;
-        const fx = (mx + 3) + fProg * 6 + Math.sin(animTimer * 2.5 + f) * 2;
-        const fy = (my - 14) - fProg * 14;
-        const fAlpha = Math.sin(fProg * Math.PI) * 0.35;
-        ctx.fillStyle = `rgba(226, 232, 240, ${fAlpha.toFixed(2)})`;
-        ctx.fillRect(Math.round(fx), Math.round(fy), 2, 2);
+    ctx.fillRect(mx - 3, my - 9 + Math.round(mBreathe), 6, 3);
+    ctx.fillRect(mx - 5, my - 7 + Math.round(mBreathe), 3, 5 + Math.round(scarfFlutter));
+    // Cabeça, boina e barba grisalha
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(mx - 2, my - 15 + Math.round(mBreathe), 6, 6);
+    ctx.fillStyle = '#cbd5e1'; // barba
+    ctx.fillRect(mx - 2, my - 11 + Math.round(mBreathe), 6, 3);
+    ctx.fillStyle = '#1e293b'; // boina
+    ctx.fillRect(mx - 4, my - 17 + Math.round(mBreathe), 9, 3);
+    // Chávena de bica quente com vapor suave
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(mx + 4, my - 5 + Math.round(mBreathe), 3, 3);
+    for (let s = 0; s < 2; s++) {
+        const sProg = ((animTimer * 1.5 + s * 1.2) % 2.5) / 2.5;
+        const sx = mx + 5 + Math.sin(animTimer * 3 + s) * 2;
+        const sy = my - 6 - sProg * 12;
+        const sAlpha = Math.sin(sProg * Math.PI) * 0.4;
+        ctx.fillStyle = `rgba(255, 255, 255, ${sAlpha.toFixed(2)})`;
+        ctx.fillRect(Math.round(sx), Math.round(sy), 2, 2);
     }
 
-    // 3. CAIXA GERAL / MULTIBANCO (ATM iluminado e cliente na fila, x: 305, y: 175)
-    const bx = 305;
-    const by = 175;
-    // Brilho azul pulsante do ecrã do Multibanco
-    const atmPulse = 0.35 + Math.sin(animTimer * 4.0) * 0.15;
+    // 3. CAIXA GERAL / MULTIBANCO (Cidadão Completo a Marcar Código no ATM, x: 298, y: 174)
+    const bx = 298;
+    const by = 174;
+    // Sombra no pavimento
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.fillRect(bx - 4, by + 8, 12, 3);
+    // Ecrã do Multibanco na parede
+    const atmPulse = 0.4 + Math.sin(animTimer * 4.0) * 0.2;
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(bx + 7, by - 12, 8, 12);
     ctx.fillStyle = `rgba(56, 189, 248, ${atmPulse.toFixed(2)})`;
-    ctx.fillRect(303, 166, 8, 6);
-
-    const watchCycle = animTimer % 5.0;
-    const slipWave = Math.sin(animTimer * 7.0) * 1.2;
-    ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(bx + 4, by - 6 + Math.round(slipWave), 3, 2);
-
-    if (watchCycle > 2.8 && watchCycle < 4.2) {
-        ctx.fillStyle = '#fed7aa';
-        ctx.fillRect(bx - 3, by - 8, 2, 2);
-        ctx.fillStyle = '#f59e0b';
-        ctx.fillRect(bx - 2, by - 8, 1, 1);
+    ctx.fillRect(bx + 8, by - 11, 6, 5); // visor luminoso
+    ctx.fillStyle = '#22c55e';
+    ctx.fillRect(bx + 8, by - 4, 3, 1); // ranhura do cartão
+    // Pernas e sapatos do cidadão
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(bx - 3, by + 1, 4, 7);
+    ctx.fillRect(bx + 2, by + 1, 4, 7);
+    ctx.fillStyle = '#090d16';
+    ctx.fillRect(bx - 4, by + 7, 5, 2);
+    ctx.fillRect(bx + 2, by + 7, 5, 2);
+    // Sobretudo / Gabardine Camel
+    const bBreathe = Math.sin(animTimer * 2.5) * 0.5;
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(bx - 4, by - 8 + Math.round(bBreathe), 9, 10);
+    ctx.fillStyle = '#92400e';
+    ctx.fillRect(bx - 1, by - 8 + Math.round(bBreathe), 2, 10); // dobra
+    // Cabeça e Boina Lisboeta
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(bx - 2, by - 14 + Math.round(bBreathe), 6, 6);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(bx - 4, by - 16 + Math.round(bBreathe), 9, 3);
+    ctx.fillRect(bx - 1, by - 17 + Math.round(bBreathe), 4, 1);
+    // Braço a marcar código no Multibanco
+    const typeAnim = Math.sin(animTimer * 8.0);
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(bx + 3, by - 6 + Math.round(bBreathe), 5, 3);
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(bx + 7, by - 5 + (typeAnim > 0 ? 1 : 0), 2, 2);
+    // Talão a sair da ranhura
+    const slipCycle = animTimer % 6.0;
+    if (slipCycle > 2.5) {
+        const slipFlutter = Math.sin(animTimer * 6) * 1.0;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(bx + 6, by - 2 + Math.round(slipFlutter), 3, 2);
     }
 
-    // 4. DEGRAUS DO IST / UNIVERSIDADE (Estudante com Sebenta, x: 72, y: 180)
+    // 4. DEGRAUS DO IST / UNIVERSIDADE (Estudante com Sebenta e Mochila, x: 72, y: 178)
     const sx = 72;
-    const sy = 180;
-    const pageCycle = animTimer % 6.0;
-
-    ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(sx + 7, sy + 3, 2, 3);
+    const sy = 178;
+    // Sombra no degrau
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.fillRect(sx - 7, sy + 7, 18, 4);
+    // Mochila pousada no degrau
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(sx - 9, sy + 1, 5, 7);
     ctx.fillStyle = '#78350f';
-    ctx.fillRect(sx + 7, sy + 2, 2, 1);
-
-    if (pageCycle > 4.5 && pageCycle < 5.6) {
-        const pageProg = (pageCycle - 4.5) / 1.1;
-        const turnX = sx - 1 + Math.round((1 - pageProg) * 4);
+    ctx.fillRect(sx - 8, sy, 3, 2);
+    ctx.fillStyle = '#fde047';
+    ctx.fillRect(sx - 8, sy + 4, 3, 1);
+    // Pernas sentadas (Jeans azul-escuro)
+    ctx.fillStyle = '#1e3a8a';
+    ctx.fillRect(sx - 3, sy + 3, 10, 4);
+    ctx.fillRect(sx + 3, sy + 5, 4, 3);
+    ctx.fillStyle = '#f8fafc'; // sapatilhas brancas
+    ctx.fillRect(sx + 5, sy + 7, 4, 2);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(sx + 5, sy + 9, 4, 1);
+    // Tronco / Casaco Hoodie Verde IST
+    const sBreathe = Math.sin(animTimer * 2.8) * 0.5;
+    ctx.fillStyle = '#15803d';
+    ctx.fillRect(sx - 4, sy - 5 + Math.round(sBreathe), 9, 8);
+    ctx.fillStyle = '#166534';
+    ctx.fillRect(sx - 3, sy - 5 + Math.round(sBreathe), 7, 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(sx, sy - 2 + Math.round(sBreathe), 1, 3); // cordões
+    // Cabeça e Cabelo com Óculos
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(sx - 2, sy - 11 + Math.round(sBreathe), 6, 6);
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(sx - 3, sy - 13 + Math.round(sBreathe), 8, 3);
+    ctx.fillRect(sx - 4, sy - 11 + Math.round(sBreathe), 2, 4);
+    ctx.fillStyle = '#0f172a'; // óculos
+    ctx.fillRect(sx - 1, sy - 9 + Math.round(sBreathe), 2, 1);
+    ctx.fillRect(sx + 2, sy - 9 + Math.round(sBreathe), 2, 1);
+    ctx.fillRect(sx + 1, sy - 9 + Math.round(sBreathe), 1, 1);
+    // Livro / Sebenta Aberta no Colo
+    const pageCycle = animTimer % 5.0;
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(sx - 4, sy, 12, 5);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(sx - 3, sy - 1, 5, 5);
+    ctx.fillRect(sx + 3, sy - 1, 5, 5);
+    ctx.fillStyle = '#fef08a'; // marcador
+    ctx.fillRect(sx - 2, sy + 1, 3, 1);
+    // Braços a segurar a sebenta
+    ctx.fillStyle = '#15803d';
+    ctx.fillRect(sx - 5, sy - 3 + Math.round(sBreathe), 2, 5);
+    ctx.fillRect(sx + 5, sy - 3 + Math.round(sBreathe), 2, 5);
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(sx - 4, sy + 1, 2, 2);
+    ctx.fillRect(sx + 6, sy + 1, 2, 2);
+    if (pageCycle > 3.8 && pageCycle < 4.8) {
+        const pProg = (pageCycle - 3.8) / 1.0;
+        const pX = sx + 2 - Math.round(pProg * 5);
+        const pArc = Math.sin(pProg * Math.PI) * 3;
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(turnX, sy - 3 - Math.round(Math.sin(pageProg * Math.PI) * 2), 3, 4);
-    } else {
-        ctx.fillStyle = '#fef08a';
-        ctx.fillRect(sx - 1, sy - 2, 5, 3);
-        ctx.fillStyle = '#3b82f6';
-        ctx.fillRect(sx - 2, sy - 2, 1, 3);
+        ctx.fillRect(pX, sy - 2 - Math.round(pArc), 3, 4);
     }
 
     // 5. MODAS CHIADO (Pronto-a-Vestir Chiado / Alfaiataria, x: 376, y: 182)
@@ -1717,29 +2003,87 @@ function renderBoardLivingCharacters(ctx, animTimer) {
     // 6. PINGO DOCE (Freguesa com o Saco das Compras, x: 478, y: 182)
     const gx = 478;
     const gy = 182;
-    const bagSway = Math.sin(animTimer * 2.8) * 1.5;
-    ctx.fillStyle = '#16a34a';
-    ctx.fillRect(gx + 3, gy - 2 + Math.round(bagSway), 4, 5);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(gx + 4, gy + Math.round(bagSway), 2, 2);
-
-    // 7. ACAMPADA DO ROSSIO (Ativista a Tocar Guitarra nas Tendas, x: 186, y: 205)
-    const ax = 186;
-    const ay = 205;
-    const strum = Math.sin(animTimer * 9.0) * 1.5;
-    ctx.fillStyle = '#b45309';
-    ctx.fillRect(ax - 2, ay - 6, 6, 4);
+    // Sombra no passeio
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.fillRect(gx - 5, gy + 7, 13, 3);
+    // Saia / Calças e Sapatos
+    ctx.fillStyle = '#1e3a8a';
+    ctx.fillRect(gx - 3, gy + 1, 7, 7);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(gx - 4, gy + 7, 4, 2);
+    ctx.fillRect(gx + 1, gy + 7, 4, 2);
+    // Casaco Mostarda
+    const gBreathe = Math.sin(animTimer * 2.7) * 0.5;
+    ctx.fillStyle = '#ca8a04';
+    ctx.fillRect(gx - 4, gy - 8 + Math.round(gBreathe), 9, 9);
+    // Cabeça e Cabelo Louro
     ctx.fillStyle = '#fed7aa';
-    ctx.fillRect(ax + 1, ay - 6 + Math.round(strum), 2, 2);
+    ctx.fillRect(gx - 2, gy - 14 + Math.round(gBreathe), 6, 6);
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(gx - 3, gy - 16 + Math.round(gBreathe), 8, 4);
+    // Saco Verde de Compras do Pingo Doce a Baloiçar
+    const bagSway = Math.sin(animTimer * 3.0) * 1.5;
+    ctx.fillStyle = '#16a34a';
+    ctx.fillRect(gx + 3, gy - 3 + Math.round(bagSway), 6, 7);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(gx + 4, gy - 1 + Math.round(bagSway), 4, 2);
+    ctx.fillStyle = '#fde047'; // pão / baguete
+    ctx.fillRect(gx + 6, gy - 6 + Math.round(bagSway), 2, 4);
 
-    const noteProg = (animTimer * 0.9) % 2.5;
-    if (noteProg < 2.0) {
-        const nx = ax + 4 + Math.sin(noteProg * 4) * 3;
-        const ny = ay - 10 - noteProg * 8;
-        const nAlpha = (1 - noteProg / 2.0) * 0.8;
-        ctx.fillStyle = `rgba(251, 191, 36, ${nAlpha.toFixed(2)})`;
-        ctx.font = '7px "Press Start 2P"';
-        ctx.fillText("♪", Math.round(nx), Math.round(ny));
+    // 7. ACAMPADA DO ROSSIO (Inês Sentada no Caixote a Tocar Viola, x: 182, y: 202)
+    const ax = 182;
+    const ay = 202;
+    // Sombra no chão
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.fillRect(ax - 7, ay + 6, 18, 4);
+    // Caixote de madeira
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(ax - 6, ay, 9, 7);
+    ctx.fillStyle = '#92400e';
+    ctx.fillRect(ax - 5, ay + 1, 7, 5);
+    // Pernas e botas
+    ctx.fillStyle = '#1e3a8a';
+    ctx.fillRect(ax - 4, ay + 2, 8, 4);
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(ax - 5, ay + 5, 4, 3);
+    ctx.fillRect(ax + 1, ay + 5, 4, 3);
+    // Casaco quente de ativista com laço vermelho
+    const inesBreathe = Math.sin(animTimer * 2.6) * 0.5;
+    ctx.fillStyle = '#374151';
+    ctx.fillRect(ax - 5, ay - 6 + Math.round(inesBreathe), 10, 8);
+    ctx.fillStyle = '#ef4444'; // laço / pin direito à habitação
+    ctx.fillRect(ax - 3, ay - 4 + Math.round(inesBreathe), 2, 2);
+    // Cabeça, cabelo castanho em coque e óculos
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(ax - 3, ay - 12 + Math.round(inesBreathe), 6, 6);
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(ax - 4, ay - 14 + Math.round(inesBreathe), 8, 3);
+    ctx.fillRect(ax - 1, ay - 17 + Math.round(inesBreathe), 4, 3); // coque
+    ctx.fillStyle = '#f59e0b'; // óculos
+    ctx.fillRect(ax - 2, ay - 10 + Math.round(inesBreathe), 2, 1);
+    ctx.fillRect(ax + 1, ay - 10 + Math.round(inesBreathe), 2, 1);
+    // Viola acústica ao colo
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(ax - 2, ay - 2 + Math.round(inesBreathe), 8, 5);
+    ctx.fillStyle = '#451a03'; // boca da viola
+    ctx.fillRect(ax + 1, ay - 1 + Math.round(inesBreathe), 2, 2);
+    ctx.fillStyle = '#78350f'; // braço da viola
+    ctx.fillRect(ax - 8, ay - 5 + Math.round(inesBreathe), 6, 2);
+    // Mãos a dedilhar
+    const strumProg = Math.sin(animTimer * 7.5) * 1.5;
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(ax - 7, ay - 6 + Math.round(inesBreathe), 2, 2); // mão esquerda nos acordes
+    ctx.fillRect(ax + 1, ay - 3 + Math.round(inesBreathe + strumProg), 2, 2); // mão direita a dedilhar
+    // Notas musicais flutuantes ♪ ♫
+    const noteCycle = (animTimer * 1.1) % 3.0;
+    if (noteCycle < 2.5) {
+        const noteProg = noteCycle / 2.5;
+        const noteX = ax + 5 + Math.sin(noteProg * 5) * 4;
+        const noteY = ay - 12 - noteProg * 14;
+        const noteAlpha = (1 - noteProg) * 0.9;
+        ctx.fillStyle = `rgba(251, 191, 36, ${noteAlpha.toFixed(2)})`;
+        ctx.font = '8px "Press Start 2P"';
+        ctx.fillText(noteCycle > 1.2 ? "♫" : "♪", Math.round(noteX), Math.round(noteY));
     }
 
     // 8. EFEITO DE HOVER RETRO SOBRE AS PERSONAGENS VIVAS (Estilo Aventura LucasArts)
@@ -1807,29 +2151,43 @@ function renderSpeechBubbles() {
         });
         if (curLine) lines.push(curLine.trim());
 
-        const bw = Math.min(180, Math.max(110, ctx.measureText(b.speaker || '').width + 20));
-        const bh = 14 + lines.length * 11;
-        const bx = b.x - bw / 2;
-        const by = b.y - bh - 6;
+        // Medir largura real necessária com base em todas as linhas e no nome do orador
+        let maxLineWidth = ctx.measureText(b.speaker || '').width + 20;
+        lines.forEach(l => {
+            const lw = ctx.measureText(l).width + 16;
+            if (lw > maxLineWidth) maxLineWidth = lw;
+        });
 
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+        const bw = Math.min(220, Math.max(130, Math.ceil(maxLineWidth)));
+        const bh = 15 + lines.length * 11;
+        let bx = Math.round(b.x - bw / 2);
+        let by = Math.round(b.y - bh - 8);
+
+        // Prevenir estritamente corte fora dos limites do ecrã (640x360)
+        if (bx < 8) bx = 8;
+        if (bx + bw > 632) bx = 632 - bw;
+        if (by < 8) by = Math.min(b.y + 20, 360 - bh - 8);
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
         ctx.fillRect(bx, by, bw, bh);
         ctx.strokeStyle = '#f59e0b';
         ctx.lineWidth = 1.5;
         ctx.strokeRect(bx, by, bw, bh);
 
-        // Ponta do balão
+        // Ponta do balão ancorada na posição exata da personagem
+        const arrowX = Math.max(bx + 12, Math.min(bx + bw - 12, Math.round(b.x)));
+        const arrowY = by + bh;
         ctx.fillStyle = '#0f172a';
         ctx.beginPath();
-        ctx.moveTo(b.x - 4, by + bh);
-        ctx.lineTo(b.x + 4, by + bh);
-        ctx.lineTo(b.x, by + bh + 5);
+        ctx.moveTo(arrowX - 4, arrowY);
+        ctx.lineTo(arrowX + 4, arrowY);
+        ctx.lineTo(arrowX, arrowY + 5);
         ctx.fill();
         ctx.strokeStyle = '#f59e0b';
         ctx.beginPath();
-        ctx.moveTo(b.x - 4, by + bh);
-        ctx.lineTo(b.x, by + bh + 5);
-        ctx.lineTo(b.x + 4, by + bh);
+        ctx.moveTo(arrowX - 4, arrowY);
+        ctx.lineTo(arrowX, arrowY + 5);
+        ctx.lineTo(arrowX + 4, arrowY);
         ctx.stroke();
 
         // Nome do interlocutor
@@ -1840,7 +2198,7 @@ function renderSpeechBubbles() {
             ctx.fillText(b.speaker, bx + 6, by + 10);
         }
 
-        // Texto
+        // Linhas de Texto Formatadas
         ctx.fillStyle = '#f8fafc';
         ctx.font = '8px "Fira Code"';
         ctx.textAlign = 'left';
@@ -1884,6 +2242,15 @@ let player = {
     careerIndex: 0,
     currentWorkplace: null, // Começa Desempregado conforme a narrativa!
     enrolledCourse: null,
+    completedSubjects: {},
+    completedCourses: [],
+    courseSubjectIndex: {
+        informatica: 0,
+        economia: 0,
+        matematica: 0,
+        gestao: 0
+    },
+    musicSkill: 0,
     courseEcts: {
         informatica: 0,
         economia: 0,
@@ -1902,14 +2269,16 @@ let player = {
         tasca: 0,
         banco: 0,
         startup: 0,
-        faculdade: 0
+        faculdade: 0,
+        loja_roupa: 0
     },
     careerShifts: {
         pingo_doce: 0,
         tasca: 0,
         banco: 0,
         startup: 0,
-        faculdade: 0
+        faculdade: 0,
+        loja_roupa: 0
     },
     totalShiftsWorked: 0,
     daysUntilRent: 7,
@@ -1936,7 +2305,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '2.5';
+const ASSET_VER = '2.6';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -1945,6 +2314,10 @@ zeSheetImg.src = `assets/ze_spritesheet.png?v=${ASSET_VER}`;
 
 const portraitsSheetImg = new Image();
 portraitsSheetImg.src = `assets/portraits_sheet.png?v=${ASSET_VER}`;
+
+// Retrato Exclusivo em Pixel Art da D. Mariana (IEFP / 45 anos, Loura, Óculos e Blazer)
+const iefpPortraitImg = new Image();
+iefpPortraitImg.src = `assets/portrait_iefp.png?v=${ASSET_VER}`;
 
 // Splash Screen Bitmapped 16-Bit Deslumbrante de Lisboa
 const splashImg = new Image();
@@ -3832,12 +4205,13 @@ const NPC_INFO = {
         color: "#1e3a8a"
     },
     startup: {
-        name: "Mariana (Recrutamento)",
-        role: "Agência Emprego & Hub",
+        name: "D. Mariana (IEFP)",
+        role: "Conselheira de Emprego (45 anos)",
         quote: () => {
-            const curComp = (WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce).name;
+            const curComp = player.currentWorkplace ? (WORKPLACES[player.currentWorkplace] || {}).name : "Nenhum (Desempregado)";
             const job = getPlayerJob();
-            return `IEFP & Tech Hub! Currículo: ${getCurriculumDegree()} (${player.ects} ECTS). Contrato ativo: ${curComp} (${job.title}).`;
+            const jobTitle = job ? job.title : "Sem emprego ativo";
+            return `Centro de Emprego do IEFP! Currículo: ${getCurriculumDegree()} (${player.ects} ECTS). Emprego atual: ${curComp} (${jobTitle}). Consulta o teu dossier curricular!`;
         },
         color: "#065f46"
     },
@@ -3971,7 +4345,16 @@ function drawNpcPortrait(id, x, y, size) {
     ctx.rect(x + 1, y + 1, size - 2, size - 2);
     ctx.clip();
 
-    if (portraitsSheetImg.complete && portraitsSheetImg.naturalWidth > 0) {
+    if (id === 'startup' && iefpPortraitImg.complete && iefpPortraitImg.naturalWidth > 0) {
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(
+            iefpPortraitImg,
+            0, 0, 128, 128,
+            x + 1, y + 1 + breathY, size - 2, size - 2
+        );
+        ctx.restore();
+        return;
+    } else if (portraitsSheetImg.complete && portraitsSheetImg.naturalWidth > 0) {
         ctx.imageSmoothingEnabled = false;
         // Desenha o sprite 128x128 com respiração natural de 1px
         ctx.drawImage(
@@ -4990,60 +5373,77 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                     desc: `${nextHouse.rent}€/sem · ${nextHouse.qual}`
                 });
             }
+
+            // Trabalho para o Senhorio: Biscate de Manutenção e Pintura
+            actions.push({
+                label: "Biscate: Manutenção & Obras em Prédios (4h)",
+                workLandlordJob: true,
+                gain: 32,
+                timeH: 4,
+                timeM: 0,
+                hunger: -12,
+                desc: "Pintar tetos e reparar canalizações para o Sr. Jerónimo. +32€ na mão!"
+            });
         }
     } else if (id === 'faculdade') {
         // ====================================================================
-        // UNIVERSIDADE (IST): CURSOS UNIVERSITÁRIOS & CARREIRA DOCENTE
+        // UNIVERSIDADE (IST): CURSOS UNIVERSITÁRIOS & CADEIRAS SEQUENCIAIS
         // ====================================================================
         if (!player.enrolledCourse) {
-            actions.push({
-                label: "Matrícula: Eng. Informática (IST)",
-                cost: 30,
-                enrollCourse: 'informatica',
-                desc: "Habilita carreira no Tech Hub / Startups (Dev, Cloud, CTO)."
-            });
-            actions.push({
-                label: "Matrícula: Economia & Banca (IST/ISEG)",
-                cost: 30,
-                enrollCourse: 'economia',
-                desc: "Habilita carreira na Caixa / Banco (Crédito, Gestor, Diretor)."
-            });
-            actions.push({
-                label: "Matrícula: Matemática Aplicada (IST)",
-                cost: 30,
-                enrollCourse: 'matematica',
-                desc: "Habilita carreira docente no IST (Monitor Álgebra, Professor)."
-            });
-            actions.push({
-                label: "Matrícula: Gestão & Logística (IST)",
-                cost: 30,
-                enrollCourse: 'gestao',
-                desc: "Habilita carreira de Chefia e Gerência no Pingo Doce."
+            Object.keys(COURSES).forEach(cKey => {
+                const c = COURSES[cKey];
+                const isConcluded = (player.completedCourses || []).includes(cKey);
+                actions.push({
+                    label: isConcluded ? `✓ ${c.shortName} (Canudo Obtido)` : `Matrícula: ${c.shortName}`,
+                    cost: isConcluded ? 0 : 30,
+                    enrollCourse: isConcluded ? null : cKey,
+                    desc: isConcluded ? `Já tens o canudo oficial deste curso! (${c.name})` : `Inscrição no IST (30€) · ${c.desc}`
+                });
             });
         } else {
             const curCourse = COURSES[player.enrolledCourse];
             const courseEcts = (player.courseEcts && player.courseEcts[player.enrolledCourse]) || 0;
+            const subIdx = (player.courseSubjectIndex && player.courseSubjectIndex[player.enrolledCourse]) || 0;
+            const isDegreeDone = (player.completedCourses || []).includes(player.enrolledCourse);
 
-            // Cadeiras do Curso
-            actions.push({
-                label: `Cadeira: ${curCourse.subjects[0].name}`,
-                cost: 25,
-                timeH: 4,
-                timeM: 0,
-                ects: 15,
-                studyCourse: curCourse.id,
-                desc: `Aulas no IST · +15 ECTS em ${curCourse.shortName} (Tens: ${courseEcts})`
-            });
+            if (isDegreeDone || subIdx >= curCourse.subjects.length) {
+                actions.push({
+                    label: `🎓 ${curCourse.shortName} CONCLUÍDO!`,
+                    cost: 0,
+                    openCvModal: true,
+                    desc: `Canudo do IST obtido com sucesso! (${courseEcts} ECTS). Clica para ver o teu CV.`
+                });
+                actions.push({
+                    label: "Secretaria: Inscrever noutro Curso (30€)",
+                    cost: 30,
+                    resetCourse: true,
+                    desc: "Concluíste este curso com sucesso! Podes inscrever-te noutra licenciatura."
+                });
+            } else {
+                const nextSub = curCourse.subjects[subIdx];
+                actions.push({
+                    label: `Estudar (${subIdx + 1}/4): ${nextSub.name}`,
+                    cost: nextSub.cost,
+                    timeH: nextSub.timeH,
+                    timeM: 0,
+                    ects: nextSub.ects,
+                    studySubject: { courseId: curCourse.id, subjectIndex: subIdx, name: nextSub.name, isFinal: nextSub.isFinal },
+                    desc: `${nextSub.desc} (+${nextSub.ects} ECTS no Canudo)`
+                });
 
-            actions.push({
-                label: `Exames: ${curCourse.subjects[1].name}`,
-                cost: 40,
-                timeH: 6,
-                timeM: 0,
-                ects: 25,
-                studyCourse: curCourse.id,
-                desc: `Época de exames · +25 ECTS em ${curCourse.shortName} (Tens: ${courseEcts})`
-            });
+                actions.push({
+                    label: "📜 Consultar Histórico de Cadeiras (CV)",
+                    openCvModal: true,
+                    desc: `Progresso: ${subIdx}/4 cadeiras concluídas em ${curCourse.shortName}. Ver dossier.`
+                });
+
+                actions.push({
+                    label: "Secretaria: Trocar de Curso (30€)",
+                    cost: 30,
+                    resetCourse: true,
+                    desc: `Curso atual: ${curCourse.name}. Clica para mudar de curso.`
+                });
+            }
 
             // Carreira Docente no IST (Monitor de Álgebra, Assistente, Professor)
             const teachRank = (player.careerRanks && player.careerRanks.faculdade) || 0;
@@ -5059,7 +5459,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                     timeH: curTeachJob.hoursPerShift,
                     timeM: 0,
                     ectsBonus: curTeachJob.ectsBonus,
-                    desc: `Dar aulas aos caloiros · +${curTeachJob.wagePerHour * curTeachJob.hoursPerShift}€ e +${curTeachJob.ectsBonus} ECTS (Turnos: ${teachShifts})`
+                    desc: `Dar aulas aos caloiros no IST · +${curTeachJob.wagePerHour * curTeachJob.hoursPerShift}€ e +${curTeachJob.ectsBonus} ECTS (Turnos: ${teachShifts})`
                 });
 
                 if (nextTeachJob) {
@@ -5073,27 +5473,18 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                     });
                 }
             } else {
-                // Candidatura a Monitor de Álgebra
                 actions.push({
                     label: "Candidatar: Monitor de Álgebra (IST)",
                     applyJob: 'faculdade',
-                    desc: "Requer curso de Matemática/Informática, min 45 ECTS e Smart Casual. 12€/h!"
+                    desc: "Requer curso de Matemática, min 35 ECTS e Smart Casual. 12€/h!"
                 });
             }
 
-            // Loja da AEIST
             actions.push({
                 label: "AEIST: Traje Académico do IST",
                 cost: 140,
                 buyClothing: 'academic',
                 desc: "Capa e batina tradicional do IST (Durabilidade: 90). Dá prestígio!"
-            });
-
-            actions.push({
-                label: "Secretaria: Trocar de Curso (30€)",
-                cost: 30,
-                resetCourse: true,
-                desc: `Curso atual: ${curCourse.name}. Clica para mudar de curso.`
             });
         }
     } else if (id === 'banco') {
@@ -5103,7 +5494,6 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         actions.push({ label: "Depositar 50€ no Banco", deposit: 50, timeH: 0, timeM: 15, desc: "Protege o teu dinheiro contra assaltos noturnos." });
         actions.push({ label: "Levantar 50€ da Conta", withdraw: 50, timeH: 0, timeM: 15, desc: "Dinheiro vivo na mão para compras diárias." });
 
-        // Alfaiate Parceiro da Caixa
         actions.push({
             label: "Alfaiate da Caixa: Fato Pombalino",
             cost: 180,
@@ -5150,7 +5540,6 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         actions.push({ label: "Saco de Mercearia (2 Ref.)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições nutritivas para a despensa." });
         actions.push({ label: "Cabaz Económico (5 Ref.)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para abastecer a casa." });
 
-        // Secção Têxtil Básica do Pingo Doce (Apenas Calções e T-shirt)
         actions.push({
             label: "Têxtil Básico: Calções & T-Shirt (25€)",
             cost: 25,
@@ -5236,8 +5625,34 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         }
     } else if (id === 'startup') {
         // ====================================================================
-        // STARTUP TECH HUB / IEFP: CARREIRAS TECH & CV
+        // IEFP / CENTRO DE EMPREGO (D. Mariana, 45 anos): CONSULTORIA & CV
         // ====================================================================
+        actions.push({
+            label: "📜 Consultar Dossier Curricular (CV)",
+            openCvModal: true,
+            desc: "Examinar habilitações académicas, ECTS, canudos e histórico profissional."
+        });
+
+        actions.push({
+            label: "Orientação de Carreiras com D. Mariana (1h)",
+            reviewCv: true,
+            timeH: 1,
+            timeM: 0,
+            sanity: 20,
+            desc: `Análise curricular no IEFP. Grau: ${getCurriculumDegree()} · +20 Sanidade`
+        });
+
+        actions.push({
+            label: "Formação Profissional do IEFP (3h)",
+            cost: 20,
+            timeH: 3,
+            timeM: 0,
+            gainEcts: 5,
+            sanity: 15,
+            desc: "Workshop prático de empregabilidade. +5 ECTS gerais e +15 Sanidade."
+        });
+
+        // Bolsa de Carreiras Tech Hub (se qualificado)
         const techRank = (player.careerRanks && player.careerRanks.startup) || 0;
         const curTechJob = WORKPLACES.startup.careers[techRank];
         const nextTechJob = WORKPLACES.startup.careers[techRank + 1];
@@ -5245,14 +5660,13 @@ function renderBuildingActions(id, mx, my, mw, mh) {
 
         if (player.currentWorkplace === 'startup') {
             actions.push({
-                label: `Turno: ${curTechJob.title} (${curTechJob.hoursPerShift}h)`,
+                label: `Turno Tech Hub: ${curTechJob.title} (${curTechJob.hoursPerShift}h)`,
                 workShift: 'startup',
                 gain: curTechJob.wagePerHour * curTechJob.hoursPerShift,
                 timeH: curTechJob.hoursPerShift,
                 timeM: 0,
-                desc: `Sprint de desenvolvimento · +${curTechJob.wagePerHour * curTechJob.hoursPerShift}€ (Turnos: ${techShifts})`
+                desc: `Sprint remoto do Tech Hub · +${curTechJob.wagePerHour * curTechJob.hoursPerShift}€ (Turnos: ${techShifts})`
             });
-
             if (nextTechJob) {
                 actions.push({
                     label: `Promover: ${nextTechJob.title}`,
@@ -5267,31 +5681,53 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             actions.push({
                 label: "Candidatar: Estagiário Tech Hub",
                 applyJob: 'startup',
-                desc: "Requer matrícula em Eng. Informática e 20 ECTS. 8.50€/h!"
+                desc: "Requer matrícula em Informática e 20 ECTS. 8.50€/h!"
             });
         }
-
-        actions.push({
-            label: "Orientação de CV & Mercado (1h)",
-            reviewCv: true,
-            timeH: 1,
-            timeM: 0,
-            sanity: 15,
-            desc: `Curso: ${player.enrolledCourse ? COURSES[player.enrolledCourse].shortName : 'Nenhum'} · ${getCurriculumDegree()} · +15 Sanidade`
-        });
     } else if (id === 'miradouro') {
+        // ====================================================================
+        // MIRADOURO: DESCANSO, BEBER COM AMIGOS & TOCAR GUITARRA / FADO
+        // ====================================================================
+        const musicLvl = Math.round(player.musicSkill || 0);
+        let buskDesc = `Qualidade: Caloiro Desafinado (${musicLvl}%) · Pratica para ganhares ouvido e moedas!`;
+        if (musicLvl >= 80) buskDesc = `Qualidade: Mestre Fadista de Alfama (${musicLvl}%) · Ganhos máximos e aplausos de pé!`;
+        else if (musicLvl >= 50) buskDesc = `Qualidade: Virtuoso de Esquina (${musicLvl}%) · Multidão aplaude fados na calçada!`;
+        else if (musicLvl >= 20) buskDesc = `Qualidade: Fadista Amador (${musicLvl}%) · Melodia afinada, moedas a cair no chapéu!`;
+
         actions = [
-            { label: "Ver o Tejo ao Pôr-do-Sol", cost: 0, timeH: 1, timeM: 0, sanity: 25, desc: "Ar fresco lisboeta. +25 Sanidade mental." },
-            { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Socializar à beira-rio. +50 Sanidade." },
-            { label: "Tocar Guitarra Portuguesa (2h)", gain: 15, timeH: 2, timeM: 0, sanity: 10, desc: "Tocar fado com chapéu na calçada. +15€ e +10 Sanidade." }
+            { label: "Ver o Tejo ao Pôr-do-Sol", cost: 0, timeH: 1, timeM: 0, sanity: 25, desc: "Ar fresco lisboeta e vista sobre o rio. +25 Sanidade mental." },
+            { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Tertúlia à beira-rio com finos frescos. +50 Sanidade." },
+            { label: "🎸 Tocar Guitarra no Miradouro (3h)", buskingMusic: true, timeH: 3, timeM: 0, desc: buskDesc }
         ];
     } else if (id === 'acampada') {
+        // ====================================================================
+        // ACAMPADA ROSSIO: RESISTÊNCIA POPULAR, PERNOITA & TURNOS SOLIDÁRIOS
+        // ====================================================================
         actions = [
             {
                 label: "Pernoitar na Acampada (Passar Noite em Luta)",
                 cost: 0,
                 sleepAcampada: true,
                 desc: "Passa a noite na tenda do Rossio! +40 Sanidade, +35 Comida grátis e CONGELA despejo!"
+            },
+            {
+                label: "Turno: Cantina & Cozinha Popular Solidária (3h)",
+                workCommunityShift: 'cozinha',
+                gain: 18,
+                hunger: 40,
+                sanity: 20,
+                timeH: 3,
+                timeM: 0,
+                desc: "Preparar sopa comunitária e servir refeições. +18€ solidários, +40 Comida e +20 Sanidade."
+            },
+            {
+                label: "Turno: Vigília & Segurança Noturna (4h)",
+                workCommunityShift: 'vigilia',
+                gain: 24,
+                sanity: 25,
+                timeH: 4,
+                timeM: 0,
+                desc: "Guardar o acampamento popular e proteger as tendas. +24€ de apoio e +25 Sanidade."
             },
             {
                 label: "Assembleia Popular da Habitação (2h)",
@@ -5310,19 +5746,12 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                 sanity: 20,
                 donateAcampada: true,
                 desc: "Apoia a panela de sopa comunitária com 5€. +20 Sanidade e apoio mútuo."
-            },
-            {
-                label: "Marcha de Protesto: 'Mais Teto, Menos Renda!' (3h)",
-                cost: 0,
-                timeH: 3,
-                timeM: 0,
-                sanity: 35,
-                hunger: -15,
-                marchProtest: true,
-                desc: "Descer a Avenida com megafone e cartazes. +35 Sanidade (gasta 15 nutrição)."
             }
         ];
     } else if (id === 'loja_roupa') {
+        // ====================================================================
+        // MODAS CHIADO: VESTUÁRIO, ALFAIATARIA & CARREIRAS DE ALTA COSTURA
+        // ====================================================================
         actions = [
             {
                 label: "Polo Smart Casual (65€)",
@@ -5357,6 +5786,38 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                 desc: `Restaura a roupa atual (+60% Durabilidade). Roupa atual: ${player.clothing.name} (${player.clothing.durability}%).`
             }
         ];
+
+        // Carreira na Alfaiataria Modas Chiado
+        const lrRank = (player.careerRanks && player.careerRanks.loja_roupa) || 0;
+        const curLrJob = WORKPLACES.loja_roupa.careers[lrRank];
+        const nextLrJob = WORKPLACES.loja_roupa.careers[lrRank + 1];
+        const lrShifts = (player.careerShifts && player.careerShifts.loja_roupa) || 0;
+
+        if (player.currentWorkplace === 'loja_roupa') {
+            actions.push({
+                label: `Turno: ${curLrJob.title} (${curLrJob.hoursPerShift}h)`,
+                workShift: 'loja_roupa',
+                gain: curLrJob.wagePerHour * curLrJob.hoursPerShift,
+                timeH: curLrJob.hoursPerShift,
+                timeM: 0,
+                desc: `Trabalho no ateliê do Chiado · +${curLrJob.wagePerHour * curLrJob.hoursPerShift}€ (Turnos: ${lrShifts})`
+            });
+
+            if (nextLrJob) {
+                actions.push({
+                    label: `Promover: ${nextLrJob.title}`,
+                    promoteCareer: 'loja_roupa',
+                    reqShifts: nextLrJob.reqShifts,
+                    desc: `Requer ${nextLrJob.reqShifts} turnos no ateliê · ${nextLrJob.wagePerHour}€/h`
+                });
+            }
+        } else {
+            actions.push({
+                label: "Candidatar: Ajudante de Alfaiataria",
+                applyJob: 'loja_roupa',
+                desc: "Ajudar na engomadoria e corte de tecidos no Chiado. 7.50€/h!"
+            });
+        }
     }
 
     // Desenhar Ações na Coluna Direita (ax: mx + 138, aw: mw - 152)
@@ -5388,7 +5849,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         const titleY = cardH < 44 ? ay + 14 : ay + 18;
         ctx.fillText(act.label, ax + 14, titleY);
 
-        const btnW = 90;
+        const btnW = 96;
         const btnH = cardH < 44 ? 22 : 26;
         const btnX = ax + aw - btnW - 8;
         const btnY = ay + (cardH - btnH) / 2;
@@ -5411,7 +5872,36 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         let btnColor = "#10b981";
         let isAffordable = true;
 
-        if (act.cost !== undefined) {
+        if (act.openCvModal) {
+            btnText = "VER CV";
+            btnColor = "#38bdf8";
+        } else if (act.studySubject) {
+            btnText = `${act.cost}€ [ESTUDAR]`;
+            if (player.wallet < act.cost) {
+                isAffordable = false;
+                btnColor = "#64748b";
+            } else {
+                btnColor = "#38bdf8";
+            }
+        } else if (act.buskingMusic) {
+            btnText = "TOCAR FADO";
+            btnColor = "#f59e0b";
+        } else if (act.workCommunityShift) {
+            btnText = `+${act.gain}€ TURNO`;
+            btnColor = "#10b981";
+        } else if (act.workLandlordJob) {
+            btnText = `+${act.gain}€ BISCATE`;
+            btnColor = "#10b981";
+        } else if (act.sleepAcampada) {
+            btnText = "PERNOITAR";
+            btnColor = "#ef4444";
+        } else if (act.promoteCareer) {
+            btnText = "PROMOÇÃO";
+            btnColor = "#f59e0b";
+        } else if (act.workShift) {
+            btnText = `+${act.gain}€ TURNO`;
+            btnColor = "#10b981";
+        } else if (act.cost !== undefined) {
             btnText = `${act.cost}€`;
             if (player.wallet < act.cost) {
                 isAffordable = false;
@@ -5575,9 +6065,10 @@ canvas.addEventListener('mousemove', (e) => {
     mouse.y = c.y;
 
     if (state === 'BOARD') {
+        const isTramHover = (c.x >= 368 && c.x <= 478 && c.y >= 190 && c.y <= 236);
         const isHover = BUILDINGS.some(b => c.x >= b.x && c.x <= b.x + b.w && c.y >= b.y && c.y <= b.y + b.h);
         const isNpcHover = LIVING_NPCS.some(n => Math.hypot(c.x - n.x, c.y - n.y) < n.radius);
-        canvas.style.cursor = (isHover || isNpcHover) ? 'pointer' : 'default';
+        canvas.style.cursor = (isHover || isNpcHover || isTramHover) ? 'pointer' : 'default';
     } else {
         canvas.style.cursor = 'default';
     }
@@ -5587,6 +6078,15 @@ canvas.addEventListener('click', (e) => {
     initAudio();
     const c = getCanvasCoords(e);
     handleCanvasClick(c.x, c.y);
+});
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeCurriculumModal();
+        closeLeaderboard();
+        closeSubmitModal();
+        if (state === 'MODAL') closeModal();
+    }
 });
 
 function handleCanvasClick(cx, cy) {
@@ -5701,11 +6201,10 @@ function handleCanvasClick(cx, cy) {
         }
 
         // Easter Egg 1: Clicar no Elétrico 28 toca a sineta (Ding-Ding!)
-        const tramX = ((animTimer * 38) % (canvas.width + 140)) - 70;
-        if (cx >= tramX && cx <= tramX + 48 && cy >= 142 && cy <= 168) {
+        if (cx >= 368 && cx <= 478 && cy >= 190 && cy <= 236) {
             sfxTramBell();
             triggerHaptic([30, 40, 30]);
-            spawnParticle("🔔 Plim-Plim!", "#fde047", tramX + 24, 136);
+            spawnParticle("🔔 Plim-Plim!", "#fde047", cx, cy - 12);
             return;
         }
 
@@ -5836,12 +6335,38 @@ function executeAction(act) {
         spawnParticle(`🎓 ${course.shortName}`, '#38bdf8');
     }
 
-    // Estudo de Cadeiras / Exames no Curso Ativo
-    if (act.studyCourse) {
-        const cId = act.studyCourse;
-        player.courseEcts[cId] = (player.courseEcts[cId] || 0) + act.ects;
-        showToast(`Cadeira concluída com sucesso! +${act.ects} ECTS em ${COURSES[cId].shortName}.`);
-        spawnParticle(`+${act.ects} ECTS`, '#38bdf8');
+    // Estudo de Cadeiras Sequenciais do IST com Tese e Obtenção de Canudo
+    if (act.studySubject) {
+        const { courseId, subjectIndex, name, isFinal } = act.studySubject;
+        player.completedSubjects = player.completedSubjects || {};
+        player.completedSubjects[courseId + '_' + subjectIndex] = true;
+
+        player.courseSubjectIndex = player.courseSubjectIndex || {};
+        player.courseSubjectIndex[courseId] = subjectIndex + 1;
+
+        player.courseEcts[courseId] = (player.courseEcts[courseId] || 0) + act.ects;
+        player.ects = Math.min(180, player.ects + act.ects);
+
+        if (isFinal) {
+            player.completedCourses = player.completedCourses || [];
+            if (!player.completedCourses.includes(courseId)) {
+                player.completedCourses.push(courseId);
+            }
+            sfxAcademicTrumpet();
+            triggerHaptic([50, 50, 50, 100]);
+            spawnParticle("🎓 CANUDO OBTIDO!", '#fde047');
+            showToast(`🎓 PARABÉNS! Concluíste com distinção o curso de ${COURSES[courseId].name}! O Canudo do IST é teu!`);
+        } else {
+            sfxCoin();
+            spawnParticle(`✓ ${name.split('(')[0].trim()}`, '#38bdf8');
+            showToast(`Cadeira concluída com sucesso! +${act.ects} ECTS no canudo.`);
+        }
+    }
+
+    // Abrir Modal do Dossier Curricular (CV)
+    if (act.openCvModal) {
+        openCurriculumModal();
+        return;
     }
 
     // Cancelar / Trocar de Curso
@@ -5935,6 +6460,66 @@ function executeAction(act) {
         player.clothing.durability = Math.min(maxDur, player.clothing.durability + 40);
         showToast(`Roupa remendada com linha e agulha! Durabilidade: ${player.clothing.durability}%`);
         spawnParticle("✂️ Remendado!", '#10b981');
+    }
+
+    // Tocar Guitarra no Miradouro (Aptidão Musical Progressiva & Fado de Lisboa)
+    if (act.buskingMusic) {
+        player.musicSkill = player.musicSkill || 0;
+        // Evolução lenta: 2.5% a 3.8% por sessão de 3h (demora para atingir o topo)
+        const skillDelta = +(Math.random() * 1.3 + 2.5).toFixed(1);
+        player.musicSkill = Math.min(100, +(player.musicSkill + skillDelta).toFixed(1));
+
+        let earned = 0;
+        let sanityGain = 10;
+        let msg = "";
+
+        if (player.musicSkill < 20) {
+            sfxGuitarBad();
+            earned = Math.floor(Math.random() * 3) + 1; // 1-3€
+            sanityGain = 10;
+            msg = `Acordes desafinados... Transeuntes deram ${earned}€ por caridade. (Qualidade: ${player.musicSkill}%)`;
+            spawnParticle(`🎶 +${earned}€ (Desafinado)`, '#f87171');
+        } else if (player.musicSkill < 50) {
+            sfxGuitarGood(1);
+            earned = Math.floor(Math.random() * 8) + 8; // 8-15€
+            sanityGain = 20;
+            msg = `Fados populares dedilhados com afinco! O chapéu rendeu ${earned}€. (Qualidade: ${player.musicSkill}%)`;
+            spawnParticle(`🎵 +${earned}€`, '#facc15');
+        } else if (player.musicSkill < 80) {
+            sfxGuitarGood(2);
+            earned = Math.floor(Math.random() * 18) + 22; // 22-39€
+            sanityGain = 32;
+            msg = `Virtuoso de Alfama! Uma roda de lisboetas e turistas aplaudiu: +${earned}€! (Qualidade: ${player.musicSkill}%)`;
+            spawnParticle(`🎸 +${earned}€ (Virtuoso!)`, '#38bdf8');
+        } else {
+            sfxGuitarGood(3);
+            earned = Math.floor(Math.random() * 25) + 50; // 50-74€
+            sanityGain = 45;
+            msg = `Mestre Fadista no Miradouro! O chapéu encheu-se de notas: +${earned}€! (Qualidade: ${player.musicSkill}%)`;
+            spawnParticle(`👑 +${earned}€ (Mestre!)`, '#facc15');
+        }
+
+        player.wallet += earned;
+        stats.totalEarned += earned;
+        player.sanity = Math.min(100, player.sanity + sanityGain);
+        wearClothing(4);
+        showToast(msg);
+    }
+
+    // Turno Comunitário na Acampada (Cantina ou Vigília)
+    if (act.workCommunityShift) {
+        wearClothing(4);
+        player.totalShiftsWorked = (player.totalShiftsWorked || 0) + 1;
+        showToast(act.workCommunityShift === 'cozinha' ? 
+            "🍲 Turno na cantina solidária cumprido! Distribuíste refeições quentes à comunidade." : 
+            "🛡️ Vigília noturna cumprida! Protegeste as tendas e moradores do Rossio.");
+    }
+
+    // Biscate do Senhorio (Manutenção & Obras)
+    if (act.workLandlordJob) {
+        wearClothing(6);
+        player.totalShiftsWorked = (player.totalShiftsWorked || 0) + 1;
+        showToast("🛠️ Biscate de pintura e canalização concluído com o Sr. Jerónimo! Dinheiro vivo na mão.");
     }
 
     // Ações da Acampada pelo Direito à Habitação & Emprego
@@ -6049,17 +6634,44 @@ function resetGame() {
     player.houseIndex = 1;
     player.careerIndex = 0;
     player.currentWorkplace = null; // Reinicia Desempregado
+    player.enrolledCourse = null;
+    player.completedSubjects = {};
+    player.completedCourses = [];
+    player.courseSubjectIndex = {
+        informatica: 0,
+        economia: 0,
+        matematica: 0,
+        gestao: 0
+    };
+    player.courseEcts = {
+        informatica: 0,
+        economia: 0,
+        matematica: 0,
+        gestao: 0
+    };
+    player.musicSkill = 0;
+    player.clothing = {
+        id: 'shorts',
+        name: 'Calções & Sapatilhas',
+        icon: '🩳',
+        formality: 1,
+        durability: 100
+    };
     player.careerRanks = {
         pingo_doce: 0,
         tasca: 0,
         banco: 0,
-        startup: 0
+        startup: 0,
+        faculdade: 0,
+        loja_roupa: 0
     };
     player.careerShifts = {
         pingo_doce: 0,
         tasca: 0,
         banco: 0,
-        startup: 0
+        startup: 0,
+        faculdade: 0,
+        loja_roupa: 0
     };
     player.totalShiftsWorked = 0;
     player.daysUntilRent = 7;
@@ -6387,6 +6999,146 @@ function shareImageCard() {
             showToast("📸 Imagem descarregada! Pronta para o Instagram Stories!");
         }, 'image/png');
     }, 100);
+}
+
+// ============================================================================
+// 8.1 DOSSIER CURRICULAR (ESTILO AVENTURA LUCASARTS SCUMM)
+// ============================================================================
+function openCurriculumModal() {
+    initAudio();
+    sfxAction();
+    const modal = document.getElementById('curriculum-modal');
+    const container = document.getElementById('cv-content');
+    if (!modal || !container) return;
+
+    const curJob = getPlayerJob();
+    const curDegree = getCurriculumDegree();
+    const musicLvl = Math.round(player.musicSkill || 0);
+    let musicTitle = "Caloiro Desafinado";
+    if (musicLvl >= 80) musicTitle = "Mestre Fadista";
+    else if (musicLvl >= 50) musicTitle = "Virtuoso de Esquina";
+    else if (musicLvl >= 20) musicTitle = "Fadista Amador";
+
+    const houseName = (HOUSES[player.houseIndex] || {}).name || "Sem-Abrigo";
+    const dur = player.clothing ? player.clothing.durability : 0;
+    const form = player.clothing ? CLOTHING_TIERS[player.clothing.id].formality : 0;
+    const clothName = player.clothing ? player.clothing.name : "Nenhum";
+
+    let coursesHtml = "";
+    Object.keys(COURSES).forEach(cKey => {
+        const c = COURSES[cKey];
+        const isEnrolled = player.enrolledCourse === cKey;
+        const isDone = (player.completedCourses || []).includes(cKey);
+        const subIdx = (player.courseSubjectIndex && player.courseSubjectIndex[cKey]) || 0;
+
+        coursesHtml += `
+            <div class="cv-course-card ${isDone ? 'concluded' : ''}">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+                    <span style="font-weight: bold; color: ${isDone ? '#4ade80' : (isEnrolled ? '#38bdf8' : '#e2e8f0')}">
+                        ${c.icon} ${c.name}
+                    </span>
+                    <span style="font-family:'Press Start 2P'; font-size:0.46rem; color:${isDone ? '#4ade80' : (isEnrolled ? '#38bdf8' : '#64748b')}">
+                        ${isDone ? '🎓 CANUDO OBTIDO' : (isEnrolled ? 'EM FREQUÊNCIA' : 'NÃO INSCRITO')}
+                    </span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap: 3px;">
+                    ${c.subjects.map((sub, sIdx) => {
+                        const done = (player.completedSubjects && player.completedSubjects[cKey + '_' + sIdx]) || isDone;
+                        const inProg = isEnrolled && !done && sIdx === subIdx;
+                        return `
+                            <div class="cv-subject-item">
+                                <span style="color: ${done ? '#86efac' : (inProg ? '#fde047' : '#94a3b8')}">
+                                    ${done ? '✓' : (inProg ? '➔' : '○')} ${sub.name}
+                                </span>
+                                <span class="${done ? 'cv-badge-done' : 'cv-badge-todo'}">
+                                    ${done ? `Aprovado (+${sub.ects} ECTS)` : (inProg ? `A Frequentar (${sub.ects} ECTS)` : `${sub.ects} ECTS`)}
+                                </span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    });
+
+    let shiftsHtml = `
+        <div class="cv-grid">
+            <div class="cv-chip">
+                <div class="cv-chip-label">Pingo Doce</div>
+                <div class="cv-chip-val">${(player.careerShifts && player.careerShifts.pingo_doce) || 0} turnos (${WORKPLACES.pingo_doce.careers[(player.careerRanks && player.careerRanks.pingo_doce) || 0].title})</div>
+            </div>
+            <div class="cv-chip">
+                <div class="cv-chip-label">Tasca Ti Zé</div>
+                <div class="cv-chip-val">${(player.careerShifts && player.careerShifts.tasca) || 0} turnos (${WORKPLACES.tasca.careers[(player.careerRanks && player.careerRanks.tasca) || 0].title})</div>
+            </div>
+            <div class="cv-chip">
+                <div class="cv-chip-label">Caixa / Banco</div>
+                <div class="cv-chip-val">${(player.careerShifts && player.careerShifts.banco) || 0} turnos (${WORKPLACES.banco.careers[(player.careerRanks && player.careerRanks.banco) || 0].title})</div>
+            </div>
+            <div class="cv-chip">
+                <div class="cv-chip-label">Docência IST</div>
+                <div class="cv-chip-val">${(player.careerShifts && player.careerShifts.faculdade) || 0} turnos (${WORKPLACES.faculdade.careers[(player.careerRanks && player.careerRanks.faculdade) || 0].title})</div>
+            </div>
+            <div class="cv-chip">
+                <div class="cv-chip-label">Modas Chiado</div>
+                <div class="cv-chip-val">${(player.careerShifts && player.careerShifts.loja_roupa) || 0} turnos (${(WORKPLACES.loja_roupa ? WORKPLACES.loja_roupa.careers[(player.careerRanks && player.careerRanks.loja_roupa) || 0].title : 'Ajudante')})</div>
+            </div>
+            <div class="cv-chip">
+                <div class="cv-chip-label">Total Turnos</div>
+                <div class="cv-chip-val" style="color:#fbbf24;">${player.totalShiftsWorked || 0} turnos cumpridos</div>
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = `
+        <div class="cv-section">
+            <div class="cv-section-title">👤 DADOS BIOGRÁFICOS & APRESENTAÇÃO</div>
+            <div class="cv-grid">
+                <div class="cv-chip">
+                    <div class="cv-chip-label">Nome do Cidadão</div>
+                    <div class="cv-chip-val" style="color:#fbbf24;">${player.avatarName || 'Zé Desenrasca'}</div>
+                </div>
+                <div class="cv-chip">
+                    <div class="cv-chip-label">Estatuto Habitacional</div>
+                    <div class="cv-chip-val">${houseName} (${player.daysUntilRent}d renda)</div>
+                </div>
+                <div class="cv-chip">
+                    <div class="cv-chip-label">Vestuário Atual</div>
+                    <div class="cv-chip-val">${clothName} (${dur}%, Nível ${form})</div>
+                </div>
+                <div class="cv-chip">
+                    <div class="cv-chip-label">Emprego Ativo</div>
+                    <div class="cv-chip-val" style="color:#34d399;">${curJob.title}</div>
+                </div>
+                <div class="cv-chip">
+                    <div class="cv-chip-label">Guitarra / Fado</div>
+                    <div class="cv-chip-val" style="color:#f59e0b;">${musicTitle} (${musicLvl}%)</div>
+                </div>
+                <div class="cv-chip">
+                    <div class="cv-chip-label">Grau Académico</div>
+                    <div class="cv-chip-val" style="color:#60a5fa;">${curDegree} (${player.ects} ECTS)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cv-section">
+            <div class="cv-section-title">🎓 REGISTO ACADÉMICO DO IST (ALAMEDA)</div>
+            ${coursesHtml}
+        </div>
+
+        <div class="cv-section">
+            <div class="cv-section-title">💼 HISTÓRICO DE LABUTA & TURNOS DE LISBOA</div>
+            ${shiftsHtml}
+        </div>
+    `;
+
+    modal.style.display = 'flex';
+}
+
+function closeCurriculumModal() {
+    sfxAction();
+    const modal = document.getElementById('curriculum-modal');
+    if (modal) modal.style.display = 'none';
 }
 
 // ============================================================================
