@@ -1,0 +1,227 @@
+{
+  "version": "1.0",
+  "name": "O Correio do Purgatório - Base de Dados de Notícias & Matriz de Condições",
+  "description": "Matriz de seleção condicional contextual para os eventos matinais de Lisboa em Desenrascado",
+  "events": [
+    {
+      "id": "ev_unemployed_iefp",
+      "category": "workplace",
+      "title": "Fila do IEFP dá a volta ao quarteirão",
+      "desc": "Tentaste carimbar o formulário de procura ativa. O sistema informático foi abaixo às 09h02. Não recebes um tostão e perdes a manhã toda na burocracia.",
+      "conditions": { "workplace": ["unemployed"] },
+      "effect": { "wallet": 0, "sanity": -12, "hunger": -10, "hours": 2 },
+      "stamp": "BUROCRACIA",
+      "stampColor": "#64748b",
+      "weight": 14
+    },
+    {
+      "id": "ev_unemployed_oddjob",
+      "category": "workplace",
+      "title": "Biscate de emergência a carregar caixotes",
+      "desc": "Ajudaste uma mercearia em Arroios a descarregar melões às 06h00. Pagaram-te em dinheiro vivo.",
+      "conditions": { "workplace": ["unemployed"] },
+      "effect": { "wallet": 30, "sanity": 5, "hunger": -15, "hours": 2 },
+      "stamp": "+30€ BISCATE",
+      "stampColor": "#10b981",
+      "weight": 12
+    },
+    {
+      "id": "ev_unemployed_linkedin",
+      "category": "workplace",
+      "title": "Anúncio de Estágio exige Mestrado e 10 anos de experiência",
+      "desc": "Descobriste uma vaga de 'Ninja de Excel' não-remunerada. Fechaste o portátil com náuseas e uma quebra súbita de sanidade.",
+      "conditions": { "workplace": ["unemployed"] },
+      "effect": { "wallet": 0, "sanity": -8, "hunger": 0, "hours": 1 },
+      "stamp": "VAGA ARROMBADA",
+      "stampColor": "#ef4444",
+      "weight": 10
+    },
+    {
+      "id": "ev_pingo_congelador",
+      "category": "workplace",
+      "title": "Avaria na arca de congelados do Pingo Doce",
+      "desc": "Três horas a transferir caixas de pescada para a câmara de conservação a -18ºC. D. Maria deu-te um chá de camomila mas descontou 10 minutos de pausa.",
+      "conditions": { "workplace": ["pingo_doce"] },
+      "effect": { "wallet": 0, "sanity": -10, "hunger": -10 },
+      "stamp": "GELO & FRIO",
+      "stampColor": "#0284c7",
+      "weight": 12
+    },
+    {
+      "id": "ev_pingo_cupao",
+      "category": "workplace",
+      "title": "Cliente reclama de cupão de 15 cêntimos caducado",
+      "desc": "Uma cliente no Pingo Doce bloqueou a tua caixa durante 20 minutos por causa de um desconto de manteiga de 2024. Fila com 18 pessoas a bufar.",
+      "conditions": { "workplace": ["pingo_doce"] },
+      "effect": { "wallet": 0, "sanity": -8 },
+      "stamp": "POUPA MAIS",
+      "stampColor": "#15803d",
+      "weight": 10
+    },
+    {
+      "id": "ev_pingo_gorjeta",
+      "category": "workplace",
+      "title": "Cliente simpático deixa gorjeta na caixa",
+      "desc": "Um velhote simpático agradeceu a tua paciência a embalar garrafões de água e deixou-te uma moeda de dois euros.",
+      "conditions": { "workplace": ["pingo_doce"] },
+      "effect": { "wallet": 2, "sanity": 6 },
+      "stamp": "+2€ GORJETA",
+      "stampColor": "#10b981",
+      "weight": 8
+    },
+    {
+      "id": "ev_tasca_bitoques",
+      "category": "workplace",
+      "title": "Mesa de 14 pede contas separadas no Ti Zé",
+      "desc": "Grupo de nómadas digitais pediu para dividir uma conta de 46€ por 14 cartões Revolut. O Ti Zé quase atirou a frigideira do polvo à parede.",
+      "conditions": { "workplace": ["tasca"] },
+      "effect": { "wallet": 5, "sanity": -10 },
+      "stamp": "+5€ GORJETA",
+      "stampColor": "#f59e0b",
+      "weight": 12
+    },
+    {
+      "id": "ev_tasca_sobras",
+      "category": "workplace",
+      "title": "Petisco do chef no fim do turno da Tasca",
+      "desc": "Sobrou uma dose generosa de feijoada à transmontana. O Ti Zé mandou-te empacotar num tupperware para o teu jantar.",
+      "conditions": { "workplace": ["tasca"] },
+      "effect": { "wallet": 0, "sanity": 12, "hunger": 30 },
+      "stamp": "+30 NUTRIÇÃO",
+      "stampColor": "#10b981",
+      "weight": 10
+    },
+    {
+      "id": "ev_banco_auditoria",
+      "category": "workplace",
+      "title": "Auditoria de balancetes de 1998 na Caixa",
+      "desc": "Dr. Alcoviteiro descobriu um desvio de 3 cêntimos num lote de juros pombalinos. Quatro horas a conferir extratos amarelados em microfilme.",
+      "conditions": { "workplace": ["banco"] },
+      "effect": { "wallet": 0, "sanity": -12 },
+      "stamp": "AUDITORIA",
+      "stampColor": "#854d0e",
+      "weight": 12
+    },
+    {
+      "id": "ev_banco_premio",
+      "category": "workplace",
+      "title": "Meta trimestral de comissões atingida na Caixa",
+      "desc": "A agência bateu o recorde de comissões cobradas por manutenção de conta. Recebeste um mini-bónus simbólico no recibo.",
+      "conditions": { "workplace": ["banco"] },
+      "effect": { "wallet": 40, "sanity": 8 },
+      "stamp": "+40€ BÓNUS",
+      "stampColor": "#10b981",
+      "weight": 8
+    },
+    {
+      "id": "ev_startup_pivot",
+      "category": "workplace",
+      "title": "Startup anuncia 'Pivot Estratégico com IA'",
+      "desc": "Mariana agendou um 'all-hands' às 08h00. O produto mudou 4 vezes antes do almoço. Sobraram autocolantes para o portátil e kombucha.",
+      "conditions": { "workplace": ["startup"] },
+      "effect": { "wallet": 0, "sanity": -10 },
+      "stamp": "DISRUPT",
+      "stampColor": "#ec4899",
+      "weight": 12
+    },
+    {
+      "id": "ev_startup_stockoptions",
+      "category": "workplace",
+      "title": "Aumento salarial substituído por 'Stock Options'",
+      "desc": "Pediste revisão salarial na tech hub. Deram-te 500 ações de uma holding em Delaware que atualmente valem zero euros.",
+      "conditions": { "workplace": ["startup"] },
+      "effect": { "wallet": 0, "sanity": -8 },
+      "stamp": "STOCK OPTIONS",
+      "stampColor": "#64748b",
+      "weight": 10
+    },
+    {
+      "id": "ev_rossio_mangueira",
+      "category": "housing",
+      "title": "Mangueirada da Higiene Urbana às 06h00",
+      "desc": "O camião da CML lavou o calcetamento do Rossio com lixívia. Acordaste encharcado no teu banco de jardim.",
+      "conditions": { "minHouseIndex": 0, "maxHouseIndex": 0 },
+      "effect": { "wallet": 0, "sanity": -15, "hunger": -10 },
+      "stamp": "LIXÍVIA",
+      "stampColor": "#0284c7",
+      "weight": 15
+    },
+    {
+      "id": "ev_arroios_ronco",
+      "category": "housing",
+      "title": "Colega de beliche ressona em frequências subsónicas",
+      "desc": "No hostel de Arroios, o companheiro de beliche do piso de cima pareceu um compressor de camião TIR a noite toda.",
+      "conditions": { "minHouseIndex": 1, "maxHouseIndex": 1 },
+      "effect": { "wallet": 0, "sanity": -10 },
+      "stamp": "NOITE BRANCA",
+      "stampColor": "#64748b",
+      "weight": 12
+    },
+    {
+      "id": "ev_anjos_martelo",
+      "category": "housing",
+      "title": "Obras no 3º andar dos Anjos às 07h15",
+      "desc": "Martelo pneumático na parede contígua para converter o apartamento em três estúdios turísticos T0.0. Sanidade reduzida.",
+      "conditions": { "minHouseIndex": 2, "maxHouseIndex": 2 },
+      "effect": { "wallet": 0, "sanity": -10 },
+      "stamp": "OBRAS CML",
+      "stampColor": "#f59e0b",
+      "weight": 12
+    },
+    {
+      "id": "ev_alfama_fadistas",
+      "category": "housing",
+      "title": "Tertúlia de Fado Vadio no beco de Alfama",
+      "desc": "Vinho carrascão e guitarradas debaixo da tua janela de cave até às 04h30 da manhã. Não dormiste nada.",
+      "conditions": { "minHouseIndex": 3, "maxHouseIndex": 3 },
+      "effect": { "wallet": 0, "sanity": -8 },
+      "stamp": "SAUDADE",
+      "stampColor": "#0369a1",
+      "weight": 10
+    },
+    {
+      "id": "ev_chiado_rooftop",
+      "category": "housing",
+      "title": "Festa no rooftop vizinho do Chiado até às 05h00",
+      "desc": "DJ tocou techno acústico na varanda contígua. Tiveste de beber café expresso duplo de 4€ para aguentar o dia.",
+      "conditions": { "minHouseIndex": 4, "maxHouseIndex": 4 },
+      "effect": { "wallet": -4, "sanity": -6 },
+      "stamp": "-4€ CAFÉ",
+      "stampColor": "#ef4444",
+      "weight": 12
+    },
+    {
+      "id": "ev_renda_urgente",
+      "category": "housing",
+      "title": "Carta com aviso de despejo na caixa do correio",
+      "desc": "Sr. Jerónimo colou um post-it: 'A renda vence em breve. Não aceito desculpas de transferências bancárias em processamento'.",
+      "conditions": { "maxDaysUntilRent": 2, "minHouseIndex": 1 },
+      "effect": { "wallet": 0, "sanity": -14 },
+      "stamp": "⚠️ RENDA A VENCER",
+      "stampColor": "#ef4444",
+      "weight": 18
+    },
+    {
+      "id": "ev_multa_carril",
+      "category": "lisbon_satire",
+      "title": "Fiscal da Carris pede título de transporte",
+      "desc": "Não tinhas passe Viva Viagem carregado. O fiscal da Carris passou-te uma coima de 25€ sem direito a recurso.",
+      "conditions": { "minWallet": 30 },
+      "effect": { "wallet": -25, "sanity": -8 },
+      "stamp": "-25€ MULTA",
+      "stampColor": "#ef4444",
+      "weight": 7
+    },
+    {
+      "id": "ev_achado_calcada",
+      "category": "lisbon_satire",
+      "title": "Nota de dez euros esquecida entre as pedras da calçada",
+      "desc": "Ao tropeçar num buraco de basalto na Rua Augusta, encontraste uma nota amarrotada de 10€ no chão.",
+      "conditions": {},
+      "effect": { "wallet": 10, "sanity": 8 },
+      "stamp": "+10€ ACHADO",
+      "stampColor": "#10b981",
+      "weight": 6
+    }
+  ]
+}

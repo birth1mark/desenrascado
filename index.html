@@ -773,13 +773,25 @@ const WORKPLACES = {
 };
 
 function getPlayerJob(workplaceKey = player.currentWorkplace) {
-    const wp = WORKPLACES[workplaceKey] || WORKPLACES.pingo_doce;
+    if (!workplaceKey || !WORKPLACES[workplaceKey]) {
+        return {
+            id: -1,
+            title: "Desempregado",
+            wagePerHour: 0,
+            hoursPerShift: 0,
+            desc: "Sem emprego ativo. Visita a Agência de Emprego, Pingo Doce, Tasca ou Caixa para começar a trabalhar!"
+        };
+    }
+    const wp = WORKPLACES[workplaceKey];
     const rank = (player.careerRanks && player.careerRanks[workplaceKey]) || 0;
     return wp.careers[Math.min(wp.careers.length - 1, rank)];
 }
 
 function getNextJob(workplaceKey = player.currentWorkplace) {
-    const wp = WORKPLACES[workplaceKey] || WORKPLACES.pingo_doce;
+    if (!workplaceKey || !WORKPLACES[workplaceKey]) {
+        return null;
+    }
+    const wp = WORKPLACES[workplaceKey];
     const rank = (player.careerRanks && player.careerRanks[workplaceKey]) || 0;
     if (rank >= wp.careers.length - 1) return null;
     return wp.careers[rank + 1];
@@ -799,9 +811,72 @@ const CAREERS = WORKPLACES.startup.careers;
 let currentEvent = null;
 
 // ============================================================================
-// SISTEMA DINÂMICO DO JORNAL DO PURGATÓRIO (100% Contextual ao Zé Desenrasca)
+// SISTEMA DINÂMICO DO JORNAL DO PURGATÓRIO (Base de Dados & Matriz de Condições)
 // ============================================================================
+let newspaperDb = null;
+
+// Carregamento assíncrono da Base de Dados JSON do Jornal
+fetch('assets/newspaper_database.json')
+    .then(r => r.json())
+    .then(d => {
+        if (d && d.events) {
+            newspaperDb = d.events;
+            console.log(`Base de Dados do Jornal do Purgatório carregada: ${newspaperDb.length} eventos.`);
+        }
+    })
+    .catch(() => { newspaperDb = null; });
+
+function matchEventConditions(ev, p) {
+    const c = ev.conditions || {};
+    if (c.workplace) {
+        const curWp = p.currentWorkplace || 'unemployed';
+        if (!c.workplace.includes('any') && !c.workplace.includes(curWp)) {
+            return false;
+        }
+    }
+    if (c.minHouseIndex !== undefined && p.houseIndex < c.minHouseIndex) return false;
+    if (c.maxHouseIndex !== undefined && p.houseIndex > c.maxHouseIndex) return false;
+    if (c.minWallet !== undefined && p.wallet < c.minWallet) return false;
+    if (c.maxWallet !== undefined && p.wallet > c.maxWallet) return false;
+    if (c.minSanity !== undefined && p.sanity < c.minSanity) return false;
+    if (c.maxSanity !== undefined && p.sanity > c.maxSanity) return false;
+    if (c.minEcts !== undefined && p.ects < c.minEcts) return false;
+    if (c.maxDaysUntilRent !== undefined && p.daysUntilRent > c.maxDaysUntilRent) return false;
+    return true;
+}
+
 function generateMorningEvent(p) {
+    // Se a base de dados JSON estiver disponível, usa a matriz de seleção ponderada
+    if (newspaperDb && newspaperDb.length > 0) {
+        const matched = newspaperDb.filter(e => matchEventConditions(e, p));
+        if (matched.length > 0) {
+            const totalWeight = matched.reduce((s, e) => s + (e.weight || 10), 0);
+            let rand = Math.random() * totalWeight;
+            let chosen = matched[0];
+            for (const ev of matched) {
+                rand -= (ev.weight || 10);
+                if (rand <= 0) { chosen = ev; break; }
+            }
+            return {
+                title: chosen.title,
+                desc: chosen.desc,
+                effect: (player) => {
+                    const eff = chosen.effect || {};
+                    if (eff.wallet) {
+                        player.wallet = Math.max(0, player.wallet + eff.wallet);
+                        if (eff.wallet > 0) stats.totalEarned += eff.wallet;
+                    }
+                    if (eff.sanity) player.sanity = Math.max(0, Math.min(100, player.sanity + eff.sanity));
+                    if (eff.hunger) player.hunger = Math.max(0, Math.min(100, player.hunger + eff.hunger));
+                    if (eff.groceries) player.groceries += eff.groceries;
+                    if (eff.ects) player.ects = Math.min(180, player.ects + eff.ects);
+                },
+                badge: chosen.stamp || "NOTÍCIA DE LISBOA",
+                badgeColor: chosen.stampColor || "#f59e0b",
+                good: (chosen.effect && chosen.effect.sanity > 0) || (chosen.effect && chosen.effect.wallet > 0)
+            };
+        }
+    }
     const curWp = WORKPLACES[p.currentWorkplace] || WORKPLACES.pingo_doce;
     const curJob = getPlayerJob();
     const curHouse = HOUSES[p.houseIndex];
@@ -1059,7 +1134,7 @@ let player = {
     groceries: 2,
     houseIndex: 1,
     careerIndex: 0,
-    currentWorkplace: 'pingo_doce',
+    currentWorkplace: null, // Começa Desempregado conforme a narrativa!
     careerRanks: {
         pingo_doce: 0,
         tasca: 0,
@@ -1817,86 +1892,73 @@ function renderBoard() {
     }
 }
 
-// Placas e Efeitos Interativos dos Edifícios no Tabuleiro (Sem molduras amarelas invasivas)
+// Efeitos Interativos dos Edifícios no Tabuleiro (As fachadas e letreiros existem fisicamente na arte!)
 function renderBuildingOverlays() {
     let hoveredBuilding = null;
 
     BUILDINGS.forEach(b => {
         const isHovered = (mouse.x >= b.x && mouse.x <= b.x + b.w && mouse.y >= b.y && mouse.y <= b.y + b.h);
-        if (isHovered) hoveredBuilding = b;
-
-        // Medição dinâmica da largura para o texto nunca transbordar
-        ctx.font = 'bold 8.5px "Fira Code"';
-        const label = `${b.icon} ${b.name}`;
-        const tw = ctx.measureText(label).width;
-        const signW = Math.max(90, Math.round(tw + 16));
-        const signH = 19;
-        const signX = (b.doorX || (b.x + b.w / 2)) - signW / 2;
-        const signY = (b.doorY || (b.y + b.h)) - 30;
-
-        // Sombra suave sob a placa
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
-        ctx.fillRect(signX + 2, signY + 2, signW, signH);
-
-        // Fundo da placa (Ardósia escura com rebordo subtil)
-        ctx.fillStyle = isHovered ? '#1e293b' : '#090d16';
-        ctx.fillRect(signX, signY, signW, signH);
-        ctx.strokeStyle = isHovered ? '#38bdf8' : 'rgba(255, 255, 255, 0.2)';
-        ctx.lineWidth = isHovered ? 1.5 : 1;
-        ctx.strokeRect(signX, signY, signW, signH);
-
-        // Texto da placa perfeitamente centrado
-        ctx.fillStyle = isHovered ? '#ffffff' : '#e2e8f0';
-        ctx.textAlign = 'center';
-        ctx.fillText(label, signX + signW / 2, signY + 13);
-
-        // Indicador elegante saltitante quando hovered (substitui a moldura amarela berrante)
         if (isHovered) {
-            const arrowBob = Math.sin(animTimer * 7) * 2.5;
-            ctx.fillStyle = '#38bdf8';
-            ctx.font = '9px "Press Start 2P"';
+            hoveredBuilding = b;
+
+            // 1. Halo suave de luz dourada na porta do edifício
+            const doorX = b.doorX || (b.x + b.w / 2);
+            const doorY = b.doorY || (b.y + b.h);
+            const grad = ctx.createRadialGradient(doorX, doorY - 10, 2, doorX, doorY - 10, 28);
+            grad.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
+            grad.addColorStop(0.55, 'rgba(245, 158, 11, 0.15)');
+            grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(doorX, doorY - 10, 28, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2. Indicador retro saltitante na porta (apenas quando hovered!)
+            const arrowBob = Math.sin(animTimer * 6.5) * 2.5;
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 11px "Press Start 2P"';
             ctx.textAlign = 'center';
-            ctx.fillText("▼", signX + signW / 2, signY - 4 + arrowBob);
+            ctx.fillText("▼", doorX, doorY - 18 + arrowBob);
         }
     });
 
-    // Tooltip refinada em ardósia/vidro escuro (sem molduras amarelas)
+    // Tooltip refinada que acompanha o cursor sem tapar o cenário
     if (hoveredBuilding && state === 'BOARD') {
         const b = hoveredBuilding;
-        const ttW = 210;
-        const ttH = 46;
+        const ttW = 220;
+        const ttH = 48;
         let ttX = mouse.x + 12;
-        let ttY = mouse.y - 52;
+        let ttY = mouse.y - 54;
 
         if (ttX + ttW > canvas.width - 10) ttX = mouse.x - ttW - 12;
         if (ttY < 10) ttY = mouse.y + 20;
 
         // Sombra
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
         ctx.fillRect(ttX + 3, ttY + 3, ttW, ttH);
 
-        // Caixa de ardósia escura
+        // Caixa de ardósia escura com borda na cor da localização
         ctx.fillStyle = '#0f172a';
         ctx.fillRect(ttX, ttY, ttW, ttH);
-        ctx.strokeStyle = '#334155';
+        ctx.strokeStyle = b.accent || b.color;
         ctx.lineWidth = 1.5;
         ctx.strokeRect(ttX, ttY, ttW, ttH);
 
-        // Título
+        // Título com ícone
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 9px "Press Start 2P"';
         ctx.textAlign = 'left';
-        ctx.fillText(`${b.icon} ${b.name}`, ttX + 10, ttY + 14);
+        ctx.fillText(`${b.icon} ${b.name.toUpperCase()}`, ttX + 10, ttY + 16);
 
-        // Tag / Ação
+        // Descrição do local
         ctx.fillStyle = '#94a3b8';
         ctx.font = '8.5px "Fira Code"';
-        ctx.fillText(b.tag, ttX + 10, ttY + 28);
+        ctx.fillText(b.tag, ttX + 10, ttY + 30);
 
-        // Dica
+        // Prompt de entrada
         ctx.fillStyle = '#34d399';
         ctx.font = 'bold 7.5px "Press Start 2P"';
-        ctx.fillText("▶ CLIQUE P/ ENTRAR", ttX + 10, ttY + 40);
+        ctx.fillText("▶ CLIQUE P/ ENTRAR", ttX + 10, ttY + 42);
     }
 }
 
@@ -2819,7 +2881,8 @@ function renderHUD() {
 
     // Slot 4: Emprego Atual & Estudos (x: 342, w: 138) - Interativo / Clicável!
     const curJob = getPlayerJob();
-    const curWp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
+    const isEmployed = (player.currentWorkplace && WORKPLACES[player.currentWorkplace]);
+    const curWp = isEmployed ? WORKPLACES[player.currentWorkplace] : { icon: '💼', name: 'Desempregado' };
     const isHoverJob = (mouse.x >= 342 && mouse.x <= 480 && mouse.y >= hy + 8 && mouse.y <= hy + 56 && state === 'BOARD');
 
     ctx.fillStyle = isHoverJob ? '#1e293b' : '#151d2c';
@@ -2827,9 +2890,9 @@ function renderHUD() {
     ctx.strokeStyle = isHoverJob ? '#38bdf8' : '#233148';
     ctx.strokeRect(342, hy + 8, 138, 48);
 
-    ctx.fillStyle = isHoverJob ? '#ffffff' : '#facc15';
+    ctx.fillStyle = isHoverJob ? '#ffffff' : (isEmployed ? '#facc15' : '#94a3b8');
     ctx.font = 'bold 9px "Fira Code"';
-    let jobTitleShort = `${curWp.icon} ${curJob.title}`;
+    let jobTitleShort = isEmployed ? `${curWp.icon} ${curJob.title}` : "💼 Desempregado";
     if (ctx.measureText(jobTitleShort).width > 126) {
         while (ctx.measureText(jobTitleShort + '..').width > 126 && jobTitleShort.length > 4) {
             jobTitleShort = jobTitleShort.slice(0, -1);
@@ -4670,7 +4733,7 @@ function resetGame() {
     player.groceries = 2;
     player.houseIndex = 1;
     player.careerIndex = 0;
-    player.currentWorkplace = 'pingo_doce';
+    player.currentWorkplace = null; // Reinicia Desempregado
     player.careerRanks = {
         pingo_doce: 0,
         tasca: 0,
