@@ -1,0 +1,26 @@
+{
+  "name": "Desenrascado: Sobrevivência Urbana em Lisboa",
+  "short_name": "Desenrascado",
+  "description": "Aventura gráfica retro de sobrevivência lisboeta ao estilo 16-bit LucasArts SCUMM. Trabalha, estuda, paga a renda e resiste à crise na habitação.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0b0f19",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "assets/portraits/ze.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/splash.png",
+      "sizes": "640x360",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["games", "entertainment", "simulation"],
+  "lang": "pt-PT"
+}

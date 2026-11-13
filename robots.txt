@@ -1,0 +1,6 @@
+# robots.txt for https://desenrascado.pormenores.net/
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://desenrascado.pormenores.net/sitemap.xml
