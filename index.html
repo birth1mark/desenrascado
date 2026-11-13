@@ -42,7 +42,10 @@
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: #060913;
+            background-image: 
+                radial-gradient(circle at 50% 30%, rgba(30, 58, 138, 0.45) 0%, rgba(15, 23, 42, 0.85) 60%, #030712 100%),
+                url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M24 0l12 12-12 12L12 12zM0 24l12 12-12 12-12-12zM48 24l12 12-12 12-12-12zM24 48l12 12-12 12-12-12z' fill='%231e3a8a' fill-opacity='0.14'/%3E%3Ccircle cx='24' cy='24' r='4' fill='%2338bdf8' fill-opacity='0.16'/%3E%3C/svg%3E");
             color: #f1f5f9;
             font-family: var(--font-mono);
             min-height: 100vh;
@@ -50,29 +53,169 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            padding: 12px 8px;
+            overflow-x: hidden;
             touch-action: manipulation;
         }
 
+        /* Gabinete / Bezel Retrô de Lisboa */
+        #arcade-cabinet {
+            width: 100%;
+            max-width: 970px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(180deg, #1c140d 0%, #100b07 100%);
+            border: 4px solid #78350f;
+            border-radius: 12px;
+            box-shadow: 
+                0 0 0 2px #b45309,
+                0 25px 50px rgba(0, 0, 0, 0.95),
+                0 0 35px rgba(245, 158, 11, 0.2);
+            padding: 8px;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* Marquee Superior Iluminado */
+        #arcade-marquee {
+            width: 100%;
+            background: linear-gradient(180deg, #1e1b18 0%, #0c0a09 100%);
+            border: 2px solid #b45309;
+            border-radius: 6px;
+            padding: 8px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.15);
+            box-sizing: border-box;
+        }
+
+        .marquee-center {
+            text-align: center;
+            flex: 1;
+        }
+
+        .marquee-badge {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.46rem;
+            color: #38bdf8;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+
+        .marquee-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1.15rem;
+            color: #fbbf24;
+            text-shadow: 0 0 12px rgba(245, 158, 11, 0.6), 2px 2px 0 #78350f;
+            letter-spacing: 1px;
+            margin: 2px 0;
+        }
+
+        .marquee-subtitle {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.68rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .marquee-decor {
+            font-size: 1.1rem;
+            color: #f59e0b;
+            text-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+            padding: 0 8px;
+        }
+
+        /* Barra de Ações & Atalhos */
+        #arcade-toolbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 2px 4px 6px;
+            box-sizing: border-box;
+        }
+
+        .arcade-link {
+            color: #94a3b8;
+            text-decoration: none;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.68rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+        .arcade-link:hover {
+            color: #fbbf24;
+            border-color: #f59e0b;
+        }
+
+        .arcade-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .arcade-btn {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #475569;
+            color: #e2e8f0;
+            padding: 5px 9px;
+            border-radius: 4px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.50rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 0 #020617;
+        }
+        .arcade-btn:hover {
+            border-color: #f59e0b;
+            color: #fbbf24;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(245, 158, 11, 0.25);
+        }
+        .arcade-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 0 0;
+        }
+        .arcade-btn.btn-acampada {
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+        .arcade-btn.btn-acampada:hover {
+            background: #991b1b;
+            color: #fff;
+        }
+        .arcade-btn.btn-roupa {
+            border-color: #ec4899;
+            color: #fbcfe8;
+        }
+        .arcade-btn.btn-roupa:hover {
+            background: #be185d;
+            color: #fff;
+        }
+
+        /* Moldura do Ecrã de Jogo */
         #game-wrapper {
             position: relative;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            aspect-ratio: 16 / 9;
             max-width: 960px;
-            max-height: 540px;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #000;
-            box-shadow: 0 0 45px rgba(0, 0, 0, 0.95), 0 0 20px rgba(245, 158, 11, 0.15);
-            border-radius: 8px;
+            background: #020617;
+            border: 2px solid #233148;
+            border-radius: 6px;
             overflow: hidden;
-        }
-
-        @media (min-width: 960px) and (min-height: 540px) {
-            #game-wrapper {
-                border: 2px solid #233148;
-            }
+            box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.95);
         }
 
         canvas {
@@ -86,55 +229,53 @@
             image-rendering: crisp-edges;
         }
 
-        #game-wrapper::after {
+        #game-wrapper.crt-active::after {
             content: " ";
             display: block;
             position: absolute;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 10;
             background-size: 100% 3px, 3px 100%;
             pointer-events: none;
-            opacity: 0.6;
+            opacity: 0.65;
         }
 
-        #author-bar {
-            position: absolute;
-            top: 8px;
-            left: 12px;
-            right: 12px;
+        /* Placa Toponímica Tradicional de Lisboa */
+        #arcade-plaque {
+            width: 100%;
+            background: #090d16;
+            border: 2px solid #1e3a8a;
+            border-radius: 6px;
+            padding: 6px 14px;
+            margin-top: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 20;
             font-size: 0.68rem;
-            pointer-events: auto;
-        }
-
-        #author-bar a {
             color: #94a3b8;
-            text-decoration: none;
-            background: rgba(11, 14, 20, 0.9);
-            padding: 4px 10px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            transition: all 0.2s ease;
+            box-shadow: inset 0 0 10px rgba(30, 58, 138, 0.25);
+            box-sizing: border-box;
+        }
+        .plaque-badge {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.50rem;
+            color: #38bdf8;
+            background: rgba(30, 58, 138, 0.35);
+            padding: 3px 8px;
+            border-radius: 3px;
+            border: 1px solid rgba(56, 189, 248, 0.35);
         }
 
-        #author-bar a:hover {
-            color: var(--amber);
-            border-color: var(--amber);
-        }
-
-        .sound-toggle {
-            cursor: pointer;
-            background: rgba(11, 14, 20, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #94a3b8;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.68rem;
-            font-family: inherit;
+        @media (max-width: 640px) {
+            body { padding: 4px; }
+            #arcade-cabinet { border-radius: 0; border: none; padding: 2px; }
+            #arcade-marquee { padding: 4px 6px; }
+            .marquee-title { font-size: 0.85rem; }
+            .marquee-subtitle { font-size: 0.56rem; }
+            #arcade-toolbar { justify-content: center; }
+            .arcade-btn { padding: 4px 6px; font-size: 0.44rem; }
+            #arcade-plaque { flex-direction: column; text-align: center; gap: 4px; font-size: 0.60rem; }
         }
 
         #toast {
@@ -345,68 +486,90 @@
 </head>
 <body>
 
-    <div id="game-wrapper">
-        <div id="author-bar">
-            <a href="https://pormenores.net/">
-                ← <b>pormenores.net</b>
-            </a>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <button class="sound-toggle" onclick="openLeaderboard()" id="btn-leaderboard">🏆 Top 10</button>
-                <button class="sound-toggle" onclick="toggleMusic()" id="btn-music">🎵 BGM: ON</button>
-                <button class="sound-toggle" onclick="toggleAudio()" id="btn-audio">🔊 SFX: ON</button>
+    <div id="arcade-cabinet">
+        <!-- Marquee Superior Iluminado -->
+        <div id="arcade-marquee">
+            <div class="marquee-decor">✦</div>
+            <div class="marquee-center">
+                <div class="marquee-badge">🇵🇹 EDIÇÃO RETRO 16-BIT · LISBOA</div>
+                <h1 class="marquee-title">DESENRASCADO</h1>
+                <div class="marquee-subtitle">O PURGATÓRIO DA HABITAÇÃO, EMPREGO & SOBREVIVÊNCIA</div>
+            </div>
+            <div class="marquee-decor">✦</div>
+        </div>
+
+        <!-- Barra de Ações & Atalhos Rápidos -->
+        <div id="arcade-toolbar">
+            <a href="https://pormenores.net/" target="_blank" class="arcade-link">← pormenores.net</a>
+            <div class="arcade-actions">
+                <button class="arcade-btn btn-acampada" onclick="quickVisit('acampada')">⛺ Acampada</button>
+                <button class="arcade-btn btn-roupa" onclick="quickVisit('loja_roupa')">👗 Loja de Roupa</button>
+                <button class="arcade-btn" onclick="openLeaderboard()" id="btn-leaderboard">🏆 Top 10</button>
+                <button class="arcade-btn" onclick="toggleMusic()" id="btn-music">🎵 BGM: ON</button>
+                <button class="arcade-btn" onclick="toggleAudio()" id="btn-audio">🔊 SFX: ON</button>
+                <button class="arcade-btn" onclick="toggleCRT()" id="btn-crt">📺 CRT: ON</button>
             </div>
         </div>
 
-        <canvas id="gameCanvas" width="640" height="360"></canvas>
-        <div id="toast">Notificação</div>
+        <div id="game-wrapper" class="crt-active">
+            <canvas id="gameCanvas" width="640" height="360"></canvas>
+            <div id="toast">Notificação</div>
 
-        <!-- Modal: Tabela de Recordes (Hall of Fame) -->
-        <div id="leaderboard-modal" class="game-overlay" style="display: none;">
-            <div class="overlay-box lb-box">
-                <div class="overlay-header">
-                    <span class="overlay-title">🏆 REGISTO NACIONAL DE DESPEJADOS</span>
-                    <button class="overlay-close" onclick="closeLeaderboard()">✕</button>
+            <!-- Modal: Tabela de Recordes (Hall of Fame) -->
+            <div id="leaderboard-modal" class="game-overlay" style="display: none;">
+                <div class="overlay-box lb-box">
+                    <div class="overlay-header">
+                        <span class="overlay-title">🏆 REGISTO NACIONAL DE DESPEJADOS</span>
+                        <button class="overlay-close" onclick="closeLeaderboard()">✕</button>
+                    </div>
+                    <div class="lb-tagline">OS 10 MAIORES SOBREVIVENTES DO PURGATÓRIO DE LISBOA</div>
+                    <div class="lb-table-container">
+                        <table class="lb-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Alcunha</th>
+                                    <th>Dias</th>
+                                    <th>€ Saldo</th>
+                                    <th>Fim da Linha</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lb-table-body">
+                                <tr><td colspan="6" style="text-align:center; padding: 20px; color: #94a3b8;">A carregar recordes de Lisboa...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="overlay-actions">
+                        <button class="retro-btn" onclick="closeLeaderboard()">VOLTAR AO JOGO</button>
+                    </div>
                 </div>
-                <div class="lb-tagline">OS 10 MAIORES SOBREVIVENTES DO PURGATÓRIO DE LISBOA</div>
-                <div class="lb-table-container">
-                    <table class="lb-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Alcunha</th>
-                                <th>Dias</th>
-                                <th>€ Saldo</th>
-                                <th>Fim da Linha</th>
-                                <th>Data</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lb-table-body">
-                            <tr><td colspan="6" style="text-align:center; padding: 20px; color: #94a3b8;">A carregar recordes de Lisboa...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="overlay-actions">
-                    <button class="retro-btn" onclick="closeLeaderboard()">VOLTAR AO JOGO</button>
+            </div>
+
+            <!-- Modal: Submeter Recorde -->
+            <div id="submit-score-modal" class="game-overlay" style="display: none;">
+                <div class="overlay-box submit-box">
+                    <div class="overlay-header">
+                        <span class="overlay-title">📜 REGISTO OFICIAL DE DESPEJO</span>
+                        <button class="overlay-close" onclick="closeSubmitModal()">✕</button>
+                    </div>
+                    <p class="submit-desc">
+                        Sobreviveste <b id="sub-days-text" style="color:var(--amber);">0</b> dias na labuta com um património final de <b id="sub-money-text" style="color:#10b981;">0€</b>.
+                    </p>
+                    <div class="submit-form">
+                        <label for="player-nickname">DIGITA A TUA ALCUNHA / NOME:</label>
+                        <input type="text" id="player-nickname" maxlength="18" placeholder="Ex: Zé do Bitoque" autocomplete="off" />
+                        <button class="retro-btn btn-amber" id="btn-confirm-submit" onclick="submitPlayerScore()">GRAVAR NO HALL OF FAME ➔</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal: Submeter Recorde -->
-        <div id="submit-score-modal" class="game-overlay" style="display: none;">
-            <div class="overlay-box submit-box">
-                <div class="overlay-header">
-                    <span class="overlay-title">📜 REGISTO OFICIAL DE DESPEJO</span>
-                    <button class="overlay-close" onclick="closeSubmitModal()">✕</button>
-                </div>
-                <p class="submit-desc">
-                    Sobreviveste <b id="sub-days-text" style="color:var(--amber);">0</b> dias na labuta com um património final de <b id="sub-money-text" style="color:#10b981;">0€</b>.
-                </p>
-                <div class="submit-form">
-                    <label for="player-nickname">DIGITA A TUA ALCUNHA / NOME:</label>
-                    <input type="text" id="player-nickname" maxlength="18" placeholder="Ex: Zé do Bitoque" autocomplete="off" />
-                    <button class="retro-btn btn-amber" id="btn-confirm-submit" onclick="submitPlayerScore()">GRAVAR NO HALL OF FAME ➔</button>
-                </div>
-            </div>
+        <!-- Placa Toponímica Tradicional Alfacinha -->
+        <div id="arcade-plaque">
+            <span class="plaque-badge">LARGO DO DESENRASCO</span>
+            <span>Baixa, Rossio & Chiado · Sobrevive ao Purgatório Urbano · Autor: <b>Pedro Ribeiro</b> (birth1mark)</span>
+            <span style="font-size:0.6rem; color:#f59e0b;">🇵🇹 LISBOA 2026</span>
         </div>
     </div>
 
@@ -443,7 +606,33 @@ function toggleAudio() {
     initAudio();
     soundEnabled = !soundEnabled;
     const btn = document.getElementById('btn-audio');
-    if (btn) btn.textContent = soundEnabled ? '🔊 Áudio: ON' : '🔇 Áudio: OFF';
+    if (btn) btn.textContent = soundEnabled ? '🔊 SFX: ON' : '🔇 SFX: OFF';
+}
+
+let crtEnabled = true;
+function toggleCRT() {
+    crtEnabled = !crtEnabled;
+    const wrap = document.getElementById('game-wrapper');
+    const btn = document.getElementById('btn-crt');
+    if (wrap) {
+        if (crtEnabled) wrap.classList.add('crt-active');
+        else wrap.classList.remove('crt-active');
+    }
+    if (btn) btn.textContent = crtEnabled ? '📺 CRT: ON' : '📺 CRT: OFF';
+    showToast(crtEnabled ? "Filtro CRT Scanlines ativado!" : "Filtro CRT desativado (Pixels Puros).");
+}
+
+function quickVisit(buildingId) {
+    initAudio();
+    if (state !== 'BOARD') {
+        showToast("Inicia o jogo para viajar no tabuleiro de Lisboa!");
+        return;
+    }
+    const b = BUILDINGS.find(x => x.id === buildingId);
+    if (b) {
+        walkToBuilding(b);
+        showToast(`A caminhar para: ${b.name}...`);
+    }
 }
 
 function playBeep(freq, type, duration, vol = 0.1) {
@@ -1037,6 +1226,16 @@ function matchEventConditions(ev, p) {
             return false;
         }
     }
+    if (c.clothing && Array.isArray(c.clothing)) {
+        const curCloth = (p.clothing && p.clothing.id) || 'shorts';
+        if (!c.clothing.includes(curCloth)) return false;
+    }
+    if (c.course && Array.isArray(c.course)) {
+        if (!p.enrolledCourse || !c.course.includes(p.enrolledCourse)) return false;
+    }
+    if (c.sleptAcampada !== undefined && !!p.sleptAcampada !== !!c.sleptAcampada) {
+        return false;
+    }
     if (c.minHouseIndex !== undefined && p.houseIndex < c.minHouseIndex) return false;
     if (c.maxHouseIndex !== undefined && p.houseIndex > c.maxHouseIndex) return false;
     if (c.minWallet !== undefined && p.wallet < c.minWallet) return false;
@@ -1073,6 +1272,8 @@ function generateMorningEvent(p) {
                     if (eff.hunger) player.hunger = Math.max(0, Math.min(100, player.hunger + eff.hunger));
                     if (eff.groceries) player.groceries += eff.groceries;
                     if (eff.ects) player.ects = Math.min(180, player.ects + eff.ects);
+                    if (eff.clothingWear) wearClothing(eff.clothingWear);
+                    player.sleptAcampada = false;
                 },
                 badge: chosen.stamp || "NOTÍCIA DE LISBOA",
                 badgeColor: chosen.stampColor || "#f59e0b",
@@ -1281,7 +1482,9 @@ const BUILDINGS = [
     { id: 'banco', name: 'Caixa / Banco', x: 270, y: 75, w: 125, h: 115, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 335, doorY: 185, desc: 'Dr. Alcoviteiro — Poupança, Multibanco e carreiras financeiras.' },
     { id: 'casa', name: 'O Teu Teto', x: 520, y: 20, w: 110, h: 100, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 545, doorY: 195, desc: 'Dorme para recuperar sanidade, fome e energia.' },
     { id: 'supermercado', name: 'Pingo Doce', x: 405, y: 120, w: 110, h: 80, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 460, doorY: 195, desc: 'D. Maria — Mantimentos e carreiras de supermercado.' },
-    { id: 'tasca', name: 'Tasca Ti Zé', x: 520, y: 120, w: 115, h: 80, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 580, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' }
+    { id: 'tasca', name: 'Tasca Ti Zé', x: 520, y: 120, w: 115, h: 80, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 580, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
+    { id: 'acampada', name: 'Acampada Rossio', x: 155, y: 210, w: 115, h: 72, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 210, doorY: 250, desc: 'Inês — Vigília popular e assembleia pelo direito à habitação e emprego digno.' },
+    { id: 'loja_roupa', name: 'Loja de Roupa', x: 280, y: 210, w: 115, h: 72, color: '#db2777', accent: '#f472b6', tag: 'MODA & ALFAIATARIA', icon: '👗', doorX: 340, doorY: 250, desc: 'D. Zulmira — Fatos de gala, polos, trajes e arranjos de costura.' }
 ];
 
 // Pombos do Rossio a debicar na calçada
@@ -1302,6 +1505,346 @@ function spawnParticle(text, color, x, y) {
         y: y || player.y - 20,
         alpha: 1.0,
         vy: -1.2
+    });
+}
+
+// ============================================================================
+// SISTEMA DINÂMICO DE PEÕES & NPCS DE RUA EM LISBOA (Com Entrada e Saída)
+// ============================================================================
+let streetNpcs = [];
+let npcSpawnTimer = 0;
+let speechBubbles = [];
+
+const STREET_NPC_ARCHETYPES = [
+    {
+        type: 'estudante',
+        name: 'Estudante do IST',
+        speed: 1.8,
+        hairColor: '#facc15',
+        skinColor: '#fed7aa',
+        shirtColor: '#2563eb',
+        pantsColor: '#1e293b',
+        accType: 'backpack',
+        accColor: '#ea580c',
+        targetBuilding: 'faculdade',
+        quote: "Tenho exame de Álgebra às duas da tarde, estou tramado!"
+    },
+    {
+        type: 'turista',
+        name: 'Turista Estrangeiro',
+        speed: 1.4,
+        hairColor: '#78350f',
+        skinColor: '#fde047',
+        shirtColor: '#06b6d4',
+        pantsColor: '#d97706',
+        accType: 'camera',
+        accColor: '#18181b',
+        targetBuilding: 'miradouro',
+        quote: "Excuse me, where is the famous Tram 28 and Pastel de Nata?!"
+    },
+    {
+        type: 'banqueiro',
+        name: 'Banqueiro da Caixa',
+        speed: 1.9,
+        hairColor: '#475569',
+        skinColor: '#fed7aa',
+        shirtColor: '#0f172a',
+        pantsColor: '#0f172a',
+        accType: 'briefcase',
+        accColor: '#78350f',
+        targetBuilding: 'banco',
+        quote: "O Banco Central Europeu não dá tréguas às taxas Euribor..."
+    },
+    {
+        type: 'velhinha',
+        name: 'D. Gracinda',
+        speed: 1.1,
+        hairColor: '#cbd5e1',
+        skinColor: '#fed7aa',
+        shirtColor: '#7c3aed',
+        pantsColor: '#581c87',
+        accType: 'basket',
+        accColor: '#15803d',
+        targetBuilding: 'supermercado',
+        quote: "No meu tempo um quarto em Lisboa custava três contos de réis!"
+    },
+    {
+        type: 'fadista',
+        name: 'Fadista da Mouraria',
+        speed: 1.5,
+        hairColor: '#18181b',
+        skinColor: '#fed7aa',
+        shirtColor: '#18181b',
+        pantsColor: '#18181b',
+        accType: 'guitar',
+        accColor: '#92400e',
+        targetBuilding: 'tasca',
+        quote: "Lisboa cheira a fado, a saudade e a sardinha assada à luz da lua..."
+    },
+    {
+        type: 'ativista',
+        name: 'Ativista da Habitação',
+        speed: 2.0,
+        hairColor: '#b45309',
+        skinColor: '#fed7aa',
+        shirtColor: '#dc2626',
+        pantsColor: '#1e293b',
+        accType: 'megaphone',
+        accColor: '#facc15',
+        targetBuilding: 'acampada',
+        quote: "Habitação é um direito consagrado no Artigo 65º da Constituição!"
+    }
+];
+
+function spawnStreetNpc() {
+    const arch = STREET_NPC_ARCHETYPES[Math.floor(Math.random() * STREET_NPC_ARCHETYPES.length)];
+    const fromDoor = Math.random() < 0.45;
+    let startX, startY, targetX, targetY;
+    let destBuilding = null;
+
+    if (fromDoor) {
+        // Sai de uma porta de edifício existente
+        const srcB = BUILDINGS[Math.floor(Math.random() * BUILDINGS.length)];
+        startX = srcB.doorX || (srcB.x + srcB.w / 2);
+        startY = srcB.doorY || (srcB.y + srcB.h);
+        if (Math.random() < 0.5) {
+            targetX = Math.random() < 0.5 ? -20 : 660;
+            targetY = 205 + Math.random() * 45;
+        } else {
+            const destB = BUILDINGS.find(b => b.id === arch.targetBuilding) || BUILDINGS[0];
+            targetX = destB.doorX || (destB.x + destB.w / 2);
+            targetY = destB.doorY || (destB.y + destB.h);
+            destBuilding = destB;
+        }
+    } else {
+        // Entra no jogo pelos cantos da rua
+        const fromLeft = Math.random() < 0.5;
+        startX = fromLeft ? -15 : 655;
+        startY = 205 + Math.random() * 45;
+        const destB = BUILDINGS.find(b => b.id === arch.targetBuilding) || BUILDINGS[Math.floor(Math.random() * BUILDINGS.length)];
+        targetX = destB.doorX || (destB.x + destB.w / 2);
+        targetY = destB.doorY || (destB.y + destB.h);
+        destBuilding = destB;
+    }
+
+    streetNpcs.push({
+        ...arch,
+        id: Math.random().toString(36).substr(2, 9),
+        x: startX,
+        y: startY,
+        targetX: targetX,
+        targetY: targetY,
+        destBuilding: destBuilding,
+        walkAnimTimer: Math.random() * 5,
+        walkFrame: 0,
+        facing: targetX > startX ? 'right' : 'left',
+        opacity: 1.0,
+        entering: false
+    });
+}
+
+function updateStreetNpcs(dt) {
+    npcSpawnTimer += dt;
+    if (streetNpcs.length < 5 && npcSpawnTimer > 3.0) {
+        spawnStreetNpc();
+        npcSpawnTimer = 0;
+    }
+
+    for (let i = streetNpcs.length - 1; i >= 0; i--) {
+        const npc = streetNpcs[i];
+        const dx = npc.targetX - npc.x;
+        const dy = npc.targetY - npc.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (npc.entering) {
+            npc.opacity -= dt * 2.5;
+            if (npc.opacity <= 0) {
+                streetNpcs.splice(i, 1);
+                continue;
+            }
+        } else if (dist < 5) {
+            if (npc.destBuilding) {
+                npc.entering = true;
+                spawnDust(npc.x, npc.y + 2);
+            } else {
+                streetNpcs.splice(i, 1);
+                continue;
+            }
+        } else {
+            const step = npc.speed * 42 * dt;
+            npc.x += (dx / dist) * step;
+            npc.y += (dy / dist) * step;
+            npc.facing = dx >= 0 ? 'right' : 'left';
+            npc.walkAnimTimer += dt * 6 * npc.speed;
+            npc.walkFrame = Math.floor(npc.walkAnimTimer) % 2;
+        }
+    }
+}
+
+function renderStreetNpcs() {
+    streetNpcs.forEach(npc => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(1, npc.opacity));
+
+        const nx = Math.round(npc.x);
+        const ny = Math.round(npc.y);
+        const bob = npc.walkFrame === 1 ? -1 : 0;
+        const isFacingLeft = npc.facing === 'left';
+
+        // 1. Sombra Suave no Pavimento
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.beginPath();
+        ctx.ellipse(nx, ny + 1, 6, 2.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 2. Pernas / Calças
+        ctx.fillStyle = npc.pantsColor;
+        if (npc.walkFrame === 0) {
+            ctx.fillRect(nx - 4, ny - 6 + bob, 3, 6);
+            ctx.fillRect(nx + 1, ny - 6 + bob, 3, 6);
+        } else {
+            ctx.fillRect(nx - 5, ny - 6 + bob, 3, 6);
+            ctx.fillRect(nx + 2, ny - 5 + bob, 3, 5);
+        }
+
+        // Sapatos
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(nx - 4, ny, 3, 2);
+        ctx.fillRect(nx + 1, ny, 3, 2);
+
+        // 3. Tronco / Camisola
+        ctx.fillStyle = npc.shirtColor;
+        ctx.fillRect(nx - 5, ny - 16 + bob, 10, 10);
+
+        // Acessórios específicos
+        if (npc.accType === 'backpack') {
+            ctx.fillStyle = npc.accColor;
+            ctx.fillRect(isFacingLeft ? nx + 3 : nx - 7, ny - 15 + bob, 4, 7);
+        } else if (npc.accType === 'camera') {
+            ctx.fillStyle = npc.accColor;
+            ctx.fillRect(nx - 2, ny - 12 + bob, 4, 3);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(nx - 1, ny - 11 + bob, 2, 1);
+        } else if (npc.accType === 'briefcase') {
+            ctx.fillStyle = npc.accColor;
+            ctx.fillRect(isFacingLeft ? nx - 8 : nx + 5, ny - 10 + bob, 4, 5);
+        } else if (npc.accType === 'basket') {
+            ctx.fillStyle = '#92400e';
+            ctx.fillRect(isFacingLeft ? nx - 7 : nx + 4, ny - 11 + bob, 4, 5);
+            ctx.fillStyle = npc.accColor;
+            ctx.fillRect(isFacingLeft ? nx - 6 : nx + 5, ny - 13 + bob, 2, 2);
+        } else if (npc.accType === 'guitar') {
+            ctx.fillStyle = npc.accColor;
+            ctx.fillRect(isFacingLeft ? nx + 3 : nx - 6, ny - 19 + bob, 3, 10);
+        } else if (npc.accType === 'megaphone') {
+            ctx.fillStyle = npc.accColor;
+            ctx.fillRect(isFacingLeft ? nx - 8 : nx + 5, ny - 13 + bob, 4, 3);
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(isFacingLeft ? nx - 9 : nx + 8, ny - 14 + bob, 2, 5);
+        }
+
+        // 4. Cabeça e Rosto
+        ctx.fillStyle = npc.skinColor;
+        ctx.fillRect(nx - 4, ny - 24 + bob, 8, 8);
+
+        // Olhos
+        ctx.fillStyle = '#0f172a';
+        if (isFacingLeft) {
+            ctx.fillRect(nx - 3, ny - 21 + bob, 2, 2);
+        } else {
+            ctx.fillRect(nx + 1, ny - 21 + bob, 2, 2);
+        }
+
+        // Cabelo / Penteado / Chapéu
+        ctx.fillStyle = npc.hairColor;
+        ctx.fillRect(nx - 5, ny - 26 + bob, 10, 4);
+        if (isFacingLeft) {
+            ctx.fillRect(nx + 2, ny - 24 + bob, 3, 4);
+        } else {
+            ctx.fillRect(nx - 5, ny - 24 + bob, 3, 4);
+        }
+
+        ctx.restore();
+    });
+}
+
+function updateSpeechBubbles(dt) {
+    for (let i = speechBubbles.length - 1; i >= 0; i--) {
+        const b = speechBubbles[i];
+        b.timer -= dt;
+        if (b.timer <= 0) speechBubbles.splice(i, 1);
+    }
+}
+
+function spawnSpeechBubble(x, y, text, speaker) {
+    speechBubbles = speechBubbles.filter(b => Math.hypot(b.x - x, b.y - y) > 25);
+    speechBubbles.push({
+        x: Math.max(90, Math.min(canvas.width - 90, x)),
+        y: Math.max(35, y),
+        text,
+        speaker,
+        timer: 3.8
+    });
+}
+
+function renderSpeechBubbles() {
+    speechBubbles.forEach(b => {
+        const maxW = 160;
+        ctx.font = '8px "Fira Code"';
+        const words = b.text.split(' ');
+        let lines = [];
+        let curLine = '';
+        words.forEach(w => {
+            const test = curLine + w + ' ';
+            if (ctx.measureText(test).width > maxW && curLine) {
+                lines.push(curLine.trim());
+                curLine = w + ' ';
+            } else {
+                curLine = test;
+            }
+        });
+        if (curLine) lines.push(curLine.trim());
+
+        const bw = Math.min(180, Math.max(110, ctx.measureText(b.speaker || '').width + 20));
+        const bh = 14 + lines.length * 11;
+        const bx = b.x - bw / 2;
+        const by = b.y - bh - 6;
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+        ctx.fillRect(bx, by, bw, bh);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(bx, by, bw, bh);
+
+        // Ponta do balão
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.moveTo(b.x - 4, by + bh);
+        ctx.lineTo(b.x + 4, by + bh);
+        ctx.lineTo(b.x, by + bh + 5);
+        ctx.fill();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.moveTo(b.x - 4, by + bh);
+        ctx.lineTo(b.x, by + bh + 5);
+        ctx.lineTo(b.x + 4, by + bh);
+        ctx.stroke();
+
+        // Nome do interlocutor
+        if (b.speaker) {
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 7.5px "Press Start 2P"';
+            ctx.textAlign = 'left';
+            ctx.fillText(b.speaker, bx + 6, by + 10);
+        }
+
+        // Texto
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '8px "Fira Code"';
+        ctx.textAlign = 'left';
+        lines.forEach((l, idx) => {
+            ctx.fillText(l, bx + 6, by + 19 + idx * 11);
+        });
     });
 }
 
@@ -1369,6 +1912,7 @@ let player = {
     totalShiftsWorked: 0,
     daysUntilRent: 7,
     hungerDays: 0,
+    sleptAcampada: false,
     avatarName: "Zé Desenrasca",
     deathTitle: "",
     deathCause: ""
@@ -1519,6 +2063,10 @@ function update(dt) {
         if (pt.alpha <= 0) particles.splice(i, 1);
     }
 
+    // Peões e NPCs de Rua de Lisboa & Balões de Diálogo
+    updateStreetNpcs(dt);
+    updateSpeechBubbles(dt);
+
     // Movimento do Peão
     if (state === 'BOARD') {
         if (player.walking) {
@@ -1664,13 +2212,23 @@ function endDay(motivo) {
         return;
     }
 
-    // O jogador recolhe à porta de casa para dormir
-    const casa = BUILDINGS.find(b => b.id === 'casa');
-    if (casa) {
-        player.x = casa.x + casa.w / 2;
-        player.y = casa.y + casa.h + 12;
-        player.targetX = player.x;
-        player.targetY = player.y;
+    // O jogador recolhe à porta de casa para dormir (ou à Acampada se dormiu em protesto)
+    if (player.sleptAcampada) {
+        const acamp = BUILDINGS.find(b => b.id === 'acampada');
+        if (acamp) {
+            player.x = acamp.doorX;
+            player.y = acamp.doorY;
+            player.targetX = player.x;
+            player.targetY = player.y;
+        }
+    } else {
+        const casa = BUILDINGS.find(b => b.id === 'casa');
+        if (casa) {
+            player.x = casa.x + casa.w / 2;
+            player.y = casa.y + casa.h + 12;
+            player.targetX = player.x;
+            player.targetY = player.y;
+        }
     }
 
     // Sortear evento aleatório lisboeta com impacto real e 100% contextual
@@ -1719,7 +2277,9 @@ function render() {
         } else {
             renderBoard();
             renderPigeons();
+            renderStreetNpcs();
             renderPlayer();
+            renderSpeechBubbles();
             renderParticles();
             renderLisbonLight();
             renderHUD();
@@ -2078,6 +2638,196 @@ function renderLisbonLight() {
     }
 }
 
+// ============================================================================
+// VISUAL 16-BIT: ACAMPADA DO ROSSIO (Tendas, Faixas & Fogueira Popular)
+// ============================================================================
+function renderAcampadaVisual() {
+    const ax = 155;
+    const ay = 210;
+
+    // 1. Mancha de chão de acampamento (esteiras e calçada de luta)
+    ctx.fillStyle = 'rgba(69, 10, 10, 0.22)';
+    ctx.beginPath();
+    ctx.ellipse(ax + 55, ay + 45, 48, 18, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Tenda Vermelha Canadiana (Tenda Principal da Habitação)
+    const t1x = ax + 14;
+    const t1y = ay + 20;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(t1x + 18, t1y + 28, 20, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#b91c1c';
+    ctx.beginPath();
+    ctx.moveTo(t1x, t1y + 26);
+    ctx.lineTo(t1x + 18, t1y + 4);
+    ctx.lineTo(t1x + 36, t1y + 26);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath();
+    ctx.moveTo(t1x + 18, t1y + 4);
+    ctx.lineTo(t1x + 36, t1y + 26);
+    ctx.lineTo(t1x + 18, t1y + 26);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#450a0a';
+    ctx.beginPath();
+    ctx.moveTo(t1x + 14, t1y + 26);
+    ctx.lineTo(t1x + 18, t1y + 12);
+    ctx.lineTo(t1x + 22, t1y + 26);
+    ctx.closePath();
+    ctx.fill();
+
+    // 3. Tenda Azul Iglu ao lado
+    const t2x = ax + 46;
+    const t2y = ay + 26;
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.arc(t2x + 15, t2y + 18, 14, Math.PI, 0);
+    ctx.fill();
+    ctx.fillStyle = '#0369a1';
+    ctx.beginPath();
+    ctx.arc(t2x + 15, t2y + 18, 14, Math.PI * 1.5, 0);
+    ctx.fill();
+    ctx.fillStyle = '#082f49';
+    ctx.beginPath();
+    ctx.arc(t2x + 15, t2y + 18, 6, Math.PI, 0);
+    ctx.fill();
+
+    // 4. Faixa de Protesto entre Mastros de Madeira
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(ax + 8, ay + 6, 2, 34);
+    ctx.fillRect(ax + 98, ay + 6, 2, 34);
+    const bannerWave = Math.sin(animTimer * 4) * 1.5;
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(ax + 9, ay + 8 + bannerWave, 89, 13);
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(ax + 9, ay + 8 + bannerWave, 89, 13);
+    ctx.fillStyle = '#b91c1c';
+    ctx.font = 'bold 7px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("CASA P/ VIVER", ax + 53, ay + 18 + bannerWave);
+
+    // 5. Braseiro / Fogo de Vigília
+    const fx = ax + 85;
+    const fy = ay + 42;
+    const fGrad = ctx.createRadialGradient(fx, fy, 2, fx, fy, 16);
+    fGrad.addColorStop(0, 'rgba(245, 158, 11, 0.45)');
+    fGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+    ctx.fillStyle = fGrad;
+    ctx.beginPath();
+    ctx.arc(fx, fy, 16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(fx - 4, fy - 1, 8, 4);
+    const flameH = 4 + Math.sin(animTimer * 14) * 2;
+    ctx.fillStyle = '#ea580c';
+    ctx.fillRect(fx - 3, fy - flameH, 6, flameH);
+    ctx.fillStyle = '#facc15';
+    ctx.fillRect(fx - 1, fy - flameH - 1, 3, flameH);
+
+    // 6. Megafone amarelo e caixas de protesto
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(ax + 36, ay + 45, 5, 3);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(ax + 35, ay + 44, 2, 5);
+}
+
+// ============================================================================
+// VISUAL 16-BIT: LOJA DE ROUPA (Pronto-a-Vestir Chiado / Alfaiataria)
+// ============================================================================
+function renderLojaRoupaVisual() {
+    const lx = 280;
+    const ly = 210;
+    const lw = 115;
+    const lh = 72;
+
+    // 1. Paredes de Pedra Pombalina Creme
+    ctx.fillStyle = '#e2d9cc';
+    ctx.fillRect(lx, ly + 8, lw, lh - 8);
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(lx, ly + 8, lw, lh - 8);
+
+    // Moldura nobre de madeira escura
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(lx + 2, ly + 10, lw - 4, 3);
+
+    // 2. Toldo Listrado Vintage da Boutique (Bordô e Creme)
+    const stripeW = 8;
+    const numStripes = Math.floor(lw / stripeW);
+    for (let s = 0; s < numStripes; s++) {
+        ctx.fillStyle = (s % 2 === 0) ? '#991b1b' : '#fef3c7';
+        ctx.fillRect(lx + s * stripeW, ly + 12, stripeW, 14);
+        ctx.beginPath();
+        ctx.arc(lx + s * stripeW + stripeW / 2, ly + 26, stripeW / 2, 0, Math.PI);
+        ctx.fill();
+    }
+
+    // 3. Vitrine Iluminada com Manequins
+    const winX = lx + 8;
+    const winY = ly + 28;
+    const winW = 58;
+    const winH = 34;
+    ctx.fillStyle = '#1e1b4b';
+    ctx.fillRect(winX, winY, winW, winH);
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(winX, winY, winW, winH);
+
+    // Manequim 1: Fato Pombalino
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(winX + 10, winY + 12, 10, 16);
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(winX + 14, winY + 13, 2, 7);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(winX + 13, winY + 11, 4, 2);
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(winX + 14, winY + 28, 2, 5);
+
+    // Manequim 2: Vestido / Polo Chic
+    ctx.fillStyle = '#ec4899';
+    ctx.fillRect(winX + 34, winY + 12, 10, 15);
+    ctx.fillStyle = '#fbcfe8';
+    ctx.fillRect(winX + 37, winY + 10, 4, 3);
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(winX + 38, winY + 27, 2, 6);
+
+    // Reflexo de vidro diagonal
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.beginPath();
+    ctx.moveTo(winX + 4, winY + winH);
+    ctx.lineTo(winX + 22, winY);
+    ctx.lineTo(winX + 32, winY);
+    ctx.lineTo(winX + 14, winY + winH);
+    ctx.closePath();
+    ctx.fill();
+
+    // 4. Porta de Entrada envidraçada
+    const doorX = lx + 74;
+    const doorY = ly + 28;
+    ctx.fillStyle = '#2c1810';
+    ctx.fillRect(doorX, doorY, 32, 38);
+    ctx.fillStyle = 'rgba(254, 240, 138, 0.35)';
+    ctx.fillRect(doorX + 4, doorY + 4, 24, 20);
+    ctx.fillStyle = '#facc15';
+    ctx.fillRect(doorX + 24, doorY + 20, 2, 4);
+
+    // 5. Tabuleta Dourada da Alfaiataria
+    ctx.fillStyle = '#1c1917';
+    ctx.fillRect(lx + 8, ly + 1, lw - 16, 10);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(lx + 8, ly + 1, lw - 16, 10);
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = 'bold 5.5px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("👗 PRONTO-A-VESTIR CHIADO", lx + lw / 2, ly + 8);
+}
+
 // Renderizar o Tabuleiro com Qualidade Gráfica 16-Bit Artesanal (Stardew Valley / Eastward)
 function renderBoard() {
     const hr = player.timeHour;
@@ -2094,10 +2844,14 @@ function renderBoard() {
         BUILDINGS.forEach(b => drawBuilding(b));
     }
 
-    // 2. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
+    // 2. Elementos Físicos e Vivos da Acampada & Loja de Roupa no Rossio
+    renderAcampadaVisual();
+    renderLojaRoupaVisual();
+
+    // 3. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
     renderBuildingOverlays();
 
-    // 3. Halos de Luz dos Candeeiros Históricos à Noite na Calçada
+    // 4. Halos de Luz dos Candeeiros Históricos à Noite na Calçada
     if (isNight) {
         LANTERNS.forEach(l => {
             const grad = ctx.createRadialGradient(l.x, l.y + 6, 2, l.x, l.y + 16, 28);
@@ -3331,6 +4085,37 @@ const NPC_INFO = {
         role: "Músico de Rua",
         quote: "Respira fundo e olha o Tejo. Há coisas na vida que o dinheiro não compra.",
         color: "#0369a1"
+    },
+    acampada: {
+        name: "Inês (Porta-Voz)",
+        role: "Acampada pelo Direito à Habitação",
+        quote: () => {
+            if (player.houseIndex === 0) {
+                return "Quem não tem teto luta pelo teto! Junta-te à vigília, come da nossa panela e passa a noite connosco em resistência!";
+            }
+            if (player.daysUntilRent <= 2) {
+                return "O senhorio está a apertar? Se tentarem despejar-te, a comissão de moradores bloqueia a porta! Nenhum despejo sem alternativa!";
+            }
+            return "Assembleia popular aberta: exigimos tetos máximos para as rendas, habitação pública e salários que cheguem até ao fim do mês!";
+        },
+        color: "#dc2626"
+    },
+    loja_roupa: {
+        name: "D. Zulmira",
+        role: "Mestre de Alfaiataria do Chiado",
+        quote: () => {
+            if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
+                return "Ai credo em cruz, Zé! Entraste na loja sem roupa nenhuma?! Veste já um conjunto antes que venha a polícia municipal!";
+            }
+            if (player.clothing.id === 'suit') {
+                return "Que porte distinto! Esse Fato Pombalino assenta-te que nem uma luva. Estás pronto para ser banqueiro ou gerente de topo!";
+            }
+            if (player.clothing.id === 'shorts') {
+                return "Esses calções servem para a praia ou para carregar caixotes, mas para subir na vida precisas de alfaiataria a sério!";
+            }
+            return "Bem-vindo à melhor alfaiataria de Lisboa! Tecidos nobres, polos de linho, fatos completos e arranjos de costura profissional.";
+        },
+        color: "#db2777"
     }
 };
 
@@ -3362,7 +4147,9 @@ function drawNpcPortrait(id, x, y, size) {
         banco: { col: 0, row: 1 },
         faculdade: { col: 1, row: 1 },
         miradouro: { col: 2, row: 1 },
-        casa: { col: 3, row: 1 }
+        casa: { col: 3, row: 1 },
+        acampada: { col: 2, row: 0 },
+        loja_roupa: { col: 3, row: 0 }
     };
 
     const coord = npcCoords[id] || npcCoords.senhorio;
@@ -3487,10 +4274,119 @@ function renderInteriorScene(ctx, id, animTimer, player, HOUSES, WORKPLACES, get
             renderInteriorCasa(ctx, animTimer, player, HOUSES);
         } else if (id === 'miradouro') {
             renderInteriorMiradouro(ctx, animTimer);
+        } else if (id === 'acampada') {
+            renderInteriorAcampada(ctx, animTimer);
+        } else if (id === 'loja_roupa') {
+            renderInteriorLojaRoupa(ctx, animTimer);
         }
     }
 
     ctx.restore();
+}
+
+function renderInteriorAcampada(ctx, animTimer) {
+    // 1. Céu Estrelado Noturno sobre o Rossio
+    ctx.fillStyle = '#030712';
+    ctx.fillRect(0, 0, 640, 295);
+
+    // Silhueta dos edifícios pombalinos e monumentos ao fundo
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 40, 640, 110);
+    ctx.fillStyle = '#fef08a';
+    for (let j = 0; j < 14; j++) {
+        ctx.fillRect(40 + j * 42, 60, 6, 8);
+        ctx.fillRect(40 + j * 42, 85, 6, 8);
+    }
+
+    // Pavimento da Calçada
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(0, 150, 640, 145);
+
+    // Tendas da Acampada em semicírculo
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath();
+    ctx.moveTo(30, 210);
+    ctx.lineTo(80, 120);
+    ctx.lineTo(130, 210);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.arc(550, 200, 50, Math.PI, 0);
+    ctx.fill();
+
+    // Faixas de Protesto monumentais
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(150, 65, 340, 28);
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(150, 65, 340, 28);
+    ctx.fillStyle = '#b91c1c';
+    ctx.font = 'bold 12px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("CASA PARA VIVER!", 320, 84);
+
+    // Mesa da Cantina Popular com Panela Fumegante
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(200, 175, 140, 18);
+    ctx.fillRect(210, 193, 10, 35);
+    ctx.fillRect(320, 193, 10, 35);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(250, 145, 40, 30);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    const steamBob = Math.sin(animTimer * 5) * 6;
+    ctx.beginPath();
+    ctx.arc(270 + steamBob, 130, 8, 0, Math.PI * 2);
+    ctx.arc(265 - steamBob, 115, 12, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function renderInteriorLojaRoupa(ctx, animTimer) {
+    // 1. Parede de Veludo Bordô
+    ctx.fillStyle = '#450a0a';
+    ctx.fillRect(0, 0, 640, 150);
+
+    // Boiserie / Rodapé nobre
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(0, 135, 640, 20);
+
+    // Chão de Parquet de Madeira Nobre
+    ctx.fillStyle = '#2c1810';
+    ctx.fillRect(0, 155, 640, 140);
+    ctx.strokeStyle = '#451a03';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < 640; x += 30) {
+        ctx.beginPath();
+        ctx.moveTo(x, 155);
+        ctx.lineTo(x + 20, 295);
+        ctx.stroke();
+    }
+
+    // Tapete Central
+    ctx.fillStyle = '#991b1b';
+    ctx.fillRect(160, 185, 320, 85);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(160, 185, 320, 85);
+
+    // Charriot de Fatos Pombalinos e Blazeres
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(30, 70, 130, 6);
+    ctx.fillRect(35, 76, 5, 120);
+    ctx.fillRect(150, 76, 5, 120);
+    const suitColors = ['#0f172a', '#1e1b4b', '#312e81', '#1e293b', '#7f1d1d'];
+    suitColors.forEach((sc, idx) => {
+        ctx.fillStyle = sc;
+        ctx.fillRect(45 + idx * 20, 76, 16, 75);
+    });
+
+    // Espelho Dourado Barroco de Corpo Inteiro
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(510, 45, 80, 145);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(510, 45, 80, 145);
 }
 
 // 1. SUPERMERCADO PINGO DOCE
@@ -4440,22 +5336,17 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         }
     } else if (id === 'supermercado') {
         // ====================================================================
-        // PINGO DOCE: MERCEARIAS, CARREIRAS DE RETALHO & SECÇÃO TÊXTIL
+        // PINGO DOCE: MERCEARIAS, CARREIRAS DE RETALHO & TÊXTIL BÁSICO
         // ====================================================================
         actions.push({ label: "Saco de Mercearia (2 Ref.)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições nutritivas para a despensa." });
+        actions.push({ label: "Cabaz Económico (5 Ref.)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para abastecer a casa." });
 
-        // Secção Têxtil do Pingo Doce
+        // Secção Têxtil Básica do Pingo Doce (Apenas Calções e T-shirt)
         actions.push({
-            label: "Têxtil: Calções & Sapatilhas (25€)",
+            label: "Têxtil Básico: Calções & T-Shirt (25€)",
             cost: 25,
             buyClothing: 'shorts',
-            desc: "Roupa informal e barata de emergência (Durabilidade: 40). Bom para desenrascar!"
-        });
-        actions.push({
-            label: "Têxtil: Polo Smart Casual (65€)",
-            cost: 65,
-            buyClothing: 'casual',
-            desc: "Polo limpo e calças direitas (Durabilidade: 60). Bom para atendimento e escritório!"
+            desc: "Roupa informal e barata de emergência (Durabilidade: 40%). Bom para desenrascar!"
         });
         actions.push({
             label: "Têxtil: Kit Linha e Agulha (12€)",
@@ -4584,6 +5475,78 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             { label: "Ver o Tejo ao Pôr-do-Sol", cost: 0, timeH: 1, timeM: 0, sanity: 25, desc: "Ar fresco lisboeta. +25 Sanidade mental." },
             { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Socializar à beira-rio. +50 Sanidade." },
             { label: "Tocar Guitarra Portuguesa (2h)", gain: 15, timeH: 2, timeM: 0, sanity: 10, desc: "Tocar fado com chapéu na calçada. +15€ e +10 Sanidade." }
+        ];
+    } else if (id === 'acampada') {
+        actions = [
+            {
+                label: "Pernoitar na Acampada (Passar Noite em Luta)",
+                cost: 0,
+                sleepAcampada: true,
+                desc: "Passa a noite na tenda do Rossio! +40 Sanidade, +35 Comida grátis e CONGELA despejo!"
+            },
+            {
+                label: "Assembleia Popular da Habitação (2h)",
+                cost: 0,
+                timeH: 2,
+                timeM: 0,
+                sanity: 30,
+                participateAssembly: true,
+                desc: "Debater tetos às rendas e trabalho com direitos. +30 Sanidade e união comunitária."
+            },
+            {
+                label: "Donativo p/ Cantina Popular (5€)",
+                cost: 5,
+                timeH: 0,
+                timeM: 15,
+                sanity: 20,
+                donateAcampada: true,
+                desc: "Apoia a panela de sopa comunitária com 5€. +20 Sanidade e apoio mútuo."
+            },
+            {
+                label: "Marcha de Protesto: 'Mais Teto, Menos Renda!' (3h)",
+                cost: 0,
+                timeH: 3,
+                timeM: 0,
+                sanity: 35,
+                hunger: -15,
+                marchProtest: true,
+                desc: "Descer a Avenida com megafone e cartazes. +35 Sanidade (gasta 15 nutrição)."
+            }
+        ];
+    } else if (id === 'loja_roupa') {
+        actions = [
+            {
+                label: "Polo Smart Casual (65€)",
+                cost: 65,
+                buyClothing: 'casual',
+                desc: "Polo de linho e calças direitas (Durabilidade: 60%). Bom para escritório e aulas!"
+            },
+            {
+                label: "Fato Pombalino de Alfaiate (180€)",
+                cost: 180,
+                buyClothing: 'suit',
+                desc: "Fato nobre completo com colete e gravata (Durabilidade: 80%). EXIGIDO para Banco e Gerente!"
+            },
+            {
+                label: "Traje Académico Tradicional (140€)",
+                cost: 140,
+                buyClothing: 'academic',
+                desc: "Capa e batina preta do IST (Durabilidade: 90%). Dá prestígio universitário!"
+            },
+            {
+                label: "Calções & Sapatilhas (25€)",
+                cost: 25,
+                buyClothing: 'shorts',
+                desc: "Roupa informal e barata de emergência (Durabilidade: 40%)."
+            },
+            {
+                label: "Arranjo de Alfaiataria Profissional (15€)",
+                cost: 15,
+                timeH: 0,
+                timeM: 30,
+                repairClothing: true,
+                desc: `Restaura a roupa atual (+60% Durabilidade). Roupa atual: ${player.clothing.name} (${player.clothing.durability}%).`
+            }
         ];
     }
 
@@ -4804,7 +5767,8 @@ canvas.addEventListener('mousemove', (e) => {
 
     if (state === 'BOARD') {
         const isHover = BUILDINGS.some(b => c.x >= b.x && c.x <= b.x + b.w && c.y >= b.y && c.y <= b.y + b.h);
-        canvas.style.cursor = isHover ? 'pointer' : 'default';
+        const isNpcHover = streetNpcs.some(n => Math.hypot(c.x - n.x, c.y - (n.y - 12)) < 16);
+        canvas.style.cursor = (isHover || isNpcHover) ? 'pointer' : 'default';
     } else {
         canvas.style.cursor = 'default';
     }
@@ -4907,12 +5871,23 @@ function handleCanvasClick(cx, cy) {
             return;
         }
 
-        // Clicar no Slot 5 de Vestuário & Desgaste (x de 456 a 526) -> Caminha para o Pingo Doce / Alfaiate
+        // Clicar no Slot 5 de Vestuário & Desgaste (x de 456 a 526) -> Caminha para a Loja de Roupa Chiado
         if (cx >= 456 && cx <= 526 && cy >= hy + 8 && cy <= hy + 56) {
             triggerHaptic([25]);
-            walkToBuilding(BUILDINGS.find(b => b.id === 'supermercado'));
-            showToast("A caminho da Secção Têxtil (Pingo Doce) para comprar roupa!");
+            walkToBuilding(BUILDINGS.find(b => b.id === 'loja_roupa'));
+            showToast("A caminho do Pronto-a-Vestir Chiado (Loja de Roupa)!");
             return;
+        }
+
+        // Clicar num Peão / NPC de Rua para falar (Balão de Diálogo)
+        for (let i = 0; i < streetNpcs.length; i++) {
+            const n = streetNpcs[i];
+            if (Math.hypot(cx - n.x, cy - (n.y - 12)) < 16) {
+                triggerHaptic([20]);
+                sfxAction();
+                spawnSpeechBubble(n.x, n.y - 28, n.quote, n.name);
+                return;
+            }
         }
 
         // Easter Egg 1: Clicar no Elétrico 28 toca a sineta (Ding-Ding!)
@@ -5150,6 +6125,39 @@ function executeAction(act) {
         player.clothing.durability = Math.min(maxDur, player.clothing.durability + 40);
         showToast(`Roupa remendada com linha e agulha! Durabilidade: ${player.clothing.durability}%`);
         spawnParticle("✂️ Remendado!", '#10b981');
+    }
+
+    // Ações da Acampada pelo Direito à Habitação & Emprego
+    if (act.sleepAcampada) {
+        player.sleptAcampada = true;
+        player.sanity = Math.min(100, player.sanity + 40);
+        player.hunger = Math.min(100, player.hunger + 35);
+        wearClothing(5);
+        player.daysUntilRent = Math.max(player.daysUntilRent, Math.min(7, player.daysUntilRent + 1));
+        sfxAction();
+        showToast("⛺ Passaste a noite na Acampada do Rossio! +40 Sanidade, +35 Comida e Despejo travado!");
+        spawnParticle("✊ Resistência!", '#ef4444');
+        endDay("Dormiste na tenda da Acampada do Rossio em vigília popular.");
+        return;
+    }
+
+    if (act.participateAssembly) {
+        player.sanity = Math.min(100, player.sanity + 30);
+        showToast("🗣️ Participaste na Assembleia Popular! A solidariedade coletiva renovou a tua sanidade (+30).");
+        spawnParticle("🗣️ Assembleia!", '#38bdf8');
+    }
+
+    if (act.donateAcampada) {
+        player.sanity = Math.min(100, player.sanity + 20);
+        showToast("🍲 Doaste 5€ para a panela de sopa comunitária da Acampada! +20 Sanidade.");
+        spawnParticle("❤️ Solidariedade!", '#10b981');
+    }
+
+    if (act.marchProtest) {
+        player.sanity = Math.min(100, player.sanity + 35);
+        player.hunger = Math.max(0, player.hunger - 15);
+        showToast("📢 Marchaste na Avenida pelo Direito à Habitação! 'Mais Teto, Menos Renda!' (+35 Sanidade)");
+        spawnParticle("📢 Marcha Popular!", '#f59e0b');
     }
 
     if (act.cycleWorkplace) {
