@@ -3292,20 +3292,29 @@ const NPC_INFO = {
     },
     supermercado: {
         name: "D. Maria da Caixa",
-        role: "Pingo Doce de Bairro",
+        role: "Pingo Doce de Bairro & Têxtil",
         quote: () => {
+            if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
+                return "Virgem Santíssima, homem! Estás em fato de Adão no corredor dos congelados?! Compra já calções ou um polo na secção têxtil antes que chame a bófia!";
+            }
             const job = WORKPLACES.pingo_doce.careers[player.careerRanks.pingo_doce || 0];
             if (player.currentWorkplace === 'pingo_doce') {
                 return `Olá Zé! Como ${job.title}, o teu turno faz a diferença no corredor. Sabe bem trabalhar em equipa!`;
             }
-            return "Sabe bem pagar tão pouco! Leva atum e ovos para a despensa, ou candidata-te à nossa equipa!";
+            return "Sabe bem pagar tão pouco! Leva mantimentos, espreita a nossa secção têxtil para renovar a roupa ou candidata-te à equipa!";
         },
         color: "#15803d"
     },
     banco: {
         name: "Dr. Alcoviteiro",
-        role: "Gestor de Poupança",
+        role: "Gestor de Poupança & Alfaiate",
         quote: () => {
+            if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
+                return "Inadmissível! A Caixa Geral não tolera nudismo no balcão nobre! Vá já comprar roupa de gente!";
+            }
+            if (player.clothing.formality < 3) {
+                return "Atenção ao decoro: para trabalhar na Caixa ou ser promovido, tem de vestir Fato Pombalino do alfaiate parceiro!";
+            }
             const job = WORKPLACES.banco.careers[player.careerRanks.banco || 0];
             if (player.currentWorkplace === 'banco') {
                 return `Bem-vindo à agência, colega. Como ${job.title}, o rigor financeiro é a nossa imagem de marca.`;
@@ -3313,7 +3322,7 @@ const NPC_INFO = {
             if (player.ects < 20) {
                 return "Para estagiar na Caixa exigimos pelo menos 20 ECTS universitários. Estuda no Politec/IST e volta cá!";
             }
-            return "O cofre da agência é o local mais seguro de Lisboa. Deposite o seu dinheiro a salvo de assaltos.";
+            return "Taxas de juro sob controlo. Deposita as tuas poupanças ou veste o Fato Pombalino e junta-te à carreira bancária!";
         },
         color: "#854d0e"
     },
@@ -4434,14 +4443,19 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         // PINGO DOCE: MERCEARIAS, CARREIRAS DE RETALHO & SECÇÃO TÊXTIL
         // ====================================================================
         actions.push({ label: "Saco de Mercearia (2 Ref.)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições nutritivas para a despensa." });
-        actions.push({ label: "Cabaz Económico (5 Ref.)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para abastecer a casa." });
 
         // Secção Têxtil do Pingo Doce
+        actions.push({
+            label: "Têxtil: Calções & Sapatilhas (25€)",
+            cost: 25,
+            buyClothing: 'shorts',
+            desc: "Roupa informal e barata de emergência (Durabilidade: 40). Bom para desenrascar!"
+        });
         actions.push({
             label: "Têxtil: Polo Smart Casual (65€)",
             cost: 65,
             buyClothing: 'casual',
-            desc: "Polo limpo e calças direitas (Durabilidade: 60). Bom para atendimento!"
+            desc: "Polo limpo e calças direitas (Durabilidade: 60). Bom para atendimento e escritório!"
         });
         actions.push({
             label: "Têxtil: Kit Linha e Agulha (12€)",
@@ -4576,8 +4590,9 @@ function renderBuildingActions(id, mx, my, mw, mh) {
     // Desenhar Ações na Coluna Direita (ax: mx + 138, aw: mw - 152)
     const ax = mx + 138;
     const aw = mw - 152;
-    const cardH = 48;
-    const cardGap = 5;
+    const maxAvailH = mh - 50;
+    const cardGap = actions.length > 4 ? 3 : 5;
+    const cardH = actions.length > 4 ? Math.floor((maxAvailH - (actions.length - 1) * cardGap) / actions.length) : 48;
 
     actions.forEach((act, idx) => {
         const ay = my + 44 + idx * (cardH + cardGap);
@@ -4598,15 +4613,16 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         ctx.fillStyle = isHover ? '#ffffff' : '#e2e8f0';
         ctx.font = 'bold 10px "Fira Code"';
         ctx.textAlign = 'left';
-        ctx.fillText(act.label, ax + 14, ay + 18);
+        const titleY = cardH < 44 ? ay + 14 : ay + 18;
+        ctx.fillText(act.label, ax + 14, titleY);
 
         const btnW = 90;
-        const btnH = 26;
+        const btnH = cardH < 44 ? 22 : 26;
         const btnX = ax + aw - btnW - 8;
         const btnY = ay + (cardH - btnH) / 2;
 
         const maxDescW = btnX - ax - 22;
-        ctx.font = '8.5px "Fira Code"';
+        ctx.font = cardH < 44 ? '8px "Fira Code"' : '8.5px "Fira Code"';
         ctx.fillStyle = '#94a3b8';
 
         let descText = act.desc;
@@ -4616,7 +4632,8 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             }
             descText += '...';
         }
-        ctx.fillText(descText, ax + 14, ay + 36);
+        const descY = cardH < 44 ? ay + 27 : ay + 36;
+        ctx.fillText(descText, ax + 14, descY);
 
         let btnText = "";
         let btnColor = "#10b981";
@@ -4859,8 +4876,9 @@ function handleCanvasClick(cx, cy) {
         if (modalBuilding && modalBuilding.currentActions) {
             const ax = mx + 138;
             const aw = mw - 152;
-            const cardH = 48;
-            const cardGap = 5;
+            const maxAvailH = mh - 50;
+            const cardGap = modalBuilding.currentActions.length > 4 ? 3 : 5;
+            const cardH = modalBuilding.currentActions.length > 4 ? Math.floor((maxAvailH - (modalBuilding.currentActions.length - 1) * cardGap) / modalBuilding.currentActions.length) : 48;
 
             modalBuilding.currentActions.forEach((act, idx) => {
                 const ay = my + 44 + idx * (cardH + cardGap);
@@ -4885,6 +4903,7 @@ function handleCanvasClick(cx, cy) {
         if (cx >= 342 && cx <= 452 && cy >= hy + 8 && cy <= hy + 56) {
             triggerHaptic([25]);
             walkToBuilding(BUILDINGS.find(b => b.id === 'faculdade'));
+            showToast("A caminhar para o IST (Cursos & Provas)!");
             return;
         }
 
@@ -4892,6 +4911,7 @@ function handleCanvasClick(cx, cy) {
         if (cx >= 456 && cx <= 526 && cy >= hy + 8 && cy <= hy + 56) {
             triggerHaptic([25]);
             walkToBuilding(BUILDINGS.find(b => b.id === 'supermercado'));
+            showToast("A caminho da Secção Têxtil (Pingo Doce) para comprar roupa!");
             return;
         }
 
