@@ -1485,23 +1485,23 @@ const EVENTOS_LISBOA = []; // Alias de compatibilidade retroativa
 
 // Edifícios no Tabuleiro
 const BUILDINGS = [
-    { id: 'miradouro', name: 'Miradouro', x: 15, y: 220, w: 130, h: 60, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 85, doorY: 245, desc: 'O Boémio — Vista sobre o Tejo, descanso e tertúlias.' },
-    { id: 'faculdade', name: 'Politec / IST', x: 20, y: 15, w: 165, h: 165, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 138, doorY: 175, desc: 'Prof. Leitão — Aulas e exames para o canudo no campus do IST.' },
-    { id: 'startup', name: 'Agência Emprego', x: 185, y: 45, w: 75, h: 110, color: '#065f46', accent: '#10b981', tag: 'EMPREGO & HUB', icon: '💼', doorX: 220, doorY: 155, desc: 'Mariana — IEFP, Gestão de Carreiras e Tech Hub.' },
-    { id: 'senhorio', name: 'Senhorio', x: 285, y: 15, w: 115, h: 65, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 365, doorY: 185, desc: 'Sr. Jerónimo — Rendas e contratos de habitação.' },
-    { id: 'banco', name: 'Caixa / Banco', x: 270, y: 75, w: 125, h: 115, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 335, doorY: 185, desc: 'Dr. Alcoviteiro — Poupança, Multibanco e carreiras financeiras.' },
-    { id: 'casa', name: 'O Teu Teto', x: 520, y: 20, w: 110, h: 100, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 545, doorY: 195, desc: 'Dorme para recuperar sanidade, fome e energia.' },
-    { id: 'supermercado', name: 'Pingo Doce', x: 405, y: 120, w: 110, h: 80, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 460, doorY: 195, desc: 'D. Maria — Mantimentos e carreiras de supermercado.' },
-    { id: 'tasca', name: 'Tasca Ti Zé', x: 520, y: 120, w: 115, h: 80, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 580, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
-    { id: 'acampada', name: 'Acampada Rossio', x: 155, y: 210, w: 115, h: 72, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 210, doorY: 250, desc: 'Inês — Vigília popular e assembleia pelo direito à habitação e emprego digno.' },
-    { id: 'loja_roupa', name: 'Loja de Roupa', x: 280, y: 210, w: 115, h: 72, color: '#db2777', accent: '#f472b6', tag: 'MODA & ALFAIATARIA', icon: '👗', doorX: 340, doorY: 250, desc: 'D. Zulmira — Fatos de gala, polos, trajes e arranjos de costura.' }
+    { id: 'miradouro', name: 'Miradouro', x: 0, y: 220, w: 140, h: 75, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 65, doorY: 245, desc: 'O Boémio — Vista sobre o Tejo, descanso e tertúlias.' },
+    { id: 'faculdade', name: 'Politec / IST', x: 0, y: 15, w: 146, h: 180, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 72, doorY: 185, desc: 'Prof. Leitão — Aulas e exames para o canudo no campus do IST.' },
+    { id: 'acampada', name: 'Acampada Rossio', x: 128, y: 168, w: 116, h: 54, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 186, doorY: 215, desc: 'Inês — Vigília popular e assembleia pelo direito à habitação e emprego digno.' },
+    { id: 'startup', name: 'Agência Emprego', x: 146, y: 45, w: 76, h: 145, color: '#065f46', accent: '#10b981', tag: 'EMPREGO & HUB', icon: '💼', doorX: 186, doorY: 175, desc: 'Mariana — IEFP, Gestão de Carreiras e Tech Hub.' },
+    { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 185, desc: 'Dr. Alcoviteiro — Poupança, Multibanco e carreiras financeiras.' },
+    { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 185, desc: 'D. Zulmira — Fatos de gala, polos, trajes e arranjos de costura.' },
+    { id: 'supermercado', name: 'Pingo Doce', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 478, doorY: 185, desc: 'D. Maria — Mantimentos e carreiras de supermercado.' },
+    { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 70, w: 110, h: 125, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 185, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
+    { id: 'casa', name: 'O Teu Teto', x: 340, y: 15, w: 120, h: 65, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 376, doorY: 185, desc: 'Dorme para recuperar sanidade, fome e energia.' },
+    { id: 'senhorio', name: 'Senhorio', x: 530, y: 15, w: 110, h: 65, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 585, doorY: 185, desc: 'Sr. Jerónimo — Rendas e contratos de habitação.' }
 ];
 
 // Pombos do Rossio a debicar na calçada
 const PIGEONS = [
-    { x: 140, y: 200, frame: 0, timer: 0 },
-    { x: 380, y: 220, frame: 1, timer: 1.2 },
-    { x: 500, y: 215, frame: 0, timer: 2.1 }
+    { x: 100, y: 205, frame: 0, timer: 0 },
+    { x: 260, y: 215, frame: 1, timer: 1.2 },
+    { x: 510, y: 210, frame: 0, timer: 2.1 }
 ];
 
 // Partículas flutuantes (+15€, -20€, ☕)
@@ -1526,7 +1526,7 @@ const LIVING_NPCS = [
     {
         id: 'tasca_fregueses',
         name: 'Ti Zé & Fregueses',
-        x: 588, y: 168, radius: 18,
+        x: 605, y: 188, radius: 20,
         quotes: [
             "Mais um fino bem gelado e um pires de caracóis, Ti Zé!",
             "Hoje o Sporting joga às oito, guarda-me a mesa da frente!",
@@ -1536,7 +1536,7 @@ const LIVING_NPCS = [
     {
         id: 'boemio_miradouro',
         name: 'O Boémio do Miradouro',
-        x: 72, y: 242, radius: 16,
+        x: 65, y: 248, radius: 18,
         quotes: [
             "A luz de Lisboa ao entardecer é a única renda que ninguém nos cobra.",
             "Fico aqui a ver os cacilheiros cruzar o Tejo e quase esqueço a Euribor.",
@@ -1546,7 +1546,7 @@ const LIVING_NPCS = [
     {
         id: 'cliente_banco',
         name: 'Cliente da Caixa',
-        x: 342, y: 174, radius: 15,
+        x: 305, y: 175, radius: 15,
         quotes: [
             "Vim ver o saldo... e acho que o Multibanco começou a chorar comigo.",
             "Comissão de manutenção de 6,50€?! Nem o Rei cobrava tanto dízimo!",
@@ -1554,9 +1554,19 @@ const LIVING_NPCS = [
         ]
     },
     {
+        id: 'cliente_loja_roupa',
+        name: 'D. Zulmira (Modas Chiado)',
+        x: 376, y: 182, radius: 16,
+        quotes: [
+            "Para ser gerente ou trabalhar na banca é preciso fato e gravata bem engomados!",
+            "A roupa desgasta-se com o trabalho diário, mas um bom remendo faz milagres!",
+            "Em Lisboa uma boa apresentação abre mais portas que uma cunha!"
+        ]
+    },
+    {
         id: 'estudante_ist',
         name: 'Estudante do IST',
-        x: 108, y: 156, radius: 16,
+        x: 72, y: 180, radius: 18,
         quotes: [
             "Tenho frequência de Álgebra amanhã e só sei que nada sei...",
             "Passei a noite na biblioteca da Alameda à base de café e desespero.",
@@ -1566,7 +1576,7 @@ const LIVING_NPCS = [
     {
         id: 'cliente_pingo_doce',
         name: 'Cliente do Pingo Doce',
-        x: 452, y: 177, radius: 15,
+        x: 478, y: 182, radius: 16,
         quotes: [
             "O azeite está a preço de ouro! Vim só buscar pão e gastei uma fortuna.",
             "As promoções da D. Maria salvam qualquer fim de mês em Lisboa."
@@ -1575,10 +1585,10 @@ const LIVING_NPCS = [
     {
         id: 'ines_acampada',
         name: 'Inês (Acampada)',
-        x: 195, y: 248, radius: 18,
+        x: 186, y: 202, radius: 22,
         quotes: [
             "Habitação é um direito, não é um privilégio de fundos abutres!",
-            "Junta-te à nossa vigília noturna: partilhamos sopa quente e coragem.",
+            "Junta-te à nossa vigília no Rossio: partilhamos sopa quente e coragem.",
             "Nenhum despejo sem alternativa digna em Lisboa!"
         ]
     }
@@ -1587,14 +1597,14 @@ const LIVING_NPCS = [
 function renderBoardLivingCharacters(ctx, animTimer) {
     ctx.save();
 
-    // 1. ESPLANADA DA TASCA DO TI ZÉ (x: 575 a 605, y: 160 a 178)
+    // 1. ESPLANADA DA TASCA DO TI ZÉ (x: 585 a 635, y: 175 a 195)
     const drinkCycle = animTimer % 4.8;
-    const px1 = 580;
-    const py1 = 166;
+    const px1 = 595;
+    const py1 = 186;
     
     // Vapor / Fumo aromático do bitoque e petiscos no centro da mesa
-    const steamX = 589;
-    const steamY = 171;
+    const steamX = 606;
+    const steamY = 188;
     for (let s = 0; s < 3; s++) {
         const sProg = ((animTimer * 1.8 + s * 1.4) % 3.0) / 3.0;
         const sx = steamX + Math.sin(animTimer * 3 + s * 2) * 2;
@@ -1626,8 +1636,8 @@ function renderBoardLivingCharacters(ctx, animTimer) {
     }
 
     // Cliente da direita a conversar / gesticular
-    const px2 = 600;
-    const py2 = 166;
+    const px2 = 618;
+    const py2 = 186;
     const talkBob = Math.sin(animTimer * 5.2) * 1.0;
     const handWave = Math.sin(animTimer * 3.5) * 1.5;
     ctx.fillStyle = '#fed7aa';
@@ -1637,9 +1647,9 @@ function renderBoardLivingCharacters(ctx, animTimer) {
         ctx.fillRect(px2, py2 - 6 + Math.round(talkBob * 0.5), 4, 2);
     }
 
-    // 2. MIRADOURO SOBRE O TEJO (O Boémio na Balaustrada, x: 72, y: 242)
-    const mx = 72;
-    const my = 242;
+    // 2. MIRADOURO SOBRE O TEJO (O Boémio na Balaustrada, x: 65, y: 248)
+    const mx = 65;
+    const my = 248;
     const scarfFlutter = Math.sin(animTimer * 5.0) * 1.8;
     ctx.fillStyle = '#dc2626';
     ctx.fillRect(mx - 3, my - 8, 3, 3);
@@ -1654,9 +1664,14 @@ function renderBoardLivingCharacters(ctx, animTimer) {
         ctx.fillRect(Math.round(fx), Math.round(fy), 2, 2);
     }
 
-    // 3. CAIXA GERAL / MULTIBANCO (Cidadão na Fila / ATM, x: 342, y: 174)
-    const bx = 342;
-    const by = 174;
+    // 3. CAIXA GERAL / MULTIBANCO (ATM iluminado e cliente na fila, x: 305, y: 175)
+    const bx = 305;
+    const by = 175;
+    // Brilho azul pulsante do ecrã do Multibanco
+    const atmPulse = 0.35 + Math.sin(animTimer * 4.0) * 0.15;
+    ctx.fillStyle = `rgba(56, 189, 248, ${atmPulse.toFixed(2)})`;
+    ctx.fillRect(303, 166, 8, 6);
+
     const watchCycle = animTimer % 5.0;
     const slipWave = Math.sin(animTimer * 7.0) * 1.2;
     ctx.fillStyle = '#f8fafc';
@@ -1669,9 +1684,9 @@ function renderBoardLivingCharacters(ctx, animTimer) {
         ctx.fillRect(bx - 2, by - 8, 1, 1);
     }
 
-    // 4. DEGRAUS DO IST / UNIVERSIDADE (Estudante com Sebenta, x: 108, y: 156)
-    const sx = 108;
-    const sy = 156;
+    // 4. DEGRAUS DO IST / UNIVERSIDADE (Estudante com Sebenta, x: 72, y: 180)
+    const sx = 72;
+    const sy = 180;
     const pageCycle = animTimer % 6.0;
 
     ctx.fillStyle = '#f8fafc';
@@ -1691,18 +1706,26 @@ function renderBoardLivingCharacters(ctx, animTimer) {
         ctx.fillRect(sx - 2, sy - 2, 1, 3);
     }
 
-    // 5. PINGO DOCE (Freguesa com o Saco das Compras, x: 452, y: 177)
-    const gx = 452;
-    const gy = 177;
+    // 5. MODAS CHIADO (Pronto-a-Vestir Chiado / Alfaiataria, x: 376, y: 182)
+    const lx = 376;
+    const ly = 182;
+    // Reflexo suave dourado na montra da alfaiataria
+    const winGlow = 0.12 + Math.sin(animTimer * 2.0) * 0.05;
+    ctx.fillStyle = `rgba(254, 240, 138, ${winGlow.toFixed(2)})`;
+    ctx.fillRect(348, 172, 54, 14);
+
+    // 6. PINGO DOCE (Freguesa com o Saco das Compras, x: 478, y: 182)
+    const gx = 478;
+    const gy = 182;
     const bagSway = Math.sin(animTimer * 2.8) * 1.5;
     ctx.fillStyle = '#16a34a';
     ctx.fillRect(gx + 3, gy - 2 + Math.round(bagSway), 4, 5);
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(gx + 4, gy + Math.round(bagSway), 2, 2);
 
-    // 6. ACAMPADA DO ROSSIO (Ativista a Tocar Guitarra à Fogueira, x: 195, y: 248)
-    const ax = 195;
-    const ay = 248;
+    // 7. ACAMPADA DO ROSSIO (Ativista a Tocar Guitarra nas Tendas, x: 186, y: 205)
+    const ax = 186;
+    const ay = 205;
     const strum = Math.sin(animTimer * 9.0) * 1.5;
     ctx.fillStyle = '#b45309';
     ctx.fillRect(ax - 2, ay - 6, 6, 4);
@@ -1719,7 +1742,7 @@ function renderBoardLivingCharacters(ctx, animTimer) {
         ctx.fillText("♪", Math.round(nx), Math.round(ny));
     }
 
-    // 7. EFEITO DE HOVER RETRO SOBRE AS PERSONAGENS VIVAS (Estilo Aventura LucasArts)
+    // 8. EFEITO DE HOVER RETRO SOBRE AS PERSONAGENS VIVAS (Estilo Aventura LucasArts)
     if (state === 'BOARD') {
         LIVING_NPCS.forEach(n => {
             if (Math.hypot(mouse.x - n.x, mouse.y - n.y) < n.radius) {
@@ -1913,7 +1936,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '2.2';
+const ASSET_VER = '2.5';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -2615,196 +2638,6 @@ function renderLisbonLight() {
     }
 }
 
-// ============================================================================
-// VISUAL 16-BIT: ACAMPADA DO ROSSIO (Tendas, Faixas & Fogueira Popular)
-// ============================================================================
-function renderAcampadaVisual() {
-    const ax = 155;
-    const ay = 210;
-
-    // 1. Mancha de chão de acampamento (esteiras e calçada de luta)
-    ctx.fillStyle = 'rgba(69, 10, 10, 0.22)';
-    ctx.beginPath();
-    ctx.ellipse(ax + 55, ay + 45, 48, 18, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 2. Tenda Vermelha Canadiana (Tenda Principal da Habitação)
-    const t1x = ax + 14;
-    const t1y = ay + 20;
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-    ctx.beginPath();
-    ctx.ellipse(t1x + 18, t1y + 28, 20, 5, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#b91c1c';
-    ctx.beginPath();
-    ctx.moveTo(t1x, t1y + 26);
-    ctx.lineTo(t1x + 18, t1y + 4);
-    ctx.lineTo(t1x + 36, t1y + 26);
-    ctx.closePath();
-    ctx.fill();
-    ctx.fillStyle = '#dc2626';
-    ctx.beginPath();
-    ctx.moveTo(t1x + 18, t1y + 4);
-    ctx.lineTo(t1x + 36, t1y + 26);
-    ctx.lineTo(t1x + 18, t1y + 26);
-    ctx.closePath();
-    ctx.fill();
-    ctx.fillStyle = '#450a0a';
-    ctx.beginPath();
-    ctx.moveTo(t1x + 14, t1y + 26);
-    ctx.lineTo(t1x + 18, t1y + 12);
-    ctx.lineTo(t1x + 22, t1y + 26);
-    ctx.closePath();
-    ctx.fill();
-
-    // 3. Tenda Azul Iglu ao lado
-    const t2x = ax + 46;
-    const t2y = ay + 26;
-    ctx.fillStyle = '#0284c7';
-    ctx.beginPath();
-    ctx.arc(t2x + 15, t2y + 18, 14, Math.PI, 0);
-    ctx.fill();
-    ctx.fillStyle = '#0369a1';
-    ctx.beginPath();
-    ctx.arc(t2x + 15, t2y + 18, 14, Math.PI * 1.5, 0);
-    ctx.fill();
-    ctx.fillStyle = '#082f49';
-    ctx.beginPath();
-    ctx.arc(t2x + 15, t2y + 18, 6, Math.PI, 0);
-    ctx.fill();
-
-    // 4. Faixa de Protesto entre Mastros de Madeira
-    ctx.fillStyle = '#78350f';
-    ctx.fillRect(ax + 8, ay + 6, 2, 34);
-    ctx.fillRect(ax + 98, ay + 6, 2, 34);
-    const bannerWave = Math.sin(animTimer * 4) * 1.5;
-    ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(ax + 9, ay + 8 + bannerWave, 89, 13);
-    ctx.strokeStyle = '#dc2626';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(ax + 9, ay + 8 + bannerWave, 89, 13);
-    ctx.fillStyle = '#b91c1c';
-    ctx.font = 'bold 7px "Press Start 2P"';
-    ctx.textAlign = 'center';
-    ctx.fillText("CASA P/ VIVER", ax + 53, ay + 18 + bannerWave);
-
-    // 5. Braseiro / Fogo de Vigília
-    const fx = ax + 85;
-    const fy = ay + 42;
-    const fGrad = ctx.createRadialGradient(fx, fy, 2, fx, fy, 16);
-    fGrad.addColorStop(0, 'rgba(245, 158, 11, 0.45)');
-    fGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
-    ctx.fillStyle = fGrad;
-    ctx.beginPath();
-    ctx.arc(fx, fy, 16, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(fx - 4, fy - 1, 8, 4);
-    const flameH = 4 + Math.sin(animTimer * 14) * 2;
-    ctx.fillStyle = '#ea580c';
-    ctx.fillRect(fx - 3, fy - flameH, 6, flameH);
-    ctx.fillStyle = '#facc15';
-    ctx.fillRect(fx - 1, fy - flameH - 1, 3, flameH);
-
-    // 6. Megafone amarelo e caixas de protesto
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillRect(ax + 36, ay + 45, 5, 3);
-    ctx.fillStyle = '#ef4444';
-    ctx.fillRect(ax + 35, ay + 44, 2, 5);
-}
-
-// ============================================================================
-// VISUAL 16-BIT: LOJA DE ROUPA (Pronto-a-Vestir Chiado / Alfaiataria)
-// ============================================================================
-function renderLojaRoupaVisual() {
-    const lx = 280;
-    const ly = 210;
-    const lw = 115;
-    const lh = 72;
-
-    // 1. Paredes de Pedra Pombalina Creme
-    ctx.fillStyle = '#e2d9cc';
-    ctx.fillRect(lx, ly + 8, lw, lh - 8);
-    ctx.strokeStyle = '#78350f';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(lx, ly + 8, lw, lh - 8);
-
-    // Moldura nobre de madeira escura
-    ctx.fillStyle = '#451a03';
-    ctx.fillRect(lx + 2, ly + 10, lw - 4, 3);
-
-    // 2. Toldo Listrado Vintage da Boutique (Bordô e Creme)
-    const stripeW = 8;
-    const numStripes = Math.floor(lw / stripeW);
-    for (let s = 0; s < numStripes; s++) {
-        ctx.fillStyle = (s % 2 === 0) ? '#991b1b' : '#fef3c7';
-        ctx.fillRect(lx + s * stripeW, ly + 12, stripeW, 14);
-        ctx.beginPath();
-        ctx.arc(lx + s * stripeW + stripeW / 2, ly + 26, stripeW / 2, 0, Math.PI);
-        ctx.fill();
-    }
-
-    // 3. Vitrine Iluminada com Manequins
-    const winX = lx + 8;
-    const winY = ly + 28;
-    const winW = 58;
-    const winH = 34;
-    ctx.fillStyle = '#1e1b4b';
-    ctx.fillRect(winX, winY, winW, winH);
-    ctx.strokeStyle = '#b45309';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(winX, winY, winW, winH);
-
-    // Manequim 1: Fato Pombalino
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(winX + 10, winY + 12, 10, 16);
-    ctx.fillStyle = '#dc2626';
-    ctx.fillRect(winX + 14, winY + 13, 2, 7);
-    ctx.fillStyle = '#e2e8f0';
-    ctx.fillRect(winX + 13, winY + 11, 4, 2);
-    ctx.fillStyle = '#78350f';
-    ctx.fillRect(winX + 14, winY + 28, 2, 5);
-
-    // Manequim 2: Vestido / Polo Chic
-    ctx.fillStyle = '#ec4899';
-    ctx.fillRect(winX + 34, winY + 12, 10, 15);
-    ctx.fillStyle = '#fbcfe8';
-    ctx.fillRect(winX + 37, winY + 10, 4, 3);
-    ctx.fillStyle = '#78350f';
-    ctx.fillRect(winX + 38, winY + 27, 2, 6);
-
-    // Reflexo de vidro diagonal
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-    ctx.beginPath();
-    ctx.moveTo(winX + 4, winY + winH);
-    ctx.lineTo(winX + 22, winY);
-    ctx.lineTo(winX + 32, winY);
-    ctx.lineTo(winX + 14, winY + winH);
-    ctx.closePath();
-    ctx.fill();
-
-    // 4. Porta de Entrada envidraçada
-    const doorX = lx + 74;
-    const doorY = ly + 28;
-    ctx.fillStyle = '#2c1810';
-    ctx.fillRect(doorX, doorY, 32, 38);
-    ctx.fillStyle = 'rgba(254, 240, 138, 0.35)';
-    ctx.fillRect(doorX + 4, doorY + 4, 24, 20);
-    ctx.fillStyle = '#facc15';
-    ctx.fillRect(doorX + 24, doorY + 20, 2, 4);
-
-    // 5. Tabuleta Dourada da Alfaiataria
-    ctx.fillStyle = '#1c1917';
-    ctx.fillRect(lx + 8, ly + 1, lw - 16, 10);
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(lx + 8, ly + 1, lw - 16, 10);
-    ctx.fillStyle = '#fbbf24';
-    ctx.font = 'bold 5.5px "Press Start 2P"';
-    ctx.textAlign = 'center';
-    ctx.fillText("👗 PRONTO-A-VESTIR CHIADO", lx + lw / 2, ly + 8);
-}
-
 // Renderizar o Tabuleiro com Qualidade Gráfica 16-Bit Artesanal (Stardew Valley / Eastward)
 function renderBoard() {
     const hr = player.timeHour;
@@ -2821,14 +2654,10 @@ function renderBoard() {
         BUILDINGS.forEach(b => drawBuilding(b));
     }
 
-    // 2. Elementos Físicos e Vivos da Acampada & Loja de Roupa no Rossio
-    renderAcampadaVisual();
-    renderLojaRoupaVisual();
-
-    // 3. Personagens Nativas e Vivas de Lisboa Integradas no Tabuleiro
+    // 2. Personagens Nativas e Vivas de Lisboa Integradas no Tabuleiro
     renderBoardLivingCharacters(ctx, animTimer);
 
-    // 4. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
+    // 3. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
     renderBuildingOverlays();
 
     // 4. Halos de Luz dos Candeeiros Históricos à Noite na Calçada
