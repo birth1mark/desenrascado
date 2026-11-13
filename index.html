@@ -798,78 +798,201 @@ const CAREERS = WORKPLACES.startup.careers;
 
 let currentEvent = null;
 
-const EVENTOS_LISBOA = [
-    {
-        title: "Greve Geral no Metro de Lisboa",
-        desc: "A linha azul fechou de surpresa. Tiveste de apanhar um TVDE em tarifa dinâmica na calçada.",
-        effect: (p) => { p.wallet = Math.max(0, p.wallet - 14); p.sanity = Math.max(0, p.sanity - 8); },
-        badge: "IMPACTO: -14€ TVDE | -8 Sanidade",
+// ============================================================================
+// SISTEMA DINÂMICO DO JORNAL DO PURGATÓRIO (100% Contextual ao Zé Desenrasca)
+// ============================================================================
+function generateMorningEvent(p) {
+    const curWp = WORKPLACES[p.currentWorkplace] || WORKPLACES.pingo_doce;
+    const curJob = getPlayerJob();
+    const curHouse = HOUSES[p.houseIndex];
+
+    const possibleEvents = [];
+
+    // 1. Deslocação & Transporte (Afeta o trabalho real do Zé!)
+    possibleEvents.push({
+        title: "Greve de Zelo no Metro de Lisboa",
+        desc: `A Linha Verde fechou de surpresa. Para não chegares atrasado ao turno de ${curJob.title} no ${curWp.name}, tiveste de apanhar um TVDE em tarifa dinâmica na calçada!`,
+        effect: (player) => {
+            player.wallet = Math.max(0, player.wallet - 12);
+            player.sanity = Math.max(0, player.sanity - 7);
+        },
+        badge: "IMPACTO: -12€ TVDE | -7 Sanidade",
         good: false
-    },
-    {
-        title: "Turista Perdido em Santa Luzia",
-        desc: "Explicaste a uns alemães como subir ao Castelo sem serem enganados no elétrico. Deram-te gorjeta!",
-        effect: (p) => { p.wallet += 25; p.sanity = Math.min(100, p.sanity + 6); },
-        badge: "IMPACTO: +25€ Gorjeta | +6 Sanidade",
-        good: true
-    },
-    {
-        title: "Obras no Prédio ao Lado às 07:30",
-        desc: "Um martelo pneumático começou a abrir roços na parede do teu quarto em dia de folga.",
-        effect: (p) => { p.sanity = Math.max(0, p.sanity - 18); },
-        badge: "IMPACTO: -18 Sanidade (Ruído Infernal)",
-        good: false
-    },
-    {
-        title: "Happy Hour de Fino e Tremoços",
-        desc: "O Ti Zé ofereceu uma rodada no balcão porque o clube dele marcou aos 94 minutos.",
-        effect: (p) => { p.sanity = Math.min(100, p.sanity + 15); p.hunger = Math.min(100, p.hunger + 10); },
-        badge: "IMPACTO: +15 Sanidade | +10 Energia",
-        good: true
-    },
-    {
-        title: "Envelope Azul da Autoridade Tributária",
-        desc: "Notificação das Finanças na caixa de correio: era só publicidade ao Débito Direto, mas apanhaste um susto brutal.",
-        effect: (p) => { p.sanity = Math.max(0, p.sanity - 12); },
-        badge: "IMPACTO: -12 Sanidade (Pânico Fiscal)",
-        good: false
-    },
-    {
-        title: "Achado no Jardim da Estrela",
-        desc: "Encontraste uma nota de 20€ esquecida debaixo de uma beata de SG Ventil.",
-        effect: (p) => { p.wallet += 20; },
-        badge: "IMPACTO: +20€ Achados e Perdidos",
-        good: true
-    },
-    {
-        title: "Filmagens da Netflix na tua Rua",
-        desc: "A tua rua foi cortada para filmar uma perseguição de tuk-tuks. Chegaste atrasado ao coworking.",
-        effect: (p) => { p.wallet = Math.max(0, p.wallet - 10); p.sanity = Math.max(0, p.sanity - 5); },
+    });
+
+    // 2. Habitação Contextual (Baseada na casa real onde dormiu)
+    if (p.houseIndex === 0) {
+        possibleEvents.push({
+            title: "Mangueirada da Higiene Urbana",
+            desc: "A carrinha de lavagem da CML começou a lavar a calçada do Rossio às 06h30. Acordaste encharcado no banco de jardim!",
+            effect: (player) => { player.sanity = Math.max(0, player.sanity - 16); },
+            badge: "IMPACTO: -16 Sanidade (Banho de Mangueira)",
+            good: false
+        });
+    } else if (p.houseIndex === 1) {
+        possibleEvents.push({
+            title: "Ressonar em Estéreo em Arroios",
+            desc: "O teu companheiro de beliche do turno da noite ressonou feito uma betoneira e roubou-te o edredom a noite inteira.",
+            effect: (player) => { player.sanity = Math.max(0, player.sanity - 14); },
+            badge: "IMPACTO: -14 Sanidade (Noite em Branco)",
+            good: false
+        });
+    } else if (p.houseIndex === 2) {
+        possibleEvents.push({
+            title: "Obras no Prédio ao Lado às 07:30",
+            desc: "Um martelo pneumático começou a abrir roços na empena do prédio para montar mais um alojamento local nos Anjos.",
+            effect: (player) => { player.sanity = Math.max(0, player.sanity - 15); },
+            badge: "IMPACTO: -15 Sanidade (Martelo Pneumático)",
+            good: false
+        });
+    } else if (p.houseIndex === 3) {
+        possibleEvents.push({
+            title: "Serenata de Fadistas Bêbados à Janela",
+            desc: "Às 04h00 da manhã, um grupo de boémios parou junto à janela da tua cave em Alfama a cantar fados desafinados até ao nascer do sol.",
+            effect: (player) => { player.sanity = Math.max(0, player.sanity - 12); },
+            badge: "IMPACTO: -12 Sanidade (Fado Desafinado)",
+            good: false
+        });
+    } else if (p.houseIndex >= 4) {
+        possibleEvents.push({
+            title: "Festa de Nómadas Digitais no Rooftop",
+            desc: "Os teus vizinhos alemães do 4º andar montaram um 'Sunset Lounge' com batidas techno que fizeram tremer os estuques do teu teto pombalino.",
+            effect: (player) => { player.sanity = Math.max(0, player.sanity - 10); },
+            badge: "IMPACTO: -10 Sanidade (Techno no Teto)",
+            good: false
+        });
+    }
+
+    // 3. Acontecimentos no Local de Trabalho Atual (100% Verdadeiros à Empresa Ativa)
+    if (p.currentWorkplace === 'pingo_doce') {
+        possibleEvents.push({
+            title: "Quebra de Palete de Atum no Pingo Doce",
+            desc: "Um porta-paletes tombou no corredor 3 do Pingo Doce. Ajudaste a arrumar 300 latas e a D. Maria ofereceu-te um bónus de assiduidade e conservas!",
+            effect: (player) => {
+                player.wallet += 22;
+                player.groceries += 1;
+                player.sanity = Math.min(100, player.sanity + 6);
+            },
+            badge: "IMPACTO: +22€ Bónus | +1 Conserva | +6 Sanidade",
+            good: true
+        });
+        possibleEvents.push({
+            title: "Inspeção Surpresa da ASAE no Pingo Doce",
+            desc: "Os inspetores verificaram todas as validades do armazém da loja. O turno foi uma correria stressante de horas extra!",
+            effect: (player) => { player.sanity = Math.max(0, player.sanity - 10); },
+            badge: "IMPACTO: -10 Sanidade (Correria da ASAE)",
+            good: false
+        });
+    } else if (p.currentWorkplace === 'tasca') {
+        possibleEvents.push({
+            title: "Vitória do Clube do Ti Zé aos 94 Minutos",
+            desc: "O clube de bairro do Ti Zé marcou no último lance! O Ti Zé ofereceu fino e tremoços a todos os fregueses e dividiu as gorjetas do balcão!",
+            effect: (player) => {
+                player.wallet += 20;
+                player.hunger = Math.min(100, player.hunger + 15);
+                player.sanity = Math.min(100, player.sanity + 12);
+            },
+            badge: "IMPACTO: +20€ Gorjetas | +15 Nutrição | +12 Sanidade",
+            good: true
+        });
+        possibleEvents.push({
+            title: "Freguês Reclamou do Ponto do Bitoque",
+            desc: "Um cliente exigente na Tasca devolveu o prato porque o ovo não estava a cavalo com a gema mole. Discussão no balcão até às tantas!",
+            effect: (player) => { player.sanity = Math.max(0, player.sanity - 9); },
+            badge: "IMPACTO: -9 Sanidade (Chatice no Balcão)",
+            good: false
+        });
+    } else if (p.currentWorkplace === 'banco') {
+        possibleEvents.push({
+            title: "Bónus de Auditoria Financeira na Caixa",
+            desc: "O fecho das contas de depósitos bateu certo até ao último cêntimo. O Dr. Alcoviteiro aprovou uma gratificação de produtividade aos funcionários!",
+            effect: (player) => {
+                player.wallet += 35;
+                player.sanity = Math.min(100, player.sanity + 10);
+            },
+            badge: "IMPACTO: +35€ Bónus Caixa | +10 Sanidade",
+            good: true
+        });
+        possibleEvents.push({
+            title: "Avaria no Dispensador de Senhas da Caixa",
+            desc: "O dispensador de senhas do balcão encravou em dia de pagamento de reformas. A fila estendeu-se até à rua e foi um teste supremo à paciência!",
+            effect: (player) => { player.sanity = Math.max(0, player.sanity - 12); },
+            badge: "IMPACTO: -12 Sanidade (Caos no Balcão)",
+            good: false
+        });
+    } else if (p.currentWorkplace === 'startup') {
+        possibleEvents.push({
+            title: "Ronda Seed Fechada no Tech Hub",
+            desc: "A equipa da Mariana fechou uma ronda com fundos de capital de risco. Houve almoço comemorativo de sushi e um prémio de sprint!",
+            effect: (player) => {
+                player.wallet += 40;
+                player.hunger = Math.min(100, player.hunger + 20);
+                player.sanity = Math.min(100, player.sanity + 14);
+            },
+            badge: "IMPACTO: +40€ Bónus Tech | +20 Nutrição | +14 Sanidade",
+            good: true
+        });
+        possibleEvents.push({
+            title: "Crash no Servidor Cloud às 03:00",
+            desc: "Um deploy de última hora deitou a plataforma abaixo durante a madrugada. Tiveram de reverter commits de emergência antes do daily standup!",
+            effect: (player) => { player.sanity = Math.max(0, player.sanity - 14); },
+            badge: "IMPACTO: -14 Sanidade (Bug em Produção)",
+            good: false
+        });
+    }
+
+    // 4. Filmagens na Rua (Contextual: afeta a chegada ao trabalho real do Zé!)
+    possibleEvents.push({
+        title: "Filmagens de Telenovela na tua Rua",
+        desc: `A produtora cortou o trânsito da calçada para filmar uma cena de elétrico. Chegaste 40 minutos atrasado ao turno no ${curWp.name} e descontaram-te o atraso!`,
+        effect: (player) => {
+            player.wallet = Math.max(0, player.wallet - 10);
+            player.sanity = Math.max(0, player.sanity - 5);
+        },
         badge: "IMPACTO: -10€ Desconto | -5 Sanidade",
         good: false
-    },
-    {
+    });
+
+    // 5. Alma & Solidariedade Alfacinha
+    possibleEvents.push({
+        title: "Turistas Perdidos em Santa Luzia",
+        desc: "Explicaste a uns alemães como subir ao Castelo sem serem enganados no elétrico 28. Deram-te uma gorjeta simpática!",
+        effect: (player) => {
+            player.wallet += 25;
+            player.sanity = Math.min(100, player.sanity + 7);
+        },
+        badge: "IMPACTO: +25€ Gorjeta Turística | +7 Sanidade",
+        good: true
+    });
+
+    possibleEvents.push({
+        title: "Achado na Paragem do Elétrico",
+        desc: "Encontraste uma nota de 20€ caída junto aos carris da calçada debaixo de um maço de tabaco vazio.",
+        effect: (player) => { player.wallet += 20; },
+        badge: "IMPACTO: +20€ Achados e Perdidos",
+        good: true
+    });
+
+    possibleEvents.push({
         title: "Brisa Dourada do Rio Tejo",
         desc: "Luz de fim de tarde fantástica sobre o rio. A calçada brilha e a alma lisboeta respira aliviada.",
-        effect: (p) => { p.sanity = Math.min(100, p.sanity + 20); },
-        badge: "IMPACTO: +20 Sanidade Mental",
+        effect: (player) => { player.sanity = Math.min(100, player.sanity + 22); },
+        badge: "IMPACTO: +22 Sanidade Mental",
         good: true
-    },
-    {
-        title: "Promoção Relâmpago de Atum Bom Petisco",
-        desc: "O supermercado colocou latas de conserva a metade do preço. Despensa reforçada!",
-        effect: (p) => { p.groceries++; p.wallet = Math.max(0, p.wallet - 3); },
-        badge: "IMPACTO: +1 Lata na Despensa (-3€)",
-        good: true
-    },
-    {
+    });
+
+    possibleEvents.push({
         title: "Inflação da Bica no Balcão",
-        desc: "O café expresso subiu mais 10 cêntimos. O desespero nacional instala-se junto à máquina de café.",
-        effect: (p) => { p.sanity = Math.max(0, p.sanity - 6); },
-        badge: "IMPACTO: -6 Sanidade (Bica a 90 cêntimos)",
+        desc: "O café expresso subiu mais 10 cêntimos em todos os snack-bars da cidade. O desespero nacional instala-se junto à máquina de café.",
+        effect: (player) => { player.sanity = Math.max(0, player.sanity - 6); },
+        badge: "IMPACTO: -6 Sanidade (Bica mais cara)",
         good: false
-    }
-];
+    });
+
+    return possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
+}
+
+const EVENTOS_LISBOA = []; // Alias de compatibilidade retroativa
 
 // Edifícios no Tabuleiro
 const BUILDINGS = [
@@ -1231,8 +1354,8 @@ function endDay(motivo) {
         player.targetY = player.y;
     }
 
-    // Sortear evento aleatório lisboeta com impacto real
-    currentEvent = EVENTOS_LISBOA[Math.floor(Math.random() * EVENTOS_LISBOA.length)];
+    // Sortear evento aleatório lisboeta com impacto real e 100% contextual
+    currentEvent = generateMorningEvent(player);
     currentEvent.effect(player);
     if (currentEvent.good) {
         sfxCoin();
@@ -1268,15 +1391,19 @@ function render() {
     } else if (state === 'NEWS') {
         renderNewsScreen();
     } else if (state === 'BOARD' || state === 'MODAL') {
-        renderBoard();
-        renderPigeons();
-        renderPlayer();
-        renderParticles();
-        renderLisbonLight();
-        renderHUD();
-
-        if (state === 'MODAL') {
+        if (state === 'MODAL' && modalBuilding) {
+            // Sais da rua, do tabuleiro principal e ficas dentro da loja!
+            renderInteriorScene(ctx, modalBuilding.id, animTimer, player, HOUSES, WORKPLACES, getPlayerJob);
+            renderLisbonLight();
+            renderHUD();
             renderBuildingModal();
+        } else {
+            renderBoard();
+            renderPigeons();
+            renderPlayer();
+            renderParticles();
+            renderLisbonLight();
+            renderHUD();
         }
     } else if (state === 'GAMEOVER') {
         renderGameOverScreen();
@@ -2791,14 +2918,111 @@ function drawNpcPortrait(id, x, y, size) {
 
     const coord = npcCoords[id] || npcCoords.senhorio;
 
+    // Respiração e Movimento Orgânico Idle
+    const breathY = Math.round(Math.sin(animTimer * 2.8) * 1.5);
+    const isBlinking = ((animTimer + (coord.col * 1.3)) % 3.8) < 0.18;
+    const isTalking = Math.sin(animTimer * 9.5) > 0.35;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x + 2, y + 2, size - 4, size - 4);
+    ctx.clip();
+
     if (portraitsSheetImg.complete && portraitsSheetImg.naturalWidth > 0) {
         ctx.imageSmoothingEnabled = false;
-        // Cada retrato na portraits_sheet.png tem 128x128
+        // Desenha o sprite com respiração suave
         ctx.drawImage(
             portraitsSheetImg,
             coord.col * 128, coord.row * 128, 128, 128,
-            x + 2, y + 2, size - 4, size - 4
+            x + 2, y + 2 + breathY, size - 4, size - 4
         );
+
+        const cx = x + size / 2;
+        const cy = y + size / 2 + breathY;
+
+        // 1. Piscar de Olhos (Eyelid blink orgânico)
+        if (isBlinking) {
+            ctx.fillStyle = 'rgba(30, 20, 15, 0.75)';
+            ctx.fillRect(cx - 15, cy - 8, 11, 3);
+            ctx.fillRect(cx + 4, cy - 8, 11, 3);
+        }
+
+        // 2. Animação de Falar (Boca abre/fecha ritmadamente com o diálogo)
+        if (isTalking) {
+            ctx.fillStyle = '#450a0a';
+            ctx.fillRect(cx - 5, cy + 12, 10, 3);
+            ctx.fillStyle = '#fca5a5';
+            ctx.fillRect(cx - 3, cy + 14, 6, 1);
+        }
+
+        // 3. Efeitos Dinâmicos e Acessórios Exclusivos por Personagem
+        if (id === 'banco') {
+            // Brilho dos Óculos Dourados do Banqueiro (Shine Glint)
+            const glintCycle = animTimer % 3.6;
+            if (glintCycle < 0.35) {
+                const gAlpha = Math.sin((glintCycle / 0.35) * Math.PI);
+                ctx.fillStyle = `rgba(255, 255, 255, ${gAlpha * 0.95})`;
+                ctx.fillRect(cx + 8, cy - 9, 7, 2);
+                ctx.fillRect(cx + 10, cy - 11, 3, 6);
+            }
+        } else if (id === 'supermercado') {
+            // Scanner Laser Vermelho de Código de Barras
+            const laserY = y + 40 + ((animTimer * 35) % 45);
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.85)';
+            ctx.fillRect(x + 4, laserY, 26, 2);
+            ctx.fillStyle = 'rgba(254, 202, 202, 0.9)';
+            ctx.fillRect(x + 14, laserY, 6, 2);
+        } else if (id === 'startup') {
+            // Auricular Bluetooth a piscar LED ciano
+            const ledPulse = (Math.sin(animTimer * 6) + 1) / 2;
+            ctx.fillStyle = `rgba(56, 189, 248, ${0.35 + ledPulse * 0.65})`;
+            ctx.beginPath();
+            ctx.arc(x + 18, cy - 4, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            // Vapor do café no canto
+            const steamY = y + size - 14 - ((animTimer * 18) % 24);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.beginPath();
+            ctx.arc(x + size - 16, steamY, 3, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (id === 'tasca') {
+            // Palito a oscilar no canto dos lábios
+            const toothpickAngle = Math.sin(animTimer * 8) * 3;
+            ctx.strokeStyle = '#fef08a';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(cx + 4, cy + 13);
+            ctx.lineTo(cx + 14, cy + 16 + toothpickAngle);
+            ctx.stroke();
+        } else if (id === 'senhorio') {
+            // Monóculo / Tique de sobrancelha austera
+            if (Math.sin(animTimer * 2.5) > 0.7) {
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx - 16, cy - 12, 12, 3);
+            }
+        } else if (id === 'miradouro') {
+            // Notas musicais da guitarra portuguesa a subir
+            const noteY1 = y + size - 15 - ((animTimer * 22) % 60);
+            const noteY2 = y + size - 25 - (((animTimer + 1.2) * 22) % 60);
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 11px "Press Start 2P"';
+            ctx.fillText("♪", x + size - 18, noteY1);
+            ctx.fillStyle = '#facc15';
+            ctx.fillText("♫", x + size - 28, noteY2);
+        } else if (id === 'faculdade') {
+            // Poeira de giz a flutuar
+            const chalkY = y + 30 + ((animTimer * 12) % 40);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.fillRect(x + size - 22, chalkY, 2, 2);
+            ctx.fillRect(x + size - 16, chalkY + 8, 2, 2);
+        } else if (id === 'casa') {
+            // Luz quente acolhedora a cintilar
+            const flicker = (Math.sin(animTimer * 7) + 1) / 2;
+            ctx.fillStyle = `rgba(251, 191, 36, ${0.12 + flicker * 0.1})`;
+            ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+        }
+
+        ctx.restore();
         return;
     }
 
@@ -3054,21 +3278,710 @@ function drawNpcPortrait(id, x, y, size) {
         ctx.fillRect(cx - 8, cy - 5, 4, 3);
         ctx.fillRect(cx + 4, cy - 5, 4, 3);
     }
+    ctx.restore();
+}
+
+function renderInteriorScene(ctx, id, animTimer, player, HOUSES, WORKPLACES, getPlayerJob) {
+    ctx.save();
+
+    if (id === 'supermercado') {
+        renderInteriorPingoDoce(ctx, animTimer);
+    } else if (id === 'tasca') {
+        renderInteriorTasca(ctx, animTimer);
+    } else if (id === 'banco') {
+        renderInteriorBanco(ctx, animTimer);
+    } else if (id === 'startup') {
+        renderInteriorStartup(ctx, animTimer);
+    } else if (id === 'senhorio') {
+        renderInteriorSenhorio(ctx, animTimer);
+    } else if (id === 'faculdade') {
+        renderInteriorFaculdade(ctx, animTimer);
+    } else if (id === 'casa') {
+        renderInteriorCasa(ctx, animTimer, player, HOUSES);
+    } else if (id === 'miradouro') {
+        renderInteriorMiradouro(ctx, animTimer);
+    }
+
+    ctx.restore();
+}
+
+// 1. SUPERMERCADO PINGO DOCE
+function renderInteriorPingoDoce(ctx, animTimer) {
+    // Teto & Luzes fluorescentes
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, 640, 295);
+
+    // Parede de Fundo: Faixa Verde Pingo Doce
+    ctx.fillStyle = '#15803d';
+    ctx.fillRect(0, 0, 640, 75);
+    ctx.fillStyle = '#166534';
+    ctx.fillRect(0, 75, 640, 10);
+
+    // Azulejos Brancos de Supermercado
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(0, 85, 640, 65);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < 640; x += 32) {
+        ctx.beginPath(); ctx.moveTo(x, 85); ctx.lineTo(x, 150); ctx.stroke();
+    }
+    for (let y = 85; y < 150; y += 16) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(640, y); ctx.stroke();
+    }
+
+    // Letreiros de Secção Pingo Doce
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 11px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("🛒 PINGO DOCE · FRESCOS & MERCEARIA", 320, 36);
+
+    ctx.fillStyle = '#86efac';
+    ctx.font = 'bold 9px "Fira Code"';
+    ctx.fillText("SABE BEM PAGAR TÃO POUCO · DESCONTOS COM CARTÃO POUPA MAIS", 320, 58);
+
+    // Chão Quadriculado de Supermercado em Perspetiva
+    for (let y = 150; y < 295; y += 18) {
+        const row = Math.floor((y - 150) / 18);
+        for (let x = 0; x < 640; x += 32) {
+            const col = Math.floor(x / 32);
+            ctx.fillStyle = (row + col) % 2 === 0 ? '#f1f5f9' : '#cbd5e1';
+            ctx.fillRect(x, y, 32, 18);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.strokeRect(x, y, 32, 18);
+        }
+    }
+
+    // Gôndolas de Prateleiras com Produtos Portugueses
+    const shelfY = 88;
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(15, shelfY, 610, 58);
+
+    // Prateleira 1: Latas de Atum Bom Petisco (Amarelo & Azul)
+    for (let x = 20; x < 620; x += 15) {
+        ctx.fillStyle = '#facc15'; ctx.fillRect(x, shelfY + 4, 12, 10);
+        ctx.fillStyle = '#1d4ed8'; ctx.fillRect(x + 2, shelfY + 7, 8, 4);
+    }
+    // Prateleira 2: Azeite Virgem Extra (Verde Escuro & Ouro)
+    for (let x = 20; x < 620; x += 18) {
+        ctx.fillStyle = '#14532d'; ctx.fillRect(x, shelfY + 18, 10, 14);
+        ctx.fillStyle = '#fbbf24'; ctx.fillRect(x + 2, shelfY + 16, 6, 3);
+    }
+    // Prateleira 3: Pacotes de Arroz & Massas (Vermelho & Azul)
+    for (let x = 20; x < 620; x += 16) {
+        ctx.fillStyle = (x % 32 === 0) ? '#dc2626' : '#2563eb';
+        ctx.fillRect(x, shelfY + 36, 12, 18);
+    }
+
+    // Etiquetas fluorescentes de preço
+    ctx.fillStyle = '#facc15';
+    for (let x = 24; x < 620; x += 48) {
+        ctx.fillRect(x, shelfY + 15, 14, 4);
+        ctx.fillRect(x, shelfY + 33, 14, 4);
+    }
+
+    // Tapete Rolante da Caixa no Canto Esquerdo
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(20, 180, 145, 95);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(20, 180, 145, 95);
+
+    // Faixa rolante de borracha
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(25, 188, 135, 36);
+    // Divisor de compras
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(75, 186, 6, 40);
+
+    // Scanner Laser da Caixa a piscar em vermelho
+    const laserPulse = (Math.sin(animTimer * 6) + 1) / 2;
+    ctx.fillStyle = `rgba(239, 68, 68, ${0.4 + laserPulse * 0.5})`;
+    ctx.fillRect(30, 228, 40, 2);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(48, 226, 4, 6);
+
+    // Cesto de compras verde Pingo Doce
+    ctx.fillStyle = '#15803d';
+    ctx.fillRect(125, 230, 30, 20);
+    ctx.strokeStyle = '#86efac';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(125, 230, 30, 20);
+    ctx.beginPath(); ctx.arc(140, 226, 8, Math.PI, 0); ctx.stroke();
+}
+
+// 2. TASCA TI ZÉ
+function renderInteriorTasca(ctx, animTimer) {
+    // Teto escuro com vigas de madeira rústica
+    ctx.fillStyle = '#271106';
+    ctx.fillRect(0, 0, 640, 295);
+
+    // Vigas de Carvalho
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(0, 0, 640, 28);
+    for (let x = 20; x < 640; x += 75) {
+        ctx.fillStyle = '#3b1702';
+        ctx.fillRect(x, 0, 16, 28);
+    }
+
+    // Parede Superior: Estuque Ocre Alfacinha
+    ctx.fillStyle = '#fed7aa';
+    ctx.fillRect(0, 28, 640, 82);
+
+    // Parede Inferior: Azulejos Tradicionais de Lisboa (Azul & Branco)
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 110, 640, 55);
+    ctx.strokeStyle = '#1d4ed8';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < 640; x += 18) {
+        for (let y = 110; y < 165; y += 18) {
+            ctx.strokeRect(x, y, 18, 18);
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(x + 7, y + 7, 4, 4);
+        }
+    }
+
+    // Chão de Tijoleira Rústica Terracota
+    ctx.fillStyle = '#9a3412';
+    ctx.fillRect(0, 165, 640, 130);
+    ctx.strokeStyle = '#431407';
+    for (let y = 165; y < 295; y += 22) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(640, y); ctx.stroke();
+    }
+    for (let x = 0; x < 640; x += 44) {
+        ctx.beginPath(); ctx.moveTo(x, 165); ctx.lineTo(x, 295); ctx.stroke();
+    }
+
+    // Presuntos e Alhos Pendurados nas Vigas
+    const hams = [45, 115, 235, 345, 475, 575];
+    hams.forEach(hx => {
+        // Corda
+        ctx.strokeStyle = '#d97706'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(hx, 28); ctx.lineTo(hx, 46); ctx.stroke();
+        // Pata de Presunto
+        ctx.fillStyle = '#7c2d12';
+        ctx.beginPath(); ctx.ellipse(hx, 58, 8, 15, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fef08a'; ctx.fillRect(hx - 3, 70, 6, 5); // osso
+    });
+
+    // Trança de Alhos
+    ctx.fillStyle = '#f8fafc';
+    [85, 290, 520].forEach(gx => {
+        for (let gy = 32; gy < 65; gy += 8) {
+            ctx.beginPath(); ctx.arc(gx, gy, 4, 0, Math.PI * 2); ctx.fill();
+        }
+    });
+
+    // Quadro de Ardósia com Prato do Dia
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(180, 42, 280, 52);
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(180, 42, 280, 52);
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = 'bold 9px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("🍲 TASCA DO TI ZÉ — PRATO DO DIA", 320, 58);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 8.5px "Fira Code"';
+    ctx.fillText("BITOQUE C/ OVO A CAVALO 9€ · IMPERIAL GELADA 1€", 320, 74);
+    ctx.fillStyle = '#86efac';
+    ctx.fillText("CARACÓIS VIVOS DA HORTA · PÃO QUENTE & TREMOÇOS", 320, 86);
+
+    // Balcão de Inox e Madeira Típico no Fundo
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(20, 175, 150, 100);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(20, 175, 150, 10); // Tampo inox
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(20, 185, 150, 3); // Friso metálico
+
+    // Torre de Imperial com Torneira de Latão
+    ctx.fillStyle = '#ca8a04';
+    ctx.fillRect(50, 142, 10, 33);
+    ctx.fillRect(45, 138, 20, 5);
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(42, 148, 6, 3); // Torneira
+
+    // Pinga de espuma a cair suavemente
+    const dripY = 152 + ((animTimer * 18) % 18);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(44, dripY, 2, 3);
+
+    // Vitrina de Pastéis de Bacalhau & Salgados
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
+    ctx.fillRect(80, 148, 55, 27);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(80, 148, 55, 27);
+
+    // Pastéis de Bacalhau Dourados
+    ctx.fillStyle = '#d97706';
+    for (let px = 86; px < 130; px += 10) {
+        ctx.beginPath(); ctx.ellipse(px, 166, 4, 6, 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+}
+
+// 3. CAIXA / BANCO
+function renderInteriorBanco(ctx, animTimer) {
+    // Teto Nobre Neoclássico
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, 640, 295);
+
+    // Parede Superior: Papel de Parede Dourado Pombalino
+    ctx.fillStyle = '#854d0e';
+    ctx.fillRect(0, 0, 640, 85);
+    ctx.fillStyle = '#a16207';
+    for (let x = 0; x < 640; x += 24) {
+        ctx.fillRect(x, 0, 4, 85);
+    }
+
+    // Painéis de Madeira Nobre Mogno
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(0, 85, 640, 80);
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 2;
+    for (let x = 10; x < 640; x += 70) {
+        ctx.strokeRect(x, 92, 55, 66);
+    }
+
+    // Chão de Mármore Polido com Losangos
+    for (let y = 165; y < 295; y += 22) {
+        const row = Math.floor((y - 165) / 22);
+        for (let x = 0; x < 640; x += 40) {
+            const col = Math.floor(x / 40);
+            ctx.fillStyle = (row + col) % 2 === 0 ? '#f8fafc' : '#1e293b';
+            ctx.fillRect(x, y, 40, 22);
+            ctx.strokeStyle = '#64748b';
+            ctx.strokeRect(x, y, 40, 22);
+        }
+    }
+
+    // Colunas de Mármore Caneladas
+    [10, 160, 470, 610].forEach(colX => {
+        ctx.fillStyle = '#e2e8f0'; ctx.fillRect(colX, 0, 20, 165);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(colX + 4, 0, 3, 165);
+        ctx.fillRect(colX + 13, 0, 3, 165);
+        // Capitel Dourado
+        ctx.fillStyle = '#ca8a04'; ctx.fillRect(colX - 4, 0, 28, 12);
+    });
+
+    // O COFRE CENTRAL DE LISBOA (Porta Blindada em Aço & Bronze)
+    const vx = 320, vy = 95, vr = 50;
+    ctx.fillStyle = '#334155';
+    ctx.beginPath(); ctx.arc(vx, vy, vr + 6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#64748b';
+    ctx.beginPath(); ctx.arc(vx, vy, vr, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.arc(vx, vy, vr - 8, 0, Math.PI * 2); ctx.stroke();
+
+    // Volante Central do Cofre
+    const wheelRot = animTimer * 0.4;
+    ctx.fillStyle = '#eab308';
+    ctx.beginPath(); ctx.arc(vx, vy, 14, 0, Math.PI * 2); ctx.fill();
+    for (let i = 0; i < 4; i++) {
+        const angle = wheelRot + (i * Math.PI / 2);
+        const sx = vx + Math.cos(angle) * 28;
+        const sy = vy + Math.sin(angle) * 28;
+        ctx.strokeStyle = '#fef08a'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(vx, vy); ctx.lineTo(sx, sy); ctx.stroke();
+    }
+
+    // Balcão de Mogno & Candeeiro de Banqueiro Verde
+    ctx.fillStyle = '#3b1d11';
+    ctx.fillRect(20, 180, 150, 95);
+    ctx.fillStyle = '#5c2b18';
+    ctx.fillRect(20, 180, 150, 12); // Tampo
+    // Grades Douradas de Atendimento
+    ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 1.5;
+    for (let gx = 28; gx < 160; gx += 8) {
+        ctx.beginPath(); ctx.moveTo(gx, 150); ctx.lineTo(gx, 180); ctx.stroke();
+    }
+
+    // Candeeiro de Banqueiro Verde Esmeralda
+    ctx.fillStyle = '#ca8a04'; ctx.fillRect(115, 160, 4, 20); // Haste
+    ctx.fillStyle = '#059669'; ctx.fillRect(105, 154, 24, 8); // Abajur
+    // Brilho quente do candeeiro
+    ctx.fillStyle = 'rgba(52, 211, 153, 0.2)';
+    ctx.beginPath(); ctx.arc(117, 165, 22, 0, Math.PI * 2); ctx.fill();
+}
+
+// 4. AGÊNCIA DE EMPREGO & TECH HUB
+function renderInteriorStartup(ctx, animTimer) {
+    // Teto Loft Industrial
+    ctx.fillStyle = '#0b0f19';
+    ctx.fillRect(0, 0, 640, 295);
+
+    // Dutos de Ventilação no Teto
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(0, 8, 640, 14);
+    ctx.fillStyle = '#334155';
+    for (let x = 10; x < 640; x += 40) ctx.fillRect(x, 8, 4, 14);
+
+    // Parede de Tijolo Vermelho Urbano
+    ctx.fillStyle = '#7f1d1d';
+    ctx.fillRect(0, 24, 340, 140);
+    ctx.strokeStyle = '#991b1b';
+    ctx.lineWidth = 1;
+    for (let y = 24; y < 164; y += 12) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(340, y); ctx.stroke();
+    }
+
+    // Janela com Vista Panorâmica de Lisboa & Rio Tejo
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(345, 24, 280, 135);
+    // Rio Tejo ao fundo
+    ctx.fillStyle = '#0369a1';
+    ctx.fillRect(345, 105, 280, 54);
+    // Céu e Ponte 25 de Abril em silhueta
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(450, 75, 4, 35);
+    ctx.fillRect(490, 75, 4, 35);
+    ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(420, 88); ctx.lineTo(520, 88); ctx.stroke();
+
+    // Letreiro Néon
+    ctx.fillStyle = '#ec4899';
+    ctx.font = 'bold 10px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("⚡ DISRUPT & DESENRASCA ⚡", 170, 52);
+
+    // Quadro KANBAN de Emprego
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(25, 68, 290, 85);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.strokeRect(25, 68, 290, 85);
+
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 8px "Fira Code"';
+    ctx.fillText("A FAZER", 70, 82);
+    ctx.fillText("EM CURSO", 170, 82);
+    ctx.fillText("CONCLUÍDO", 265, 82);
+
+    // Post-its Coloridos
+    const colors = ['#fde047', '#67e8f9', '#f472b6', '#a7f3d0'];
+    for (let i = 0; i < 9; i++) {
+        const col = i % 3;
+        const row = Math.floor(i / 3);
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fillRect(45 + col * 95, 90 + row * 18, 50, 14);
+    }
+
+    // Chão de Parquet de Carvalho Claro
+    ctx.fillStyle = '#fde68a';
+    ctx.fillRect(0, 164, 640, 131);
+    ctx.strokeStyle = '#d97706';
+    for (let y = 164; y < 295; y += 16) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(640, y); ctx.stroke();
+    }
+
+    // Secretária Moderna com Monitores & Código a Correr
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(20, 180, 150, 95);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(15, 180, 160, 10); // Tampo
+
+    // Monitor Curvo
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(35, 142, 60, 38);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.strokeRect(35, 142, 60, 38);
+    // Linhas de código animadas
+    ctx.fillStyle = '#22c55e';
+    for (let ly = 146; ly < 176; ly += 6) {
+        const lw = 20 + Math.sin(animTimer * 5 + ly) * 15;
+        ctx.fillRect(38, ly, Math.max(10, lw), 3);
+    }
+
+    // Máquina de Café Expresso com Vapor
+    ctx.fillStyle = '#94a3b8'; ctx.fillRect(115, 150, 24, 30);
+    ctx.fillStyle = '#cbd5e1'; ctx.fillRect(118, 145, 18, 6);
+    // Vapor a subir
+    const steamY = 140 - ((animTimer * 15) % 18);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.beginPath(); ctx.arc(127, steamY, 3, 0, Math.PI * 2); ctx.fill();
+}
+
+// 5. SENHORIO (Sr. Jerónimo)
+function renderInteriorSenhorio(ctx, animTimer) {
+    // Teto & Ambiente Vintage Pombalino
+    ctx.fillStyle = '#1e110a';
+    ctx.fillRect(0, 0, 640, 295);
+
+    // Papel de Parede Floral Faded Burgundy
+    ctx.fillStyle = '#831843';
+    ctx.fillRect(0, 0, 640, 160);
+    ctx.fillStyle = '#9d174d';
+    for (let x = 0; x < 640; x += 28) {
+        for (let y = 0; y < 160; y += 28) {
+            ctx.beginPath(); ctx.arc(x + 14, y + 14, 5, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+
+    // Chão de Tábua Corrida Antiga de Pinho
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(0, 160, 640, 135);
+    ctx.strokeStyle = '#270f03';
+    ctx.lineWidth = 1.5;
+    for (let y = 160; y < 295; y += 20) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(640, y); ctx.stroke();
+    }
+
+    // Estantes com Dossiers de Rendas & Despejos
+    ctx.fillStyle = '#2e1002';
+    ctx.fillRect(200, 20, 420, 130);
+    ctx.strokeStyle = '#78350f';
+    ctx.strokeRect(200, 20, 420, 130);
+
+    // Pastas de arquivo coloridas e empoeiradas
+    const folderColors = ['#991b1b', '#1e3a8a', '#14532d', '#78350f', '#0f172a'];
+    for (let fx = 210; fx < 610; fx += 14) {
+        ctx.fillStyle = folderColors[fx % folderColors.length];
+        ctx.fillRect(fx, 28, 11, 48);
+        ctx.fillRect(fx, 84, 11, 56);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(fx + 2, 40, 7, 8); // Etiqueta
+    }
+
+    // Relógio de Pêndulo Antigo a Baloiçar
+    ctx.fillStyle = '#3b1702';
+    ctx.fillRect(35, 20, 40, 120);
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath(); ctx.arc(55, 45, 14, 0, Math.PI * 2); ctx.fill();
+    // Ponteiros
+    ctx.strokeStyle = '#000000'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(55, 45); ctx.lineTo(55, 36); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(55, 45); ctx.lineTo(62, 45); ctx.stroke();
+    // Pêndulo de latão animado
+    const pendAngle = Math.sin(animTimer * 3) * 12;
+    ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(55, 60); ctx.lineTo(55 + pendAngle, 115); ctx.stroke();
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath(); ctx.arc(55 + pendAngle, 118, 6, 0, Math.PI * 2); ctx.fill();
+
+    // Secretária de Carvalho Maciço com Livro de Recibos
+    ctx.fillStyle = '#3b1d11';
+    ctx.fillRect(20, 180, 155, 95);
+    ctx.fillStyle = '#5c2b18';
+    ctx.fillRect(15, 180, 165, 12); // Tampo
+    // Livro de recibos verde (Modelo 1)
+    ctx.fillStyle = '#15803d';
+    ctx.fillRect(35, 172, 35, 20);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(38, 176, 29, 12);
+    // Carimbo de ferro
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(80, 170, 8, 14);
+    ctx.fillRect(76, 182, 16, 4);
+}
+
+// 6. FACULDADE / POLITEC / IST (Prof. Leitão)
+function renderInteriorFaculdade(ctx, animTimer) {
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, 640, 295);
+
+    // O GRANDE QUADRO PRETO DE ARDÓSIA (Verde Escuro)
+    ctx.fillStyle = '#14532d';
+    ctx.fillRect(15, 15, 610, 140);
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(15, 15, 610, 140);
+
+    // Fórmulas de Engenharia a Giz Branco
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 10px "Fira Code"';
+    ctx.textAlign = 'left';
+    ctx.fillText("∫ (Café + ECTS) dt = Canudo do IST", 35, 45);
+    ctx.fillText("lim(Sanidade → 0) [ Renda / Salário ] = ∞", 35, 68);
+    ctx.fillText("∂²V/∂x² + ∂²V/∂y² = 0  (Laplace da Calçada)", 35, 90);
+
+    // Aviso do Exame
+    ctx.fillStyle = '#facc15';
+    ctx.font = 'bold 9px "Press Start 2P"';
+    ctx.fillText("⚠️ EXAME FINAL: 09h00 (Sem calculadora!)", 35, 125);
+
+    // Bancadas de Anfiteatro Escalonadas
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(0, 165, 640, 130);
+    for (let y = 165; y < 295; y += 35) {
+        ctx.fillStyle = '#3b1702'; ctx.fillRect(0, y, 640, 14);
+        ctx.fillStyle = '#78350f'; ctx.fillRect(0, y + 14, 640, 4); // Friso
+    }
+
+    // Púlpito de Madeira do Professor
+    ctx.fillStyle = '#2e1002';
+    ctx.fillRect(25, 175, 140, 95);
+    ctx.fillStyle = '#5c2b18';
+    ctx.fillRect(20, 175, 150, 12);
+    // Microfone
+    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(40, 175); ctx.lineTo(45, 160); ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath(); ctx.arc(46, 158, 4, 0, Math.PI * 2); ctx.fill();
+}
+
+// 7. CASA (O Teu Teto)
+function renderInteriorCasa(ctx, animTimer, player, HOUSES) {
+    const idx = player.houseIndex;
+
+    if (idx === 0) {
+        // Banco de Jardim no Rossio (Ao relento à noite)
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(0, 0, 640, 295);
+        // Estrelas
+        ctx.fillStyle = '#ffffff';
+        for (let i = 0; i < 40; i++) {
+            ctx.fillRect((i * 37) % 640, (i * 23) % 150, 2, 2);
+        }
+        // Candeeiro da CML a alumiar o banco
+        ctx.fillStyle = 'rgba(251, 191, 36, 0.25)';
+        ctx.beginPath(); ctx.arc(100, 180, 80, 0, Math.PI * 2); ctx.fill();
+        // Calçada e banco de ferro
+        ctx.fillStyle = '#334155'; ctx.fillRect(0, 180, 640, 115);
+        ctx.fillStyle = '#1e293b'; ctx.fillRect(40, 210, 120, 14); // Banco
+        return;
+    }
+
+    if (idx === 1) {
+        // Beliche Rotativo em Arroios (Hostel superlotado)
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, 0, 640, 295);
+        // Paredes simples
+        ctx.fillStyle = '#334155'; ctx.fillRect(0, 0, 640, 150);
+        // Corda de roupa estendida
+        ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(0, 45); ctx.lineTo(640, 55); ctx.stroke();
+        // Meias a secar
+        for (let x = 30; x < 630; x += 45) {
+            ctx.fillStyle = (x % 2 === 0) ? '#ef4444' : '#3b82f6';
+            ctx.fillRect(x, 50, 8, 15);
+        }
+        // Chão e beliche metálico
+        ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 160, 640, 135);
+        ctx.fillStyle = '#94a3b8'; ctx.fillRect(25, 90, 8, 160); ctx.fillRect(145, 90, 8, 160);
+        ctx.fillRect(25, 140, 128, 8); ctx.fillRect(25, 210, 128, 8);
+        return;
+    }
+
+    if (idx === 2) {
+        // Quarto nos Anjos (Acolhedor com janela)
+        ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, 640, 295);
+        ctx.fillStyle = '#e2e8f0'; ctx.fillRect(0, 0, 640, 155);
+        ctx.fillStyle = '#78350f'; ctx.fillRect(0, 155, 640, 140);
+        // Cama de madeira
+        ctx.fillStyle = '#9a3412'; ctx.fillRect(25, 180, 130, 70);
+        ctx.fillStyle = '#38bdf8'; ctx.fillRect(40, 190, 110, 50); // Edredom azul
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(28, 192, 25, 18); // Almofada
+        return;
+    }
+
+    if (idx === 3) {
+        // Cave Húmida em Alfama (Arco de pedra e azulejos)
+        ctx.fillStyle = '#1c1917'; ctx.fillRect(0, 0, 640, 295);
+        // Arco de cantaria
+        ctx.fillStyle = '#44403c'; ctx.fillRect(0, 0, 640, 160);
+        ctx.strokeStyle = '#78716c'; ctx.lineWidth = 8;
+        ctx.beginPath(); ctx.arc(320, 160, 260, Math.PI, 0); ctx.stroke();
+        // Azulejos azuis
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 110, 640, 50);
+        ctx.strokeStyle = '#2563eb'; ctx.strokeRect(0, 110, 640, 50);
+        ctx.fillStyle = '#78350f'; ctx.fillRect(0, 160, 640, 135);
+        return;
+    }
+
+    // idx === 4: T1 Pombalino no Chiado (Luxo, Estuques, Varanda Francesa sobre o Tejo)
+    ctx.fillStyle = '#fef3c7'; ctx.fillRect(0, 0, 640, 295);
+    // Estuques dourados de teto
+    ctx.fillStyle = '#ca8a04'; ctx.fillRect(0, 0, 640, 14);
+    ctx.fillStyle = '#fde68a'; ctx.fillRect(0, 14, 640, 145);
+    // Sacada com vista para o Rio Tejo dourado
+    ctx.fillStyle = '#38bdf8'; ctx.fillRect(240, 35, 160, 120);
+    ctx.fillStyle = '#0284c7'; ctx.fillRect(240, 105, 160, 50); // Rio
+    // Cortinas brancas a esvoaçar
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.fillRect(230, 35, 24, 120);
+    ctx.fillRect(386, 35, 24, 120);
+    // Chão de taco de espinha
+    ctx.fillStyle = '#b45309'; ctx.fillRect(0, 160, 640, 135);
+}
+
+// 8. MIRADOURO DE SANTA LUZIA
+function renderInteriorMiradouro(ctx, animTimer) {
+    // Céu de Pôr-do-Sol de Lisboa (Gradiente Dourado & Rosa)
+    ctx.fillStyle = '#ea580c';
+    ctx.fillRect(0, 0, 640, 160);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(0, 60, 640, 60);
+    ctx.fillStyle = '#fde68a';
+    ctx.fillRect(0, 110, 640, 45);
+
+    // O Rio Tejo a cintilar com a luz do entardecer
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(0, 140, 640, 45);
+    // Ondas douradas
+    ctx.fillStyle = '#fde68a';
+    for (let x = 10; x < 640; x += 40) {
+        ctx.fillRect(x + Math.sin(animTimer * 2 + x) * 6, 155, 16, 2);
+    }
+
+    // Cacilheiro Laranja a passar ao longe
+    const ferryX = 640 - ((animTimer * 12) % 720);
+    ctx.fillStyle = '#ea580c';
+    ctx.fillRect(ferryX, 142, 38, 10);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(ferryX + 8, 136, 18, 6);
+
+    // Murete e Balustrada de Azulejos de Santa Luzia
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 165, 640, 25);
+    ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 1;
+    for (let x = 0; x < 640; x += 20) {
+        ctx.strokeRect(x, 165, 20, 25);
+        ctx.fillStyle = '#2563eb'; ctx.fillRect(x + 7, 175, 6, 6);
+    }
+
+    // Calçada Portuguesa
+    ctx.fillStyle = '#f1ebe0';
+    ctx.fillRect(0, 190, 640, 105);
+    ctx.fillStyle = '#1e293b';
+    for (let x = 0; x < 640; x += 30) {
+        ctx.fillRect(x, 230, 15, 6);
+    }
+
+    // Pérgola de Madeira com Buganvílias
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(0, 0, 640, 18);
+    for (let x = 20; x < 640; x += 30) {
+        ctx.fillStyle = '#db2777';
+        ctx.beginPath(); ctx.arc(x, 22 + Math.sin(x) * 6, 8, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#c026d3';
+        ctx.beginPath(); ctx.arc(x + 5, 24, 6, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Notas Musicais da Guitarra Portuguesa a Voar
+    const noteY = 170 - ((animTimer * 22) % 65);
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 12px "Press Start 2P"';
+    ctx.fillText("♪", 110, noteY);
+    ctx.fillText("♫", 135, noteY - 14);
 }
 
 function renderBuildingModal() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.82)';
+    // Vinheta suave sobre o interior (o interior da loja permanece visível a toda a volta)
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
     ctx.fillRect(0, 0, canvas.width, 295);
 
-    const mx = 50;
-    const my = 16;
-    const mw = 540;
-    const mh = 265;
+    const mx = 40;
+    const my = 14;
+    const mw = 560;
+    const mh = 267;
 
-    // Caixa Principal
-    ctx.fillStyle = '#0f172a';
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 1.5;
+    // Caixa Principal em vidro fosco elegante (translucent glass)
+    ctx.fillStyle = 'rgba(11, 15, 25, 0.88)';
+    ctx.strokeStyle = modalBuilding.color;
+    ctx.lineWidth = 2;
     ctx.fillRect(mx, my, mw, mh);
     ctx.strokeRect(mx, my, mw, mh);
 
@@ -3652,7 +4565,7 @@ function handleCanvasClick(cx, cy) {
     }
 
     if (state === 'MODAL') {
-        const mx = 50, my = 16, mw = 540, mh = 265;
+        const mx = 40, my = 14, mw = 560, mh = 267;
         // Fechar no botão X ou fora da caixa
         if ((cx >= mx + mw - 35 && cx <= mx + mw && cy >= my && cy <= my + 35) ||
             (cx < mx || cx > mx + mw || cy < my || cy > my + mh)) {
@@ -3664,7 +4577,7 @@ function handleCanvasClick(cx, cy) {
         if (modalBuilding && modalBuilding.currentActions) {
             const ax = mx + 138;
             const aw = mw - 152;
-            const cardH = 49;
+            const cardH = 48;
             const cardGap = 5;
 
             modalBuilding.currentActions.forEach((act, idx) => {
