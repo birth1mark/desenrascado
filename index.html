@@ -426,23 +426,30 @@ let soundEnabled = true;
 
 function initAudio() {
     if (!audioCtx) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContext();
+        const AudioContextClass = (typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext)) || (typeof AudioContext !== 'undefined' ? AudioContext : null);
+        if (!AudioContextClass) return;
+        try {
+            audioCtx = new AudioContextClass();
+        } catch(e) {
+            audioCtx = null;
+        }
     }
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
+    if (audioCtx && audioCtx.state === 'suspended') {
+        try { audioCtx.resume(); } catch(e) {}
     }
 }
 
 function toggleAudio() {
     initAudio();
     soundEnabled = !soundEnabled;
-    document.getElementById('btn-audio').textContent = soundEnabled ? '🔊 Áudio: ON' : '🔇 Áudio: OFF';
+    const btn = document.getElementById('btn-audio');
+    if (btn) btn.textContent = soundEnabled ? '🔊 Áudio: ON' : '🔇 Áudio: OFF';
 }
 
 function playBeep(freq, type, duration, vol = 0.1) {
     if (!soundEnabled) return;
     initAudio();
+    if (!audioCtx) return;
     try {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -511,6 +518,7 @@ function sfxTramBell() {
 function sfxCacilheiroHorn() {
     if (!soundEnabled) return;
     initAudio();
+    if (!audioCtx) return;
     try {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -705,6 +713,119 @@ const HOUSES = [
     { id: 4, name: "T1 Gentrificado", rent: 1600, qual: "Pombalino Chiado", bonusHours: 3, sanityDrain: -15, icon: "🏛️" }
 ];
 
+// ============================================================================
+// SISTEMA DE CURSOS UNIVERSITÁRIOS (IST - Alameda & Politécnico)
+// ============================================================================
+const COURSES = {
+    informatica: {
+        id: 'informatica',
+        name: 'Engenharia Informática (LEIC - IST)',
+        shortName: 'Eng. Informática',
+        icon: '💻',
+        faculty: 'IST - Alameda',
+        desc: 'Programação, Cloud, Algoritmos e Sistemas. Exigido para Tech Hub & Startups.',
+        subjects: [
+            { name: "Programação & Algoritmos (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS em Informática" },
+            { name: "Sistemas Cloud & DevOps (6h)", cost: 40, timeH: 6, timeM: 0, ects: 25, desc: "+25 ECTS em Informática" },
+            { name: "Projeto de Licenciatura / Tese (8h)", cost: 60, timeH: 8, timeM: 0, ects: 40, desc: "+40 ECTS para Canudo de Informática" }
+        ],
+        targetWorkplace: 'startup'
+    },
+    economia: {
+        id: 'economia',
+        name: 'Economia, Finanças & Banca (IST/ISEG)',
+        shortName: 'Finanças & Banca',
+        icon: '📈',
+        faculty: 'IST / ISEG',
+        desc: 'Mercados, Risco de Crédito e Contabilidade. Exigido para Caixa Geral / Banco.',
+        subjects: [
+            { name: "Contabilidade & Balanços (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS em Finanças" },
+            { name: "Análise de Risco & Crédito (6h)", cost: 40, timeH: 6, timeM: 0, ects: 25, desc: "+25 ECTS em Finanças" },
+            { name: "Mercados Financeiros & Fusões (8h)", cost: 60, timeH: 8, timeM: 0, ects: 40, desc: "+40 ECTS para Canudo Bancário" }
+        ],
+        targetWorkplace: 'banco'
+    },
+    matematica: {
+        id: 'matematica',
+        name: 'Matemática Aplicada & Computação (LMAC - IST)',
+        shortName: 'Matemática Aplicada',
+        icon: '📐',
+        faculty: 'IST - Departamento de Matemática',
+        desc: 'Álgebra Linear, Cálculo e Análise. Exigido para Monitor de Álgebra e Docência no IST.',
+        subjects: [
+            { name: "Álgebra Linear & Matrizes (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS em Matemática" },
+            { name: "Cálculo Diferencial & Análise (6h)", cost: 40, timeH: 6, timeM: 0, ects: 25, desc: "+25 ECTS em Matemática" },
+            { name: "Equações Diferenciais Avançadas (8h)", cost: 60, timeH: 8, timeM: 0, ects: 40, desc: "+40 ECTS para Canudo de Matemática" }
+        ],
+        targetWorkplace: 'faculdade'
+    },
+    gestao: {
+        id: 'gestao',
+        name: 'Gestão Industrial & Logística (LEGI - IST)',
+        shortName: 'Gestão & Logística',
+        icon: '📦',
+        faculty: 'IST / DEG',
+        desc: 'Cadeias de Abastecimento e Retalho. Exigido para Chefia e Gerência no Pingo Doce.',
+        subjects: [
+            { name: "Gestão de Stocks & Retalho (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS em Logística" },
+            { name: "Logística e Distribuição Moderna (6h)", cost: 40, timeH: 6, timeM: 0, ects: 25, desc: "+25 ECTS em Logística" },
+            { name: "Direção Estratégica de Loja (8h)", cost: 60, timeH: 8, timeM: 0, ects: 40, desc: "+40 ECTS para Grau de Gerente" }
+        ],
+        targetWorkplace: 'pingo_doce'
+    }
+};
+
+// ============================================================================
+// SISTEMA DE VESTUÁRIO, DURABILIDADE & FORMALIDADE (Anti-Calções)
+// ============================================================================
+const CLOTHING_TIERS = {
+    nude: {
+        id: 'nude',
+        name: 'Completamente Nu',
+        icon: '🔞',
+        formality: 0,
+        maxDurability: 0,
+        cost: 0,
+        desc: 'Sem roupa! Mosaico de censura pixelizado. Entrada proibida em bancos e faculdades.'
+    },
+    shorts: {
+        id: 'shorts',
+        name: 'Calções & Sapatilhas',
+        icon: '🩳',
+        formality: 1,
+        maxDurability: 40,
+        cost: 25,
+        desc: 'Roupa informal de rua. Aceitável apenas para copeiro e repositor básico.'
+    },
+    casual: {
+        id: 'casual',
+        name: 'Polo Limpo & Calças Smart',
+        icon: '👕',
+        formality: 2,
+        maxDurability: 60,
+        cost: 65,
+        desc: 'Smart casual limpo. Aceitável para atendimento, tech júnior e aulas no IST.'
+    },
+    suit: {
+        id: 'suit',
+        name: 'Fato Pombalino & Gravata',
+        icon: '👔',
+        formality: 3,
+        maxDurability: 80,
+        cost: 180,
+        desc: 'Fato formal completo. OBRIGATÓRIO para trabalhar no Banco e ser Gerente!'
+    },
+    academic: {
+        id: 'academic',
+        name: 'Traje Académico do IST',
+        icon: '🎓',
+        formality: 4,
+        maxDurability: 90,
+        cost: 140,
+        desc: 'Capa e batina tradicional do IST. Prestígio académico e bónus de estudo!'
+    }
+};
+
 const WORKPLACES = {
     pingo_doce: {
         id: 'pingo_doce',
@@ -716,10 +837,10 @@ const WORKPLACES = {
         icon: '🛒',
         color: '#15803d',
         careers: [
-            { id: 0, title: "Repositor de Prateleiras", reqEcts: 0, reqShifts: 0, wagePerHour: 7, hoursPerShift: 4, desc: "Arrumar latas de atum e caixas de leite nos corredores." },
-            { id: 1, title: "Operador de Caixa", reqEcts: 15, reqShifts: 3, wagePerHour: 9, hoursPerShift: 5, desc: "Registar compras e perguntar pelo cartão Poupa Mais." },
-            { id: 2, title: "Chefe de Secção & Frescos", reqEcts: 40, reqShifts: 7, wagePerHour: 13, hoursPerShift: 6, desc: "Gerir stocks de frescos e encomendas de armazém." },
-            { id: 3, title: "Gerente de Supermercado", reqEcts: 80, reqShifts: 12, wagePerHour: 20, hoursPerShift: 6, desc: "Gestão executiva da loja de bairro em Lisboa." }
+            { id: 0, title: "Repositor de Prateleiras", reqShifts: 0, minFormality: 1, reqCourse: null, minCourseEcts: 0, wagePerHour: 7.5, hoursPerShift: 4, desc: "Arrumar latas de atum e caixas de leite nos corredores." },
+            { id: 1, title: "Operador de Caixa", reqShifts: 3, minFormality: 2, reqCourse: null, minCourseEcts: 0, wagePerHour: 9.5, hoursPerShift: 5, desc: "Registar compras com polo limpo. Requer 3 turnos de repositor." },
+            { id: 2, title: "Chefe de Secção & Frescos", reqShifts: 7, minFormality: 2, reqCourse: 'gestao', minCourseEcts: 35, wagePerHour: 14, hoursPerShift: 6, desc: "Gerir stocks de frescos. Requer 35 ECTS em Gestão e 7 turnos." },
+            { id: 3, title: "Gerente de Supermercado", reqShifts: 12, minFormality: 3, reqCourse: 'gestao', minCourseEcts: 90, wagePerHour: 22, hoursPerShift: 6, desc: "Gestão executiva da loja. OBRIGATÓRIO FATO e Licenciatura (90 ECTS em Gestão)!" }
         ]
     },
     tasca: {
@@ -732,10 +853,10 @@ const WORKPLACES = {
         icon: '🍲',
         color: '#9a3412',
         careers: [
-            { id: 0, title: "Copeiro / Apanha-Copos", reqEcts: 0, reqShifts: 0, wagePerHour: 6, hoursPerShift: 4, mealHunger: 25, desc: "Lavar loiça e levar imperiais às mesas (+25 Comida grátis)." },
-            { id: 1, title: "Empregado de Mesa", reqEcts: 10, reqShifts: 3, wagePerHour: 8.5, hoursPerShift: 5, mealHunger: 35, desc: "Atender fregueses e servir caracóis frescos (+35 Comida grátis)." },
-            { id: 2, title: "Mestre dos Bitoques", reqEcts: 35, reqShifts: 7, wagePerHour: 12.5, hoursPerShift: 6, mealHunger: 50, desc: "Grelhar bifes e fritar batatas caseiras lendárias (+50 Comida grátis)." },
-            { id: 3, title: "Sócio do Balcão", reqEcts: 70, reqShifts: 12, wagePerHour: 19, hoursPerShift: 6, mealHunger: 65, desc: "Partilhar lucros e mandar fechar a tasca às 02h (+65 Comida grátis)." }
+            { id: 0, title: "Copeiro / Apanha-Copos", reqShifts: 0, minFormality: 1, reqCourse: null, minCourseEcts: 0, wagePerHour: 6.5, hoursPerShift: 4, mealHunger: 30, desc: "Lavar loiça e imperiais ao balcão (+30 Comida grátis)." },
+            { id: 1, title: "Empregado de Mesa", reqShifts: 3, minFormality: 2, reqCourse: null, minCourseEcts: 0, wagePerHour: 9.0, hoursPerShift: 5, mealHunger: 40, desc: "Servir caracóis e bitoques com polo limpo (+40 Comida grátis)." },
+            { id: 2, title: "Mestre dos Bitoques", reqShifts: 7, minFormality: 1, reqCourse: null, minCourseEcts: 0, wagePerHour: 13.5, hoursPerShift: 6, mealHunger: 55, desc: "Grelhar bifes e fritar batatas caseiras (+55 Comida grátis)." },
+            { id: 3, title: "Sócio do Balcão", reqShifts: 12, minFormality: 2, reqCourse: null, minCourseEcts: 0, minTotalEcts: 35, wagePerHour: 20, hoursPerShift: 6, mealHunger: 70, desc: "Partilhar lucros e fechar a tasca (+70 Comida grátis)." }
         ]
     },
     banco: {
@@ -748,10 +869,10 @@ const WORKPLACES = {
         icon: '🏦',
         color: '#854d0e',
         careers: [
-            { id: 0, title: "Assistente de Balcão", reqEcts: 20, reqShifts: 0, wagePerHour: 10, hoursPerShift: 4, desc: "Atender senhas e carimbar talões no Rossio." },
-            { id: 1, title: "Técnico de Crédito", reqEcts: 45, reqShifts: 3, wagePerHour: 15, hoursPerShift: 5, desc: "Analisar folhas salariais e verificar fiadores em Lisboa." },
-            { id: 2, title: "Gestor de Carteiras", reqEcts: 85, reqShifts: 7, wagePerHour: 22, hoursPerShift: 6, desc: "Aconselhar investimentos pomposos e poupanças VIP." },
-            { id: 3, title: "Diretor de Agência", reqEcts: 130, reqShifts: 12, wagePerHour: 32, hoursPerShift: 6, desc: "Gabinete nobre, fatos caros e aprovação de hipotecas." }
+            { id: 0, title: "Assistente de Balcão", reqShifts: 0, minFormality: 3, reqCourse: 'economia', minCourseEcts: 25, wagePerHour: 11, hoursPerShift: 4, desc: "Atender senhas. OBRIGATÓRIO FATO e 25 ECTS em Economia/Finanças." },
+            { id: 1, title: "Técnico de Crédito", reqShifts: 4, minFormality: 3, reqCourse: 'economia', minCourseEcts: 50, wagePerHour: 16, hoursPerShift: 5, desc: "Analisar folhas salariais e fiadores. Requer Fato, 50 ECTS e 4 turnos." },
+            { id: 2, title: "Gestor de Carteiras VIP", reqShifts: 8, minFormality: 3, reqCourse: 'economia', minCourseEcts: 90, wagePerHour: 24, hoursPerShift: 6, desc: "Aconselhar investimentos VIP. Requer Fato, Licenciatura (90 ECTS) e 8 turnos." },
+            { id: 3, title: "Diretor de Agência", reqShifts: 14, minFormality: 3, reqCourse: 'economia', minCourseEcts: 140, wagePerHour: 36, hoursPerShift: 6, desc: "Gabinete nobre da Caixa. Requer Fato pomposo, Mestrado (140 ECTS) e 14 turnos." }
         ]
     },
     startup: {
@@ -764,13 +885,95 @@ const WORKPLACES = {
         icon: '💻',
         color: '#065f46',
         careers: [
-            { id: 0, title: "Estagiário Café & Bugs", reqEcts: 15, reqShifts: 0, wagePerHour: 8, hoursPerShift: 4, desc: "Resolver bugs de CSS e ouvir piadas de sprint." },
-            { id: 1, title: "Dev Júnior Fullstack", reqEcts: 50, reqShifts: 3, wagePerHour: 16, hoursPerShift: 5, desc: "Criar endpoints REST em Node e componentes React." },
-            { id: 2, title: "Engenheiro Cloud & DevOps", reqEcts: 95, reqShifts: 7, wagePerHour: 25, hoursPerShift: 6, desc: "Clusters Kubernetes e pipelines de deploy contínuo." },
-            { id: 3, title: "Tech Lead / CTO", reqEcts: 150, reqShifts: 12, wagePerHour: 38, hoursPerShift: 6, desc: "Arquitetura global de sistemas e reuniões com VCs." }
+            { id: 0, title: "Estagiário Café & QA", reqShifts: 0, minFormality: 2, reqCourse: 'informatica', minCourseEcts: 20, wagePerHour: 8.5, hoursPerShift: 4, desc: "Resolver bugs de CSS. Requer Smart Casual e 20 ECTS em Informática." },
+            { id: 1, title: "Dev Júnior Fullstack", reqShifts: 4, minFormality: 2, reqCourse: 'informatica', minCourseEcts: 50, wagePerHour: 17, hoursPerShift: 5, desc: "Criar endpoints REST em Node. Requer 50 ECTS em Informática e 4 turnos." },
+            { id: 2, title: "Engenheiro Cloud & DevOps", reqShifts: 8, minFormality: 2, reqCourse: 'informatica', minCourseEcts: 90, wagePerHour: 26, hoursPerShift: 6, desc: "Clusters Kubernetes. Requer Licenciatura (90 ECTS em Informática) e 8 turnos." },
+            { id: 3, title: "Tech Lead / CTO", reqShifts: 14, minFormality: 2, reqCourse: 'informatica', minCourseEcts: 140, wagePerHour: 40, hoursPerShift: 6, desc: "Arquitetura global de software. Requer Mestrado (140 ECTS) e 14 turnos." }
+        ]
+    },
+    faculdade: {
+        id: 'faculdade',
+        buildingId: 'faculdade',
+        name: 'Corpo Docente (IST)',
+        shortName: 'Docência IST',
+        tag: 'ENSINO & INVESTIGAÇÃO',
+        boss: 'Prof. Leitão',
+        icon: '🎓',
+        color: '#1e3a8a',
+        careers: [
+            { id: 0, title: "Monitor de Álgebra Linear", reqShifts: 0, minFormality: 2, reqCourse: 'matematica', minCourseEcts: 45, wagePerHour: 12, hoursPerShift: 3, ectsBonus: 5, desc: "Aulas de apoio aos caloiros do IST. Requer Matemática e min 45 ECTS!" },
+            { id: 1, title: "Assistente Convidado", reqShifts: 4, minFormality: 3, reqCourse: 'matematica', minCourseEcts: 90, wagePerHour: 18, hoursPerShift: 4, ectsBonus: 8, desc: "Lecionar turmas práticas. Requer Licenciatura (90 ECTS em Matemática) e 4 turnos." },
+            { id: 2, title: "Professor Auxiliar", reqShifts: 8, minFormality: 3, reqCourse: 'matematica', minCourseEcts: 140, wagePerHour: 28, hoursPerShift: 5, ectsBonus: 10, desc: "Aulas teóricas e investigação. Requer Mestrado (140 ECTS) e 8 turnos." },
+            { id: 3, title: "Professor Catedrático / Regente", reqShifts: 14, minFormality: 3, reqCourse: 'matematica', minCourseEcts: 180, wagePerHour: 42, hoursPerShift: 6, ectsBonus: 12, desc: "Regência máxima da cadeira no IST. Requer Doutoramento (180 ECTS) e 14 turnos." }
         ]
     }
 };
+
+function checkJobPrerequisites(wpKey, rank) {
+    const wp = WORKPLACES[wpKey];
+    if (!wp) return { ok: false, reason: "Local desconhecido." };
+    const job = wp.careers[rank];
+    if (!job) return { ok: false, reason: "Cargo inexistente." };
+
+    // 1. Verificação de Nudez
+    if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
+        return { ok: false, reason: "Estás completamente nu! Veste roupa antes de trabalhar ou candidatar-te!" };
+    }
+
+    // 2. Verificação de Formalidade de Roupa ("Não posso ser gerente de calções e sapatilhas!")
+    const curFormality = CLOTHING_TIERS[player.clothing.id].formality;
+    if (curFormality < job.minFormality) {
+        if (job.minFormality >= 3) {
+            return { ok: false, reason: `Exige Fato Pombalino Completo! Não podes ser ${job.title} de calções e sapatilhas. Compra um fato no alfaiate!` };
+        } else if (job.minFormality >= 2) {
+            return { ok: false, reason: `Exige pelo menos Smart Casual (polo limpo e calças)! Não podes trabalhar de calções rasgados.` };
+        }
+    }
+
+    // 3. Verificação de Curso Universitário Específico
+    if (job.reqCourse) {
+        if (player.enrolledCourse !== job.reqCourse) {
+            const reqCourseName = COURSES[job.reqCourse].name;
+            if (wpKey === 'faculdade' && rank === 0) {
+                return { ok: false, reason: "Monitor de álgebra sem curso de Matemática é fodido! Matricula-te em Matemática Aplicada no IST." };
+            }
+            return { ok: false, reason: `Exige matrícula no curso de ${reqCourseName} no IST!` };
+        }
+        const courseEcts = (player.courseEcts && player.courseEcts[job.reqCourse]) || 0;
+        if (courseEcts < job.minCourseEcts) {
+            return { ok: false, reason: `Precisas de pelo menos ${job.minCourseEcts} ECTS no curso de ${COURSES[job.reqCourse].shortName} (tens ${courseEcts} ECTS)!` };
+        }
+    }
+
+    // 4. ECTS Gerais (caso aplicável)
+    if (job.minTotalEcts && player.ects < job.minTotalEcts) {
+        return { ok: false, reason: `Precisas de pelo menos ${job.minTotalEcts} ECTS universitários (tens ${player.ects})!` };
+    }
+
+    // 5. Turnos de Experiência do Cargo
+    const shifts = (player.careerShifts && player.careerShifts[wpKey]) || 0;
+    if (job.reqShifts && shifts < job.reqShifts) {
+        return { ok: false, reason: `Precisas de ${job.reqShifts} turnos de experiência no ${wp.name} (tens ${shifts})!` };
+    }
+
+    return { ok: true };
+}
+
+function wearClothing(amount) {
+    if (!player.clothing || player.clothing.id === 'nude') return;
+    player.clothing.durability = Math.max(0, player.clothing.durability - amount);
+    if (player.clothing.durability <= 0) {
+        player.clothing.id = 'nude';
+        player.clothing.name = 'Completamente Nu (Censurado)';
+        player.clothing.icon = '🔞';
+        player.clothing.formality = 0;
+        player.clothing.durability = 0;
+        sfxAlert();
+        showToast("💥 A tua roupa rasgou-se em trapos! Estás completamente nu nas ruas de Lisboa!");
+        spawnParticle("🔞 NU!", '#ef4444');
+        player.sanity = Math.max(0, player.sanity - 25);
+    }
+}
 
 function getPlayerJob(workplaceKey = player.currentWorkplace) {
     if (!workplaceKey || !WORKPLACES[workplaceKey]) {
@@ -1135,17 +1338,33 @@ let player = {
     houseIndex: 1,
     careerIndex: 0,
     currentWorkplace: null, // Começa Desempregado conforme a narrativa!
+    enrolledCourse: null,
+    courseEcts: {
+        informatica: 0,
+        economia: 0,
+        matematica: 0,
+        gestao: 0
+    },
+    clothing: {
+        id: 'shorts',
+        name: 'Calções & Sapatilhas',
+        icon: '🩳',
+        formality: 1,
+        durability: 100
+    },
     careerRanks: {
         pingo_doce: 0,
         tasca: 0,
         banco: 0,
-        startup: 0
+        startup: 0,
+        faculdade: 0
     },
     careerShifts: {
         pingo_doce: 0,
         tasca: 0,
         banco: 0,
-        startup: 0
+        startup: 0,
+        faculdade: 0
     },
     totalShiftsWorked: 0,
     daysUntilRent: 7,
@@ -1171,18 +1390,19 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
+const ASSET_VER = '2.2';
 const boardImg = new Image();
-boardImg.src = 'assets/board.png';
+boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
 const zeSheetImg = new Image();
-zeSheetImg.src = 'assets/ze_spritesheet.png';
+zeSheetImg.src = `assets/ze_spritesheet.png?v=${ASSET_VER}`;
 
 const portraitsSheetImg = new Image();
-portraitsSheetImg.src = 'assets/portraits_sheet.png';
+portraitsSheetImg.src = `assets/portraits_sheet.png?v=${ASSET_VER}`;
 
 // Splash Screen Bitmapped 16-Bit Deslumbrante de Lisboa
 const splashImg = new Image();
-splashImg.src = 'assets/splash.png';
+splashImg.src = `assets/splash.png?v=${ASSET_VER}`;
 
 // Cenários Interiores 16-Bit com Resolução & Detalhe Equivalente ao Tabuleiro (assets/board.png)
 const interiorImgs = {
@@ -1195,14 +1415,14 @@ const interiorImgs = {
     miradouro: new Image(),
     casa: new Image()
 };
-interiorImgs.supermercado.src = 'assets/interiors/supermercado.png';
-interiorImgs.tasca.src = 'assets/interiors/tasca.png';
-interiorImgs.banco.src = 'assets/interiors/banco.png';
-interiorImgs.startup.src = 'assets/interiors/startup.png';
-interiorImgs.senhorio.src = 'assets/interiors/senhorio.png';
-interiorImgs.faculdade.src = 'assets/interiors/faculdade.png';
-interiorImgs.miradouro.src = 'assets/interiors/miradouro.png';
-interiorImgs.casa.src = 'assets/interiors/casa.png';
+interiorImgs.supermercado.src = `assets/interiors/supermercado.png?v=${ASSET_VER}`;
+interiorImgs.tasca.src = `assets/interiors/tasca.png?v=${ASSET_VER}`;
+interiorImgs.banco.src = `assets/interiors/banco.png?v=${ASSET_VER}`;
+interiorImgs.startup.src = `assets/interiors/startup.png?v=${ASSET_VER}`;
+interiorImgs.senhorio.src = `assets/interiors/senhorio.png?v=${ASSET_VER}`;
+interiorImgs.faculdade.src = `assets/interiors/faculdade.png?v=${ASSET_VER}`;
+interiorImgs.miradouro.src = `assets/interiors/miradouro.png?v=${ASSET_VER}`;
+interiorImgs.casa.src = `assets/interiors/casa.png?v=${ASSET_VER}`;
 
 // Pre-renderização da Calçada com Ondas de Basalto do Rossio
 const calcadaCanvas = document.createElement('canvas');
@@ -2732,6 +2952,48 @@ function renderPlayer() {
             ctx.fillRect(px + 9, py - 34, 2, 3);
             ctx.fillRect(px + 8, py - 32, 4, 2);
         }
+
+        // ====================================================================
+        // CENSURA PIXELIZADA DE NUDEZ & ADORNOS DE VESTUÁRIO (The Sims Mosaic)
+        // ====================================================================
+        if (player.clothing && (player.clothing.id === 'nude' || player.clothing.durability <= 0)) {
+            // Mosaico animado de censura pixelizada (16-bit blur mosaic)
+            const mosaicW = 20;
+            const mosaicH = 18;
+            const mosaicX = px - 10;
+            const mosaicY = py - 24;
+            const blockSize = 4;
+            const censorPalette = [
+                '#fbcfe8', '#fed7aa', '#f472b6', '#e2e8f0', '#fdba74', '#94a3b8', '#f87171'
+            ];
+            const tSeed = Math.floor(animTimer * 14);
+            for (let bx = 0; bx < mosaicW; bx += blockSize) {
+                for (let by = 0; by < mosaicH; by += blockSize) {
+                    const cIdx = Math.abs(Math.floor(Math.sin((bx + tSeed) * 9 + (by + tSeed) * 5) * 100)) % censorPalette.length;
+                    ctx.fillStyle = censorPalette[cIdx];
+                    ctx.fillRect(mosaicX + bx, mosaicY + by, blockSize, blockSize);
+                }
+            }
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(mosaicX, mosaicY, mosaicW, mosaicH);
+
+            if (!player.thoughtEmoji) {
+                player.thoughtEmoji = "😳";
+            }
+        } else if (player.clothing && player.clothing.id === 'suit') {
+            // Fato Pombalino Formal: Lapelas e Gravata Dourada
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(px - 5, py - 27, 10, 8);
+            ctx.fillStyle = '#f59e0b'; // Gravata
+            ctx.fillRect(px - 1, py - 26, 2, 6);
+        } else if (player.clothing && player.clothing.id === 'academic') {
+            // Traje Académico do IST: Capa Negra Alfacinha
+            ctx.fillStyle = '#090d16';
+            ctx.fillRect(px - 8, py - 28, 16, 12);
+            ctx.fillStyle = '#fbbf24'; // Alfinete de curso
+            ctx.fillRect(px + 4, py - 26, 2, 2);
+        }
     } else {
         // Fallback procedural clássico enquanto a spritesheet carrega
         drawProceduralPlayer(px, py);
@@ -2879,55 +3141,72 @@ function renderHUD() {
         ctx.fillText(`Renda (${HOUSES[player.houseIndex].rent}€): ${player.daysUntilRent}d`, 218, hy + 45);
     }
 
-    // Slot 4: Emprego Atual & Estudos (x: 342, w: 138) - Interativo / Clicável!
+    // Slot 4: Emprego Atual & Curso (x: 342, w: 110)
     const curJob = getPlayerJob();
     const isEmployed = (player.currentWorkplace && WORKPLACES[player.currentWorkplace]);
     const curWp = isEmployed ? WORKPLACES[player.currentWorkplace] : { icon: '💼', name: 'Desempregado' };
-    const isHoverJob = (mouse.x >= 342 && mouse.x <= 480 && mouse.y >= hy + 8 && mouse.y <= hy + 56 && state === 'BOARD');
 
-    ctx.fillStyle = isHoverJob ? '#1e293b' : '#151d2c';
-    ctx.fillRect(342, hy + 8, 138, 48);
-    ctx.strokeStyle = isHoverJob ? '#38bdf8' : '#233148';
-    ctx.strokeRect(342, hy + 8, 138, 48);
+    ctx.fillStyle = '#151d2c';
+    ctx.fillRect(342, hy + 8, 110, 48);
+    ctx.strokeStyle = '#233148';
+    ctx.strokeRect(342, hy + 8, 110, 48);
 
-    ctx.fillStyle = isHoverJob ? '#ffffff' : (isEmployed ? '#facc15' : '#94a3b8');
-    ctx.font = 'bold 9px "Fira Code"';
+    ctx.fillStyle = isEmployed ? '#facc15' : '#94a3b8';
+    ctx.font = 'bold 8px "Fira Code"';
     let jobTitleShort = isEmployed ? `${curWp.icon} ${curJob.title}` : "💼 Desempregado";
-    if (ctx.measureText(jobTitleShort).width > 126) {
-        while (ctx.measureText(jobTitleShort + '..').width > 126 && jobTitleShort.length > 4) {
+    if (ctx.measureText(jobTitleShort).width > 98) {
+        while (ctx.measureText(jobTitleShort + '..').width > 98 && jobTitleShort.length > 4) {
             jobTitleShort = jobTitleShort.slice(0, -1);
         }
         jobTitleShort += '..';
     }
-    ctx.fillText(jobTitleShort, 348, hy + 25);
+    ctx.fillText(jobTitleShort, 348, hy + 24);
 
+    const curCourseShort = player.enrolledCourse ? COURSES[player.enrolledCourse].shortName : "Sem Curso";
     ctx.fillStyle = '#38bdf8';
-    ctx.font = 'bold 8.5px "Fira Code"';
-    ctx.fillText(`🎓 ${player.ects}/180 ECTS`, 348, hy + 45);
-
-    // Slot 5: Fome & Sanidade (x: 485, w: 78)
-    ctx.fillStyle = '#151d2c';
-    ctx.fillRect(485, hy + 8, 78, 48);
-    ctx.strokeStyle = '#233148';
-    ctx.strokeRect(485, hy + 8, 78, 48);
-
-    ctx.fillStyle = '#94a3b8';
     ctx.font = 'bold 7.5px "Fira Code"';
-    ctx.fillText("FOME", 489, hy + 21);
-    ctx.fillStyle = '#334155';
-    ctx.fillRect(518, hy + 14, 38, 8);
-    ctx.fillStyle = player.hunger > 30 ? '#f59e0b' : '#ef4444';
-    ctx.fillRect(518, hy + 14, (player.hunger / 100) * 38, 8);
+    ctx.fillText(`🎓 ${curCourseShort} (${player.ects}e)`, 348, hy + 45);
+
+    // Slot 5: Vestuário & Desgaste (x: 456, w: 70) - Anti-Calções & Nudez
+    const isNude = (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0);
+    const clothColor = isNude ? '#ef4444' : (player.clothing.durability <= 25 ? '#f59e0b' : '#10b981');
+
+    ctx.fillStyle = isNude ? '#450a0a' : '#151d2c';
+    ctx.fillRect(456, hy + 8, 70, 48);
+    ctx.strokeStyle = isNude ? '#ef4444' : '#233148';
+    ctx.strokeRect(456, hy + 8, 70, 48);
+
+    ctx.fillStyle = clothColor;
+    ctx.font = 'bold 8px "Fira Code"';
+    ctx.fillText(isNude ? "🔞 NU!" : `${player.clothing.icon} ${player.clothing.name.slice(0, 7)}`, 460, hy + 24);
+
+    ctx.fillStyle = clothColor;
+    ctx.font = 'bold 7.5px "Fira Code"';
+    ctx.fillText(isNude ? "CENSURADO" : `DUR: ${player.clothing.durability}%`, 460, hy + 45);
+
+    // Slot 6: Fome & Sanidade (x: 530, w: 48)
+    ctx.fillStyle = '#151d2c';
+    ctx.fillRect(530, hy + 8, 48, 48);
+    ctx.strokeStyle = '#233148';
+    ctx.strokeRect(530, hy + 8, 48, 48);
 
     ctx.fillStyle = '#94a3b8';
-    ctx.fillText("SAN", 489, hy + 43);
+    ctx.font = 'bold 7px "Fira Code"';
+    ctx.fillText("FOM", 533, hy + 21);
     ctx.fillStyle = '#334155';
-    ctx.fillRect(518, hy + 36, 38, 8);
-    ctx.fillStyle = player.sanity > 30 ? '#06b6d4' : '#ef4444';
-    ctx.fillRect(518, hy + 36, (player.sanity / 100) * 38, 8);
+    ctx.fillRect(550, hy + 14, 24, 7);
+    ctx.fillStyle = player.hunger > 30 ? '#f59e0b' : '#ef4444';
+    ctx.fillRect(550, hy + 14, (player.hunger / 100) * 24, 7);
 
-    // Slot 6: Botão Dormir / Terminar Turno (x: 568, w: 64)
-    const btnDormirX = 568;
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText("SAN", 533, hy + 43);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(550, hy + 36, 24, 7);
+    ctx.fillStyle = player.sanity > 30 ? '#06b6d4' : '#ef4444';
+    ctx.fillRect(550, hy + 36, (player.sanity / 100) * 24, 7);
+
+    // Slot 7: Botão Dormir / Terminar Turno (x: 582, w: 52)
+    const btnDormirX = 582;
     const isHoverBtn = (mouse.x >= btnDormirX && mouse.x <= btnDormirX + 64 && mouse.y >= hy + 8 && mouse.y <= hy + 56);
     ctx.fillStyle = isHoverBtn ? '#ea580c' : '#c2410c';
     ctx.fillRect(btnDormirX, hy + 8, 64, 48);
@@ -3948,7 +4227,6 @@ function renderBuildingActions(id, mx, my, mw, mh) {
 
     if (id === 'casa') {
         if (player.houseIndex === 0) {
-            // Despejado no banco de jardim
             actions = [
                 { label: "Dormitar no Banco", cost: 0, timeH: 1, timeM: 0, sanity: 5, desc: "Descanso leve ao relento. +5 Sanidade." },
                 { label: "Comer Atum de Conserva", cost: 0, timeH: 0, timeM: 15, eatHome: true, desc: `${player.groceries} latas na despensa. +45 Nutrição.` },
@@ -3959,7 +4237,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                 { label: "Sesta Reparadora (1h)", cost: 0, timeH: 1, timeM: 0, sanity: 20, desc: "Descansa na cama. +20 Sanidade." },
                 { label: "Cozinhar Refeição", cost: 0, timeH: 0, timeM: 30, eatHome: true, desc: `${player.groceries} disponíveis. +45 Nutrição.` },
                 { label: "Dormir / Terminar o Dia", cost: 0, timeH: 0, timeM: 0, sleepNight: true, desc: "Dorme em paz até à manhã seguinte." },
-                { label: "Limpar e Arejar a Casa", cost: 0, timeH: 0, timeM: 30, sanity: 10, desc: "Abre a janela. +10 Sanidade." }
+                { label: "Remendar Roupa (Linha e Agulha)", cost: 12, timeH: 0, timeM: 30, repairClothing: true, desc: `Roupa atual: ${player.clothing.name} (${player.clothing.durability}%). +40% Durabilidade.` }
             ];
         }
     } else if (id === 'senhorio') {
@@ -3997,144 +4275,287 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                     upgradeHouse: true,
                     desc: `${nextHouse.rent}€/sem · ${nextHouse.qual}`
                 });
-            } else {
+            }
+        }
+    } else if (id === 'faculdade') {
+        // ====================================================================
+        // UNIVERSIDADE (IST): CURSOS UNIVERSITÁRIOS & CARREIRA DOCENTE
+        // ====================================================================
+        if (!player.enrolledCourse) {
+            actions.push({
+                label: "Matrícula: Eng. Informática (IST)",
+                cost: 30,
+                enrollCourse: 'informatica',
+                desc: "Habilita carreira no Tech Hub / Startups (Dev, Cloud, CTO)."
+            });
+            actions.push({
+                label: "Matrícula: Economia & Banca (IST/ISEG)",
+                cost: 30,
+                enrollCourse: 'economia',
+                desc: "Habilita carreira na Caixa / Banco (Crédito, Gestor, Diretor)."
+            });
+            actions.push({
+                label: "Matrícula: Matemática Aplicada (IST)",
+                cost: 30,
+                enrollCourse: 'matematica',
+                desc: "Habilita carreira docente no IST (Monitor Álgebra, Professor)."
+            });
+            actions.push({
+                label: "Matrícula: Gestão & Logística (IST)",
+                cost: 30,
+                enrollCourse: 'gestao',
+                desc: "Habilita carreira de Chefia e Gerência no Pingo Doce."
+            });
+        } else {
+            const curCourse = COURSES[player.enrolledCourse];
+            const courseEcts = (player.courseEcts && player.courseEcts[player.enrolledCourse]) || 0;
+
+            // Cadeiras do Curso
+            actions.push({
+                label: `Cadeira: ${curCourse.subjects[0].name}`,
+                cost: 25,
+                timeH: 4,
+                timeM: 0,
+                ects: 15,
+                studyCourse: curCourse.id,
+                desc: `Aulas no IST · +15 ECTS em ${curCourse.shortName} (Tens: ${courseEcts})`
+            });
+
+            actions.push({
+                label: `Exames: ${curCourse.subjects[1].name}`,
+                cost: 40,
+                timeH: 6,
+                timeM: 0,
+                ects: 25,
+                studyCourse: curCourse.id,
+                desc: `Época de exames · +25 ECTS em ${curCourse.shortName} (Tens: ${courseEcts})`
+            });
+
+            // Carreira Docente no IST (Monitor de Álgebra, Assistente, Professor)
+            const teachRank = (player.careerRanks && player.careerRanks.faculdade) || 0;
+            const curTeachJob = WORKPLACES.faculdade.careers[teachRank];
+            const nextTeachJob = WORKPLACES.faculdade.careers[teachRank + 1];
+            const teachShifts = (player.careerShifts && player.careerShifts.faculdade) || 0;
+
+            if (player.currentWorkplace === 'faculdade') {
                 actions.push({
-                    label: "T1 no Chiado (Topo)",
-                    rentPaid: true,
-                    desc: "Atingiste o topo da habitação de Lisboa! Parabéns!"
+                    label: `Turno: ${curTeachJob.title} (${curTeachJob.hoursPerShift}h)`,
+                    workShift: 'faculdade',
+                    gain: curTeachJob.wagePerHour * curTeachJob.hoursPerShift,
+                    timeH: curTeachJob.hoursPerShift,
+                    timeM: 0,
+                    ectsBonus: curTeachJob.ectsBonus,
+                    desc: `Dar aulas aos caloiros · +${curTeachJob.wagePerHour * curTeachJob.hoursPerShift}€ e +${curTeachJob.ectsBonus} ECTS (Turnos: ${teachShifts})`
+                });
+
+                if (nextTeachJob) {
+                    actions.push({
+                        label: `Promover: ${nextTeachJob.title}`,
+                        promoteCareer: 'faculdade',
+                        reqCourse: nextTeachJob.reqCourse,
+                        minCourseEcts: nextTeachJob.minCourseEcts,
+                        reqShifts: nextTeachJob.reqShifts,
+                        desc: `Requer ${nextTeachJob.minCourseEcts} ECTS em Matemática e ${nextTeachJob.reqShifts} turnos · ${nextTeachJob.wagePerHour}€/h`
+                    });
+                }
+            } else {
+                // Candidatura a Monitor de Álgebra
+                actions.push({
+                    label: "Candidatar: Monitor de Álgebra (IST)",
+                    applyJob: 'faculdade',
+                    desc: "Requer curso de Matemática/Informática, min 45 ECTS e Smart Casual. 12€/h!"
                 });
             }
-        }
-    } else if (id === 'supermercado') {
-        const curJob = WORKPLACES.pingo_doce.careers[player.careerRanks.pingo_doce || 0];
-        const nextJob = getNextJob('pingo_doce');
-        const shifts = (player.careerShifts && player.careerShifts.pingo_doce) || 0;
 
-        actions = [
-            { label: "Saco de Mercearia (2 Ref.)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições para a despensa." },
-            { label: "Cabaz Económico (5 Ref.)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para poupar." },
-            {
-                label: `Turno: ${curJob.title}`,
-                workShift: 'pingo_doce',
-                gain: curJob.wagePerHour * curJob.hoursPerShift,
-                timeH: curJob.hoursPerShift,
-                timeM: 0,
-                desc: `${curJob.hoursPerShift}h de turno · +${curJob.wagePerHour * curJob.hoursPerShift}€ em mão (Turnos: ${shifts})`
-            }
-        ];
-
-        if (nextJob) {
+            // Loja da AEIST
             actions.push({
-                label: `Promover: ${nextJob.title}`,
-                promoteCareer: 'pingo_doce',
-                reqEcts: nextJob.reqEcts,
-                reqShifts: nextJob.reqShifts,
-                desc: `Requer ${nextJob.reqEcts} ECTS e ${nextJob.reqShifts} turnos · ${nextJob.wagePerHour}€/h`
+                label: "AEIST: Traje Académico do IST",
+                cost: 140,
+                buyClothing: 'academic',
+                desc: "Capa e batina tradicional do IST (Durabilidade: 90). Dá prestígio!"
             });
-        }
-    } else if (id === 'tasca') {
-        const curJob = WORKPLACES.tasca.careers[player.careerRanks.tasca || 0];
-        const nextJob = getNextJob('tasca');
-        const shifts = (player.careerShifts && player.careerShifts.tasca) || 0;
 
-        actions = [
-            { label: "Bica ao Balcão", cost: 1, timeH: 0, timeM: 15, hunger: 5, sanity: 15, desc: "+15 Sanidade em 15 minutos." },
-            { label: "Bitoque c/ Ovo a Cavalo", cost: 9, timeH: 1, timeM: 0, hunger: 85, sanity: 25, desc: "+85 Nutrição e +25 Sanidade." },
-            {
-                label: `Turno: ${curJob.title}`,
-                workShift: 'tasca',
-                mealHunger: curJob.mealHunger,
-                gain: Math.round(curJob.wagePerHour * curJob.hoursPerShift),
-                timeH: curJob.hoursPerShift,
-                timeM: 0,
-                desc: `${curJob.hoursPerShift}h · +${Math.round(curJob.wagePerHour * curJob.hoursPerShift)}€ + Almoço Grátis (+${curJob.mealHunger} Comida)`
-            }
-        ];
-
-        if (nextJob) {
             actions.push({
-                label: `Promover: ${nextJob.title}`,
-                promoteCareer: 'tasca',
-                reqEcts: nextJob.reqEcts,
-                reqShifts: nextJob.reqShifts,
-                desc: `Requer ${nextJob.reqEcts} ECTS e ${nextJob.reqShifts} turnos · ${nextJob.wagePerHour}€/h`
+                label: "Secretaria: Trocar de Curso (30€)",
+                cost: 30,
+                resetCourse: true,
+                desc: `Curso atual: ${curCourse.name}. Clica para mudar de curso.`
             });
         }
     } else if (id === 'banco') {
-        const curJob = WORKPLACES.banco.careers[player.careerRanks.banco || 0];
-        const nextJob = getNextJob('banco');
-        const shifts = (player.careerShifts && player.careerShifts.banco) || 0;
+        // ====================================================================
+        // BANCO (CAIXA GERAL): DEPÓSITO, MULTIBANCO & CARREIRAS BANCÁRIAS
+        // ====================================================================
+        actions.push({ label: "Depositar 50€ no Banco", deposit: 50, timeH: 0, timeM: 15, desc: "Protege o teu dinheiro contra assaltos noturnos." });
+        actions.push({ label: "Levantar 50€ da Conta", withdraw: 50, timeH: 0, timeM: 15, desc: "Dinheiro vivo na mão para compras diárias." });
 
-        actions = [
-            { label: "Depositar 50€ no Banco", deposit: 50, timeH: 0, timeM: 15, desc: "Protege contra assaltos noturnos." },
-            { label: "Levantar 50€ da Conta", withdraw: 50, timeH: 0, timeM: 15, desc: "Dinheiro na mão para compras." }
-        ];
+        // Alfaiate Parceiro da Caixa
+        actions.push({
+            label: "Alfaiate da Caixa: Fato Pombalino",
+            cost: 180,
+            buyClothing: 'suit',
+            desc: "Fato e gravata de corte nobre. OBRIGATÓRIO para trabalhar no Banco!"
+        });
 
-        if (player.ects < 20 && (player.careerRanks.banco || 0) === 0 && shifts === 0) {
+        const bankRank = (player.careerRanks && player.careerRanks.banco) || 0;
+        const curBankJob = WORKPLACES.banco.careers[bankRank];
+        const nextBankJob = WORKPLACES.banco.careers[bankRank + 1];
+        const bankShifts = (player.careerShifts && player.careerShifts.banco) || 0;
+
+        if (player.currentWorkplace === 'banco') {
             actions.push({
-                label: `Candidatura: ${curJob.title}`,
-                reqEcts: 20,
-                desc: "Requer 20 ECTS universitários do Politec/IST para estagiar."
-            });
-        } else {
-            actions.push({
-                label: `Turno: ${curJob.title}`,
+                label: `Turno: ${curBankJob.title} (${curBankJob.hoursPerShift}h)`,
                 workShift: 'banco',
-                gain: curJob.wagePerHour * curJob.hoursPerShift,
-                timeH: curJob.hoursPerShift,
+                gain: curBankJob.wagePerHour * curBankJob.hoursPerShift,
+                timeH: curBankJob.hoursPerShift,
                 timeM: 0,
-                desc: `${curJob.hoursPerShift}h no balcão · +${curJob.wagePerHour * curJob.hoursPerShift}€ em mão (Turnos: ${shifts})`
+                desc: `Trabalho no balcão da Caixa · +${curBankJob.wagePerHour * curBankJob.hoursPerShift}€ (Turnos: ${bankShifts})`
             });
 
-            if (nextJob) {
+            if (nextBankJob) {
                 actions.push({
-                    label: `Promover: ${nextJob.title}`,
+                    label: `Promover: ${nextBankJob.title}`,
                     promoteCareer: 'banco',
-                    reqEcts: nextJob.reqEcts,
-                    reqShifts: nextJob.reqShifts,
-                    desc: `Requer ${nextJob.reqEcts} ECTS e ${nextJob.reqShifts} turnos · ${nextJob.wagePerHour}€/h`
+                    reqCourse: nextBankJob.reqCourse,
+                    minCourseEcts: nextBankJob.minCourseEcts,
+                    reqShifts: nextBankJob.reqShifts,
+                    desc: `Requer ${nextBankJob.minCourseEcts} ECTS em Finanças, Fato e ${nextBankJob.reqShifts} turnos · ${nextBankJob.wagePerHour}€/h`
                 });
             }
-        }
-    } else if (id === 'startup') {
-        const curTech = WORKPLACES.startup.careers[player.careerRanks.startup || 0];
-        const nextTech = getNextJob('startup');
-        const techShifts = (player.careerShifts && player.careerShifts.startup) || 0;
-        const curActive = getPlayerJob();
-        const curWp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
-
-        if (player.ects < 15 && (player.careerRanks.startup || 0) === 0 && techShifts === 0) {
-            actions.push({
-                label: `Estágio: ${curTech.title}`,
-                reqEcts: 15,
-                desc: "Requer 15 ECTS de programação no Politec/IST."
-            });
         } else {
             actions.push({
-                label: `Turno Tech: ${curTech.title}`,
-                workShift: 'startup',
-                gain: curTech.wagePerHour * curTech.hoursPerShift,
-                timeH: curTech.hoursPerShift,
-                timeM: 0,
-                desc: `${curTech.hoursPerShift}h código · +${curTech.wagePerHour * curTech.hoursPerShift}€ (Turnos: ${techShifts})`
+                label: "Candidatar: Assistente de Balcão",
+                applyJob: 'banco',
+                desc: "Exige Fato Completo, curso de Economia e 25 ECTS. 11€/h!"
             });
         }
+    } else if (id === 'supermercado') {
+        // ====================================================================
+        // PINGO DOCE: MERCEARIAS, CARREIRAS DE RETALHO & SECÇÃO TÊXTIL
+        // ====================================================================
+        actions.push({ label: "Saco de Mercearia (2 Ref.)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições nutritivas para a despensa." });
+        actions.push({ label: "Cabaz Económico (5 Ref.)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para abastecer a casa." });
 
-        if (nextTech) {
-            actions.push({
-                label: `Promover Tech: ${nextTech.title}`,
-                promoteCareer: 'startup',
-                reqEcts: nextTech.reqEcts,
-                reqShifts: nextTech.reqShifts,
-                desc: `Requer ${nextTech.reqEcts} ECTS e ${nextTech.reqShifts} turnos · ${nextTech.wagePerHour}€/h`
-            });
-        }
-
+        // Secção Têxtil do Pingo Doce
         actions.push({
-            label: "IEFP: Trocar Empregador Ativo",
-            cycleWorkplace: true,
-            desc: `Atual: ${curWp.name} (${curActive.title}). Clica para alternar empresa!`
+            label: "Têxtil: Polo Smart Casual (65€)",
+            cost: 65,
+            buyClothing: 'casual',
+            desc: "Polo limpo e calças direitas (Durabilidade: 60). Bom para atendimento!"
         });
+        actions.push({
+            label: "Têxtil: Kit Linha e Agulha (12€)",
+            cost: 12,
+            repairClothing: true,
+            desc: "Kit de costura para reparar a roupa atual (+40% Durabilidade)."
+        });
+
+        const pingoRank = (player.careerRanks && player.careerRanks.pingo_doce) || 0;
+        const curPingoJob = WORKPLACES.pingo_doce.careers[pingoRank];
+        const nextPingoJob = WORKPLACES.pingo_doce.careers[pingoRank + 1];
+        const pingoShifts = (player.careerShifts && player.careerShifts.pingo_doce) || 0;
+
+        if (player.currentWorkplace === 'pingo_doce') {
+            actions.push({
+                label: `Turno: ${curPingoJob.title} (${curPingoJob.hoursPerShift}h)`,
+                workShift: 'pingo_doce',
+                gain: curPingoJob.wagePerHour * curPingoJob.hoursPerShift,
+                timeH: curPingoJob.hoursPerShift,
+                timeM: 0,
+                desc: `Turno no supermercado · +${curPingoJob.wagePerHour * curPingoJob.hoursPerShift}€ (Turnos: ${pingoShifts})`
+            });
+
+            if (nextPingoJob) {
+                actions.push({
+                    label: `Promover: ${nextPingoJob.title}`,
+                    promoteCareer: 'pingo_doce',
+                    reqCourse: nextPingoJob.reqCourse,
+                    minCourseEcts: nextPingoJob.minCourseEcts,
+                    reqShifts: nextPingoJob.reqShifts,
+                    desc: `Requer ${nextPingoJob.minCourseEcts || 0} ECTS em Gestão e ${nextPingoJob.reqShifts} turnos · ${nextPingoJob.wagePerHour}€/h`
+                });
+            }
+        } else {
+            actions.push({
+                label: "Candidatar: Repositor de Prateleiras",
+                applyJob: 'pingo_doce',
+                desc: "Entrada livre! Não exige curso nem fato formal. 7.50€/h!"
+            });
+        }
+    } else if (id === 'tasca') {
+        // ====================================================================
+        // TASCA TI ZÉ: COMIDA, BALCÃO & CARREIRA NA RESTAURAÇÃO
+        // ====================================================================
+        actions.push({ label: "Bica ao Balcão", cost: 1, timeH: 0, timeM: 15, hunger: 5, sanity: 15, desc: "+15 Sanidade em 15 minutos." });
+        actions.push({ label: "Bitoque c/ Ovo a Cavalo", cost: 9, timeH: 1, timeM: 0, hunger: 85, sanity: 25, desc: "+85 Nutrição e +25 Sanidade." });
+
+        const tascaRank = (player.careerRanks && player.careerRanks.tasca) || 0;
+        const curTascaJob = WORKPLACES.tasca.careers[tascaRank];
+        const nextTascaJob = WORKPLACES.tasca.careers[tascaRank + 1];
+        const tascaShifts = (player.careerShifts && player.careerShifts.tasca) || 0;
+
+        if (player.currentWorkplace === 'tasca') {
+            actions.push({
+                label: `Turno: ${curTascaJob.title} (${curTascaJob.hoursPerShift}h)`,
+                workShift: 'tasca',
+                mealHunger: curTascaJob.mealHunger,
+                gain: Math.round(curTascaJob.wagePerHour * curTascaJob.hoursPerShift),
+                timeH: curTascaJob.hoursPerShift,
+                timeM: 0,
+                desc: `Turno na tasca · +${Math.round(curTascaJob.wagePerHour * curTascaJob.hoursPerShift)}€ + Almoço Grátis (+${curTascaJob.mealHunger} Comida)`
+            });
+
+            if (nextTascaJob) {
+                actions.push({
+                    label: `Promover: ${nextTascaJob.title}`,
+                    promoteCareer: 'tasca',
+                    reqShifts: nextTascaJob.reqShifts,
+                    desc: `Requer ${nextTascaJob.reqShifts} turnos no balcão · ${nextTascaJob.wagePerHour}€/h`
+                });
+            }
+        } else {
+            actions.push({
+                label: "Candidatar: Copeiro / Apanha-Copos",
+                applyJob: 'tasca',
+                desc: "Entrada livre! Não exige curso universitário. 6.50€/h + Comida grátis!"
+            });
+        }
+    } else if (id === 'startup') {
+        // ====================================================================
+        // STARTUP TECH HUB / IEFP: CARREIRAS TECH & CV
+        // ====================================================================
+        const techRank = (player.careerRanks && player.careerRanks.startup) || 0;
+        const curTechJob = WORKPLACES.startup.careers[techRank];
+        const nextTechJob = WORKPLACES.startup.careers[techRank + 1];
+        const techShifts = (player.careerShifts && player.careerShifts.startup) || 0;
+
+        if (player.currentWorkplace === 'startup') {
+            actions.push({
+                label: `Turno: ${curTechJob.title} (${curTechJob.hoursPerShift}h)`,
+                workShift: 'startup',
+                gain: curTechJob.wagePerHour * curTechJob.hoursPerShift,
+                timeH: curTechJob.hoursPerShift,
+                timeM: 0,
+                desc: `Sprint de desenvolvimento · +${curTechJob.wagePerHour * curTechJob.hoursPerShift}€ (Turnos: ${techShifts})`
+            });
+
+            if (nextTechJob) {
+                actions.push({
+                    label: `Promover: ${nextTechJob.title}`,
+                    promoteCareer: 'startup',
+                    reqCourse: nextTechJob.reqCourse,
+                    minCourseEcts: nextTechJob.minCourseEcts,
+                    reqShifts: nextTechJob.reqShifts,
+                    desc: `Requer ${nextTechJob.minCourseEcts} ECTS em Informática e ${nextTechJob.reqShifts} turnos · ${nextTechJob.wagePerHour}€/h`
+                });
+            }
+        } else {
+            actions.push({
+                label: "Candidatar: Estagiário Tech Hub",
+                applyJob: 'startup',
+                desc: "Requer matrícula em Eng. Informática e 20 ECTS. 8.50€/h!"
+            });
+        }
 
         actions.push({
             label: "Orientação de CV & Mercado (1h)",
@@ -4142,34 +4563,12 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             timeH: 1,
             timeM: 0,
             sanity: 15,
-            desc: `Grau: ${getCurriculumDegree()} · ${player.totalShiftsWorked || 0} turnos totais · +15 Sanidade`
+            desc: `Curso: ${player.enrolledCourse ? COURSES[player.enrolledCourse].shortName : 'Nenhum'} · ${getCurriculumDegree()} · +15 Sanidade`
         });
-    } else if (id === 'faculdade') {
-        actions = [
-            { label: "Cadeira Teórica (4h)", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "+15 ECTS para carreira académica e técnica." },
-            { label: "Maratona de Exame (8h)", cost: 45, timeH: 8, timeM: 0, ects: 35, desc: "+35 ECTS intensivos para subir no canudo." }
-        ];
-
-        if (player.ects >= 50) {
-            actions.push({
-                label: "Monitor de Álgebra (3h)",
-                gain: 30,
-                ects: 5,
-                timeH: 3,
-                timeM: 0,
-                desc: "Aulas de apoio a caloiros do IST. +30€ e +5 ECTS."
-            });
-        } else {
-            actions.push({
-                label: "Monitor de Álgebra (3h)",
-                reqEcts: 50,
-                desc: "Requer 50 ECTS para dar explicações remuneradas aos caloiros."
-            });
-        }
     } else if (id === 'miradouro') {
         actions = [
-            { label: "Ver o Tejo ao Pôr-do-Sol", cost: 0, timeH: 1, timeM: 0, sanity: 25, desc: "Ar fresco. +25 Sanidade mental." },
-            { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Socializar. +50 Sanidade." },
+            { label: "Ver o Tejo ao Pôr-do-Sol", cost: 0, timeH: 1, timeM: 0, sanity: 25, desc: "Ar fresco lisboeta. +25 Sanidade mental." },
+            { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Socializar à beira-rio. +50 Sanidade." },
             { label: "Tocar Guitarra Portuguesa (2h)", gain: 15, timeH: 2, timeM: 0, sanity: 10, desc: "Tocar fado com chapéu na calçada. +15€ e +10 Sanidade." }
         ];
     }
@@ -4184,32 +4583,28 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         const ay = my + 44 + idx * (cardH + cardGap);
         const isHover = (mouse.x >= ax && mouse.x <= ax + aw && mouse.y >= ay && mouse.y <= ay + cardH);
 
-        // Fundo do cartão de ação em ardósia escura (sem moldura amarela)
+        // Fundo do cartão de ação
         ctx.fillStyle = isHover ? '#1e293b' : '#0f172a';
         ctx.fillRect(ax, ay, aw, cardH);
         ctx.strokeStyle = isHover ? '#38bdf8' : '#1e293b';
         ctx.lineWidth = isHover ? 1.5 : 1;
         ctx.strokeRect(ax, ay, aw, cardH);
 
-        // Barra lateral de realce no cartão hovered
         if (isHover) {
             ctx.fillStyle = '#38bdf8';
             ctx.fillRect(ax, ay, 3, cardH);
         }
 
-        // Título da Ação em branco de alto contraste
         ctx.fillStyle = isHover ? '#ffffff' : '#e2e8f0';
         ctx.font = 'bold 10px "Fira Code"';
         ctx.textAlign = 'left';
         ctx.fillText(act.label, ax + 14, ay + 18);
 
-        // Botão de Preço / Ganho no Lado Direito
-        const btnW = 86;
+        const btnW = 90;
         const btnH = 26;
         const btnX = ax + aw - btnW - 8;
         const btnY = ay + (cardH - btnH) / 2;
 
-        // Descrição com largura máxima garantida (nunca colide com o botão nem sai da caixa!)
         const maxDescW = btnX - ax - 22;
         ctx.font = '8.5px "Fira Code"';
         ctx.fillStyle = '#94a3b8';
@@ -4245,33 +4640,20 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         } else if (act.rentPaid) {
             btnText = "✓ EM DIA";
             btnColor = "#10b981";
-            isAffordable = true;
-        } else if (act.cycleWorkplace) {
-            btnText = "TROCAR";
+        } else if (act.enrollCourse) {
+            btnText = "MATRICULAR";
             btnColor = "#38bdf8";
-        } else if (act.reviewCv) {
-            btnText = "VER CV";
-            btnColor = "#38bdf8";
-        }
-
-        if (act.promoteCareer) {
-            btnText = "PROMOVER";
+        } else if (act.applyJob) {
+            btnText = "CANDIDATAR";
             btnColor = "#f59e0b";
-        }
-
-        if (act.reqEcts !== undefined && player.ects < act.reqEcts) {
-            isAffordable = false;
-            btnText = `${act.reqEcts} ECTS`;
-            btnColor = "#64748b";
-        }
-
-        if (act.reqShifts !== undefined && act.promoteCareer) {
-            const curShifts = (player.careerShifts && player.careerShifts[act.promoteCareer]) || 0;
-            if (curShifts < act.reqShifts) {
-                isAffordable = false;
-                btnText = `${act.reqShifts} TURNOS`;
-                btnColor = "#64748b";
-            }
+        } else if (act.buyClothing) {
+            btnText = "COMPRAR";
+            btnColor = "#ec4899";
+        } else if (act.repairClothing) {
+            btnText = "REMENDAR";
+            btnColor = "#10b981";
+        } else {
+            btnText = "EXECUTAR";
         }
 
         ctx.fillStyle = isAffordable ? btnColor : '#1e293b';
@@ -4281,7 +4663,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         ctx.strokeRect(btnX, btnY, btnW, btnH);
 
         ctx.fillStyle = isAffordable ? '#0b0e14' : '#64748b';
-        ctx.font = 'bold 9.5px "Fira Code"';
+        ctx.font = 'bold 9px "Fira Code"';
         ctx.textAlign = 'center';
         ctx.fillText(btnText, btnX + btnW / 2, btnY + 17);
     });
@@ -4493,16 +4875,23 @@ function handleCanvasClick(cx, cy) {
     if (state === 'BOARD') {
         const hy = 295;
         // Clicar no botão Dormir (Slot 6: x de 568 a 634)
-        if (cx >= 568 && cx <= 634 && cy >= hy + 8 && cy <= hy + 56) {
+        if (cx >= 582 && cx <= 634 && cy >= hy + 8 && cy <= hy + 56) {
             triggerHaptic([40, 30, 40]);
             endDay("Terminaste o turno voluntariamente para descansar.");
             return;
         }
 
-        // Clicar no Slot 4 de Emprego & ECTS (x de 342 a 480) -> Caminha para a Agência de Emprego
-        if (cx >= 342 && cx <= 480 && cy >= hy + 8 && cy <= hy + 56) {
+        // Clicar no Slot 4 de Emprego & Curso (x de 342 a 452) -> Caminha para o IST / Universidade
+        if (cx >= 342 && cx <= 452 && cy >= hy + 8 && cy <= hy + 56) {
             triggerHaptic([25]);
-            walkToBuilding(BUILDINGS.find(b => b.id === 'startup'));
+            walkToBuilding(BUILDINGS.find(b => b.id === 'faculdade'));
+            return;
+        }
+
+        // Clicar no Slot 5 de Vestuário & Desgaste (x de 456 a 526) -> Caminha para o Pingo Doce / Alfaiate
+        if (cx >= 456 && cx <= 526 && cy >= hy + 8 && cy <= hy + 56) {
+            triggerHaptic([25]);
+            walkToBuilding(BUILDINGS.find(b => b.id === 'supermercado'));
             return;
         }
 
@@ -4634,25 +5023,113 @@ function executeAction(act) {
         spawnParticle("🛒 Despensa", '#10b981');
     }
 
+    // Matrícula em Curso no IST
+    if (act.enrollCourse) {
+        player.enrolledCourse = act.enrollCourse;
+        const course = COURSES[act.enrollCourse];
+        showToast(`Matrícula efetuada com sucesso em: ${course.name}!`);
+        spawnParticle(`🎓 ${course.shortName}`, '#38bdf8');
+    }
+
+    // Estudo de Cadeiras / Exames no Curso Ativo
+    if (act.studyCourse) {
+        const cId = act.studyCourse;
+        player.courseEcts[cId] = (player.courseEcts[cId] || 0) + act.ects;
+        showToast(`Cadeira concluída com sucesso! +${act.ects} ECTS em ${COURSES[cId].shortName}.`);
+        spawnParticle(`+${act.ects} ECTS`, '#38bdf8');
+    }
+
+    // Cancelar / Trocar de Curso
+    if (act.resetCourse) {
+        player.enrolledCourse = null;
+        showToast("Matrícula reiniciada na secretaria do IST. Escolhe o teu novo curso!");
+        spawnParticle("🔄 Novo Curso", '#38bdf8');
+    }
+
+    // Candidatura Formal a Emprego
+    if (act.applyJob) {
+        const wpKey = act.applyJob;
+        const check = checkJobPrerequisites(wpKey, 0);
+        if (!check.ok) {
+            sfxAlert();
+            showToast(check.reason);
+            return;
+        }
+        player.currentWorkplace = wpKey;
+        const firstJob = WORKPLACES[wpKey].careers[0];
+        showToast(`Contratado oficialmente como ${firstJob.title} no ${WORKPLACES[wpKey].name}!`);
+        spawnParticle(`💼 ${firstJob.title}`, '#10b981');
+    }
+
+    // Turno de Trabalho Rigoroso
     if (act.workShift) {
         const wpKey = act.workShift;
-        player.currentWorkplace = wpKey;
+        const rank = (player.careerRanks && player.careerRanks[wpKey]) || 0;
+        const check = checkJobPrerequisites(wpKey, rank);
+        if (!check.ok) {
+            sfxAlert();
+            showToast(check.reason);
+            return;
+        }
+
+        wearClothing(act.wear || (wpKey === 'tasca' || wpKey === 'pingo_doce' ? 8 : 5));
         player.careerShifts[wpKey] = (player.careerShifts[wpKey] || 0) + 1;
         player.totalShiftsWorked = (player.totalShiftsWorked || 0) + 1;
+
         if (act.mealHunger) {
             player.hunger = Math.min(100, player.hunger + act.mealHunger);
             spawnParticle(`🍲 +${act.mealHunger} Comida`, '#10b981');
         }
+        if (act.ectsBonus) {
+            player.courseEcts.matematica = (player.courseEcts.matematica || 0) + act.ectsBonus;
+            player.ects = Math.min(180, player.ects + act.ectsBonus);
+            spawnParticle(`+${act.ectsBonus} ECTS`, '#38bdf8');
+        }
         showToast(`Turno concluído no ${WORKPLACES[wpKey].name}! (+${act.gain}€)`);
     }
 
+    // Promoção de Carreira
     if (act.promoteCareer) {
         const wpKey = act.promoteCareer;
-        player.careerRanks[wpKey] = Math.min(WORKPLACES[wpKey].careers.length - 1, (player.careerRanks[wpKey] || 0) + 1);
-        player.currentWorkplace = wpKey;
-        const newJob = WORKPLACES[wpKey].careers[player.careerRanks[wpKey]];
+        const currentRank = (player.careerRanks && player.careerRanks[wpKey]) || 0;
+        const targetRank = currentRank + 1;
+        const check = checkJobPrerequisites(wpKey, targetRank);
+        if (!check.ok) {
+            sfxAlert();
+            showToast(check.reason);
+            return;
+        }
+        player.careerRanks[wpKey] = targetRank;
+        const newJob = WORKPLACES[wpKey].careers[targetRank];
         showToast(`⭐ Promovido a ${newJob.title} no ${WORKPLACES[wpKey].name}!`);
         spawnParticle("⭐ Promoção!", '#10b981');
+    }
+
+    // Compra de Vestuário
+    if (act.buyClothing) {
+        const tier = CLOTHING_TIERS[act.buyClothing];
+        player.clothing = {
+            id: tier.id,
+            name: tier.name,
+            icon: tier.icon,
+            formality: tier.formality,
+            durability: tier.maxDurability
+        };
+        showToast(`Compraste ${tier.name}! Vestuário pronto a usar.`);
+        spawnParticle(`👕 ${tier.name}`, '#10b981');
+    }
+
+    // Remendar Roupa
+    if (act.repairClothing) {
+        if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
+            sfxAlert();
+            showToast("Não podes remendar o ar! Estás nu, compra roupa nova.");
+            return;
+        }
+        const maxDur = CLOTHING_TIERS[player.clothing.id].maxDurability || 60;
+        player.clothing.durability = Math.min(maxDur, player.clothing.durability + 40);
+        showToast(`Roupa remendada com linha e agulha! Durabilidade: ${player.clothing.durability}%`);
+        spawnParticle("✂️ Remendado!", '#10b981');
     }
 
     if (act.cycleWorkplace) {
