@@ -1105,6 +1105,30 @@ zeSheetImg.src = 'assets/ze_spritesheet.png';
 const portraitsSheetImg = new Image();
 portraitsSheetImg.src = 'assets/portraits_sheet.png';
 
+// Splash Screen Bitmapped 16-Bit Deslumbrante de Lisboa
+const splashImg = new Image();
+splashImg.src = 'assets/splash.png';
+
+// Cenários Interiores 16-Bit com Resolução & Detalhe Equivalente ao Tabuleiro (assets/board.png)
+const interiorImgs = {
+    supermercado: new Image(),
+    tasca: new Image(),
+    banco: new Image(),
+    startup: new Image(),
+    senhorio: new Image(),
+    faculdade: new Image(),
+    miradouro: new Image(),
+    casa: new Image()
+};
+interiorImgs.supermercado.src = 'assets/interiors/supermercado.png';
+interiorImgs.tasca.src = 'assets/interiors/tasca.png';
+interiorImgs.banco.src = 'assets/interiors/banco.png';
+interiorImgs.startup.src = 'assets/interiors/startup.png';
+interiorImgs.senhorio.src = 'assets/interiors/senhorio.png';
+interiorImgs.faculdade.src = 'assets/interiors/faculdade.png';
+interiorImgs.miradouro.src = 'assets/interiors/miradouro.png';
+interiorImgs.casa.src = 'assets/interiors/casa.png';
+
 // Pre-renderização da Calçada com Ondas de Basalto do Rossio
 const calcadaCanvas = document.createElement('canvas');
 calcadaCanvas.width = 640;
@@ -1447,45 +1471,108 @@ function wrapTextCanvas(targetCtx, text, x, y, maxWidth, lineHeight, font, color
     return curY;
 }
 
-// Ecrã Inicial
+// Ecrã Inicial (Splash Screen 16-Bit Deslumbrante de Lisboa)
 function renderTitleScreen() {
-    ctx.drawImage(calcadaCanvas, 0, 0);
+    // 1. Cenário Bitmapped Pixel Art 16-Bit Deslumbrante de Lisboa (assets/splash.png)
+    if (splashImg.complete && splashImg.naturalWidth > 0) {
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(splashImg, 0, 0, canvas.width, canvas.height);
+    } else {
+        ctx.drawImage(calcadaCanvas, 0, 0);
+    }
 
-    ctx.fillStyle = 'rgba(11, 14, 20, 0.94)';
+    // 2. Vinheta e Gradiente Atmosférico
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, 'rgba(11, 15, 26, 0.72)');
+    gradient.addColorStop(0.38, 'rgba(11, 15, 26, 0.22)');
+    gradient.addColorStop(0.72, 'rgba(11, 15, 26, 0.45)');
+    gradient.addColorStop(1, 'rgba(11, 15, 26, 0.94)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 3. Cartaz e Título Estilizado 16-Bit Retro
+    const titleBoxW = 460;
+    const titleBoxH = 78;
+    const titleBoxX = (canvas.width - titleBoxW) / 2;
+    const titleBoxY = 22;
+
+    ctx.fillStyle = 'rgba(11, 15, 26, 0.88)';
+    ctx.fillRect(titleBoxX, titleBoxY, titleBoxW, titleBoxH);
     ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(50, 40, 540, 275);
-    ctx.fillRect(50, 40, 540, 275);
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(titleBoxX, titleBoxY, titleBoxW, titleBoxH);
 
-    ctx.fillStyle = '#f59e0b';
-    ctx.font = '20px "Press Start 2P"';
+    // Cantos decorativos estilo RPG
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillRect(titleBoxX - 3, titleBoxY - 3, 5, 5);
+    ctx.fillRect(titleBoxX + titleBoxW - 2, titleBoxY - 3, 5, 5);
+    ctx.fillRect(titleBoxX - 3, titleBoxY + titleBoxH - 2, 5, 5);
+    ctx.fillRect(titleBoxX + titleBoxW - 2, titleBoxY + titleBoxH - 2, 5, 5);
+
+    // Título Principal com Sombra Sólida Retro
+    ctx.font = '22px "Press Start 2P"';
     ctx.textAlign = 'center';
-    ctx.fillText("DESENRASCADO", 320, 95);
+    ctx.fillStyle = '#78350f';
+    ctx.fillText("DESENRASCADO", 322, titleBoxY + 39);
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillText("DESENRASCADO", 320, titleBoxY + 37);
 
+    ctx.font = '9.5px "Press Start 2P"';
     ctx.fillStyle = '#38bdf8';
-    ctx.font = '9px "Press Start 2P"';
-    ctx.fillText("O PURGATÓRIO DE LISBOA", 320, 125);
+    ctx.fillText("O PURGATÓRIO DE LISBOA", 320, titleBoxY + 63);
+
+    // 4. Cartão Informativo Central Translúcido
+    const cardW = 500;
+    const cardH = 50;
+    const cardX = (canvas.width - cardW) / 2;
+    const cardY = 114;
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.lineWidth = 1;
+    ctx.fillRect(cardX, cardY, cardW, cardH);
+    ctx.strokeRect(cardX, cardY, cardW, cardH);
 
     ctx.fillStyle = '#e2e8f0';
-    ctx.font = '12px "Fira Code"';
-    ctx.fillText("O simulador de tabuleiro oficial da precariedade alfacinha.", 320, 160);
-    ctx.fillText("Gere o teu tempo, ganha dinheiro, estuda e não te atrases na renda!", 320, 182);
+    ctx.font = '11.5px "Fira Code"';
+    ctx.fillText("Simulador oficial de sobrevivência urbana e precariedade alfacinha.", 320, cardY + 22);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '10.5px "Fira Code"';
+    ctx.fillText("Gere o tempo, trabalha, estuda no IST e paga a renda a tempo!", 320, cardY + 38);
 
-    // Botão Começar
-    const pulse = (Math.sin(animTimer * 5) + 1) / 2;
-    ctx.fillStyle = pulse > 0.5 ? '#f59e0b' : '#fbbf24';
-    ctx.font = '11px "Press Start 2P"';
-    ctx.fillText("[ CLICA PARA COMEÇAR ]", 320, 230);
+    // 5. Botão Começar Pulsante
+    const pulse = (Math.sin(animTimer * 4.5) + 1) / 2;
+    const isStartHover = (mouse.x >= 160 && mouse.x <= 480 && mouse.y >= 210 && mouse.y <= 250);
+    const btnW = 320;
+    const btnH = 38;
+    const btnX = (canvas.width - btnW) / 2;
+    const btnY = 212;
 
-    // Botão Hall of Fame
-    const isLbHover = (mouse.x >= 180 && mouse.x <= 460 && mouse.y >= 252 && mouse.y <= 278);
-    ctx.fillStyle = isLbHover ? '#38bdf8' : '#94a3b8';
+    ctx.fillStyle = isStartHover ? '#f59e0b' : `rgba(245, 158, 11, ${0.85 + pulse * 0.15})`;
+    ctx.fillRect(btnX, btnY, btnW, btnH);
+    ctx.strokeStyle = '#fde68a';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(btnX, btnY, btnW, btnH);
+
+    ctx.fillStyle = isStartHover ? '#ffffff' : '#0b0f19';
+    ctx.font = 'bold 11px "Press Start 2P"';
+    ctx.fillText("▶ CLICA PARA COMEÇAR", 320, btnY + 24);
+
+    // 6. Botão Recordes / Hall of Fame
+    const isLbHover = (mouse.x >= 200 && mouse.x <= 440 && mouse.y >= 260 && mouse.y <= 292);
+    ctx.fillStyle = isLbHover ? '#38bdf8' : 'rgba(15, 23, 42, 0.85)';
+    ctx.fillRect(200, 260, 240, 28);
+    ctx.strokeStyle = isLbHover ? '#ffffff' : '#334155';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(200, 260, 240, 28);
+
+    ctx.fillStyle = isLbHover ? '#0b0f19' : '#cbd5e1';
     ctx.font = '9px "Press Start 2P"';
-    ctx.fillText("🏆 [ VER TOP 10 RECORDES ]", 320, 265);
+    ctx.fillText("🏆 TOP 10 RECORDES", 320, 278);
 
-    ctx.fillStyle = '#64748b';
-    ctx.font = '10px "Fira Code"';
-    ctx.fillText("pormenores.net", 320, 295);
+    // 7. Rodapé Discreto
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '9.5px "Fira Code"';
+    ctx.fillText("desenrascado.pormenores.net", 320, 342);
 }
 
 // Ecrã do Jornal Matinal com Eventos e Selos de Impacto
@@ -2896,14 +2983,25 @@ const NPC_INFO = {
     }
 };
 
-// Renderizador de Retratos em Pixel Art 16-Bit (Estilo Stardew Valley / Eastward)
+// Renderizador de Retratos em Pixel Art 16-Bit Suave e Sem Flickering
 function drawNpcPortrait(id, x, y, size) {
-    // Moldura Elegante em Ardósia e Ébano
+    const npc = NPC_INFO[id] || NPC_INFO.senhorio;
+
+    // 1. Moldura Externa Elegante com Borda Dourada / Temática
     ctx.fillStyle = '#090d16';
     ctx.fillRect(x - 2, y - 2, size + 4, size + 4);
-    ctx.strokeStyle = '#334155';
+    
+    // Borda elegante com a cor de assinatura do NPC
+    ctx.strokeStyle = npc.color;
     ctx.lineWidth = 1.5;
     ctx.strokeRect(x - 2, y - 2, size + 4, size + 4);
+
+    // Cantos decorativos de estilo retro RPG
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(x - 3, y - 3, 3, 3);
+    ctx.fillRect(x + size, y - 3, 3, 3);
+    ctx.fillRect(x - 3, y + size, 3, 3);
+    ctx.fillRect(x + size, y + size, 3, 3);
 
     const npcCoords = {
         senhorio: { col: 0, row: 0 },
@@ -2918,388 +3016,127 @@ function drawNpcPortrait(id, x, y, size) {
 
     const coord = npcCoords[id] || npcCoords.senhorio;
 
-    // Respiração e Movimento Orgânico Idle
-    const breathY = Math.round(Math.sin(animTimer * 2.8) * 1.5);
-    const isBlinking = ((animTimer + (coord.col * 1.3)) % 3.8) < 0.18;
-    const isTalking = Math.sin(animTimer * 9.5) > 0.35;
+    // Respiração Suave (1 pixel de deslocamento arredondado, sem jitter subpixel)
+    const breathY = Math.round(Math.sin(animTimer * 2.0));
 
     ctx.save();
     ctx.beginPath();
-    ctx.rect(x + 2, y + 2, size - 4, size - 4);
+    ctx.rect(x + 1, y + 1, size - 2, size - 2);
     ctx.clip();
 
     if (portraitsSheetImg.complete && portraitsSheetImg.naturalWidth > 0) {
         ctx.imageSmoothingEnabled = false;
-        // Desenha o sprite com respiração suave
+        // Desenha o sprite 128x128 com respiração natural de 1px
         ctx.drawImage(
             portraitsSheetImg,
             coord.col * 128, coord.row * 128, 128, 128,
-            x + 2, y + 2 + breathY, size - 4, size - 4
+            x + 1, y + 1 + breathY, size - 2, size - 2
         );
 
-        const cx = x + size / 2;
-        const cy = y + size / 2 + breathY;
-
-        // 1. Piscar de Olhos (Eyelid blink orgânico)
-        if (isBlinking) {
-            ctx.fillStyle = 'rgba(30, 20, 15, 0.75)';
-            ctx.fillRect(cx - 15, cy - 8, 11, 3);
-            ctx.fillRect(cx + 4, cy - 8, 11, 3);
-        }
-
-        // 2. Animação de Falar (Boca abre/fecha ritmadamente com o diálogo)
-        if (isTalking) {
-            ctx.fillStyle = '#450a0a';
-            ctx.fillRect(cx - 5, cy + 12, 10, 3);
-            ctx.fillStyle = '#fca5a5';
-            ctx.fillRect(cx - 3, cy + 14, 6, 1);
-        }
-
-        // 3. Efeitos Dinâmicos e Acessórios Exclusivos por Personagem
+        // Acessórios e Efeitos Ambientais Elegantes nos Cantos (sem tapar o rosto):
         if (id === 'banco') {
-            // Brilho dos Óculos Dourados do Banqueiro (Shine Glint)
-            const glintCycle = animTimer % 3.6;
-            if (glintCycle < 0.35) {
-                const gAlpha = Math.sin((glintCycle / 0.35) * Math.PI);
-                ctx.fillStyle = `rgba(255, 255, 255, ${gAlpha * 0.95})`;
-                ctx.fillRect(cx + 8, cy - 9, 7, 2);
-                ctx.fillRect(cx + 10, cy - 11, 3, 6);
+            // Brilho dourado suave no canto da moldura (fade suave a cada 3.5s)
+            const glintCycle = (animTimer % 3.5) / 3.5;
+            if (glintCycle < 0.25) {
+                const alpha = Math.sin((glintCycle / 0.25) * Math.PI);
+                ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.9})`;
+                const gx = x + size - 14, gy = y + 12;
+                ctx.fillRect(gx - 4, gy, 9, 2);
+                ctx.fillRect(gx, gy - 4, 2, 9);
             }
-        } else if (id === 'supermercado') {
-            // Scanner Laser Vermelho de Código de Barras
-            const laserY = y + 40 + ((animTimer * 35) % 45);
-            ctx.fillStyle = 'rgba(239, 68, 68, 0.85)';
-            ctx.fillRect(x + 4, laserY, 26, 2);
-            ctx.fillStyle = 'rgba(254, 202, 202, 0.9)';
-            ctx.fillRect(x + 14, laserY, 6, 2);
         } else if (id === 'startup') {
-            // Auricular Bluetooth a piscar LED ciano
-            const ledPulse = (Math.sin(animTimer * 6) + 1) / 2;
-            ctx.fillStyle = `rgba(56, 189, 248, ${0.35 + ledPulse * 0.65})`;
+            // LED de status online ciano pulsante no canto
+            const pulse = (Math.sin(animTimer * 4.0) + 1) / 2;
+            ctx.fillStyle = `rgba(56, 189, 248, ${0.4 + pulse * 0.55})`;
             ctx.beginPath();
-            ctx.arc(x + 18, cy - 4, 3.5, 0, Math.PI * 2);
+            ctx.arc(x + 10, y + 10, 3, 0, Math.PI * 2);
             ctx.fill();
-            // Vapor do café no canto
-            const steamY = y + size - 14 - ((animTimer * 18) % 24);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.beginPath();
-            ctx.arc(x + size - 16, steamY, 3, 0, Math.PI * 2);
-            ctx.fill();
-        } else if (id === 'tasca') {
-            // Palito a oscilar no canto dos lábios
-            const toothpickAngle = Math.sin(animTimer * 8) * 3;
-            ctx.strokeStyle = '#fef08a';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(cx + 4, cy + 13);
-            ctx.lineTo(cx + 14, cy + 16 + toothpickAngle);
-            ctx.stroke();
-        } else if (id === 'senhorio') {
-            // Monóculo / Tique de sobrancelha austera
-            if (Math.sin(animTimer * 2.5) > 0.7) {
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(cx - 16, cy - 12, 12, 3);
-            }
         } else if (id === 'miradouro') {
-            // Notas musicais da guitarra portuguesa a subir
-            const noteY1 = y + size - 15 - ((animTimer * 22) % 60);
-            const noteY2 = y + size - 25 - (((animTimer + 1.2) * 22) % 60);
-            ctx.fillStyle = '#38bdf8';
-            ctx.font = 'bold 11px "Press Start 2P"';
-            ctx.fillText("♪", x + size - 18, noteY1);
-            ctx.fillStyle = '#facc15';
-            ctx.fillText("♫", x + size - 28, noteY2);
-        } else if (id === 'faculdade') {
-            // Poeira de giz a flutuar
-            const chalkY = y + 30 + ((animTimer * 12) % 40);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-            ctx.fillRect(x + size - 22, chalkY, 2, 2);
-            ctx.fillRect(x + size - 16, chalkY + 8, 2, 2);
-        } else if (id === 'casa') {
-            // Luz quente acolhedora a cintilar
-            const flicker = (Math.sin(animTimer * 7) + 1) / 2;
-            ctx.fillStyle = `rgba(251, 191, 36, ${0.12 + flicker * 0.1})`;
-            ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
-        }
+            // Notas musicais com subida contínua e fade out gradual
+            const t1 = (animTimer * 0.4) % 1.0;
+            const t2 = ((animTimer * 0.4) + 0.5) % 1.0;
+            const ny1 = y + size - 10 - (t1 * 50);
+            const ny2 = y + size - 10 - (t2 * 50);
+            const a1 = Math.sin(t1 * Math.PI);
+            const a2 = Math.sin(t2 * Math.PI);
 
+            ctx.font = 'bold 10px "Press Start 2P"';
+            ctx.fillStyle = `rgba(56, 189, 248, ${a1 * 0.9})`;
+            ctx.fillText("♪", x + size - 16, ny1);
+            ctx.fillStyle = `rgba(250, 204, 21, ${a2 * 0.9})`;
+            ctx.fillText("♫", x + size - 24, ny2);
+        } else if (id === 'tasca') {
+            // Badge artesanal no canto com caneca de imperial
+            ctx.fillStyle = 'rgba(217, 119, 6, 0.35)';
+            ctx.fillRect(x + size - 18, y + size - 18, 14, 14);
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(x + size - 16, y + size - 14, 8, 8);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x + size - 17, y + size - 16, 10, 3);
+        } else if (id === 'supermercado') {
+            // Mini badge de desconto Poupa Mais no canto
+            ctx.fillStyle = 'rgba(21, 128, 61, 0.4)';
+            ctx.fillRect(x + size - 20, y + size - 16, 16, 12);
+            ctx.fillStyle = '#86efac';
+            ctx.font = 'bold 7px "Fira Code"';
+            ctx.fillText("PD", x + size - 18, y + size - 7);
+        } else if (id === 'senhorio') {
+            // Selo de contrato com carimbo vermelho no canto
+            ctx.fillStyle = 'rgba(185, 28, 28, 0.4)';
+            ctx.fillRect(x + size - 18, y + size - 18, 14, 14);
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x + size - 18, y + size - 18, 14, 14);
+            ctx.fillStyle = '#fca5a5';
+            ctx.fillRect(x + size - 14, y + size - 14, 6, 6);
+        }
         ctx.restore();
         return;
     }
 
-    // Fundo Temático do Retrato (Fallback procedural enquanto carrega)
-    const npc = NPC_INFO[id] || NPC_INFO.senhorio;
+    // Fallback procedural clássico enquanto a spritesheet carrega
     ctx.fillStyle = npc.color + '44';
     ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
-
-    const cx = x + size / 2;
-    const cy = y + size / 2;
-
-    if (id === 'senhorio') {
-        // Sr. Jerónimo (Senhorio austero de bigode e boina)
-        // Casaco Castanho
-        ctx.fillStyle = '#78350f';
-        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
-        ctx.fillStyle = '#f8fafc';
-        ctx.fillRect(cx - 8, y + size - 26, 16, 10); // Colarinho
-
-        // Rosto e Orelhas
-        ctx.fillStyle = '#fed7aa';
-        ctx.fillRect(cx - 16, cy - 14, 32, 28);
-        ctx.fillRect(cx - 20, cy - 6, 4, 10);
-        ctx.fillRect(cx + 16, cy - 6, 4, 10);
-
-        // Boina Clássica de Lisboa (Flat Cap)
-        ctx.fillStyle = '#334155';
-        ctx.fillRect(cx - 20, cy - 26, 40, 14);
-        ctx.fillRect(cx - 24, cy - 14, 48, 5);
-
-        // Óculos de Meia-Lua
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(cx - 12, cy - 7, 9, 6);
-        ctx.strokeRect(cx + 3, cy - 7, 9, 6);
-        ctx.beginPath(); ctx.moveTo(cx - 3, cy - 4); ctx.lineTo(cx + 3, cy - 4); ctx.stroke();
-
-        // Olhos severos
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(cx - 8, cy - 5, 3, 3);
-        ctx.fillRect(cx + 6, cy - 5, 3, 3);
-
-        // Bigodaça Farfalhuda Portuguesa
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(cx - 14, cy + 3, 28, 8);
-        ctx.fillRect(cx - 10, cy + 11, 20, 3);
-
-        // Chave de Latão no Canto
-        ctx.fillStyle = '#f59e0b';
-        ctx.fillRect(x + size - 16, y + size - 22, 10, 3);
-        ctx.fillRect(x + size - 14, y + size - 24, 6, 8);
-    } else if (id === 'tasca') {
-        // Ti Zé do Balcão (Avental, palito no dente e imperial)
-        // Avental de Tasca com Nódoa de Tinto
-        ctx.fillStyle = '#e2e8f0';
-        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
-        ctx.fillStyle = '#991b1b';
-        ctx.beginPath(); ctx.arc(cx - 8, y + size - 14, 5, 0, Math.PI * 2); ctx.fill(); // Nódoa vinho
-
-        // Rosto redondo e bronzeado
-        ctx.fillStyle = '#fdba74';
-        ctx.fillRect(cx - 18, cy - 12, 36, 26);
-
-        // Cabelo preto nas têmporas (calvo em cima)
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(cx - 20, cy - 20, 7, 18);
-        ctx.fillRect(cx + 13, cy - 20, 7, 18);
-        ctx.fillRect(cx - 16, cy - 22, 32, 6);
-
-        // Olhos amigáveis
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(cx - 9, cy - 5, 4, 3);
-        ctx.fillRect(cx + 5, cy - 5, 4, 3);
-
-        // Bigode Típico do Ti Zé
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(cx - 14, cy + 3, 28, 7);
-
-        // Palito de madeira nos dentes!
-        ctx.fillStyle = '#fef08a';
-        ctx.fillRect(cx + 8, cy + 6, 9, 2);
-
-        // Mini / Imperial Verde na mão
-        ctx.fillStyle = '#15803d';
-        ctx.fillRect(x + 6, y + size - 22, 7, 16);
-        ctx.fillStyle = '#facc15';
-        ctx.fillRect(x + 7, y + size - 16, 5, 6); // Rótulo
-    } else if (id === 'startup') {
-        // Gonçalo Tech Lead (Corporate Chic, AirPods e Café)
-        // Camisa Oxford Azul Claro
-        ctx.fillStyle = '#93c5fd';
-        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(cx - 5, y + size - 26, 10, 8); // T-shirt interior
-
-        // Rosto esbelto
-        ctx.fillStyle = '#fed7aa';
-        ctx.fillRect(cx - 15, cy - 14, 30, 26);
-
-        // Cabelo penteado com gel moderno
-        ctx.fillStyle = '#451a03';
-        ctx.fillRect(cx - 16, cy - 26, 32, 14);
-        ctx.fillRect(cx - 12, cy - 29, 20, 5);
-
-        // AirPod Branco no ouvido esquerdo
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(cx - 19, cy - 6, 4, 8);
-
-        // Olhos focados
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(cx - 8, cy - 5, 4, 3);
-        ctx.fillRect(cx + 4, cy - 5, 4, 3);
-
-        // Sorriso corporativo
-        ctx.fillStyle = '#b91c1c';
-        ctx.fillRect(cx - 6, cy + 6, 12, 3);
-
-        // Caneca Vermelha de Café
-        ctx.fillStyle = '#ef4444';
-        ctx.fillRect(x + size - 18, y + size - 20, 12, 14);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(x + size - 16, y + size - 23, 8, 2); // Espuma/Vapor
-    } else if (id === 'faculdade') {
-        // Prof. Catedrático (Cabelo branco desalinhado e óculos)
-        // Beca Académica Preta com Laço
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
-        ctx.fillStyle = '#f59e0b';
-        ctx.fillRect(cx - 4, y + size - 24, 8, 5); // Laço amarelo
-
-        // Rosto com rugas de sabedoria
-        ctx.fillStyle = '#fed7aa';
-        ctx.fillRect(cx - 15, cy - 14, 30, 26);
-
-        // Cabelo Branco à Einstein
-        ctx.fillStyle = '#f1f5f9';
-        ctx.fillRect(cx - 22, cy - 26, 44, 15);
-        ctx.fillRect(cx - 24, cy - 16, 8, 18);
-        ctx.fillRect(cx + 16, cy - 16, 8, 18);
-
-        // Barba Branca Farta
-        ctx.fillStyle = '#e2e8f0';
-        ctx.fillRect(cx - 12, cy + 4, 24, 14);
-
-        // Óculos Redondos de Catedrático
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.arc(cx - 6, cy - 4, 5, 0, Math.PI * 2); ctx.stroke();
-        ctx.beginPath(); ctx.arc(cx + 6, cy - 4, 5, 0, Math.PI * 2); ctx.stroke();
-    } else if (id === 'supermercado') {
-        // D. Maria (Pingo Doce - Colete verde e sorriso amável)
-        // Polo Verde do Pingo Doce
-        ctx.fillStyle = '#15803d';
-        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
-        ctx.fillStyle = '#ea580c';
-        ctx.fillRect(cx - 6, y + size - 26, 12, 6); // Gola Laranja
-
-        // Rosto sorridente
-        ctx.fillStyle = '#fed7aa';
-        ctx.fillRect(cx - 15, cy - 14, 30, 26);
-
-        // Cabelo Castanho com Touca/Bandana
-        ctx.fillStyle = '#451a03';
-        ctx.fillRect(cx - 18, cy - 24, 36, 14);
-        ctx.fillStyle = '#16a34a';
-        ctx.fillRect(cx - 16, cy - 26, 32, 5); // Fita verde
-
-        // Bochechas rosadas e sorriso
-        ctx.fillStyle = '#fca5a5';
-        ctx.fillRect(cx - 12, cy, 4, 3);
-        ctx.fillRect(cx + 8, cy, 4, 3);
-        ctx.fillStyle = '#dc2626';
-        ctx.fillRect(cx - 5, cy + 5, 10, 3);
-    } else if (id === 'banco') {
-        // Dr. Alcoviteiro (Gerente sério com fato risca de giz)
-        // Fato Executivo Azul Marinho
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(cx - 7, y + size - 26, 14, 12);
-        ctx.fillStyle = '#b91c1c';
-        ctx.fillRect(cx - 3, y + size - 22, 6, 16); // Gravata vermelha
-
-        // Rosto severo e impecável
-        ctx.fillStyle = '#fed7aa';
-        ctx.fillRect(cx - 15, cy - 14, 30, 26);
-
-        // Cabelo Grisalho Penteado para Trás
-        ctx.fillStyle = '#64748b';
-        ctx.fillRect(cx - 17, cy - 26, 34, 14);
-
-        // Sobrancelhas franzidas
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(cx - 9, cy - 8, 7, 2);
-        ctx.fillRect(cx + 2, cy - 8, 7, 2);
-
-        // Caneta de Ouro no Bolso
-        ctx.fillStyle = '#facc15';
-        ctx.fillRect(x + 10, y + size - 18, 3, 8);
-    } else if (id === 'miradouro') {
-        // Boémio de Alfama (Óculos escuros e boina boémia)
-        // Camisola às riscas náuticas
-        ctx.fillStyle = '#1e3a8a';
-        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(cx - 24, y + size - 20, 48, 4);
-        ctx.fillRect(cx - 24, y + size - 10, 48, 4);
-
-        // Rosto moreno com barba de 3 dias
-        ctx.fillStyle = '#fdba74';
-        ctx.fillRect(cx - 15, cy - 14, 30, 26);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
-        ctx.fillRect(cx - 13, cy + 2, 26, 10); // Barba sombreada
-
-        // Boina Boémia Inclinada
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(cx - 22, cy - 26, 44, 14);
-
-        // Óculos de Sol Negros
-        ctx.fillStyle = '#020617';
-        ctx.fillRect(cx - 12, cy - 6, 10, 7);
-        ctx.fillRect(cx + 2, cy - 6, 10, 7);
-        ctx.fillRect(cx - 2, cy - 4, 4, 2);
-    } else if (id === 'casa') {
-        // Zé Desenrasca / O Teu Teto (O protagonista alfacinha)
-        // Roupa Confortável / Hoodie
-        ctx.fillStyle = player.houseIndex === 0 ? '#1e3a8a' : '#1e293b';
-        ctx.fillRect(cx - 24, y + size - 26, 48, 26);
-
-        // Rosto
-        ctx.fillStyle = '#fed7aa';
-        ctx.fillRect(cx - 15, cy - 14, 30, 26);
-
-        if (player.houseIndex === 0) {
-            // Despejado no banco de jardim: Gorro de lã azul e cara com frio
-            ctx.fillStyle = '#2563eb';
-            ctx.fillRect(cx - 17, cy - 26, 34, 14);
-            ctx.fillStyle = '#93c5fd';
-            ctx.fillRect(cx - 19, cy - 14, 38, 4);
-            // Gotas de frio
-            ctx.fillStyle = '#38bdf8';
-            ctx.fillRect(cx + 12, cy - 4, 2, 4);
-        } else {
-            // Cabelo castanho penteado e barba aparada
-            ctx.fillStyle = '#451a03';
-            ctx.fillRect(cx - 17, cy - 24, 34, 12);
-            ctx.fillStyle = '#451a03';
-            ctx.fillRect(cx - 12, cy + 6, 24, 5); // Barba
-        }
-
-        // Olhos
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(cx - 8, cy - 5, 4, 3);
-        ctx.fillRect(cx + 4, cy - 5, 4, 3);
-    }
     ctx.restore();
 }
 
 function renderInteriorScene(ctx, id, animTimer, player, HOUSES, WORKPLACES, getPlayerJob) {
     ctx.save();
 
-    if (id === 'supermercado') {
-        renderInteriorPingoDoce(ctx, animTimer);
-    } else if (id === 'tasca') {
-        renderInteriorTasca(ctx, animTimer);
-    } else if (id === 'banco') {
-        renderInteriorBanco(ctx, animTimer);
-    } else if (id === 'startup') {
-        renderInteriorStartup(ctx, animTimer);
-    } else if (id === 'senhorio') {
-        renderInteriorSenhorio(ctx, animTimer);
-    } else if (id === 'faculdade') {
-        renderInteriorFaculdade(ctx, animTimer);
-    } else if (id === 'casa') {
-        renderInteriorCasa(ctx, animTimer, player, HOUSES);
-    } else if (id === 'miradouro') {
-        renderInteriorMiradouro(ctx, animTimer);
+    const img = interiorImgs[id];
+    if (img && img.complete && img.naturalWidth > 0) {
+        ctx.imageSmoothingEnabled = false;
+        // Desenha o cenário interior 16-bit com a mesma resolução e riqueza artística do tabuleiro principal (assets/board.png)
+        ctx.drawImage(img, 0, 0, 640, 295);
+
+        // Overlay suave de iluminação dinâmica horária de Lisboa
+        const hr = player.timeHour;
+        if (hr >= 20 || hr < 7) {
+            ctx.fillStyle = 'rgba(11, 15, 26, 0.32)';
+            ctx.fillRect(0, 0, 640, 295);
+        } else if (hr >= 17 && hr <= 19) {
+            ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
+            ctx.fillRect(0, 0, 640, 295);
+        }
+    } else {
+        // Fallback procedural enquanto a imagem carrega
+        if (id === 'supermercado') {
+            renderInteriorPingoDoce(ctx, animTimer);
+        } else if (id === 'tasca') {
+            renderInteriorTasca(ctx, animTimer);
+        } else if (id === 'banco') {
+            renderInteriorBanco(ctx, animTimer);
+        } else if (id === 'startup') {
+            renderInteriorStartup(ctx, animTimer);
+        } else if (id === 'senhorio') {
+            renderInteriorSenhorio(ctx, animTimer);
+        } else if (id === 'faculdade') {
+            renderInteriorFaculdade(ctx, animTimer);
+        } else if (id === 'casa') {
+            renderInteriorCasa(ctx, animTimer, player, HOUSES);
+        } else if (id === 'miradouro') {
+            renderInteriorMiradouro(ctx, animTimer);
+        }
     }
 
     ctx.restore();
