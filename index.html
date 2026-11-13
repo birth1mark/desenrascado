@@ -1071,21 +1071,21 @@ const EVENTOS_LISBOA = []; // Alias de compatibilidade retroativa
 
 // Edifícios no Tabuleiro
 const BUILDINGS = [
-    { id: 'senhorio', name: 'Senhorio', x: 45, y: 38, w: 105, h: 77, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 97, doorY: 125, desc: 'Sr. Jerónimo — Rendas e contratos de habitação.' },
-    { id: 'casa', name: 'O Teu Teto', x: 185, y: 38, w: 105, h: 77, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 237, doorY: 125, desc: 'Dorme para recuperar sanidade, fome e energia.' },
-    { id: 'faculdade', name: 'Politec / IST', x: 330, y: 34, w: 105, h: 81, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 382, doorY: 125, desc: 'Prof. Leitão — Aulas e exames para o canudo.' },
-    { id: 'startup', name: 'Agência Emprego', x: 475, y: 38, w: 105, h: 77, color: '#065f46', accent: '#10b981', tag: 'EMPREGO & HUB', icon: '💼', doorX: 527, doorY: 125, desc: 'Mariana — IEFP, Gestão de Carreiras e Tech Hub.' },
-    { id: 'tasca', name: 'Tasca Ti Zé', x: 45, y: 155, w: 105, h: 77, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 97, doorY: 248, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
-    { id: 'supermercado', name: 'Pingo Doce', x: 185, y: 155, w: 105, h: 77, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 237, doorY: 248, desc: 'D. Maria — Mantimentos e carreiras de supermercado.' },
-    { id: 'banco', name: 'Caixa / Banco', x: 330, y: 155, w: 105, h: 77, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 382, doorY: 248, desc: 'Dr. Alcoviteiro — Poupança e carreiras financeiras.' },
-    { id: 'miradouro', name: 'Miradouro', x: 475, y: 155, w: 105, h: 77, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 527, doorY: 248, desc: 'O Boémio — Vista sobre o Tejo e tertúlias.' }
+    { id: 'miradouro', name: 'Miradouro', x: 15, y: 220, w: 130, h: 60, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 85, doorY: 245, desc: 'O Boémio — Vista sobre o Tejo, descanso e tertúlias.' },
+    { id: 'faculdade', name: 'Politec / IST', x: 20, y: 15, w: 165, h: 165, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 138, doorY: 175, desc: 'Prof. Leitão — Aulas e exames para o canudo no campus do IST.' },
+    { id: 'startup', name: 'Agência Emprego', x: 185, y: 45, w: 75, h: 110, color: '#065f46', accent: '#10b981', tag: 'EMPREGO & HUB', icon: '💼', doorX: 220, doorY: 155, desc: 'Mariana — IEFP, Gestão de Carreiras e Tech Hub.' },
+    { id: 'senhorio', name: 'Senhorio', x: 285, y: 15, w: 115, h: 65, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 365, doorY: 185, desc: 'Sr. Jerónimo — Rendas e contratos de habitação.' },
+    { id: 'banco', name: 'Caixa / Banco', x: 270, y: 75, w: 125, h: 115, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 335, doorY: 185, desc: 'Dr. Alcoviteiro — Poupança, Multibanco e carreiras financeiras.' },
+    { id: 'casa', name: 'O Teu Teto', x: 520, y: 20, w: 110, h: 100, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 545, doorY: 195, desc: 'Dorme para recuperar sanidade, fome e energia.' },
+    { id: 'supermercado', name: 'Pingo Doce', x: 405, y: 120, w: 110, h: 80, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 460, doorY: 195, desc: 'D. Maria — Mantimentos e carreiras de supermercado.' },
+    { id: 'tasca', name: 'Tasca Ti Zé', x: 520, y: 120, w: 115, h: 80, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 580, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' }
 ];
 
 // Pombos do Rossio a debicar na calçada
 const PIGEONS = [
-    { x: 170, y: 140, frame: 0, timer: 0 },
-    { x: 310, y: 135, frame: 1, timer: 1.2 },
-    { x: 450, y: 155, frame: 0, timer: 2.1 }
+    { x: 140, y: 200, frame: 0, timer: 0 },
+    { x: 380, y: 220, frame: 1, timer: 1.2 },
+    { x: 500, y: 215, frame: 0, timer: 2.1 }
 ];
 
 // Partículas flutuantes (+15€, -20€, ☕)
@@ -1110,10 +1110,10 @@ let modalBuilding = null;
 let morningNews = "";
 
 let player = {
-    x: 250,
-    y: 125,
-    targetX: 250,
-    targetY: 125,
+    x: 335,
+    y: 195,
+    targetX: 335,
+    targetY: 195,
     speed: 3.6,
     walking: false,
     frame: 0,
@@ -1333,7 +1333,7 @@ function update(dt) {
                 // Restrição rígida: Zé Desenrasca caminha apenas na calçada e cais de pedra!
                 // NUNCA entra na água do Rio Tejo (o rio fica em y >= 274, limite seguro y <= 255)
                 player.x = Math.max(30, Math.min(610, player.x));
-                player.y = Math.max(120, Math.min(255, player.y));
+                player.y = Math.max(140, Math.min(255, player.y));
 
                 if (Math.random() < 0.35) {
                     spawnDust(player.x + (Math.random() * 6 - 3), player.y + 2);
@@ -1738,9 +1738,9 @@ function renderNewsScreen() {
 
 // Candeeiros de ferro forjado de Lisboa
 const LANTERNS = [
-    { x: 175, y: 156 },
-    { x: 315, y: 156 },
-    { x: 455, y: 156 }
+    { x: 192, y: 165 },
+    { x: 412, y: 155 },
+    { x: 610, y: 175 }
 ];
 
 function drawLanterns(isNight) {
@@ -4749,10 +4749,10 @@ function resetGame() {
     player.totalShiftsWorked = 0;
     player.daysUntilRent = 7;
     player.hungerDays = 0;
-    player.x = 250;
-    player.y = 125;
-    player.targetX = 250;
-    player.targetY = 125;
+    player.x = 335;
+    player.y = 195;
+    player.targetX = 335;
+    player.targetY = 195;
     player.walking = false;
     player.frame = 0;
     player.walkAnimTimer = 0;
