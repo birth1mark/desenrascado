@@ -1779,8 +1779,8 @@ const EVENTOS_LISBOA = []; // Alias de compatibilidade retroativa
 const BUILDINGS = [
     { id: 'miradouro', name: 'Miradouro', x: 0, y: 220, w: 140, h: 75, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 65, doorY: 245, desc: 'O Boémio — Vista sobre o Tejo, descanso, fado à guitarra e tertúlias.' },
     { id: 'faculdade', name: 'Politec / IST', x: 0, y: 15, w: 146, h: 175, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 72, doorY: 185, desc: 'Prof. Leitão — Aulas, cadeiras sequenciais e exames para o canudo no IST.' },
-    { id: 'startup', name: 'IEFP / Emprego', x: 148, y: 35, w: 74, h: 155, color: '#065f46', accent: '#10b981', tag: 'IEFP & CARREIRAS', icon: '💼', doorX: 198, doorY: 195, desc: 'D. Mariana (IEFP, 45 anos) — Centro de Emprego, Orientação e Dossier Curricular.' },
-    { id: 'acampada', name: 'Acampada da Habitação', x: 185, y: 221, w: 90, h: 42, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 235, doorY: 248, desc: 'Inês — Vigília popular e assembleia pelo direito à habitação e turnos solidários.' },
+    { id: 'startup', name: 'IEFP / Emprego', x: 175, y: 35, w: 48, h: 155, color: '#065f46', accent: '#10b981', tag: 'IEFP & CARREIRAS', icon: '💼', doorX: 198, doorY: 195, desc: 'D. Mariana (IEFP, 45 anos) — Centro de Emprego, Orientação e Dossier Curricular.' },
+    { id: 'acampada', name: 'Acampada da Habitação', x: 122, y: 182, w: 50, h: 38, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 148, doorY: 206, desc: 'Inês — Vigília popular e assembleia pelo direito à habitação e turnos solidários.' },
     { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco e carreiras financeiras.' },
     { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira — Fatos de gala, alfaiataria, trajes académicos e ateliê de costura.' },
     { id: 'supermercado', name: 'Pingo Doce', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 478, doorY: 195, desc: 'D. Maria — Mantimentos e carreiras de supermercado.' },
@@ -1877,10 +1877,10 @@ const LIVING_NPCS = [
     {
         id: 'ines_acampada',
         name: 'Inês (Acampada)',
-        x: 254, y: 238, radius: 22,
+        x: 168, y: 202, radius: 20,
         quotes: [
             "Habitação é um direito, não é um privilégio de fundos abutres!",
-            "Junta-te à nossa vigília ribeirinha: partilhamos sopa quente e coragem.",
+            "Junta-te à nossa vigília popular no Rossio: partilhamos sopa quente e coragem.",
             "Nenhum despejo sem alternativa digna em Lisboa!"
         ]
     }
@@ -1939,31 +1939,31 @@ function renderBoardLivingCharacters(ctx, animTimer) {
         ctx.fillRect(px2, py2 - 6 + Math.round(talkBob * 0.5), 4, 2);
     }
 
-    // 2. FOGAREIRO & CHAMA DA ACAMPADA RIBEIRINHA (x: 236..244, y: 236..248)
-    // Brilho quente do fogo no cais de pedra
+    // 2. FOGAREIRO & CHAMA DA ACAMPADA DO ROSSIO (x: 166..172, y: 196..204)
+    // Brilho quente do fogo na calçada do Rossio
     const fireFlicker = Math.sin(animTimer * 12) * 1.5 + Math.cos(animTimer * 19) * 0.8;
     const fireRadius = 14 + fireFlicker;
-    const fireGrad = ctx.createRadialGradient(240, 242, 2, 240, 242, Math.max(6, fireRadius));
+    const fireGrad = ctx.createRadialGradient(168, 200, 2, 168, 200, Math.max(6, fireRadius));
     fireGrad.addColorStop(0, 'rgba(251, 146, 60, 0.45)');
     fireGrad.addColorStop(0.5, 'rgba(239, 68, 68, 0.20)');
     fireGrad.addColorStop(1, 'rgba(239, 68, 68, 0)');
     ctx.fillStyle = fireGrad;
     ctx.beginPath();
-    ctx.arc(240, 242, Math.max(6, fireRadius), 0, Math.PI * 2);
+    ctx.arc(168, 200, Math.max(6, fireRadius), 0, Math.PI * 2);
     ctx.fill();
 
     // Línguas de fogo animadas em pixel art
     const flameH = Math.round(3 + Math.abs(Math.sin(animTimer * 14)) * 3);
     ctx.fillStyle = '#f97316';
-    ctx.fillRect(239, 240 - flameH, 2, flameH);
+    ctx.fillRect(167, 198 - flameH, 2, flameH);
     ctx.fillStyle = '#fef08a';
-    ctx.fillRect(240, 241 - Math.round(flameH * 0.6), 1, Math.round(flameH * 0.6));
+    ctx.fillRect(168, 199 - Math.round(flameH * 0.6), 1, Math.round(flameH * 0.6));
 
-    // Fumo subtil a subir em direção ao céu sobre o Tejo
+    // Fumo subtil a subir em direção ao céu lisboeta
     for (let f = 0; f < 3; f++) {
         const fProg = ((animTimer * 1.2 + f * 0.9) % 2.5) / 2.5;
-        const fx = 240 + Math.sin(animTimer * 2.5 + f * 2) * 3;
-        const fy = 236 - fProg * 14;
+        const fx = 168 + Math.sin(animTimer * 2.5 + f * 2) * 3;
+        const fy = 194 - fProg * 14;
         const fAlpha = (1 - fProg) * 0.35;
         ctx.fillStyle = `rgba(226, 232, 240, ${fAlpha.toFixed(2)})`;
         ctx.fillRect(Math.round(fx), Math.round(fy), 2, 2);
@@ -1999,16 +1999,16 @@ function renderBoardLivingCharacters(ctx, animTimer) {
         const pingoFrame = (Math.floor(animTimer * 0.6) % 4 === 2) ? 1 : 0;
         ctx.drawImage(npcsLucasImg, pingoFrame * 48, 144, 48, 48, 474, 142, 48, 48);
 
-        // E. Inês da Acampada no Cais Ribeirinho (Row 2: sy=96, sw=48, sh=48)
+        // E. Inês da Acampada no Rossio (Row 2: sy=96, sw=48, sh=48)
         const inesFrame = Math.floor(animTimer * 2.8) % 2;
-        ctx.drawImage(npcsLucasImg, inesFrame * 48, 96, 48, 48, 230, 216, 48, 48);
+        ctx.drawImage(npcsLucasImg, inesFrame * 48, 96, 48, 48, 148, 168, 48, 48);
         
         // Notas musicais flutuantes da viola acústica da Inês (♪ ♫)
         const noteCycle = (animTimer * 1.3) % 2.8;
         if (noteCycle < 2.2) {
             const noteProg = noteCycle / 2.2;
-            const noteX = 252 + Math.sin(noteProg * 4.5) * 4;
-            const noteY = 215 - noteProg * 16;
+            const noteX = 166 + Math.sin(noteProg * 4.5) * 4;
+            const noteY = 172 - noteProg * 16;
             const noteAlpha = (1 - noteProg) * 0.9;
             ctx.fillStyle = `rgba(251, 191, 36, ${noteAlpha.toFixed(2)})`;
             ctx.font = '8px "Press Start 2P"';
@@ -2235,7 +2235,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '2.8';
+const ASSET_VER = '2.9';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -2524,8 +2524,8 @@ function endDay(motivo) {
     if (player.sleptAcampada) {
         const acamp = BUILDINGS.find(b => b.id === 'acampada');
         if (acamp) {
-            player.x = acamp.doorX || 235;
-            player.y = acamp.doorY || 248;
+            player.x = acamp.doorX || 148;
+            player.y = acamp.doorY || 206;
             player.targetX = player.x;
             player.targetY = player.y;
         }
