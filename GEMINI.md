@@ -70,7 +70,7 @@ Este ficheiro é a fonte da verdade para o desenvolvimento, manutenção e evolu
 ---
 
 ## 5. Mecânicas e Sistemas Centrais
-- **Estatísticas do Jogador**: `dinheiro` (€), `energia` (0-100), `fome` (0-100), `stress` (0-100), `conhecimento` (0-100), `reputacao` (0-100), `aptidaoMusical` (0-100).
+- **Estatísticas do Jogador**: `dinheiro` (€), `energia` (0-100), `fome` (0-100), `stress` (0-100), `conhecimento` (0-100), `reputacao` (0-100), `musicSkill` (0-100, perícia musical à guitarra portuguesa).
 - **Curriculum do Jogador & Cadeiras do IST**:
   - O jogador matricula-se em cursos no IST (ex: Engenharia Informática).
   - O curso é constituído por cadeiras curriculares individuais (ex: Algoritmos, Arquitetura, Redes).
@@ -78,7 +78,7 @@ Este ficheiro é a fonte da verdade para o desenvolvimento, manutenção e evolu
   - O jogador pode abrir o seu *Curriculum Vitae* para auditar as cadeiras feitas e por fazer.
 - **Trabalho nos Vários Locais**:
   - Todos os locais exceto o IEFP (formação) e a Casa (descanso) oferecem trabalho/biscates adequados à indumentária e nível educativo do jogador.
-  - Tocar no Miradouro desenvolve a `aptidaoMusical`, começando muito baixa e exigindo prática regular para evoluir.
+  - Tocar no Miradouro desenvolve a `musicSkill`, começando muito baixa (caloiro) e exigindo progressão lenta e autêntica de prática regular para evoluir.
 - **Renda do Senhorio**:
   - Renda semanal obrigatória (a cada 7 dias).
   - Falha no pagamento e esgotamento da sanidade gera a **Certidão Oficial de Despejo** em alta resolução (1080x1920 px, 9:16) com integração Web Share.

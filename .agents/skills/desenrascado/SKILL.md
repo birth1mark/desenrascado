@@ -100,7 +100,7 @@ O tabuleiro é contínuo e dividido nos seguintes marcos lisboetas de este a oes
   - `stress` (0..100): Sobe com falta de dinheiro e trabalho; aliviado no Miradouro, dormir ou imperial na Tasca.
   - `conhecimento` (0..100): Nível académico/técnico.
   - `reputacao` (0..100): Credibilidade profissional, influenciada por roupas e projetos entregues.
-  - `aptidaoMusical` (0..100): Habilidade musical desenvolvida praticando no Miradouro (inicia muito baixa e sobe progressivamente com a prática).
+  - `musicSkill` (0..100): Perícia musical desenvolvida praticando no Miradouro (inicia em 0% e progride lentamente com a dedicação à guitarra portuguesa).
 - **Curriculum do Jogador & Cadeiras do IST**:
   - Ao matricular-se num curso no IST (ex: Engenharia Informática), o curso é composto por cadeiras curriculares individuais (ex: Algoritmos, Arquitetura de Sistemas, Redes).
   - Cada sessão de estudo avança o progresso de cadeiras específicas.

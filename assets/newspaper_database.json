@@ -563,7 +563,7 @@
       "effect": {
         "wallet": 14,
         "sanity": 15,
-        "musicSkill": 4
+        "musicSkill": 0.5
       },
       "stamp": "+14€ FADO INICIAL",
       "stampColor": "#f59e0b",
@@ -580,7 +580,7 @@
       "effect": {
         "wallet": 35,
         "sanity": 20,
-        "musicSkill": 5
+        "musicSkill": 0.6
       },
       "stamp": "+35€ GORJETA TEJO",
       "stampColor": "#10b981",
@@ -597,7 +597,7 @@
       "effect": {
         "wallet": 45,
         "sanity": 30,
-        "musicSkill": 6
+        "musicSkill": 0.8
       },
       "stamp": "ALMA DE ALFAMA",
       "stampColor": "#854d0e",
@@ -614,7 +614,7 @@
       "effect": {
         "wallet": 75,
         "sanity": 35,
-        "musicSkill": 5
+        "musicSkill": 0.6
       },
       "stamp": "+75€ VIRAL LISBOA",
       "stampColor": "#f59e0b",
@@ -1132,7 +1132,7 @@
       "effect": {
         "wallet": 50,
         "sanity": 25,
-        "musicSkill": 5
+        "musicSkill": 0.6
       },
       "stamp": "+50€ FADO DO TEJO",
       "stampColor": "#f59e0b",
@@ -1148,7 +1148,7 @@
       },
       "effect": {
         "sanity": -6,
-        "musicSkill": 3
+        "musicSkill": 0.4
       },
       "stamp": "CALOIRO DO FADO",
       "stampColor": "#64748b",

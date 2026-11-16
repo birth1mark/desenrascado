@@ -1827,7 +1827,7 @@ function generateMorningEvent(p) {
                     if (eff.hunger) player.hunger = Math.max(0, Math.min(100, player.hunger + eff.hunger));
                     if (eff.groceries) player.groceries = Math.max(0, (player.groceries || 0) + eff.groceries);
                     if (eff.ects) player.ects = Math.min(180, player.ects + eff.ects);
-                    if (eff.musicSkill) player.musicSkill = Math.max(0, Math.min(100, (player.musicSkill || 0) + eff.musicSkill));
+                    if (eff.musicSkill) player.musicSkill = Math.max(0, Math.min(100, +((player.musicSkill || 0) + eff.musicSkill).toFixed(1)));
                     if (eff.bankDebt && player.bankDebt !== undefined) {
                         player.bankDebt = Math.max(0, player.bankDebt + eff.bankDebt);
                     }
@@ -2732,7 +2732,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '4.6';
+const ASSET_VER = '4.7';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -4014,12 +4014,12 @@ function openStreetWalkerEncounter(w) {
     } else if (w.type === 'tuna') {
         sfxAction();
         encounter.prompt = "«Ó rapaz! Junta a tua voz à Tuna! Traje negro traçado e uma serenata às janelas de Lisboa!»";
-        encounter.opt1Text = "► 1. Acompanhar o refrão com alma (+12 Sanidade, +6 Aptidão Musical)";
+        encounter.opt1Text = "► 1. Acompanhar o refrão com alma (+12 Sanidade, +0.3% Perícia Musical)";
         encounter.opt1Action = () => {
             player.sanity = Math.min(100, player.sanity + 12);
-            player.aptidaoMusical = Math.min(100, player.aptidaoMusical + 6);
+            player.musicSkill = Math.min(100, +((player.musicSkill || 0) + 0.3).toFixed(1));
             sfxGuitarNote(440);
-            spawnParticle("🎵 +12 Sanidade +6 Música", "#c084fc", w.x, w.y - 45);
+            spawnParticle("🎵 +12 Sanidade +0.3% Música", "#c084fc", w.x, w.y - 45);
             spawnSpeechBubble(w.x, w.y - 48, "«Tens voz de fadista, Zé! A noite lisboeta corre-te nas veias!»", w.name);
         };
         encounter.opt2Text = "► 2. Pedir uma trova rápida de incentivo para os teus estudos (+8 Sanidade)";
@@ -7819,7 +7819,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         // ====================================================================
         // MIRADOURO: DESCANSO, BEBER COM AMIGOS & TOCAR GUITARRA / FADO
         // ====================================================================
-        const musicLvl = Math.round(player.musicSkill || 0);
+        const musicLvl = +(player.musicSkill || 0).toFixed(1);
         let buskDesc = `Qualidade: Caloiro Desafinado (${musicLvl}%) · Pratica para ganhares ouvido e moedas!`;
         if (musicLvl >= 80) buskDesc = `Qualidade: Mestre Fadista de Alfama (${musicLvl}%) · Ganhos máximos e aplausos de pé!`;
         else if (musicLvl >= 50) buskDesc = `Qualidade: Virtuoso de Esquina (${musicLvl}%) · Multidão aplaude fados na calçada!`;
@@ -8650,8 +8650,22 @@ function executeAction(act) {
     if (act.buskingMusic) {
         unlockAchievement('fado_miradouro');
         player.musicSkill = player.musicSkill || 0;
-        // Evolução lenta: 2.5% a 3.8% por sessão de 3h (demora para atingir o topo)
-        const skillDelta = +(Math.random() * 1.3 + 2.5).toFixed(1);
+        // Curva autêntica e lenta de aprendizagem da Guitarra Portuguesa (12 cordas):
+        // Aprender fado exige calos nos dedos e muitas horas de prática no miradouro!
+        let skillDelta = 0.4;
+        if (player.musicSkill < 20) {
+            // Caloiro Desafinado: 0.3% a 0.6% por sessão de 3h (~45 sessões para sair do estatuto de caloiro)
+            skillDelta = +(Math.random() * 0.3 + 0.3).toFixed(1);
+        } else if (player.musicSkill < 50) {
+            // Fadista Amador: 0.2% a 0.4% por sessão de 3h
+            skillDelta = +(Math.random() * 0.2 + 0.2).toFixed(1);
+        } else if (player.musicSkill < 80) {
+            // Virtuoso de Esquina: 0.15% a 0.3% por sessão de 3h
+            skillDelta = +(Math.random() * 0.15 + 0.15).toFixed(1);
+        } else {
+            // Mestre Fadista: 0.05% a 0.15% por sessão de 3h (alcançar o topo exige dedicação de mestre)
+            skillDelta = +(Math.random() * 0.1 + 0.05).toFixed(2);
+        }
         player.musicSkill = Math.min(100, +(player.musicSkill + skillDelta).toFixed(1));
 
         let earned = 0;
@@ -8662,26 +8676,26 @@ function executeAction(act) {
             sfxGuitarBad();
             earned = Math.floor(Math.random() * 3) + 1; // 1-3€
             sanityGain = 10;
-            msg = `Acordes desafinados... Transeuntes deram ${earned}€ por caridade. (Qualidade: ${player.musicSkill}%)`;
-            spawnParticle(`🎶 +${earned}€ (Desafinado)`, '#f87171');
+            msg = `Acordes desafinados... Transeuntes deram ${earned}€ por caridade. (Qualidade: ${player.musicSkill.toFixed(1)}%, +${skillDelta}% perícia)`;
+            spawnParticle(`🎶 +${earned}€ (+${skillDelta}%)`, '#f87171');
         } else if (player.musicSkill < 50) {
             sfxGuitarGood(1);
             earned = Math.floor(Math.random() * 8) + 8; // 8-15€
             sanityGain = 20;
-            msg = `Fados populares dedilhados com afinco! O chapéu rendeu ${earned}€. (Qualidade: ${player.musicSkill}%)`;
-            spawnParticle(`🎵 +${earned}€`, '#facc15');
+            msg = `Fados populares dedilhados com afinco! O chapéu rendeu ${earned}€. (Qualidade: ${player.musicSkill.toFixed(1)}%, +${skillDelta}% perícia)`;
+            spawnParticle(`🎵 +${earned}€ (+${skillDelta}%)`, '#facc15');
         } else if (player.musicSkill < 80) {
             sfxGuitarGood(2);
             earned = Math.floor(Math.random() * 18) + 22; // 22-39€
             sanityGain = 32;
-            msg = `Virtuoso de Alfama! Uma roda de lisboetas e turistas aplaudiu: +${earned}€! (Qualidade: ${player.musicSkill}%)`;
-            spawnParticle(`🎸 +${earned}€ (Virtuoso!)`, '#38bdf8');
+            msg = `Virtuoso de Alfama! Uma roda de lisboetas e turistas aplaudiu: +${earned}€! (Qualidade: ${player.musicSkill.toFixed(1)}%, +${skillDelta}% perícia)`;
+            spawnParticle(`🎸 +${earned}€ (+${skillDelta}%)`, '#38bdf8');
         } else {
             sfxGuitarGood(3);
             earned = Math.floor(Math.random() * 25) + 50; // 50-74€
             sanityGain = 45;
-            msg = `Mestre Fadista no Miradouro! O chapéu encheu-se de notas: +${earned}€! (Qualidade: ${player.musicSkill}%)`;
-            spawnParticle(`👑 +${earned}€ (Mestre!)`, '#facc15');
+            msg = `Mestre Fadista no Miradouro! O chapéu encheu-se de notas: +${earned}€! (Qualidade: ${player.musicSkill.toFixed(1)}%, +${skillDelta}% perícia)`;
+            spawnParticle(`👑 +${earned}€ (+${skillDelta}%)`, '#facc15');
         }
 
         player.wallet += earned;
@@ -9200,7 +9214,7 @@ function openCurriculumModal() {
 
     const curJob = getPlayerJob();
     const curDegree = getCurriculumDegree();
-    const musicLvl = Math.round(player.musicSkill || 0);
+    const musicLvl = +(player.musicSkill || 0).toFixed(1);
     let musicTitle = "Caloiro Desafinado";
     if (musicLvl >= 80) musicTitle = "Mestre Fadista";
     else if (musicLvl >= 50) musicTitle = "Virtuoso de Esquina";
