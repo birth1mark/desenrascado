@@ -2065,9 +2065,11 @@ const LIVING_NPCS = [
     }
 ];
 
-function renderBoardLivingCharacters(ctx, animTimer) {
+// ============================================================================
+// 1. PERSONAGENS E AMBIENTES DE FUNDO (Junto aos Edifícios / Lojas, y <= 195)
+// ============================================================================
+function renderBoardBackgroundLiving(ctx, animTimer) {
     ctx.save();
-    const isNight = typeof player !== 'undefined' && player && (player.timeHour >= 20 || player.timeHour < 7);
 
     // 1. ESPLANADA DA TASCA DO TI ZÉ (x: 585 a 635, y: 175 a 195)
     const drinkCycle = animTimer % 4.8;
@@ -2119,8 +2121,39 @@ function renderBoardLivingCharacters(ctx, animTimer) {
         ctx.fillRect(px2, py2 - 6 + Math.round(talkBob * 0.5), 4, 2);
     }
 
-    // 2. FOGAREIRO & CHAMA DA ACAMPADA (Passeio Ribeirinho junto ao Tejo: x: 326..332, y: 243..250)
-    // Brilho quente do fogo no cais ribeirinho ao pôr-do-sol
+    // Reflexo suave dourado na montra da alfaiataria Modas Chiado
+    const winGlow = 0.12 + Math.sin(animTimer * 2.0) * 0.05;
+    ctx.fillStyle = `rgba(254, 240, 138, ${winGlow.toFixed(2)})`;
+    ctx.fillRect(348, 172, 54, 14);
+
+    // Clientes nos Edifícios em Pixel Art 16-Bit (Estilo LucasArts)
+    if (npcsLucasImg.complete && npcsLucasImg.naturalWidth > 0) {
+        ctx.imageSmoothingEnabled = false;
+
+        // B. Cliente do Banco / Multibanco (Row 1: sy=48, sw=48, sh=48)
+        const bankFrame = (Math.floor(animTimer * 0.7) % 4 === 2) ? 1 : 0;
+        ctx.drawImage(npcsLucasImg, bankFrame * 48, 48, 48, 48, 270, 142, 48, 48);
+
+        // C. Estudante do IST (Row 0: sy=0, sw=48, sh=48)
+        const istFrame = (Math.floor(animTimer * 0.5) % 5 === 3) ? 1 : 0;
+        ctx.drawImage(npcsLucasImg, istFrame * 48, 0, 48, 48, 66, 152, 48, 48);
+
+        // D. Cliente do Pingo Doce (Row 3: sy=144, sw=48, sh=48)
+        const pingoFrame = (Math.floor(animTimer * 0.6) % 4 === 2) ? 1 : 0;
+        ctx.drawImage(npcsLucasImg, pingoFrame * 48, 144, 48, 48, 474, 142, 48, 48);
+    }
+
+    ctx.restore();
+}
+
+// ============================================================================
+// 2. ELEMENTOS DE PRIMEIRO PLANO (Acampada, Tenda Quechua, Inês e Miradouro, y >= 220)
+// ============================================================================
+function renderBoardForegroundLiving(ctx, animTimer) {
+    ctx.save();
+    const isNight = typeof player !== 'undefined' && player && (player.timeHour >= 20 || player.timeHour < 7);
+
+    // 1. FOGAREIRO & CHAMA DA ACAMPADA (Passeio Ribeirinho junto ao Tejo: x: 326..332, y: 243..250)
     const fireFlicker = Math.sin(animTimer * 12) * 1.5 + Math.cos(animTimer * 19) * 0.8;
     const fireRadius = 14 + fireFlicker;
     const fireGrad = ctx.createRadialGradient(328, 247, 2, 328, 247, Math.max(6, fireRadius));
@@ -2149,7 +2182,7 @@ function renderBoardLivingCharacters(ctx, animTimer) {
         ctx.fillRect(Math.round(fx), Math.round(fy), 2, 2);
     }
 
-    // 2.A. A PEQUENA TENDA DA ACAMPADA (Resistência Popular pelo Direito à Habitação)
+    // 2. A PEQUENA TENDA DA ACAMPADA (Resistência Popular pelo Direito à Habitação)
     // Coordenadas: x: 286..312, y: 237..253 (Marginal ribeirinha junto ao Tejo)
     const tx = 286;
     const ty = 237;
@@ -2163,7 +2196,7 @@ function renderBoardLivingCharacters(ctx, animTimer) {
     ctx.fill();
 
     // Lona exterior da tenda (Verde floresta / Quechua com costuras e reflexo)
-    ctx.fillStyle = '#14532d'; // Verde escuro sombra
+    ctx.fillStyle = '#14532d';
     ctx.beginPath();
     ctx.moveTo(tx, ty + th);
     ctx.quadraticCurveTo(tx + 2, ty + 2, tx + tw / 2, ty);
@@ -2221,11 +2254,11 @@ function renderBoardLivingCharacters(ctx, animTimer) {
     // Mini-Placa de Cartão de Protesto cravada ao lado da tenda ("CASA P/ VIVER")
     const signX = tx - 8;
     const signY = ty + th - 10;
-    ctx.fillStyle = '#78350f'; // Estaca de madeira
+    ctx.fillStyle = '#78350f';
     ctx.fillRect(signX + 4, signY + 4, 1, 6);
-    ctx.fillStyle = '#d97706'; // Retângulo de cartão
+    ctx.fillStyle = '#d97706';
     ctx.fillRect(signX, signY, 9, 6);
-    ctx.fillStyle = '#451a03'; // Micro-letras pixel art
+    ctx.fillStyle = '#451a03';
     ctx.fillRect(signX + 1, signY + 1, 7, 1);
     ctx.fillRect(signX + 2, signY + 3, 5, 1);
 
@@ -2250,12 +2283,7 @@ function renderBoardLivingCharacters(ctx, animTimer) {
         ctx.fillText("z", tx + tw / 2 + Math.sin(zProg * 3) * 3, ty - 2 - zProg * 10);
     }
 
-    // Reflexo suave dourado na montra da alfaiataria Modas Chiado
-    const winGlow = 0.12 + Math.sin(animTimer * 2.0) * 0.05;
-    ctx.fillStyle = `rgba(254, 240, 138, ${winGlow.toFixed(2)})`;
-    ctx.fillRect(348, 172, 54, 14);
-
-    // 3. PERSONAGENS VIVAS EM PIXEL ART 16-BIT AUTÊNTICO (ESTILO LUCASARTS SCUMM)
+    // 3. PERSONAGENS VIVAS EM PIXEL ART 16-BIT (O Boémio e Inês)
     if (npcsLucasImg.complete && npcsLucasImg.naturalWidth > 0) {
         ctx.imageSmoothingEnabled = false;
 
@@ -2267,18 +2295,6 @@ function renderBoardLivingCharacters(ctx, animTimer) {
             ctx.fillStyle = `rgba(255, 255, 255, ${(0.45 * (1 - steamProg / 2.0)).toFixed(2)})`;
             ctx.fillRect(96 + Math.round(Math.sin(animTimer * 4) * 2), 232 - Math.round(steamProg * 10), 2, 2);
         }
-
-        // B. Cliente do Banco / Multibanco (Row 1: sy=48, sw=48, sh=48)
-        const bankFrame = (Math.floor(animTimer * 0.7) % 4 === 2) ? 1 : 0;
-        ctx.drawImage(npcsLucasImg, bankFrame * 48, 48, 48, 48, 270, 142, 48, 48);
-
-        // C. Estudante do IST (Row 0: sy=0, sw=48, sh=48)
-        const istFrame = (Math.floor(animTimer * 0.5) % 5 === 3) ? 1 : 0;
-        ctx.drawImage(npcsLucasImg, istFrame * 48, 0, 48, 48, 66, 152, 48, 48);
-
-        // D. Cliente do Pingo Doce (Row 3: sy=144, sw=48, sh=48)
-        const pingoFrame = (Math.floor(animTimer * 0.6) % 4 === 2) ? 1 : 0;
-        ctx.drawImage(npcsLucasImg, pingoFrame * 48, 144, 48, 48, 474, 142, 48, 48);
 
         // E. Inês da Acampada (Vigília Popular no Cais Ribeirinho / Row 2: sy=96, sw=48, sh=48)
         const inesFrame = Math.floor(animTimer * 2.8) % 2;
@@ -2301,7 +2317,6 @@ function renderBoardLivingCharacters(ctx, animTimer) {
     if (state === 'BOARD') {
         LIVING_NPCS.forEach(n => {
             if (Math.hypot(mouse.x - n.x, mouse.y - n.y) < n.radius) {
-                // Brilho dourado no pavimento
                 const hGrad = ctx.createRadialGradient(n.x, n.y, 2, n.x, n.y, n.radius);
                 hGrad.addColorStop(0, 'rgba(251, 191, 36, 0.40)');
                 hGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
@@ -2310,7 +2325,6 @@ function renderBoardLivingCharacters(ctx, animTimer) {
                 ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Indicador retro saltitante de conversa "💬"
                 const chatBob = Math.sin(animTimer * 7) * 1.5;
                 ctx.font = '9px "Press Start 2P"';
                 ctx.fillStyle = '#fbbf24';
@@ -2321,6 +2335,11 @@ function renderBoardLivingCharacters(ctx, animTimer) {
     }
 
     ctx.restore();
+}
+
+function renderBoardLivingCharacters(ctx, animTimer) {
+    renderBoardBackgroundLiving(ctx, animTimer);
+    renderBoardForegroundLiving(ctx, animTimer);
 }
 
 let speechBubbles = [];
@@ -2516,7 +2535,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '4.0';
+const ASSET_VER = '4.1';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -2809,13 +2828,18 @@ let streetWalkers = [
         id: 'castanheiro',
         name: 'Ti Manel Castanheiro',
         type: 'castanheiro',
-        x: 120,
-        y: 202,
-        vx: 11,
-        minX: 60,
-        maxX: 540,
+        x: 280,
+        y: 206,
+        vx: 16,
+        speed: 16,
+        minX: 165,
+        maxX: 535,
+        targetX: 430,
         facing: 'right',
-        shoutTimer: 6,
+        state: 'WALKING', // 'WALKING', 'STOPPING', 'ROASTING', 'TURNING'
+        timer: 0,
+        walkDist: 0,
+        shoutTimer: 8,
         smokeParticles: [],
         chestnutPrice: 2.50
     },
@@ -2823,46 +2847,87 @@ let streetWalkers = [
         id: 'trotinete',
         name: 'Chad Nómada Digital',
         type: 'trotinete',
-        x: -60,
-        y: 213,
-        vx: 72,
+        x: 155,
+        y: 210,
+        vx: 0,
+        targetSpeed: 28,
         active: false,
-        cooldown: 8,
-        shoutTimer: 3
-    },
-    {
-        id: 'guarda_freio',
-        name: 'Mestre António (Guarda-Freio)',
-        type: 'guarda_freio',
-        x: 486,
-        y: 206,
-        state: 'BREAK',
-        timer: 14,
-        shoutTimer: 7
+        cooldown: 25,
+        shoutTimer: 4
     }
 ];
 
 function updateStreetWalkers(dt) {
     streetWalkers.forEach(w => {
         if (w.type === 'castanheiro') {
-            w.x += w.vx * dt;
-            if (w.vx > 0 && w.x >= w.maxX) {
-                w.vx = -Math.abs(w.vx);
-                w.facing = 'left';
-            } else if (w.vx < 0 && w.x <= w.minX) {
-                w.vx = Math.abs(w.vx);
-                w.facing = 'right';
+            if (w.state === 'WALKING') {
+                const dx = w.targetX - w.x;
+                const dir = dx > 0 ? 1 : -1;
+                w.facing = dir > 0 ? 'right' : 'left';
+
+                // Aceleração suave até à velocidade de marcha (16 px/s)
+                w.vx += (dir * w.speed - w.vx) * Math.min(1, dt * 4);
+                w.x += w.vx * dt;
+                w.walkDist += Math.abs(w.vx) * dt;
+
+                // Quando atinge a zona do destino ou limites seguros da rua
+                if (Math.abs(dx) < 6 || (w.facing === 'right' && w.x >= w.maxX) || (w.facing === 'left' && w.x <= w.minX)) {
+                    w.state = 'STOPPING';
+                    w.timer = 0.6;
+                }
+            } else if (w.state === 'STOPPING') {
+                // Desaceleração suave / travagem gradual do carrinho
+                w.vx *= Math.max(0, 1 - dt * 6);
+                w.x += w.vx * dt;
+                w.timer -= dt;
+                if (w.timer <= 0) {
+                    w.vx = 0;
+                    w.state = 'ROASTING';
+                    w.timer = 5.5 + Math.random() * 4.0; // Pára durante 5.5 a 9.5 segundos a assar castanhas!
+                }
+            } else if (w.state === 'ROASTING') {
+                w.vx = 0;
+                w.timer -= dt;
+                w.shoutTimer -= dt;
+                if (w.shoutTimer <= 0 && state === 'BOARD') {
+                    w.shoutTimer = 18 + Math.random() * 10;
+                    const pregoes = [
+                        "Quentes e boas! Quem quer castanhas assadas na brasa?",
+                        "Castanhas a estalar, freguês! Para aquecer as mãos!",
+                        "Quem quer quentes e boas? Dois euros e cinquenta o cartucho!"
+                    ];
+                    spawnSpeechBubble(w.x, w.y - 48, pregoes[Math.floor(Math.random() * pregoes.length)], w.name);
+                }
+                if (w.timer <= 0) {
+                    w.state = 'TURNING';
+                    w.timer = 0.5; // Breve pausa de reflexão antes de inverter a marcha
+                }
+            } else if (w.state === 'TURNING') {
+                w.timer -= dt;
+                if (w.timer <= 0) {
+                    const nextFacing = w.facing === 'right' ? 'left' : 'right';
+                    w.facing = nextFacing;
+                    if (nextFacing === 'right') {
+                        w.targetX = 360 + Math.random() * 165; // Perto do Pingo Doce ou Tasca
+                    } else {
+                        w.targetX = 175 + Math.random() * 145; // Perto do IEFP ou Banco
+                    }
+                    w.state = 'WALKING';
+                }
             }
 
+            // Partículas de fumo da chaminé com emissão suave e orgânica
             w.smokeParticles = w.smokeParticles || [];
-            if (Math.random() < 0.45) {
-                const chimX = w.facing === 'right' ? (w.x + 28) : (w.x - 28);
+            const chimX = w.facing === 'right' ? (w.x + 28) : (w.x - 28);
+            const chimY = w.y - 42;
+            const smokeProb = (w.state === 'ROASTING' ? 0.45 : 0.28);
+            if (Math.random() < smokeProb) {
                 w.smokeParticles.push({
-                    x: chimX,
-                    y: w.y - 42,
-                    vx: (Math.random() - 0.5) * 5 - (currentWeather && currentWeather.type === 'VENTO' ? 25 : 4),
-                    vy: -(Math.random() * 12 + 10),
-                    radius: Math.random() * 1.5 + 1.2,
+                    x: chimX + (Math.random() - 0.5) * 2,
+                    y: chimY,
+                    vx: (Math.random() - 0.5) * 4 - (currentWeather && currentWeather.type === 'VENTO' ? 18 : 2),
+                    vy: -(Math.random() * 10 + 8),
+                    radius: Math.random() * 1.5 + 1.0,
                     alpha: 0.65
                 });
             }
@@ -2870,71 +2935,42 @@ function updateStreetWalkers(dt) {
                 const sm = w.smokeParticles[i];
                 sm.x += sm.vx * dt;
                 sm.y += sm.vy * dt;
-                sm.radius += dt * 2.2;
-                sm.alpha -= dt * 0.45;
+                sm.radius += dt * 1.8;
+                sm.alpha -= dt * 0.40;
                 if (sm.alpha <= 0) w.smokeParticles.splice(i, 1);
-            }
-
-            w.shoutTimer -= dt;
-            if (w.shoutTimer <= 0 && state === 'BOARD') {
-                w.shoutTimer = 16 + Math.random() * 8;
-                const pregoes = [
-                    "Quentes e boas! Quem quer castanhas assadas na brasa?",
-                    "Castanhas a estalar, freguês! Para aquecer as mãos!",
-                    "Quem quer quentes e boas? Dois euros e cinquenta o cartucho!"
-                ];
-                spawnSpeechBubble(w.x, w.y - 48, pregoes[Math.floor(Math.random() * pregoes.length)], w.name);
             }
         } else if (w.type === 'trotinete') {
             if (!w.active) {
                 w.cooldown -= dt;
                 if (w.cooldown <= 0) {
                     w.active = true;
-                    w.x = -50;
-                    w.vx = 70 + Math.random() * 20;
-                    w.shoutTimer = 2.5;
+                    w.x = 155;
+                    w.vx = 4;
+                    w.shoutTimer = 3.5;
                 }
             } else {
+                // Aceleração suave e deslizamento harmonioso ao longo do carril da rua
+                if (w.x < 460) {
+                    w.vx += (w.targetSpeed - w.vx) * Math.min(1, dt * 2.5);
+                } else {
+                    w.vx += (12 - w.vx) * Math.min(1, dt * 2.0);
+                }
                 w.x += w.vx * dt;
+
                 w.shoutTimer -= dt;
-                if (w.shoutTimer <= 0 && w.x > 180 && w.x < 460 && state === 'BOARD') {
+                if (w.shoutTimer <= 0 && w.x > 260 && w.x < 420 && state === 'BOARD') {
                     w.shoutTimer = 999;
                     const nomadQuotes = [
-                        "Sorry team, taking this sync from my trotinete in Chiado!",
-                        "Lisbon is insane! Sun, pastries and 1 Gbps fiber!",
-                        "Where can I find an oat milk flat white nearby?!"
+                        "Taking this sprint review while cruising down the Lisbon cobbles!",
+                        "Lisbon's vibe is unmatched... Sun, pastel de nata and remote work!",
+                        "Just grabbed an espresso near Chiado, heading to the hub!"
                     ];
                     spawnSpeechBubble(w.x, w.y - 48, nomadQuotes[Math.floor(Math.random() * nomadQuotes.length)], w.name);
                 }
-                if (Math.random() < 0.25) {
-                    spawnDust(w.x - 10, w.y + 4);
-                }
-                if (w.x > 690) {
+
+                if (w.x > 535) {
                     w.active = false;
-                    w.cooldown = 22 + Math.random() * 25;
-                }
-            }
-        } else if (w.type === 'guarda_freio') {
-            w.timer -= dt;
-            if (w.timer <= 0) {
-                if (w.state === 'BREAK') {
-                    w.state = 'IN_TRAM';
-                    w.timer = 20 + Math.random() * 15;
-                } else {
-                    w.state = 'BREAK';
-                    w.timer = 12 + Math.random() * 6;
-                }
-            }
-            if (w.state === 'BREAK') {
-                w.shoutTimer -= dt;
-                if (w.shoutTimer <= 0 && state === 'BOARD') {
-                    w.shoutTimer = 22;
-                    const tramQuotes = [
-                        "Mais uma avaria nas agulhas de São Bento... Hoje não chego a horas!",
-                        "O 28 hoje leva mais turistas do que a praia de Carcavelos!",
-                        "Ti Zé, tira aí uma bica curta que a calçada está escorregadia!"
-                    ];
-                    spawnSpeechBubble(w.x, w.y - 48, tramQuotes[Math.floor(Math.random() * tramQuotes.length)], w.name);
+                    w.cooldown = 35 + Math.random() * 30; // Pausa harmoniosa entre aparições
                 }
             }
         }
@@ -2948,8 +2984,8 @@ function renderStreetWalkers(ctx, animTimer) {
 
     streetWalkers.forEach(w => {
         if (w.type === 'castanheiro') {
-            const wx = Math.round(w.x);
-            const wy = Math.round(w.y);
+            const wx = w.x;
+            const wy = w.y;
 
             // Sombra suave sob o carrinho e o castanheiro na calçada
             ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
@@ -2968,8 +3004,8 @@ function renderStreetWalkers(ctx, animTimer) {
             }
 
             if (hasSprites) {
-                // Animação autêntica 16-bit LucasArts: 2 frames (86x44)
-                const cFrame = Math.floor(animTimer * 3.5) % 2;
+                // Animação sincronizada com o movimento real (evita deslize de pés)
+                const cFrame = (w.state === 'ROASTING' || w.state === 'TURNING') ? 0 : (Math.floor(w.walkDist / 7) % 2);
                 ctx.save();
                 if (w.facing === 'left') {
                     ctx.translate(wx, 0);
@@ -2989,8 +3025,8 @@ function renderStreetWalkers(ctx, animTimer) {
                 ctx.fillText("🌰", wx, wy - 48 + bob);
             }
         } else if (w.type === 'trotinete' && w.active) {
-            const tx = Math.round(w.x);
-            const ty = Math.round(w.y);
+            const tx = w.x;
+            const ty = w.y;
 
             // Sombra oval na calçada
             ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
@@ -3011,7 +3047,7 @@ function renderStreetWalkers(ctx, animTimer) {
 
             if (hasSprites) {
                 // Animação 16-bit LucasArts: 4 frames (34x44)
-                const tFrame = Math.floor(animTimer * 8) % 4;
+                const tFrame = Math.floor(animTimer * 5) % 4;
                 ctx.drawImage(streetWalkersImg, tFrame * 34, 44, 34, 44, tx - 17, ty - 42, 34, 44);
             }
 
@@ -3020,33 +3056,6 @@ function renderStreetWalkers(ctx, animTimer) {
                 ctx.font = '9px "Press Start 2P"';
                 ctx.textAlign = 'center';
                 ctx.fillText("⚡", tx, ty - 48);
-            }
-        } else if (w.type === 'guarda_freio' && w.state === 'BREAK') {
-            const gx = Math.round(w.x);
-            const gy = Math.round(w.y);
-
-            // Sombra oval na calçada
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
-            ctx.beginPath();
-            ctx.ellipse(gx, gy + 2, 12, 4.5, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            if (hasSprites) {
-                // Animação 16-bit LucasArts: 4 frames (39x44)
-                const gFrame = Math.floor(animTimer * 2) % 4;
-                ctx.drawImage(streetWalkersImg, gFrame * 39, 88, 39, 44, gx - 19, gy - 42, 39, 44);
-            }
-
-            // Vapor da bica de café
-            const steamProg = (animTimer * 1.5) % 1.5;
-            ctx.fillStyle = `rgba(255, 255, 255, ${(0.6 * (1 - steamProg / 1.5)).toFixed(2)})`;
-            ctx.fillRect(gx + 6, gy - 20 - (steamProg * 6), 2, 2);
-
-            // Ícone interativo em hover
-            if (state === 'BOARD' && Math.hypot(mouse.x - gx, mouse.y - (gy - 18)) < 24) {
-                ctx.font = '9px "Press Start 2P"';
-                ctx.textAlign = 'center';
-                ctx.fillText("☕", gx, gy - 48);
             }
         }
     });
@@ -3067,6 +3076,9 @@ function handleStreetWalkerClick(cx, cy) {
                     player.sanity = Math.min(100, player.sanity + 15);
                     sfxCoin();
                     triggerHaptic([30, 20, 30]);
+                    w.state = 'ROASTING';
+                    w.timer = 5;
+                    w.vx = 0;
                     spawnParticle("🌰 +25 Fome +15 Sanidade", "#f59e0b", w.x, w.y - 44);
                     spawnSpeechBubble(w.x, w.y - 48, "Castanhas quentinhas a estalar! Bom proveito, rapaz!", w.name);
                     unlockAchievement('quentes_e_boas');
@@ -3081,22 +3093,8 @@ function handleStreetWalkerClick(cx, cy) {
             if (Math.hypot(cx - w.x, cy - (w.y - 18)) < 24) {
                 sfxScooterBell();
                 triggerHaptic([40]);
-                w.vx = Math.min(130, w.vx + 25);
-                spawnParticle("⚡ Zoom!", "#38bdf8", w.x, w.y - 44);
-                spawnSpeechBubble(w.x, w.y - 48, "Watch out bro! I'm zooming to an AI meetup at LX Factory!", w.name);
-                return true;
-            }
-        } else if (w.type === 'guarda_freio' && w.state === 'BREAK') {
-            if (Math.hypot(cx - w.x, cy - (w.y - 18)) < 24) {
-                sfxTramBell();
-                triggerHaptic([30, 40]);
-                spawnParticle("🔔 Plim-Plim!", "#fde047", w.x, w.y - 44);
-                const quotes = [
-                    "Cuidado com os carris quando chove, Zé! A calçada fica como manteiga!",
-                    "O 28 hoje vem cheio de bifes na Graça que nem cabem no estribo!",
-                    "Mais uma avaria nas agulhas de São Bento... Paciência alfacinha!"
-                ];
-                spawnSpeechBubble(w.x, w.y - 48, quotes[Math.floor(Math.random() * quotes.length)], w.name);
+                spawnParticle("⚡ Glide!", "#38bdf8", w.x, w.y - 44);
+                spawnSpeechBubble(w.x, w.y - 48, "Hey bro, loving the Lisbon sunlight! Have a productive day!", w.name);
                 return true;
             }
         }
@@ -4252,11 +4250,14 @@ function renderBoard() {
         BUILDINGS.forEach(b => drawBuilding(b));
     }
 
-    // 2. Personagens Nativas e Vivas de Lisboa Integradas no Tabuleiro
-    renderBoardLivingCharacters(ctx, animTimer);
+    // 2. Elementos de Fundo e Clientes nos Edifícios (y <= 195)
+    renderBoardBackgroundLiving(ctx, animTimer);
 
-    // 2.5 Personagens Andantes & Encontros de Rua (Castanheiro, Trotinete, Guarda-Freio)
+    // 2.5 Personagens Andantes na Calçada / Rua (y = 206) — Passeiam em frente às lojas e ATRÁS da Acampada/Miradouro!
     renderStreetWalkers(ctx, animTimer);
+
+    // 2.8 Elementos de Primeiro Plano (y >= 220) — Acampada, Tenda Quechua, Inês e Miradouro
+    renderBoardForegroundLiving(ctx, animTimer);
 
     // 3. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
     renderBuildingOverlays();
