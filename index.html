@@ -2365,14 +2365,20 @@ function spawnSpeechBubble(x, y, text, speaker) {
 
 function renderSpeechBubbles() {
     speechBubbles.forEach(b => {
-        const maxW = 160;
-        ctx.font = '8px "Fira Code"';
-        const words = b.text.split(' ');
+        // 1. Medir título do orador na fonte correta (Fira Code é limpa, legível e proporcional)
+        const speakerFont = 'bold 8.5px "Fira Code"';
+        ctx.font = speakerFont;
+        const speakerW = b.speaker ? Math.ceil(ctx.measureText(b.speaker).width) : 0;
+
+        // 2. Quebrar o texto em linhas com base numa largura de leitura confortável
+        const maxTextW = Math.max(160, Math.min(230, Math.max(speakerW, 160)));
+        ctx.font = '8.5px "Fira Code"';
+        const words = String(b.text || '').split(' ');
         let lines = [];
         let curLine = '';
         words.forEach(w => {
             const test = curLine + w + ' ';
-            if (ctx.measureText(test).width > maxW && curLine) {
+            if (ctx.measureText(test).width > maxTextW && curLine) {
                 lines.push(curLine.trim());
                 curLine = w + ' ';
             } else {
@@ -2381,24 +2387,32 @@ function renderSpeechBubbles() {
         });
         if (curLine) lines.push(curLine.trim());
 
-        // Medir largura real necessária com base em todas as linhas e no nome do orador
-        let maxLineWidth = ctx.measureText(b.speaker || '').width + 20;
+        // 3. Medir a largura máxima real entre todas as linhas de texto
+        let maxBodyW = 0;
         lines.forEach(l => {
-            const lw = ctx.measureText(l).width + 16;
-            if (lw > maxLineWidth) maxLineWidth = lw;
+            const lw = Math.ceil(ctx.measureText(l).width);
+            if (lw > maxBodyW) maxBodyW = lw;
         });
 
-        const bw = Math.min(220, Math.max(130, Math.ceil(maxLineWidth)));
-        const bh = 15 + lines.length * 11;
-        let bx = Math.round(b.x - bw / 2);
-        let by = Math.round(b.y - bh - 8);
+        // 4. Dimensões totais blindadas com margem de segurança (padding)
+        const innerW = Math.max(speakerW, maxBodyW);
+        const bw = Math.min(260, Math.max(120, innerW + 20));
+        const hasSpeaker = !!b.speaker;
+        const headerH = hasSpeaker ? 18 : 0;
+        const lineH = 12;
+        const bh = headerH + (lines.length * lineH) + 12;
 
-        // Prevenir estritamente corte fora dos limites do ecrã (640x360)
+        let bx = Math.round(b.x - bw / 2);
+        let by = Math.round(b.y - bh - 10);
+
+        // Prevenir estritamente corte fora dos limites do ecrã (640x360) e do HUD (y: 295)
         if (bx < 8) bx = 8;
         if (bx + bw > 632) bx = 632 - bw;
-        if (by < 8) by = Math.min(b.y + 20, 360 - bh - 8);
+        if (by + bh > 290) by = 290 - bh;
+        if (by < 8) by = 8;
 
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        // 5. Caixa com fundo escuro e rebordo retro âmbar
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.96)';
         ctx.fillRect(bx, by, bw, bh);
         ctx.strokeStyle = '#f59e0b';
         ctx.lineWidth = 1.5;
@@ -2414,26 +2428,36 @@ function renderSpeechBubbles() {
         ctx.lineTo(arrowX, arrowY + 5);
         ctx.fill();
         ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(arrowX - 4, arrowY);
         ctx.lineTo(arrowX, arrowY + 5);
         ctx.lineTo(arrowX + 4, arrowY);
         ctx.stroke();
 
-        // Nome do interlocutor
-        if (b.speaker) {
+        // 6. Nome do interlocutor (com maxWidth para nunca transbordar)
+        if (hasSpeaker) {
             ctx.fillStyle = '#fbbf24';
-            ctx.font = 'bold 7.5px "Press Start 2P"';
+            ctx.font = speakerFont;
             ctx.textAlign = 'left';
-            ctx.fillText(b.speaker, bx + 6, by + 10);
+            ctx.fillText(b.speaker, bx + 10, by + 13, bw - 20);
+
+            // Linha divisória subtil entre orador e texto
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(bx + 8, by + 18);
+            ctx.lineTo(bx + bw - 8, by + 18);
+            ctx.stroke();
         }
 
-        // Linhas de Texto Formatadas
+        // 7. Linhas de Texto Formatadas (com maxWidth rigoroso para NUNCA transbordar)
         ctx.fillStyle = '#f8fafc';
-        ctx.font = '8px "Fira Code"';
+        ctx.font = '8.5px "Fira Code"';
         ctx.textAlign = 'left';
+        const textStartY = by + (hasSpeaker ? 30 : 16);
         lines.forEach((l, idx) => {
-            ctx.fillText(l, bx + 6, by + 19 + idx * 11);
+            ctx.fillText(l, bx + 10, textStartY + idx * lineH, bw - 20);
         });
     });
 }
@@ -2535,7 +2559,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '4.1';
+const ASSET_VER = '4.2';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3891,13 +3915,13 @@ function wrapTextCanvas(targetCtx, text, x, y, maxWidth, lineHeight, font, color
         if (testWidth > maxWidth && n > 0) {
             if (maxY && (curY + lineHeight > maxY)) {
                 let clipped = line.trim();
-                while (targetCtx.measureText(clipped + '...').width > maxWidth && clipped.length > 3) {
-                    clipped = clipped.slice(0, -4);
+                while (targetCtx.measureText(clipped + '...').width > maxWidth && clipped.length > 1) {
+                    clipped = clipped.slice(0, -1);
                 }
-                targetCtx.fillText(clipped + '...', x, curY);
+                targetCtx.fillText(clipped + '...', x, curY, maxWidth);
                 return curY;
             }
-            targetCtx.fillText(line.trim(), x, curY);
+            targetCtx.fillText(line.trim(), x, curY, maxWidth);
             line = words[n] + ' ';
             curY += lineHeight;
         } else {
@@ -3905,7 +3929,7 @@ function wrapTextCanvas(targetCtx, text, x, y, maxWidth, lineHeight, font, color
         }
     }
     if (!maxY || (curY <= maxY)) {
-        targetCtx.fillText(line.trim(), x, curY);
+        targetCtx.fillText(line.trim(), x, curY, maxWidth);
     }
     return curY;
 }
@@ -4352,17 +4376,17 @@ function renderBuildingOverlays() {
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 9px "Press Start 2P"';
         ctx.textAlign = 'left';
-        ctx.fillText(`${b.icon} ${b.name.toUpperCase()}`, ttX + 10, ttY + 16);
+        ctx.fillText(`${b.icon} ${b.name.toUpperCase()}`, ttX + 10, ttY + 16, ttW - 20);
 
         // Descrição do local
         ctx.fillStyle = '#94a3b8';
         ctx.font = '8.5px "Fira Code"';
-        ctx.fillText(b.tag, ttX + 10, ttY + 30);
+        ctx.fillText(b.tag, ttX + 10, ttY + 30, ttW - 20);
 
         // Prompt de entrada
         ctx.fillStyle = '#34d399';
         ctx.font = 'bold 7.5px "Press Start 2P"';
-        ctx.fillText("▶ CLIQUE P/ ENTRAR", ttX + 10, ttY + 42);
+        ctx.fillText("▶ CLIQUE P/ ENTRAR", ttX + 10, ttY + 42, ttW - 20);
     }
 }
 
@@ -5285,13 +5309,13 @@ function renderHUD() {
     ctx.font = '8px "Press Start 2P"';
     ctx.textAlign = 'left';
     const weatherIcon = (currentWeather && currentWeather.icon) ? ` ${currentWeather.icon}` : '';
-    ctx.fillText(`DIA ${player.day}${weatherIcon}`, 14, hy + 24);
+    ctx.fillText(`DIA ${player.day}${weatherIcon}`, 14, hy + 24, 74);
 
     const hh = String(player.timeHour).padStart(2, '0');
     const mm = String(player.timeMinute).padStart(2, '0');
     ctx.fillStyle = '#ffffff';
     ctx.font = '13px "Press Start 2P"';
-    ctx.fillText(`${hh}:${mm}`, 14, hy + 46);
+    ctx.fillText(`${hh}:${mm}`, 14, hy + 46, 74);
 
     // Slot 2: Finanças (€) (x: 97, w: 110)
     ctx.fillStyle = '#151d2c';
@@ -5301,9 +5325,9 @@ function renderHUD() {
 
     ctx.fillStyle = '#10b981';
     ctx.font = 'bold 10.5px "Fira Code"';
-    ctx.fillText(`💵 MÃO: ${player.wallet}€`, 104, hy + 26);
+    ctx.fillText(`💵 MÃO: ${player.wallet}€`, 104, hy + 26, 98);
     ctx.fillStyle = '#38bdf8';
-    ctx.fillText(`🏦 BANCO: ${player.bank}€`, 104, hy + 46);
+    ctx.fillText(`🏦 BANCO: ${player.bank}€`, 104, hy + 46, 98);
 
     // Slot 3: Habitação & Renda (x: 212, w: 125)
     ctx.fillStyle = '#151d2c';
@@ -5313,17 +5337,17 @@ function renderHUD() {
 
     ctx.fillStyle = '#f1f5f9';
     ctx.font = 'bold 9.5px "Fira Code"';
-    ctx.fillText(HOUSES[player.houseIndex].name, 218, hy + 25);
+    ctx.fillText(HOUSES[player.houseIndex].name, 218, hy + 25, 114);
 
     if (player.houseIndex === 0) {
         ctx.fillStyle = '#94a3b8';
         ctx.font = 'bold 8.5px "Fira Code"';
-        ctx.fillText("Sem Renda (Rossio)", 218, hy + 45);
+        ctx.fillText("Sem Renda (Rossio)", 218, hy + 45, 114);
     } else {
         const rentColor = player.daysUntilRent <= 2 ? '#ef4444' : (player.daysUntilRent <= 3 ? '#f59e0b' : '#10b981');
         ctx.fillStyle = rentColor;
         ctx.font = 'bold 9px "Fira Code"';
-        ctx.fillText(`Renda (${HOUSES[player.houseIndex].rent}€): ${player.daysUntilRent}d`, 218, hy + 45);
+        ctx.fillText(`Renda (${HOUSES[player.houseIndex].rent}€): ${player.daysUntilRent}d`, 218, hy + 45, 114);
     }
 
     // Slot 4: Emprego Atual & Curso (x: 342, w: 110)
@@ -5345,12 +5369,12 @@ function renderHUD() {
         }
         jobTitleShort += '..';
     }
-    ctx.fillText(jobTitleShort, 348, hy + 24);
+    ctx.fillText(jobTitleShort, 348, hy + 24, 98);
 
     const curCourseShort = player.enrolledCourse ? COURSES[player.enrolledCourse].shortName : "Sem Curso";
     ctx.fillStyle = '#38bdf8';
     ctx.font = 'bold 7.5px "Fira Code"';
-    ctx.fillText(`🎓 ${curCourseShort} (${player.ects}e)`, 348, hy + 45);
+    ctx.fillText(`🎓 ${curCourseShort} (${player.ects}e)`, 348, hy + 45, 98);
 
     // Slot 5: Vestuário & Desgaste (x: 456, w: 70) - Anti-Calções & Nudez
     const isNude = (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0);
@@ -5363,11 +5387,11 @@ function renderHUD() {
 
     ctx.fillStyle = clothColor;
     ctx.font = 'bold 8px "Fira Code"';
-    ctx.fillText(isNude ? "🔞 NU!" : `${player.clothing.icon} ${player.clothing.name.slice(0, 7)}`, 460, hy + 24);
+    ctx.fillText(isNude ? "🔞 NU!" : `${player.clothing.icon} ${player.clothing.name.slice(0, 7)}`, 460, hy + 24, 62);
 
     ctx.fillStyle = clothColor;
     ctx.font = 'bold 7.5px "Fira Code"';
-    ctx.fillText(isNude ? "CENSURADO" : `DUR: ${player.clothing.durability}%`, 460, hy + 45);
+    ctx.fillText(isNude ? "CENSURADO" : `DUR: ${player.clothing.durability}%`, 460, hy + 45, 62);
 
     // Slot 6: Fome & Sanidade (x: 530, w: 48)
     ctx.fillStyle = '#151d2c';
@@ -5457,10 +5481,9 @@ const NPC_INFO = {
         name: "D. Mariana (IEFP)",
         role: "Conselheira do IEFP",
         quote: () => {
-            const curComp = player.currentWorkplace ? (WORKPLACES[player.currentWorkplace] || {}).name : "Nenhum (Desempregado)";
             const job = getPlayerJob();
-            const jobTitle = job ? job.title : "Sem emprego ativo";
-            return `Centro de Emprego do IEFP! Currículo: ${getCurriculumDegree()} (${player.ects} ECTS). Emprego atual: ${curComp} (${jobTitle}). Consulta o teu dossier curricular!`;
+            const jobTitle = job ? job.title : "Sem ocupação";
+            return `Balcão do IEFP: tens ${player.ects} ECTS no currículo. Situação: ${jobTitle}. Consulta estágios e cursos!`;
         },
         color: "#065f46"
     },
@@ -5470,9 +5493,9 @@ const NPC_INFO = {
         quote: () => {
             const job = WORKPLACES.tasca.careers[player.careerRanks.tasca || 0];
             if (player.currentWorkplace === 'tasca') {
-                return `Ó Zé, mete o avental! Como ${job.title} tens direito a almoço reforçado por conta da casa hoje!`;
+                return `Ó Zé, mete o avental! Como ${job.title} tens direito ao almoço da casa hoje!`;
             }
-            return "Sai uma imperial bem gelada e um bitoque a estalar! E se quiseres dar uma mão no balcão, o tacho está pronto!";
+            return "Sai uma imperial e um bitoque a estalar! Se quiseres dar uma mão, o tacho está pronto!";
         },
         color: "#9a3412"
     },
@@ -5481,13 +5504,13 @@ const NPC_INFO = {
         role: "Pingo Doce de Bairro",
         quote: () => {
             if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
-                return "Virgem Santíssima, homem! Estás em fato de Adão no corredor dos congelados?! Compra já calções ou um polo na secção têxtil antes que chame a bófia!";
+                return "Virgem Santíssima, homem! Em fato de Adão nos congelados?! Compra roupa nas Modas Chiado!";
             }
             const job = WORKPLACES.pingo_doce.careers[player.careerRanks.pingo_doce || 0];
             if (player.currentWorkplace === 'pingo_doce') {
-                return `Olá Zé! Como ${job.title}, o teu turno faz a diferença no corredor. Sabe bem trabalhar em equipa!`;
+                return `Olá Zé! Como ${job.title}, o teu turno faz a diferença no corredor. Bom trabalho!`;
             }
-            return "Sabe bem pagar tão pouco! Leva mantimentos, espreita a nossa secção têxtil para renovar a roupa ou candidata-te à equipa!";
+            return "Sabe bem pagar tão pouco! Leva mantimentos ou candidata-te à equipa de reposição!";
         },
         color: "#15803d"
     },
@@ -5496,19 +5519,19 @@ const NPC_INFO = {
         role: "Gestor de Crédito",
         quote: () => {
             if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
-                return "Inadmissível! A Caixa Geral não tolera nudismo no balcão nobre! Vá já comprar roupa de gente nas Modas Chiado!";
+                return "Inadmissível! A Caixa não tolera nudismo no balcão! Vá já vestir-se às Modas Chiado!";
             }
             if (player.clothing.formality < 3) {
-                return "Atenção ao decoro: para trabalhar na Caixa ou ser promovido, tem de vestir Fato Pombalino adquirido nas Modas Chiado!";
+                return "Atenção ao decoro: para trabalhar na Caixa tem de vestir o Fato Pombalino do Chiado!";
             }
             const job = WORKPLACES.banco.careers[player.careerRanks.banco || 0];
             if (player.currentWorkplace === 'banco') {
-                return `Bem-vindo à agência, colega. Como ${job.title}, o rigor financeiro é a nossa imagem de marca.`;
+                return `Bem-vindo à agência, colega. Como ${job.title}, o rigor é a nossa bandeira.`;
             }
             if (player.ects < 20) {
-                return "Para estagiar na Caixa exigimos pelo menos 20 ECTS universitários. Estuda no Politec/IST e volta cá!";
+                return "Para estagiar na Caixa exigimos pelo menos 20 ECTS no IST. Estuda e volta cá!";
             }
-            return "Taxas de juro sob controlo. Deposita as tuas poupanças, gere microcréditos ou veste o Fato Pombalino das Modas Chiado para entrar na carreira bancária!";
+            return "Taxas de juro sob controlo. Deposita poupanças, gere crédito ou veste o Fato Pombalino!";
         },
         color: "#854d0e"
     },
@@ -5523,12 +5546,12 @@ const NPC_INFO = {
         role: "Direito à Habitação",
         quote: () => {
             if (player.houseIndex === 0) {
-                return "Quem não tem teto luta pelo teto! A tua pequena tenda está montada na marginal do Tejo. Come da nossa panela e passa a noite em resistência!";
+                return "Quem não tem teto luta pelo teto! A tua tenda está no cais. Partilha a sopa e resiste!";
             }
             if (player.daysUntilRent <= 2) {
-                return "O senhorio está a ameaçar despejo? A Plataforma Casa Para Viver e o Referendo pela Habitação estão contigo: nenhum despejo sem alternativa!";
+                return "Senhorio a ameaçar despejo? A Plataforma Casa Para Viver está contigo: nenhum despejo!";
             }
-            return "Assembleia popular permanente: exigimos o Referendo pela Habitação, tetos às rendas e habitação pública em vez de especulação para fundos abutres!";
+            return "Vigília popular permanente: exigimos o Referendo pela Habitação e tetos às rendas já!";
         },
         color: "#dc2626"
     },
@@ -5537,15 +5560,15 @@ const NPC_INFO = {
         role: "Alfaiataria do Chiado",
         quote: () => {
             if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
-                return "Ai credo em cruz, Zé! Entraste na loja sem roupa nenhuma?! Veste já um conjunto antes que venha a polícia municipal!";
+                return "Ai credo em cruz, Zé! Sem roupa na loja?! Veste já um fato antes que venha a polícia!";
             }
             if (player.clothing.id === 'suit') {
-                return "Que porte distinto! Esse Fato Pombalino assenta-te que nem uma luva. Estás pronto para ser banqueiro ou gerente de topo!";
+                return "Que porte distinto! Esse Fato Pombalino assenta que nem uma luva para a banca!";
             }
             if (player.clothing.id === 'shorts') {
-                return "Esses calções servem para a praia ou para carregar caixotes, mas para subir na vida precisas de alfaiataria a sério!";
+                return "Esses calções servem para a praia, mas para subir na vida precisas de alfaiataria a sério!";
             }
-            return "Bem-vindo à melhor alfaiataria de Lisboa! Tecidos nobres, polos de linho, fatos completos e arranjos de costura profissional.";
+            return "Bem-vindo à alfaiataria do Chiado! Polos de linho, fatos pombalinos e ateliê de costura.";
         },
         color: "#db2777"
     }
@@ -6535,20 +6558,20 @@ function renderBuildingModal() {
 
     // Nome & Papel do NPC abaixo do retrato
     const npc = NPC_INFO[modalBuilding.id] || NPC_INFO.senhorio;
-    const maxNpcW = pSize + 8;
+    const maxNpcW = pSize + 12;
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 10px "Fira Code"';
+    ctx.font = 'bold 9.5px "Fira Code"';
     ctx.textAlign = 'center';
-    ctx.fillText(npc.name, px + pSize / 2, py + pSize + 14, maxNpcW);
+    ctx.fillText(npc.name, px + pSize / 2, py + pSize + 13, maxNpcW);
 
     ctx.fillStyle = '#94a3b8';
-    ctx.font = '8.5px "Fira Code"';
-    ctx.fillText(npc.role, px + pSize / 2, py + pSize + 27, maxNpcW);
+    ctx.font = '8px "Fira Code"';
+    ctx.fillText(npc.role, px + pSize / 2, py + pSize + 25, maxNpcW);
 
     // Balão de Diálogo Satírico com limite rígido (nunca transborda a caixa)
-    const quoteY = py + pSize + 36;
-    const quoteW = pSize + 12;
-    const quoteH = 64;
+    const quoteY = py + pSize + 32;
+    const quoteW = pSize + 16;
+    const quoteH = 76;
 
     ctx.fillStyle = '#090d16';
     ctx.fillRect(px - 4, quoteY, quoteW, quoteH);
@@ -6558,12 +6581,12 @@ function renderBuildingModal() {
 
     // Aspas decorativas discretas
     ctx.fillStyle = '#64748b';
-    ctx.font = 'bold 12px "Fira Code"';
+    ctx.font = 'bold 11px "Fira Code"';
     ctx.textAlign = 'left';
-    ctx.fillText("“", px, quoteY + 13);
+    ctx.fillText("“", px, quoteY + 12);
 
     const quoteText = (typeof npc.quote === 'function') ? npc.quote() : (npc.getQuote ? npc.getQuote() : npc.quote);
-    wrapTextCanvas(ctx, quoteText, px + 8, quoteY + 14, quoteW - 14, 11, 'italic 8px "Fira Code"', '#cbd5e1', 'left', quoteY + quoteH - 6);
+    wrapTextCanvas(ctx, quoteText, px + 8, quoteY + 13, quoteW - 16, 11, 'italic 7.5px "Fira Code"', '#cbd5e1', 'left', quoteY + quoteH - 6);
 
     // 2. COLUNA DIREITA: CARTÕES DE AÇÃO INTERATIVOS
     renderBuildingActions(modalBuilding.id, mx, my, mw, mh);
@@ -7088,30 +7111,31 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             ctx.fillRect(ax, ay, 3, cardH);
         }
 
-        ctx.fillStyle = isHover ? '#ffffff' : '#e2e8f0';
-        ctx.font = 'bold 10px "Fira Code"';
-        ctx.textAlign = 'left';
-        const titleY = cardH < 44 ? ay + 14 : ay + 18;
-        ctx.fillText(act.label, ax + 14, titleY);
-
         const btnW = 96;
         const btnH = cardH < 44 ? 22 : 26;
         const btnX = ax + aw - btnW - 8;
         const btnY = ay + (cardH - btnH) / 2;
 
         const maxDescW = btnX - ax - 22;
+
+        ctx.fillStyle = isHover ? '#ffffff' : '#e2e8f0';
+        ctx.font = 'bold 10px "Fira Code"';
+        ctx.textAlign = 'left';
+        const titleY = cardH < 44 ? ay + 14 : ay + 18;
+        ctx.fillText(act.label, ax + 14, titleY, maxDescW);
+
         ctx.font = cardH < 44 ? '8px "Fira Code"' : '8.5px "Fira Code"';
         ctx.fillStyle = '#94a3b8';
 
         let descText = act.desc;
         if (ctx.measureText(descText).width > maxDescW) {
-            while (ctx.measureText(descText + '...').width > maxDescW && descText.length > 3) {
-                descText = descText.slice(0, -4);
+            while (ctx.measureText(descText + '...').width > maxDescW && descText.length > 1) {
+                descText = descText.slice(0, -1);
             }
             descText += '...';
         }
         const descY = cardH < 44 ? ay + 27 : ay + 36;
-        ctx.fillText(descText, ax + 14, descY);
+        ctx.fillText(descText, ax + 14, descY, maxDescW);
 
         let btnText = "";
         let btnColor = "#10b981";
