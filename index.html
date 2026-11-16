@@ -3118,7 +3118,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '6.5';
+const ASSET_VER = '6.6';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -6958,9 +6958,14 @@ function drawNpcPortrait(id, x, y, size) {
         bustImg = (zulmiraBustImg.complete && zulmiraBustImg.naturalWidth > 0) ? zulmiraBustImg : null;
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
-    } else if (id === 'acampada' && acampadaBgImg.complete && acampadaBgImg.naturalWidth > 0) {
-        bgImg = acampadaBgImg;
-        bustImg = (acampadaBustImg.complete && acampadaBustImg.naturalWidth > 0) ? acampadaBustImg : null;
+    } else if (id === 'acampada' && ((acampadaPortraitImg.complete && acampadaPortraitImg.naturalWidth > 0) || (acampadaBgImg.complete && acampadaBgImg.naturalWidth > 0))) {
+        if (acampadaPortraitImg.complete && acampadaPortraitImg.naturalWidth > 0) {
+            bgImg = acampadaPortraitImg;
+            bustImg = null;
+        } else {
+            bgImg = acampadaBgImg;
+            bustImg = (acampadaBustImg.complete && acampadaBustImg.naturalWidth > 0) ? acampadaBustImg : null;
+        }
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
     } else if (id === 'startup' && iefpBgImg.complete && iefpBgImg.naturalWidth > 0) {
@@ -6989,8 +6994,13 @@ function drawNpcPortrait(id, x, y, size) {
         ctx.rect(x, y, size, size);
         ctx.clip();
 
-        // CAMADA 1: RETRATO SCUMM 16-BIT ESTÁTICO (Fundo e personagem 100% imóveis, preenchendo a moldura sem tremores)
+        // CAMADA 1: FUNDO 100% ESTÁTICO (Fundo e personagem 100% imóveis, preenchendo a moldura sem tremores)
         ctx.drawImage(bgImg, bgSx, bgSy, 128, 128, x, y, size, size);
+
+        // CAMADA 2: BUSTO COM TRANSPARÊNCIA ESTÁTICO (Sobreposição estática e perfeita sem tremores)
+        if (bustImg) {
+            ctx.drawImage(bustImg, bustSx, bustSy, 128, 128, x, y, size, size);
+        }
 
         const scale = size / 128;
 
