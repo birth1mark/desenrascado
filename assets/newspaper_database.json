@@ -1,737 +1,1202 @@
 {
-  "version": "1.0",
-  "name": "O Correio do Purgatório - Base de Dados de Notícias & Matriz de Condições",
-  "description": "Matriz de seleção condicional contextual para os eventos matinais de Lisboa em Desenrascado",
+  "version": "2.0",
+  "name": "O Correio do Purgatório - Base de Dados Ampliada de Notícias",
+  "description": "Matriz contextual ampliada com 71 notícias dinâmicas e altamente reativas em Desenrascado",
   "events": [
     {
-      "id": "ev_unemployed_iefp",
-      "category": "workplace",
-      "title": "Fila do IEFP dá a volta ao quarteirão",
-      "desc": "Tentaste carimbar o formulário de procura ativa. O sistema informático foi abaixo às 09h02. Não recebes um tostão e perdes a manhã toda na burocracia.",
-      "conditions": {
-        "workplace": [
-          "unemployed"
-        ]
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -12,
-        "hunger": -10,
-        "hours": 2
-      },
-      "stamp": "BUROCRACIA",
-      "stampColor": "#64748b",
-      "weight": 14
-    },
-    {
-      "id": "ev_unemployed_oddjob",
-      "category": "workplace",
-      "title": "Biscate de emergência a carregar caixotes",
-      "desc": "Ajudaste uma mercearia em Arroios a descarregar melões às 06h00. Pagaram-te em dinheiro vivo.",
-      "conditions": {
-        "workplace": [
-          "unemployed"
-        ]
-      },
-      "effect": {
-        "wallet": 30,
-        "sanity": 5,
-        "hunger": -15,
-        "hours": 2
-      },
-      "stamp": "+30€ BISCATE",
-      "stampColor": "#10b981",
-      "weight": 12
-    },
-    {
-      "id": "ev_unemployed_linkedin",
-      "category": "workplace",
-      "title": "Anúncio de Estágio exige Mestrado e 10 anos de experiência",
-      "desc": "Descobriste uma vaga de 'Ninja de Excel' não-remunerada. Fechaste o portátil com náuseas e uma quebra súbita de sanidade.",
-      "conditions": {
-        "workplace": [
-          "unemployed"
-        ]
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -8,
-        "hunger": 0,
-        "hours": 1
-      },
-      "stamp": "VAGA ARROMBADA",
-      "stampColor": "#ef4444",
-      "weight": 10
-    },
-    {
-      "id": "ev_pingo_congelador",
-      "category": "workplace",
-      "title": "Avaria na arca de congelados do Pingo Doce",
-      "desc": "Três horas a transferir caixas de pescada para a câmara de conservação a -18ºC. D. Maria deu-te um chá de camomila mas descontou 10 minutos de pausa.",
-      "conditions": {
-        "workplace": [
-          "pingo_doce"
-        ]
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -10,
-        "hunger": -10
-      },
-      "stamp": "GELO & FRIO",
-      "stampColor": "#0284c7",
-      "weight": 12
-    },
-    {
-      "id": "ev_pingo_cupao",
-      "category": "workplace",
-      "title": "Cliente reclama de cupão de 15 cêntimos caducado",
-      "desc": "Uma cliente no Pingo Doce bloqueou a tua caixa durante 20 minutos por causa de um desconto de manteiga de 2024. Fila com 18 pessoas a bufar.",
-      "conditions": {
-        "workplace": [
-          "pingo_doce"
-        ]
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -8
-      },
-      "stamp": "POUPA MAIS",
-      "stampColor": "#15803d",
-      "weight": 10
-    },
-    {
-      "id": "ev_pingo_gorjeta",
-      "category": "workplace",
-      "title": "Cliente simpático deixa gorjeta na caixa",
-      "desc": "Um velhote simpático agradeceu a tua paciência a embalar garrafões de água e deixou-te uma moeda de dois euros.",
-      "conditions": {
-        "workplace": [
-          "pingo_doce"
-        ]
-      },
-      "effect": {
-        "wallet": 2,
-        "sanity": 6
-      },
-      "stamp": "+2€ GORJETA",
-      "stampColor": "#10b981",
-      "weight": 8
-    },
-    {
-      "id": "ev_tasca_bitoques",
-      "category": "workplace",
-      "title": "Mesa de 14 pede contas separadas no Ti Zé",
-      "desc": "Grupo de nómadas digitais pediu para dividir uma conta de 46€ por 14 cartões Revolut. O Ti Zé quase atirou a frigideira do polvo à parede.",
-      "conditions": {
-        "workplace": [
-          "tasca"
-        ]
-      },
-      "effect": {
-        "wallet": 5,
-        "sanity": -10
-      },
-      "stamp": "+5€ GORJETA",
-      "stampColor": "#f59e0b",
-      "weight": 12
-    },
-    {
-      "id": "ev_tasca_sobras",
-      "category": "workplace",
-      "title": "Petisco do chef no fim do turno da Tasca",
-      "desc": "Sobrou uma dose generosa de feijoada à transmontana. O Ti Zé mandou-te empacotar num tupperware para o teu jantar.",
-      "conditions": {
-        "workplace": [
-          "tasca"
-        ]
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": 12,
-        "hunger": 30
-      },
-      "stamp": "+30 NUTRIÇÃO",
-      "stampColor": "#10b981",
-      "weight": 10
-    },
-    {
-      "id": "ev_banco_auditoria",
-      "category": "workplace",
-      "title": "Auditoria de balancetes de 1998 na Caixa",
-      "desc": "Dr. Alcoviteiro descobriu um desvio de 3 cêntimos num lote de juros pombalinos. Quatro horas a conferir extratos amarelados em microfilme.",
-      "conditions": {
-        "workplace": [
-          "banco"
-        ]
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -12
-      },
-      "stamp": "AUDITORIA",
-      "stampColor": "#854d0e",
-      "weight": 12
-    },
-    {
-      "id": "ev_banco_premio",
-      "category": "workplace",
-      "title": "Meta trimestral de comissões atingida na Caixa",
-      "desc": "A agência bateu o recorde de comissões cobradas por manutenção de conta. Recebeste um mini-bónus simbólico no recibo.",
-      "conditions": {
-        "workplace": [
-          "banco"
-        ]
-      },
-      "effect": {
-        "wallet": 40,
-        "sanity": 8
-      },
-      "stamp": "+40€ BÓNUS",
-      "stampColor": "#10b981",
-      "weight": 8
-    },
-    {
-      "id": "ev_startup_pivot",
-      "category": "workplace",
-      "title": "Startup anuncia 'Pivot Estratégico com IA'",
-      "desc": "Mariana agendou um 'all-hands' às 08h00. O produto mudou 4 vezes antes do almoço. Sobraram autocolantes para o portátil e kombucha.",
-      "conditions": {
-        "workplace": [
-          "startup"
-        ]
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -10
-      },
-      "stamp": "DISRUPT",
-      "stampColor": "#ec4899",
-      "weight": 12
-    },
-    {
-      "id": "ev_startup_stockoptions",
-      "category": "workplace",
-      "title": "Aumento salarial substituído por 'Stock Options'",
-      "desc": "Pediste revisão salarial na tech hub. Deram-te 500 ações de uma holding em Delaware que atualmente valem zero euros.",
-      "conditions": {
-        "workplace": [
-          "startup"
-        ]
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -8
-      },
-      "stamp": "STOCK OPTIONS",
-      "stampColor": "#64748b",
-      "weight": 10
-    },
-    {
-      "id": "ev_rossio_mangueira",
-      "category": "housing",
-      "title": "Mangueirada da Higiene Urbana às 06h00",
-      "desc": "O camião da CML lavou o calcetamento do Rossio com lixívia. Acordaste encharcado no teu banco de jardim.",
-      "conditions": {
-        "minHouseIndex": 0,
-        "maxHouseIndex": 0
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -15,
-        "hunger": -10
-      },
-      "stamp": "LIXÍVIA",
-      "stampColor": "#0284c7",
-      "weight": 15
-    },
-    {
-      "id": "ev_arroios_ronco",
-      "category": "housing",
-      "title": "Colega de beliche ressona em frequências subsónicas",
-      "desc": "No hostel de Arroios, o companheiro de beliche do piso de cima pareceu um compressor de camião TIR a noite toda.",
-      "conditions": {
-        "minHouseIndex": 1,
-        "maxHouseIndex": 1
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -10
-      },
-      "stamp": "NOITE BRANCA",
-      "stampColor": "#64748b",
-      "weight": 12
-    },
-    {
-      "id": "ev_anjos_martelo",
-      "category": "housing",
-      "title": "Obras no 3º andar dos Anjos às 07h15",
-      "desc": "Martelo pneumático na parede contígua para converter o apartamento em três estúdios turísticos T0.0. Sanidade reduzida.",
-      "conditions": {
-        "minHouseIndex": 2,
-        "maxHouseIndex": 2
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -10
-      },
-      "stamp": "OBRAS CML",
-      "stampColor": "#f59e0b",
-      "weight": 12
-    },
-    {
-      "id": "ev_alfama_fadistas",
-      "category": "housing",
-      "title": "Tertúlia de Fado Vadio no beco de Alfama",
-      "desc": "Vinho carrascão e guitarradas debaixo da tua janela de cave até às 04h30 da manhã. Não dormiste nada.",
-      "conditions": {
-        "minHouseIndex": 3,
-        "maxHouseIndex": 3
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -8
-      },
-      "stamp": "SAUDADE",
-      "stampColor": "#0369a1",
-      "weight": 10
-    },
-    {
-      "id": "ev_chiado_rooftop",
-      "category": "housing",
-      "title": "Festa no rooftop vizinho do Chiado até às 05h00",
-      "desc": "DJ tocou techno acústico na varanda contígua. Tiveste de beber café expresso duplo de 4€ para aguentar o dia.",
-      "conditions": {
-        "minHouseIndex": 4,
-        "maxHouseIndex": 4
-      },
-      "effect": {
-        "wallet": -4,
-        "sanity": -6
-      },
-      "stamp": "-4€ CAFÉ",
-      "stampColor": "#ef4444",
-      "weight": 12
-    },
-    {
-      "id": "ev_renda_urgente",
-      "category": "housing",
-      "title": "Carta com aviso de despejo na caixa do correio",
-      "desc": "Sr. Jerónimo colou um post-it: 'A renda vence em breve. Não aceito desculpas de transferências bancárias em processamento'.",
-      "conditions": {
-        "maxDaysUntilRent": 2,
-        "minHouseIndex": 1
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": -14
-      },
-      "stamp": "⚠️ RENDA A VENCER",
-      "stampColor": "#ef4444",
-      "weight": 18
-    },
-    {
-      "id": "ev_multa_carril",
-      "category": "lisbon_satire",
-      "title": "Fiscal da Carris pede título de transporte",
-      "desc": "Não tinhas passe Viva Viagem carregado. O fiscal da Carris passou-te uma coima de 25€ sem direito a recurso.",
-      "conditions": {
-        "minWallet": 30
-      },
-      "effect": {
-        "wallet": -25,
-        "sanity": -8
-      },
-      "stamp": "-25€ MULTA",
-      "stampColor": "#ef4444",
-      "weight": 7
-    },
-    {
-      "id": "ev_achado_calcada",
-      "category": "lisbon_satire",
-      "title": "Nota de dez euros esquecida entre as pedras da calçada",
-      "desc": "Ao tropeçar num buraco de basalto na Rua Augusta, encontraste uma nota amarrotada de 10€ no chão.",
-      "conditions": {},
-      "effect": {
-        "wallet": 10,
-        "sanity": 8
-      },
-      "stamp": "+10€ ACHADO",
-      "stampColor": "#10b981",
-      "weight": 6
-    },
-    {
-      "id": "ev_acampada_rossio_noite",
+      "id": "ev_acampada_tenda_noite_luta",
       "category": "acampada",
-      "title": "Vigília Noturna no Rossio trava despejos na Baixa",
-      "desc": "A Acampada Popular manteve-se firme durante a noite ao som de palavras de ordem e cantiga de protesto. O Zé passou a noite na tenda e comeu da panela comum.",
+      "title": "Noite na Pequena Tenda da Marginal une moradores de Lisboa",
+      "desc": "Dormiste na tua pequena tenda Quechua embalado pela brisa salgada do Tejo. Acordaste com caneca de chá de hortelã e broa oferecidas pela Inês. Zero euros pagos ao senhorio e sanidade revitalizada!",
       "conditions": {
         "sleptAcampada": true
       },
       "effect": {
-        "wallet": 0,
         "sanity": 25,
         "hunger": 20,
-        "clothingWear": 4
+        "wallet": 0
       },
-      "stamp": "SOLIDARIEDADE",
+      "stamp": "TENDA EM RESISTÊNCIA",
+      "stampColor": "#15803d",
+      "weight": 25
+    },
+    {
+      "id": "ev_acampada_tenda_chuva_tejo",
+      "category": "acampada",
+      "title": "Brisa do Tejo e lona firme: a pequena tenda aguenta a madrugada",
+      "desc": "A humidade da madrugada lisboeta bateu na lona verde da tenda, mas o teu saco-cama resistiu heroicamente. Ouvir os cacilheiros ao longe deu-te uma paz que nenhuma cave húmida alugada consegue dar.",
+      "conditions": {
+        "sleptAcampada": true
+      },
+      "effect": {
+        "sanity": 20,
+        "hunger": 15,
+        "wallet": 0
+      },
+      "stamp": "PAZ À BEIRA-RIO",
+      "stampColor": "#0284c7",
+      "weight": 22
+    },
+    {
+      "id": "ev_acampada_cordao_solidario",
+      "category": "acampada",
+      "title": "Cordão humano na Acampada impede notificação da Polícia Municipal",
+      "desc": "Fiscais tentaram notificar as tendas da marginal, mas dezenas de estudantes e ativistas da Plataforma Casa Para Viver deram as mãos em protesto pacífico. As tendas continuam de pé!",
+      "conditions": {
+        "sleptAcampada": true
+      },
+      "effect": {
+        "sanity": 18,
+        "wallet": 0
+      },
+      "stamp": "VITÓRIA POPULAR",
       "stampColor": "#dc2626",
       "weight": 20
     },
     {
-      "id": "ev_acampada_cml_aviso",
+      "id": "ev_acampada_manifestacao_nacional",
       "category": "acampada",
-      "title": "CML tenta desocupar tendas do Rossio para Feira de Natal",
-      "desc": "Fiscais municipais tentaram negociar a saída das tendas do Rossio. A assembleia popular votou por unanimidade: 'Nem mais um despejo, primeiro o teto!'",
+      "title": "«A Casa é um Direito, Não um Negócio!»: Multidão enche Lisboa",
+      "desc": "Mais de trinta mil pessoas desceram a Avenida da Liberdade exigindo tetos máximos para as rendas e o fim do despejo de famílias para dar lugar a alojamento turístico desregrado.",
       "conditions": {},
       "effect": {
-        "wallet": 0,
-        "sanity": 10
+        "sanity": 15,
+        "wallet": 0
       },
-      "stamp": "RESISTÊNCIA",
-      "stampColor": "#ef4444",
+      "stamp": "CASA PARA VIVER",
+      "stampColor": "#dc2626",
       "weight": 14
     },
     {
-      "id": "ev_acampada_manifestacao_nacional",
+      "id": "ev_acampada_referendo_assinaturas",
       "category": "acampada",
-      "title": "Milhares descem a Avenida pelo Direito à Habitação",
-      "desc": "A plataforma Casa Para Viver encheu a Avenida da Liberdade. Cartazes exigem tetos às rendas e o fim dos fundos abutres. Zé bateu na tampa de uma panela até ficar rouco.",
+      "title": "Movimento Referendo pela Habitação recolhe 1000 assinaturas na marginal",
+      "desc": "A mesa de voto simbólica montada junto às tendas da Acampada recebeu centenas de lisboetas. A iniciativa popular quer levar a votos a limitação de hotéis e ALs em prédios residenciais.",
       "conditions": {},
       "effect": {
-        "wallet": 0,
-        "sanity": 18,
-        "hunger": -10
+        "sanity": 12,
+        "wallet": 0
       },
-      "stamp": "MANIFESTAÇÃO",
-      "stampColor": "#10b981",
+      "stamp": "REFERENDO JÁ",
+      "stampColor": "#ea580c",
       "weight": 12
     },
     {
-      "id": "ev_acampada_cantina_popular",
+      "id": "ev_acampada_cantina_caldo_verde",
       "category": "acampada",
-      "title": "Sopa comunitária e pão quente na tenda central",
-      "desc": "Vizinhos solidários trouxeram uma panela gigante de sopa de legumes e broa de milho para a acampada. Zé jantou de graça com calor humano.",
+      "title": "Cantina Popular serve 200 tigelas de caldo verde e broa de milho",
+      "desc": "A panela comunitária da Acampada alimentou reformados, estudantes do IST e precários. Comida quente, azeite virgem e solidariedade operária mantêm o espírito vivo.",
       "conditions": {},
       "effect": {
-        "wallet": 0,
-        "sanity": 15,
-        "hunger": 35
+        "hunger": 25,
+        "sanity": 10
       },
-      "stamp": "+35 NUTRIÇÃO",
-      "stampColor": "#10b981",
-      "weight": 12
+      "stamp": "SOPA SOLIDÁRIA",
+      "stampColor": "#16a34a",
+      "weight": 14
     },
     {
       "id": "ev_acampada_solidariedade_estudantil",
       "category": "acampada",
-      "title": "Estudantes do IST juntam-se à vigília da habitação",
-      "desc": "Delegações da Alameda e de Arroios montaram tendas de apoio à luta habitacional, partilhando apontamentos de exames à luz de lanternas de campismo.",
+      "title": "Estudantes do IST levam sacos-cama para a Acampada em protesto",
+      "desc": "Com quartos em Arroios a pedir 650€ por mês sem recibo, delegações de estudantes universitários juntaram-se às tendas da marginal para exigir residências públicas e dignas.",
       "conditions": {
         "minEcts": 20
       },
       "effect": {
-        "wallet": 0,
-        "sanity": 14,
+        "sanity": 15,
         "ects": 2
       },
-      "stamp": "+2 ECTS LUTA",
-      "stampColor": "#38bdf8",
-      "weight": 10
+      "stamp": "UNIÃO ESTUDANTIL",
+      "stampColor": "#2563eb",
+      "weight": 18
     },
     {
-      "id": "ev_nude_escandalo_rua",
-      "category": "clothing",
-      "title": "Cidadão avistado em trajes de Adão na Rua Augusta",
-      "desc": "Transeuntes filmaram um indivíduo desprovido de vestuário com um mosaico de censura a tentar entrar no banco. O Correio do Purgatório apela ao uso de calças.",
+      "id": "ev_sem_abrigo_tenda_sobrevivencia",
+      "category": "acampada",
+      "title": "Pequena tenda na marginal transforma-se no teu refúgio digno",
+      "desc": "Sem dinheiro para os preços absurdos dos senhorios de Lisboa, a tua tenda Quechua na marginal mantém-te abrigado e rodeado de entreajuda comunitária. Lisboa não te derrubou!",
       "conditions": {
-        "clothing": [
-          "nude"
-        ]
+        "maxHouseIndex": 0
       },
       "effect": {
-        "wallet": 0,
-        "sanity": -18
+        "sanity": 16,
+        "hunger": 10
       },
-      "stamp": "🔞 NUDEZ PÚBLICA",
-      "stampColor": "#ef4444",
+      "stamp": "REFÚGIO RIBEIRINHO",
+      "stampColor": "#059669",
+      "weight": 22
+    },
+    {
+      "id": "ev_despejo_ultimato_senhorio",
+      "category": "housing",
+      "title": "Senhorio Jerónimo deixa recado: 'Renda vence amanhã ou mudo o canhão!'",
+      "desc": "Encontraste uma folha colada com fita-cola na porta. O senhorio avisa que às 09h00 vem cobrar a renda em dinheiro vivo. A pressão financeira aperta o estômago!",
+      "conditions": {
+        "maxDaysUntilRent": 1,
+        "minHouseIndex": 1
+      },
+      "effect": {
+        "sanity": -18,
+        "wallet": 0
+      },
+      "stamp": "RENDA URGENTE!",
+      "stampColor": "#b91c1c",
       "weight": 25
     },
     {
-      "id": "ev_fato_pombalino_elogio",
+      "id": "ev_fundos_abutres_especulacao",
+      "category": "housing",
+      "title": "Fundo abutre compra quarteirão em Lisboa e envia cartas de cessação",
+      "desc": "Mais um prédio secular comprado por fundos sediados em offshores. Inquilinos idosos e jovens recebem cartas de rescisão para obras de 'reabilitação de luxo'. O pânico alastra ao bairro.",
+      "conditions": {
+        "maxDaysUntilRent": 2
+      },
+      "effect": {
+        "sanity": -12,
+        "wallet": 0
+      },
+      "stamp": "ESPECULAÇÃO",
+      "stampColor": "#991b1b",
+      "weight": 20
+    },
+    {
+      "id": "ev_chiado_alfaiate_elogio",
+      "category": "workplace",
+      "title": "D. Zulmira elogia o corte de casaco: 'Mãos de alfaiate pombalino!'",
+      "desc": "Ajudaste a engomar e alinhavar os forros de seda de um casaco de três peças nas Modas Chiado. D. Zulmira ficou tão impressionada que te pagou um café e deu gorjeta extra.",
+      "conditions": {
+        "workplace": [
+          "loja_roupa"
+        ]
+      },
+      "effect": {
+        "wallet": 20,
+        "sanity": 15
+      },
+      "stamp": "+20€ GORJETA MODAS",
+      "stampColor": "#db2777",
+      "weight": 20
+    },
+    {
+      "id": "ev_chiado_cliente_fidalga",
+      "category": "workplace",
+      "title": "Cliente fidalga encomenda fato de gala nas Modas Chiado",
+      "desc": "Uma marquesa do Bairro Alto veio medir bainhas nas Modas Chiado. A tua atenção aos detalhes e respeito valeram um elogio distinto no livro de honra da alfaiataria.",
+      "conditions": {
+        "workplace": [
+          "loja_roupa"
+        ]
+      },
+      "effect": {
+        "wallet": 25,
+        "sanity": 10
+      },
+      "stamp": "ALTA FIDALGUIA",
+      "stampColor": "#db2777",
+      "weight": 18
+    },
+    {
+      "id": "ev_chiado_chegada_tecidos",
+      "category": "workplace",
+      "title": "Chegam tecidos finos da Covilhã ao ateliê das Modas Chiado",
+      "desc": "A carrinha de entrega descarregou fardos de pura lã cardada da Serra da Estrela e linhos nobres. Passaste a manhã a classificar fazendas para a alta sociedade de Lisboa.",
+      "conditions": {
+        "workplace": [
+          "loja_roupa"
+        ]
+      },
+      "effect": {
+        "sanity": 8,
+        "hunger": -10,
+        "wallet": 12
+      },
+      "stamp": "FAZENDAS NOBRES",
+      "stampColor": "#be185d",
+      "weight": 16
+    },
+    {
+      "id": "ev_chiado_promocao_oficial",
+      "category": "workplace",
+      "title": "Mestre Costureiro das Modas Chiado reconhece a tua perícia",
+      "desc": "Os teus pontos invisíveis nas lapelas dos smokings foram elogiados pelo grémio dos alfaiates. As Modas Chiado são agora uma referência de aprumo no teu currículo!",
+      "conditions": {
+        "workplace": [
+          "loja_roupa"
+        ],
+        "minCareerRank": 1
+      },
+      "effect": {
+        "sanity": 20,
+        "wallet": 30
+      },
+      "stamp": "MESTRE POMBALINO",
+      "stampColor": "#9d174d",
+      "weight": 18
+    },
+    {
+      "id": "ev_fato_pombalino_distincao",
       "category": "clothing",
-      "title": "Fato Pombalino do Zé arranca cumprimentos na Baixa",
-      "desc": "Engravatado e com o blazer da alfaiataria bem vincado, o Zé foi confundido com um alto quadro do Banco de Portugal no Rossio.",
+      "title": "Fato Pombalino das Modas Chiado causa sensação na Baixa",
+      "desc": "A passear pela Rua Garrett com o fato e colete talhados nas Modas Chiado, o porteiro do Grémio Literário tirou o chapéu à tua passagem. A elegância clássica abre portas em Lisboa!",
       "conditions": {
         "clothing": [
           "suit"
         ]
       },
       "effect": {
-        "wallet": 0,
-        "sanity": 16
+        "sanity": 18,
+        "wallet": 0
       },
-      "stamp": "ESTILO IMPECÁVEL",
-      "stampColor": "#10b981",
-      "weight": 15
+      "stamp": "ELEGÂNCIA NOBRE",
+      "stampColor": "#db2777",
+      "weight": 18
     },
     {
-      "id": "ev_shorts_banco_rejeitado",
+      "id": "ev_fato_pombalino_banco_elogio",
       "category": "clothing",
-      "title": "Barrado à entrada da Caixa por usar calções e sapatilhas",
-      "desc": "O segurança da Caixa Geral apontou para os teus calções havaianos e indicou a porta da rua: 'Aqui só de fato ou polo decente!'",
+      "title": "Dr. Alcoviteiro cumprimenta-te com vénia: 'Distinção bancária pura!'",
+      "desc": "Ao entrares na agência da Caixa Geral com o Fato Pombalino impecável, o Dr. Alcoviteiro não escondeu a aprovação: 'Assim sim, rapaz! Traje à altura das nossas abóbadas financeiras.'",
       "conditions": {
         "clothing": [
-          "shorts"
+          "suit"
+        ],
+        "workplace": [
+          "banco"
         ]
       },
       "effect": {
-        "wallet": 0,
-        "sanity": -6
+        "sanity": 15,
+        "wallet": 20
       },
-      "stamp": "DRESS CODE",
-      "stampColor": "#f59e0b",
-      "weight": 12
-    },
-    {
-      "id": "ev_loja_roupa_promocao",
-      "category": "clothing",
-      "title": "Pronto-a-Vestir Chiado faz saldo relâmpago de fatos",
-      "desc": "D. Zulmira colocou os fatos de corte clássico com tecido italiano em destaque na vitrine. 'A elegância é a melhor arma contra o purgatório!'",
-      "conditions": {},
-      "effect": {
-        "wallet": 0,
-        "sanity": 6
-      },
-      "stamp": "MODA CHIADO",
-      "stampColor": "#ec4899",
-      "weight": 10
-    },
-    {
-      "id": "ev_roupa_chuva_molhada",
-      "category": "clothing",
-      "title": "Chuva repentina na descida da Graça encharca roupa",
-      "desc": "Uma bátega de água típica de Lisboa apanhou-te desprotegido. A humidade acelerou o desgaste do teu vestuário.",
-      "conditions": {},
-      "effect": {
-        "wallet": 0,
-        "sanity": -5,
-        "clothingWear": 8
-      },
-      "stamp": "-8% DURABILIDADE",
-      "stampColor": "#0284c7",
-      "weight": 12
-    },
-    {
-      "id": "ev_ist_exame_algebra",
-      "category": "education",
-      "title": "Exame de Álgebra Linear gera choro coletivo no Anfiteatro",
-      "desc": "Uma matriz diagonalizável com parâmetros complexos dizimou 82%% dos caloiros. Felizmente os teus apontamentos do IST salvaram o teu semestre.",
-      "conditions": {
-        "course": [
-          "matematica"
-        ]
-      },
-      "effect": {
-        "wallet": 0,
-        "sanity": 8,
-        "ects": 5
-      },
-      "stamp": "+5 ECTS ÁLGEBRA",
-      "stampColor": "#1e3a8a",
-      "weight": 14
-    },
-    {
-      "id": "ev_ist_hackathon_startup",
-      "category": "education",
-      "title": "Hackathon de Engenharia Informática no Pavilhão de LEIC",
-      "desc": "48 horas a Red Bull e pizzas a programar scripts de automação. Geras admiração dos veteranos e acumulas créditos universitários.",
-      "conditions": {
-        "course": [
-          "informatica"
-        ]
-      },
-      "effect": {
-        "wallet": 20,
-        "sanity": 5,
-        "ects": 6
-      },
-      "stamp": "+6 ECTS TECH",
-      "stampColor": "#065f46",
-      "weight": 14
-    },
-    {
-      "id": "ev_ist_simulacao_bolsa",
-      "category": "education",
-      "title": "Simulação de Mercado Bolsista no Departamento de Gestão",
-      "desc": "O teu plano de investimento em dívida soberana foi classificado com distinção pelo corpo docente do IST/ISEG.",
-      "conditions": {
-        "course": [
-          "economia",
-          "gestao"
-        ]
-      },
-      "effect": {
-        "wallet": 15,
-        "sanity": 10,
-        "ects": 5
-      },
-      "stamp": "+5 ECTS GESTÃO",
+      "stamp": "PRESTÍGIO BANCÁRIO",
       "stampColor": "#854d0e",
-      "weight": 14
+      "weight": 22
     },
     {
-      "id": "ev_ist_traje_academico",
-      "category": "education",
-      "title": "Cortejo Académico desce a Alameda em apoteose",
-      "desc": "Envergando a capa e batina com o brasão do IST, o Zé desfilou com prestígio e dignidade académica. Um orgulho para a família!",
+      "id": "ev_traje_academico_respeito",
+      "category": "clothing",
+      "title": "Capa e batina do IST traçada sobre o ombro impõe respeito",
+      "desc": "Desceste a Calçada de Santana com o traje académico do Instituto Superior Técnico. Um antigo aluno pagou-te o café ao balcão em honra das velhas tradições da Alameda.",
       "conditions": {
         "clothing": [
           "academic"
         ]
       },
       "effect": {
-        "wallet": 0,
-        "sanity": 20
+        "sanity": 12,
+        "hunger": 10
       },
-      "stamp": "TRADIÇÃO IST",
+      "stamp": "TRADIÇÃO TÉCNICA",
       "stampColor": "#1e3a8a",
-      "weight": 12
+      "weight": 16
     },
     {
-      "id": "ev_pingo_gerente_auditoria",
-      "category": "workplace",
-      "title": "Gerente do Pingo Doce elogiado por eficiência na logística",
-      "desc": "Como chefe de supermercado de fato impecável, conseguiste repor a prateleira de bacalhau em tempo recorde antes da hora de ponta.",
+      "id": "ev_nude_policia_municipal",
+      "category": "clothing",
+      "title": "Polícia Municipal avisa: 'Tape-se ou vai passar a noite na esquadra!'",
+      "desc": "Apanhado a circular em boxers e camisola rota pela Baixa. Dois agentes municipais ordenaram que fosses imediatamente às Modas Chiado comprar vestimenta digna.",
       "conditions": {
-        "workplace": [
-          "pingo_doce"
-        ],
         "clothing": [
-          "suit"
+          "nude"
         ]
       },
       "effect": {
-        "wallet": 35,
-        "sanity": 12
+        "sanity": -20,
+        "wallet": 0
       },
-      "stamp": "+35€ PRÉMIO",
-      "stampColor": "#15803d",
-      "weight": 14
+      "stamp": "ESCÂNDALO PÚBLICO",
+      "stampColor": "#ef4444",
+      "weight": 25
     },
     {
-      "id": "ev_banco_diretor_vip",
+      "id": "ev_carteira_vazia_centavos",
+      "category": "finance",
+      "title": "Moedas de cobre no forro do casaco: Zé conta cêntimos para a bica",
+      "desc": "Vasculhaste os bolsos todos e só encontraste três moedas de 5 cêntimos e um botão de madrepérola. A vida em Lisboa custa caro quando o saldo bate no fundo!",
+      "conditions": {
+        "maxWallet": 15
+      },
+      "effect": {
+        "sanity": -14,
+        "hunger": -10
+      },
+      "stamp": "BOLSOS FURADOS",
+      "stampColor": "#e11d48",
+      "weight": 24
+    },
+    {
+      "id": "ev_multibanco_sem_saldo",
+      "category": "finance",
+      "title": "Multibanco emite talão cruel: 'Saldo Disponível: 0,38€'",
+      "desc": "Tentaste levantar vinte euros no terminal azul da Caixa. O ecrã fez três beeps secos e devolveu o cartão com a nota humorística do sistema: 'Consulte a cantina solidária'.",
+      "conditions": {
+        "maxWallet": 10
+      },
+      "effect": {
+        "sanity": -16
+      },
+      "stamp": "SALDO A ZEROS",
+      "stampColor": "#be123c",
+      "weight": 22
+    },
+    {
+      "id": "ev_banco_divida_aviso",
+      "category": "finance",
+      "title": "Carta da Caixa Geral: juros do microcrédito aumentam com a Euribor",
+      "desc": "Dr. Alcoviteiro enviou aviso formal sobre a dívida bancária pendente. Em Lisboa, o dinheiro emprestado voa, mas a obrigação de pagar não dá tréguas.",
+      "conditions": {
+        "hasDebt": true
+      },
+      "effect": {
+        "sanity": -15
+      },
+      "stamp": "AVISO DE CRÉDITO",
+      "stampColor": "#854d0e",
+      "weight": 24
+    },
+    {
+      "id": "ev_banco_poupanca_acumulada",
+      "category": "finance",
+      "title": "Poupança na Caixa ultrapassa os 300€: sensação de alívio raro",
+      "desc": "Consultaste o extrato bancário e viste o saldo a verde consolidado. Pela primeira vez em meses, a próxima renda semanal não te tira o sono à noite!",
+      "conditions": {
+        "minWallet": 300
+      },
+      "effect": {
+        "sanity": 22
+      },
+      "stamp": "ALMOFADA FINANCEIRA",
+      "stampColor": "#15803d",
+      "weight": 18
+    },
+    {
+      "id": "ev_banco_cliente_investidor",
+      "category": "finance",
+      "title": "Dr. Alcoviteiro convida-te para a sala VIP da agência",
+      "desc": "Com mais de 500€ em carteira, o gestor do banco puxou-te uma cadeira de couro estofado e ofereceu um café de cápsula: 'O senhor é um exemplo de poupança pombalina!'",
+      "conditions": {
+        "minWallet": 500
+      },
+      "effect": {
+        "sanity": 20,
+        "wallet": 15
+      },
+      "stamp": "CLIENTE VIP",
+      "stampColor": "#ca8a04",
+      "weight": 16
+    },
+    {
+      "id": "ev_banco_balcao_recorde",
       "category": "workplace",
-      "title": "Diretoria da Caixa fecha carteira milionária em Alvalade",
-      "desc": "Graças à tua habilidade negocial de gestor bancário, a agência fechou o maior crédito estruturado do trimestre.",
+      "title": "Dia de enchente no balcão da Caixa: Zé processa 90 depósitos",
+      "desc": "Filas intermináveis de reformados e comerciantes a depositar féria. Não falhaste uma contagem de notas e o chefe de agência elogiou a tua precisão aritmética.",
+      "conditions": {
+        "workplace": [
+          "banco"
+        ]
+      },
+      "effect": {
+        "wallet": 25,
+        "sanity": 10
+      },
+      "stamp": "+25€ BÓNUS BALCÃO",
+      "stampColor": "#854d0e",
+      "weight": 18
+    },
+    {
+      "id": "ev_banco_auditoria_perfeita",
+      "category": "workplace",
+      "title": "Auditoria do Banco de Portugal à Caixa Geral não encontra falhas",
+      "desc": "Os inspetores financeiros revistaram os livros de registo do balcão onde trabalhas e deram nota máxima de rigor operacional. Dr. Alcoviteiro pagou almoço à equipa!",
       "conditions": {
         "workplace": [
           "banco"
         ],
-        "clothing": [
-          "suit"
+        "minCareerRank": 1
+      },
+      "effect": {
+        "sanity": 18,
+        "hunger": 20,
+        "wallet": 30
+      },
+      "stamp": "AUDITORIA LIMPA",
+      "stampColor": "#15803d",
+      "weight": 18
+    },
+    {
+      "id": "ev_ist_fenix_crash_leic",
+      "category": "education",
+      "title": "Servidor do Fénix cai a 4 minutos da entrega de Sistemas Operativos",
+      "desc": "Centenas de caloiros de LEIC entraram em parafuso quando a plataforma do IST deu erro 504. Felizmente o teu commit no Git tinha timestamp válido!",
+      "conditions": {
+        "course": [
+          "informatica"
+        ]
+      },
+      "effect": {
+        "sanity": -12,
+        "ects": 3
+      },
+      "stamp": "FÉNIX DOWN",
+      "stampColor": "#0284c7",
+      "weight": 22
+    },
+    {
+      "id": "ev_ist_hackathon_alameda",
+      "category": "education",
+      "title": "Noitada de código no Pavilhão de LEIC do IST rende prémio",
+      "desc": "Quarenta e oito horas seguidas a cafeína e pizzas requentadas. A tua biblioteca open-source de algoritmos distribuídos ganhou o 1º prémio do hackathon!",
+      "conditions": {
+        "course": [
+          "informatica"
         ]
       },
       "effect": {
         "wallet": 60,
-        "sanity": 15
+        "ects": 5,
+        "sanity": 12
       },
-      "stamp": "+60€ COMISSÃO",
-      "stampColor": "#854d0e",
-      "weight": 12
+      "stamp": "+60€ PRÉMIO HACK",
+      "stampColor": "#10b981",
+      "weight": 20
     },
     {
-      "id": "ev_startup_deploy_prod",
-      "category": "workplace",
-      "title": "Deploy em produção na sexta-feira às 18h00 sem rebentar nada",
-      "desc": "Milagre no Tech Hub! Os clusters de Kubernetes sobreviveram e a equipa celebrou com cerveja artesanal na esplanada.",
+      "id": "ev_ist_analise_chumbo_coletivo",
+      "category": "education",
+      "title": "Pauta de Análise Matemática afixada: 88% de chumbo no anfiteatro",
+      "desc": "A folha colada na vitrina do departamento de Matemática parece uma lista de baixas de guerra. Conseguiste passar à rasca com 10 valores arredondados!",
       "conditions": {
-        "workplace": [
-          "startup"
+        "course": [
+          "matematica"
         ]
       },
       "effect": {
-        "wallet": 30,
-        "sanity": 14
+        "sanity": -10,
+        "ects": 4
       },
-      "stamp": "+30€ PROD OK",
-      "stampColor": "#10b981",
-      "weight": 12
+      "stamp": "10 À TÉCNICO",
+      "stampColor": "#1d4ed8",
+      "weight": 22
     },
     {
-      "id": "ev_tasca_bitoque_ouro",
+      "id": "ev_ist_leitao_teorema_eureka",
+      "category": "education",
+      "title": "Momento 'Eureka' no IST: resolução de matrizes encanta o regente",
+      "desc": "Prof. Leitão chamou-te ao quadro negro do anfiteatro para resolver um sistema de equações diferenciais complexo. A turma aplaudiu de pé!",
+      "conditions": {
+        "course": [
+          "matematica"
+        ]
+      },
+      "effect": {
+        "sanity": 25,
+        "ects": 6
+      },
+      "stamp": "MÉRITO ACADÉMICO",
+      "stampColor": "#1e3a8a",
+      "weight": 18
+    },
+    {
+      "id": "ev_ist_gestao_simulacao_bolsa",
+      "category": "education",
+      "title": "Carteira de investimentos virtuais do IST bate índices mundiais",
+      "desc": "Na aula prática de Economia e Gestão, a tua estratégia de alocação de ativos pombalinos gerou os melhores retornos da faculdade.",
+      "conditions": {
+        "course": [
+          "gestao",
+          "economia"
+        ]
+      },
+      "effect": {
+        "sanity": 18,
+        "ects": 5,
+        "wallet": 20
+      },
+      "stamp": "LOUVOR GESTÃO",
+      "stampColor": "#0d9488",
+      "weight": 18
+    },
+    {
+      "id": "ev_ist_finalista_portas_abertas",
+      "category": "education",
+      "title": "Finalista do IST com mais de 100 ECTS recebe contactos de emprego",
+      "desc": "O teu percurso académico na Alameda começa a dar frutos concretos. Três empresas de consultoria deixaram cartões de visita com propostas de entrada.",
+      "conditions": {
+        "minEcts": 100
+      },
+      "effect": {
+        "sanity": 25,
+        "wallet": 30
+      },
+      "stamp": "QUASE ENGENHEIRO",
+      "stampColor": "#2563eb",
+      "weight": 20
+    },
+    {
+      "id": "ev_ist_monitor_turma_pratica",
       "category": "workplace",
-      "title": "Crítico gastronómico elogia o molho do bitoque do Ti Zé",
-      "desc": "Um guia lisboeta classificou a Tasca Ti Zé como 'Melhor Taberna Autêntica da Colina'. Fila à porta e gorjetas a duplicar.",
+      "title": "Aula de apoio no IST lotada: caloiros elogiam a tua paciência",
+      "desc": "Como monitor do corpo docente da faculdade, explicaste matrizes de projeção e espaços vetoriais a 40 alunos desesperados. Remuneração honrosa na conta!",
+      "conditions": {
+        "workplace": [
+          "faculdade"
+        ]
+      },
+      "effect": {
+        "wallet": 36,
+        "sanity": 15,
+        "ects": 4
+      },
+      "stamp": "+36€ TURNO MONITOR",
+      "stampColor": "#1e3a8a",
+      "weight": 20
+    },
+    {
+      "id": "ev_musica_miradouro_caloiro",
+      "category": "music",
+      "title": "Primeiros fados no Miradouro de Santa Catarina atraem aplausos",
+      "desc": "Sentaste-te no murete de pedra a dedilhar a guitarra. Uns acordes do 'Fado Menor' fizeram parar dois casais que deixaram algumas moedas no chapéu.",
+      "conditions": {
+        "minMusicSkill": 15
+      },
+      "effect": {
+        "wallet": 14,
+        "sanity": 15,
+        "musicSkill": 4
+      },
+      "stamp": "+14€ FADO INICIAL",
+      "stampColor": "#f59e0b",
+      "weight": 20
+    },
+    {
+      "id": "ev_musica_turistas_dolares",
+      "category": "music",
+      "title": "Turistas americanos no Miradouro ficam encantados com o fado",
+      "desc": "Uma excursão parou para ouvir a tua interpretação da 'Mouraria' ao pôr-do-sol sobre o Tejo. As notas de dólar encheram a caixa da guitarra!",
+      "conditions": {
+        "minMusicSkill": 35
+      },
+      "effect": {
+        "wallet": 35,
+        "sanity": 20,
+        "musicSkill": 5
+      },
+      "stamp": "+35€ GORJETA TEJO",
+      "stampColor": "#10b981",
+      "weight": 20
+    },
+    {
+      "id": "ev_musica_fadista_veterana",
+      "category": "music",
+      "title": "Fadista veterana de Alfama junta a voz à tua guitarra",
+      "desc": "D. Cremilde parou no miradouro, pôs o xaile negro nos ombros e soltou a voz com a tua guitarra como guia. Quem ouviu arrepiou-se com a alma alfacinha!",
+      "conditions": {
+        "minMusicSkill": 55
+      },
+      "effect": {
+        "wallet": 45,
+        "sanity": 30,
+        "musicSkill": 6
+      },
+      "stamp": "ALMA DE ALFAMA",
+      "stampColor": "#854d0e",
+      "weight": 18
+    },
+    {
+      "id": "ev_musica_video_viral_tejo",
+      "category": "music",
+      "title": "Vídeo da tua guitarra ao pôr-do-sol sobre o Tejo torna-se viral",
+      "desc": "Um criador de conteúdos gravou o teu solo acústico com a Ponte 25 de Abril em pano de fundo. Meio milhão de visualizações e gorjetas por MBWay!",
+      "conditions": {
+        "minMusicSkill": 70
+      },
+      "effect": {
+        "wallet": 75,
+        "sanity": 35,
+        "musicSkill": 5
+      },
+      "stamp": "+75€ VIRAL LISBOA",
+      "stampColor": "#f59e0b",
+      "weight": 18
+    },
+    {
+      "id": "ev_boemio_conselho_ouro",
+      "category": "music",
+      "title": "O Boémio do Miradouro partilha bagaço de medronho e sabedoria",
+      "desc": "«O dinheiro vai e vem, rapaz, mas o Tejo fica sempre aqui a ouvir os teus desgostos.» Um trago forte e uma gargalhada limparam-te o stress da semana.",
+      "conditions": {},
+      "effect": {
+        "sanity": 22,
+        "hunger": 5
+      },
+      "stamp": "FILOSOFIA BOÉMIA",
+      "stampColor": "#0369a1",
+      "weight": 14
+    },
+    {
+      "id": "ev_tasca_bitoque_perfeito",
+      "category": "workplace",
+      "title": "Ti Zé ensina o segredo do molho de alho e manteiga do bitoque",
+      "desc": "Bife na frigideira a chiar, ovo a cavalo estrelado com gema mole e batatas estaladiças. Os clientes da tasca raparam o prato com côdea de pão!",
       "conditions": {
         "workplace": [
           "tasca"
         ]
       },
       "effect": {
-        "wallet": 18,
-        "sanity": 12,
+        "wallet": 20,
+        "hunger": 35,
+        "sanity": 15
+      },
+      "stamp": "BITOQUE SUPREMO",
+      "stampColor": "#f59e0b",
+      "weight": 20
+    },
+    {
+      "id": "ev_tasca_sueca_campeonato",
+      "category": "workplace",
+      "title": "Torneio de Sueca na Tasca: Zé trunfa a manilha de espadas",
+      "desc": "Noite acesa à mesa de madeira da taberna. A tua dupla limpou quatro partidas seguidas e Ti Zé ofereceu duas jarras de tinto e chouriço assado.",
+      "conditions": {
+        "workplace": [
+          "tasca"
+        ]
+      },
+      "effect": {
+        "sanity": 25,
+        "hunger": 20,
+        "wallet": 15
+      },
+      "stamp": "CAMPEÃO DA SUECA",
+      "stampColor": "#9a3412",
+      "weight": 18
+    },
+    {
+      "id": "ev_tasca_almoco_enchente",
+      "category": "workplace",
+      "title": "Enchente na Tasca ao almoço: 65 cafés e 40 imperiais sem parar",
+      "desc": "Trabalhadores da construção, polícias e estudantes disputaram as mesas corridas. Foste uma máquina a servir ao balcão e a féria rendeu gorjeta reforçada.",
+      "conditions": {
+        "workplace": [
+          "tasca"
+        ]
+      },
+      "effect": {
+        "wallet": 28,
+        "sanity": 8,
+        "hunger": -10
+      },
+      "stamp": "+28€ BALCÃO CHEIO",
+      "stampColor": "#ea580c",
+      "weight": 18
+    },
+    {
+      "id": "ev_tasca_sobras_marmita",
+      "category": "workplace",
+      "title": "Ti Zé enche-te a marmita com cozido à portuguesa farto",
+      "desc": "«Leva isto para o jantar, rapaz! Rapaz que trabalha tem de ter sustento no corpo.» Uma marmita pesada de couves, enchidos e carne de porco.",
+      "conditions": {
+        "workplace": [
+          "tasca"
+        ]
+      },
+      "effect": {
+        "hunger": 40,
+        "sanity": 15,
+        "groceries": 1
+      },
+      "stamp": "MARMITA DA TASCA",
+      "stampColor": "#15803d",
+      "weight": 16
+    },
+    {
+      "id": "ev_pingo_super_quarta",
+      "category": "workplace",
+      "title": "Super-Quarta no Pingo Doce: corrida de carrinhos às promoções",
+      "desc": "Douradas frescas a 4,99€ e azeite com desconto levaram o bairro à loucura. Mantiveste a calma na caixa e D. Maria deu-te os parabéns pelo sangue-frio.",
+      "conditions": {
+        "workplace": [
+          "pingo_doce"
+        ]
+      },
+      "effect": {
+        "wallet": 20,
+        "sanity": 5,
+        "groceries": 1
+      },
+      "stamp": "+20€ TURNO PINGO",
+      "stampColor": "#15803d",
+      "weight": 18
+    },
+    {
+      "id": "ev_pingo_caixa_rapida",
+      "category": "workplace",
+      "title": "Zé bate recorde de leitura de códigos de barras na caixa 3",
+      "desc": "Passaste duzentos artigos em tempo recorde sem engasgar o rolo de talões. A gerência do Pingo Doce ofereceu-te um vale de compras de 15€.",
+      "conditions": {
+        "workplace": [
+          "pingo_doce"
+        ],
+        "minCareerRank": 1
+      },
+      "effect": {
+        "wallet": 25,
+        "groceries": 2,
+        "sanity": 10
+      },
+      "stamp": "VALE 15€ PINGO",
+      "stampColor": "#16a34a",
+      "weight": 18
+    },
+    {
+      "id": "ev_startup_deploy_madrugada",
+      "category": "workplace",
+      "title": "Deploy em produção às 03h da manhã sem quebrar a API",
+      "desc": "A equipa da startup aguentou o pico de tráfego de lançamento sem um único erro 500. O fundador aprovou um bónus de desempenho em dinheiro vivo.",
+      "conditions": {
+        "workplace": [
+          "startup"
+        ]
+      },
+      "effect": {
+        "wallet": 40,
+        "sanity": 15
+      },
+      "stamp": "+40€ SPRINT TECH",
+      "stampColor": "#065f46",
+      "weight": 18
+    },
+    {
+      "id": "ev_iefp_mariana_estagio",
+      "category": "workplace",
+      "title": "D. Mariana no IEFP valida o teu dossier de qualificação",
+      "desc": "A conselheira sénior do centro de emprego carimbou o teu processo de formação com distinção, abrindo portas a novas candidaturas de topo.",
+      "conditions": {
+        "workplace": [
+          "startup"
+        ]
+      },
+      "effect": {
+        "sanity": 15,
+        "wallet": 15
+      },
+      "stamp": "DOSSIER IEFP",
+      "stampColor": "#10b981",
+      "weight": 16
+    },
+    {
+      "id": "ev_casa_rossio_mangueira",
+      "category": "housing",
+      "title": "Lavagem matinal do Rossio: mangueirada da CML às 06h00",
+      "desc": "A carrinha da limpeza urbana não perdoa quem dorme no banco de jardim. Acordaste a saltar poças com os ténis ensopados de lixívia!",
+      "conditions": {
+        "minHouseIndex": 0,
+        "maxHouseIndex": 0
+      },
+      "effect": {
+        "sanity": -18,
+        "clothingWear": 10
+      },
+      "stamp": "MANGUEIRADA CML",
+      "stampColor": "#0284c7",
+      "weight": 22
+    },
+    {
+      "id": "ev_casa_arroios_beliche",
+      "category": "housing",
+      "title": "Sinfonia de roncos no beliche rotativo de Arroios",
+      "desc": "Oito pessoas num quarto de três metros de teto. O companheiro do beliche de cima ressonou como uma britadeira a furar granito a noite toda.",
+      "conditions": {
+        "minHouseIndex": 1,
+        "maxHouseIndex": 1
+      },
+      "effect": {
+        "sanity": -12
+      },
+      "stamp": "NOITE BRANCA",
+      "stampColor": "#f97316",
+      "weight": 20
+    },
+    {
+      "id": "ev_casa_anjos_martelo",
+      "category": "housing",
+      "title": "Martelo pneumático nas obras vizinhas dos Anjos às 07h05",
+      "desc": "Mais um prédio a ser transformado em suites de luxo para turistas. A trepidação das brocas fez tremer o copo de água na tua mesinha.",
+      "conditions": {
+        "minHouseIndex": 2,
+        "maxHouseIndex": 2
+      },
+      "effect": {
+        "sanity": -10
+      },
+      "stamp": "OBRAS NOS ANJOS",
+      "stampColor": "#ea580c",
+      "weight": 18
+    },
+    {
+      "id": "ev_casa_alfama_fadistas",
+      "category": "housing",
+      "title": "Sardinhada espontânea no beco de Alfama à tua janela",
+      "desc": "Grelhador de carvão montado na calçada, jarros de vinho verde e fado vadio até às duas da manhã. Os vizinhos ofereceram-te duas sardinhas no pão!",
+      "conditions": {
+        "minHouseIndex": 3,
+        "maxHouseIndex": 3
+      },
+      "effect": {
+        "sanity": 20,
         "hunger": 25
       },
-      "stamp": "+18€ GORJETAS",
+      "stamp": "BECO EM FESTA",
+      "stampColor": "#15803d",
+      "weight": 18
+    },
+    {
+      "id": "ev_casa_chiado_rooftop",
+      "category": "housing",
+      "title": "Manhã de luz pombalina no teu terraço do Chiado",
+      "desc": "Podes pagar uma fortuna de renda, mas tomar café a olhar o Castelo de São Jorge com os sinos da Baixa a tocar é uma glória reservada a poucos.",
+      "conditions": {
+        "minHouseIndex": 4,
+        "maxHouseIndex": 4
+      },
+      "effect": {
+        "sanity": 25
+      },
+      "stamp": "LUXO POMBALINO",
+      "stampColor": "#db2777",
+      "weight": 18
+    },
+    {
+      "id": "ev_sanidade_burnout_rossio",
+      "category": "sanidade",
+      "title": "Ataque de ansiedade nas pedras do Rossio: Lisboa pesa nos ombros",
+      "desc": "Rendas, trabalho precário e inflação na comida. Sentaste-te no murete a respirar fundo até a tontura passar. Precisas de descanso urgente!",
+      "conditions": {
+        "maxSanity": 20
+      },
+      "effect": {
+        "sanity": -5,
+        "hunger": -10
+      },
+      "stamp": "BURNOUT URBANO",
+      "stampColor": "#b91c1c",
+      "weight": 24
+    },
+    {
+      "id": "ev_sanidade_sol_tejo_alegria",
+      "category": "sanidade",
+      "title": "Manhã dourada de Lisboa: luz sobre o Tejo renova as forças",
+      "desc": "O reflexo dourado das águas do Tejo contra a cantaria da Praça do Comércio encheu-te o peito de coragem. Hoje ninguém te pára!",
+      "conditions": {
+        "minSanity": 75
+      },
+      "effect": {
+        "sanity": 15,
+        "wallet": 10
+      },
+      "stamp": "ALFACINHA FELIZ",
+      "stampColor": "#eab308",
+      "weight": 18
+    },
+    {
+      "id": "ev_eletrico_28_bloqueado",
+      "category": "lisbon_satire",
+      "title": "Elétrico 28 bloqueado nas Portas do Sol por carrinha de entregas",
+      "desc": "Mais um dia clássico: o guarda-freio faz soar a campainha desesperadamente enquanto o condutor da carrinha descarrega caixas de cerveja com calma olímpica.",
+      "conditions": {},
+      "effect": {
+        "sanity": -5
+      },
+      "stamp": "O 28 PARADO",
       "stampColor": "#f59e0b",
       "weight": 12
     },
     {
-      "id": "ev_eletrico_28_encalhado",
+      "id": "ev_gaivota_assalto_nata",
       "category": "lisbon_satire",
-      "title": "Elétrico 28 bloqueado por SUV com 4 piscas nas Portas do Sol",
-      "desc": "O guarda-freio tocou a campainha 420 vezes seguidas. 80 turistas aplaudiram pensando que era um espetáculo de percussão tradicional.",
+      "title": "Gaivota pirata rouba pastel de nata em pleno voo no cais",
+      "desc": "Estavas prestes a dar a primeira dentada no folhado crocante polvilhado de canela quando uma gaivota fez um voo picado cirúrgico. Menos uma iguaria!",
       "conditions": {},
       "effect": {
-        "wallet": 0,
-        "sanity": -4
+        "sanity": -6,
+        "hunger": -10
       },
-      "stamp": "🔔 PLIM-PLIM",
-      "stampColor": "#facc15",
-      "weight": 10
+      "stamp": "GAIVOTA LADRA",
+      "stampColor": "#64748b",
+      "weight": 12
     },
     {
-      "id": "ev_gaivota_pastel_nata",
+      "id": "ev_achado_calcada_basalto",
       "category": "lisbon_satire",
-      "title": "Gaivota radical surripia pastel de nata no Terreiro do Paço",
-      "desc": "Mergulho picado a 60 km/h deixou um influencer em estado de choque. Zé riu-se tanto que recuperou energia mental.",
+      "title": "Moeda de dois euros reluzente entre o basalto da calçada",
+      "desc": "O sol da manhã bateu num reflexo metálico entre as pedras pretas e brancas do passeio. Um achado que paga a bica e uma queijada!",
       "conditions": {},
       "effect": {
-        "wallet": 0,
+        "wallet": 2,
         "sanity": 8
       },
-      "stamp": "GAIVOTA NINJA",
+      "stamp": "+2€ CALÇADA",
+      "stampColor": "#10b981",
+      "weight": 14
+    },
+    {
+      "id": "ev_greve_metro_lisboa",
+      "category": "lisbon_satire",
+      "title": "Linha Verde do Metro fechada: Lisboa faz ginástica forçada",
+      "desc": "Subir do Martim Moniz até à Alameda a pé sob o sol da manhã. Suor na testa e pernas rijas como as colunas do Terreiro do Paço.",
+      "conditions": {},
+      "effect": {
+        "sanity": -8,
+        "hunger": -15
+      },
+      "stamp": "MARATONA METRO",
+      "stampColor": "#ef4444",
+      "weight": 12
+    },
+    {
+      "id": "ev_calcada_polida_chuva",
+      "category": "lisbon_satire",
+      "title": "Chuva ligeira transforma a calçada do Chiado em pista de gelo",
+      "desc": "Três turistas de sandálias e meias fizeram piruetas involuntárias na descida para o Rossio. Zé aplicou o equilíbrio alfacinha e não caiu!",
+      "conditions": {},
+      "effect": {
+        "sanity": 6
+      },
+      "stamp": "CALÇADA SABÃO",
       "stampColor": "#0284c7",
-      "weight": 10
+      "weight": 12
     },
     {
-      "id": "ev_greve_metro_verde",
-      "category": "lisbon_satire",
-      "title": "Linha Verde do Metro encerrada: Lisboa faz caminhada forçada",
-      "desc": "Subir a Rua da Madalena a pé sob o sol abrasador fez suar as estopinhas. Queimaste calorias mas a resistência moral aumentou.",
+      "id": "ev_acampada_tenda_fogueira_zeca",
+      "category": "acampada",
+      "title": "Fogueira da Acampada: vozes cantam Zeca Afonso contra os despejos",
+      "desc": "À volta do fogareiro na marginal, Inês puxou da viola e entoou 'Os Vampiros'. Dezenas de jovens sem casa juntaram-se em coro sob as estrelas de Lisboa. Calor humano que não tem preço!",
+      "conditions": {
+        "sleptAcampada": true
+      },
+      "effect": {
+        "sanity": 28,
+        "hunger": 10
+      },
+      "stamp": "VOZES DA LUTA",
+      "stampColor": "#dc2626",
+      "weight": 25
+    },
+    {
+      "id": "ev_acampada_assembleia_plataforma",
+      "category": "acampada",
+      "title": "Assembleia da Plataforma Casa Para Viver debate alternativas aos despejos",
+      "desc": "A reunião plenária na marginal juntou advogados solidários, moradores ameaçados de despejo e estudantes. Foi aprovado o plano de resistência popular para o próximo mês.",
       "conditions": {},
       "effect": {
-        "wallet": 0,
-        "sanity": -4,
-        "hunger": -12
+        "sanity": 15,
+        "wallet": 0
       },
-      "stamp": "METRO FECHADO",
+      "stamp": "UNIÃO POPULAR",
+      "stampColor": "#b91c1c",
+      "weight": 16
+    },
+    {
+      "id": "ev_renda_paga_tranquilidade",
+      "category": "housing",
+      "title": "Renda semanal em dia: dias de sossego antes da próxima cobrança",
+      "desc": "O senhorio levou o envelope e passou o recibo. Tens vários dias pela frente sem o receio imediato de veres as tuas coisas postas no meio da rua.",
+      "conditions": {
+        "minDaysUntilRent": 5,
+        "minHouseIndex": 1
+      },
+      "effect": {
+        "sanity": 15
+      },
+      "stamp": "FOLGA SEMANAL",
       "stampColor": "#15803d",
-      "weight": 10
+      "weight": 18
     },
     {
-      "id": "ev_fado_vadio_noite",
+      "id": "ev_chiado_montra_outono",
+      "category": "workplace",
+      "title": "Montra de alfaiataria das Modas Chiado atrai multidão de curiosos",
+      "desc": "A nova montra desenhada com manequins em fatos nobres e trajes pombalinos foi fotografada por dezenas de transeuntes no Chiado. D. Zulmira deu um bónus pelo teu apoio no ateliê.",
+      "conditions": {
+        "workplace": [
+          "loja_roupa"
+        ]
+      },
+      "effect": {
+        "wallet": 25,
+        "sanity": 12
+      },
+      "stamp": "+25€ BÓNUS CHIADO",
+      "stampColor": "#db2777",
+      "weight": 18
+    },
+    {
+      "id": "ev_chiado_trajes_ist_encomenda",
+      "category": "workplace",
+      "title": "Associação de Estudantes do IST encomenda capas às Modas Chiado",
+      "desc": "Dias de corte intensivo de fazenda preta para os caloiros da Alameda. O ateliê das Modas Chiado trabalhou até tarde com café e entusiasmo partilhado.",
+      "conditions": {
+        "workplace": [
+          "loja_roupa"
+        ]
+      },
+      "effect": {
+        "wallet": 30,
+        "sanity": 10,
+        "hunger": -10
+      },
+      "stamp": "+30€ CORTE CAPAS",
+      "stampColor": "#be185d",
+      "weight": 18
+    },
+    {
+      "id": "ev_banco_diplomacia_multibanco",
+      "category": "workplace",
+      "title": "Cartão retido no Multibanco da Caixa: Zé resolve com aprumo",
+      "desc": "Um cliente exaltado ia partir o ecrã do terminal azul. Com paciência pombalina e diplomacia bancária, recuperaste os dados e evitaste um escândalo na agência.",
+      "conditions": {
+        "workplace": [
+          "banco"
+        ]
+      },
+      "effect": {
+        "wallet": 20,
+        "sanity": 12
+      },
+      "stamp": "DIPLOMACIA CAIXA",
+      "stampColor": "#854d0e",
+      "weight": 18
+    },
+    {
+      "id": "ev_banco_promocao_subgerente",
+      "category": "workplace",
+      "title": "Proposta para Subgerente de Conta na Caixa Geral de Depósitos",
+      "desc": "Com o teu fato irrepreensível e rigor no balcão, a direção da Caixa chamou-te para discutir promoção aos quadros superiores com aumento substancial de ordenado.",
+      "conditions": {
+        "workplace": [
+          "banco"
+        ],
+        "minCareerRank": 2
+      },
+      "effect": {
+        "wallet": 50,
+        "sanity": 25
+      },
+      "stamp": "QUADROS DA CAIXA",
+      "stampColor": "#ca8a04",
+      "weight": 20
+    },
+    {
+      "id": "ev_ist_tese_defesa_aprovada",
+      "category": "education",
+      "title": "Defesa de Tese no IST: júri atribui nota de excelência com louvor",
+      "desc": "O Anfiteatro Nobre do Instituto Superior Técnico aplaudiu a apresentação do teu projeto de fim de curso. O canudo está praticamente nas tuas mãos!",
+      "conditions": {
+        "minEcts": 120
+      },
+      "effect": {
+        "sanity": 40,
+        "ects": 10,
+        "wallet": 50
+      },
+      "stamp": "LOUVOR TÉCNICO",
+      "stampColor": "#1e3a8a",
+      "weight": 22
+    },
+    {
+      "id": "ev_ist_caloiro_duvidas_escadaria",
+      "category": "education",
+      "title": "Caloiro aflito pede explicações na escadaria do IST",
+      "desc": "Sentado na imponente escadaria de pedra do IST, ajudaste um caloiro a perceber apontadores e ponteiros em C. Ele pagou-te uma imperial e um pastel de nata na tasca!",
+      "conditions": {
+        "minEcts": 30
+      },
+      "effect": {
+        "hunger": 15,
+        "sanity": 12,
+        "wallet": 5
+      },
+      "stamp": "SOLIDARIEDADE IST",
+      "stampColor": "#2563eb",
+      "weight": 16
+    },
+    {
+      "id": "ev_musica_miradouro_fim_tarde",
+      "category": "music",
+      "title": "Fim de tarde mágica no Miradouro: fado vadio ecoa sobre o rio",
+      "desc": "A harmonia da guitarra portuguesa misturou-se com a brisa do Tejo. Lisboa parou para escutar e o chapéu encheu-se de notas e moedas de todo o mundo.",
+      "conditions": {
+        "minMusicSkill": 50
+      },
+      "effect": {
+        "wallet": 50,
+        "sanity": 25,
+        "musicSkill": 5
+      },
+      "stamp": "+50€ FADO DO TEJO",
+      "stampColor": "#f59e0b",
+      "weight": 20
+    },
+    {
+      "id": "ev_musica_guitarra_desafinada_balde",
+      "category": "music",
+      "title": "Solo desafinado no beco: vizinha de Alfama sacode tapete à janela",
+      "desc": "Ainda a aprender os primeiros acordes de fado, uma nota em falso fez voar um bando de pombos e valeu uma reprimenda bem-humorada da janela de cima.",
+      "conditions": {
+        "maxMusicSkill": 15
+      },
+      "effect": {
+        "sanity": -6,
+        "musicSkill": 3
+      },
+      "stamp": "CALOIRO DO FADO",
+      "stampColor": "#64748b",
+      "weight": 16
+    },
+    {
+      "id": "ev_barriga_ronca_desespero",
+      "category": "sanidade",
+      "title": "Barriga a dar horas: fome aperta no meio da correria lisboeta",
+      "desc": "Trabalhar sem almoçar cobrou o seu preço. O estômago dói de vazio. Urge ir ao Pingo Doce buscar latas de conserva ou pedir sopa na cantina da Acampada!",
+      "conditions": {
+        "maxSanity": 30
+      },
+      "effect": {
+        "hunger": -15,
+        "sanity": -8
+      },
+      "stamp": "FOME EM LISBOA",
+      "stampColor": "#b91c1c",
+      "weight": 22
+    },
+    {
+      "id": "ev_feira_ladra_pechincha_fado",
       "category": "lisbon_satire",
-      "title": "Tertúlia improvisada de guitarra portuguesa no Miradouro",
-      "desc": "Ao cair da tarde sobre o Tejo, dois fadistas afinaram as guitarras e cantaram a Lisboa antiga. Alma renovada e paz de espírito.",
+      "title": "Feira da Ladra: Zé descobre disco de vinil de fado por 1 euro",
+      "desc": "A remexer nos panos estendidos no Campo de Santa Clara, encontraste uma gravação histórica de fado de Coimbra e Lisboa em perfeito estado. Um achado!",
       "conditions": {},
       "effect": {
-        "wallet": 0,
-        "sanity": 18
+        "sanity": 15,
+        "wallet": -1
       },
-      "stamp": "🎶 SAUDADE",
-      "stampColor": "#0369a1",
+      "stamp": "PECHINCHA LADRA",
+      "stampColor": "#0d9488",
+      "weight": 12
+    },
+    {
+      "id": "ev_pastel_belem_queijada",
+      "category": "lisbon_satire",
+      "title": "Fila de turistas em Belém: Zé desvia para a pastelaria de bairro",
+      "desc": "Enquanto autocarros despejavam excursões para pastéis a 2 euros cada, comeste uma queijada de Sintra fresca e bebeste um garoto na esquina por metade do preço.",
+      "conditions": {},
+      "effect": {
+        "hunger": 20,
+        "sanity": 10,
+        "wallet": -1
+      },
+      "stamp": "SABEDORIA DE BAIRRO",
+      "stampColor": "#eab308",
       "weight": 12
     }
   ]

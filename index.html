@@ -1416,7 +1416,7 @@ function checkJobPrerequisites(wpKey, rank) {
     const curFormality = CLOTHING_TIERS[player.clothing.id].formality;
     if (curFormality < job.minFormality) {
         if (job.minFormality >= 3) {
-            return { ok: false, reason: `Exige Fato Pombalino Completo! Não podes ser ${job.title} de calções e sapatilhas. Compra um fato no alfaiate!` };
+            return { ok: false, reason: `Exige Fato Pombalino Completo! Não podes ser ${job.title} de calções e sapatilhas. Compra um fato nas Modas Chiado!` };
         } else if (job.minFormality >= 2) {
             return { ok: false, reason: `Exige pelo menos Smart Casual (polo limpo e calças)! Não podes trabalhar de calções rasgados.` };
         }
@@ -1513,7 +1513,7 @@ let currentEvent = null;
 let newspaperDb = null;
 
 // Carregamento assíncrono da Base de Dados JSON do Jornal
-fetch('assets/newspaper_database.json')
+fetch('assets/newspaper_database.json?v=3.5')
     .then(r => r.json())
     .then(d => {
         if (d && d.events) {
@@ -1527,7 +1527,9 @@ function matchEventConditions(ev, p) {
     const c = ev.conditions || {};
     if (c.workplace) {
         const curWp = p.currentWorkplace || 'unemployed';
-        if (!c.workplace.includes('any') && !c.workplace.includes(curWp)) {
+        const allowed = c.workplace.map(w => (w === 'modas_chiado' ? 'loja_roupa' : w));
+        const normalizedWp = (curWp === 'modas_chiado' ? 'loja_roupa' : curWp);
+        if (!allowed.includes('any') && !allowed.includes(normalizedWp)) {
             return false;
         }
     }
@@ -1549,6 +1551,15 @@ function matchEventConditions(ev, p) {
     if (c.maxSanity !== undefined && p.sanity > c.maxSanity) return false;
     if (c.minEcts !== undefined && p.ects < c.minEcts) return false;
     if (c.maxDaysUntilRent !== undefined && p.daysUntilRent > c.maxDaysUntilRent) return false;
+    if (c.minDaysUntilRent !== undefined && p.daysUntilRent < c.minDaysUntilRent) return false;
+    if (c.minMusicSkill !== undefined && (p.musicSkill || 0) < c.minMusicSkill) return false;
+    if (c.maxMusicSkill !== undefined && (p.musicSkill || 0) > c.maxMusicSkill) return false;
+    if (c.hasDebt !== undefined && (!!(p.bankDebt && p.bankDebt > 0) !== !!c.hasDebt)) return false;
+    if (c.minCareerRank !== undefined) {
+        const targetWp = c.careerWorkplace || p.currentWorkplace;
+        const curRank = (p.careerRanks && p.careerRanks[targetWp]) || 0;
+        if (curRank < c.minCareerRank) return false;
+    }
     return true;
 }
 
@@ -1575,14 +1586,18 @@ function generateMorningEvent(p) {
                     }
                     if (eff.sanity) player.sanity = Math.max(0, Math.min(100, player.sanity + eff.sanity));
                     if (eff.hunger) player.hunger = Math.max(0, Math.min(100, player.hunger + eff.hunger));
-                    if (eff.groceries) player.groceries += eff.groceries;
+                    if (eff.groceries) player.groceries = Math.max(0, (player.groceries || 0) + eff.groceries);
                     if (eff.ects) player.ects = Math.min(180, player.ects + eff.ects);
+                    if (eff.musicSkill) player.musicSkill = Math.max(0, Math.min(100, (player.musicSkill || 0) + eff.musicSkill));
+                    if (eff.bankDebt && player.bankDebt !== undefined) {
+                        player.bankDebt = Math.max(0, player.bankDebt + eff.bankDebt);
+                    }
                     if (eff.clothingWear) wearClothing(eff.clothingWear);
                     player.sleptAcampada = false;
                 },
                 badge: chosen.stamp || "NOTÍCIA DE LISBOA",
                 badgeColor: chosen.stampColor || "#f59e0b",
-                good: (chosen.effect && chosen.effect.sanity > 0) || (chosen.effect && chosen.effect.wallet > 0)
+                good: (chosen.effect && (chosen.effect.sanity > 0 || chosen.effect.wallet > 0 || chosen.effect.ects > 0 || chosen.effect.musicSkill > 0))
             };
         }
     }
@@ -1783,8 +1798,8 @@ const BUILDINGS = [
     { id: 'miradouro', name: 'Miradouro', x: 0, y: 220, w: 140, h: 75, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 65, doorY: 245, desc: 'O Boémio — Vista sobre o Tejo, descanso, fado à guitarra e tertúlias.' },
     { id: 'faculdade', name: 'Politec / IST', x: 0, y: 15, w: 146, h: 175, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 72, doorY: 185, desc: 'Prof. Leitão — Aulas, cadeiras sequenciais e exames para o canudo no IST.' },
     { id: 'startup', name: 'IEFP / Emprego', x: 175, y: 35, w: 48, h: 155, color: '#065f46', accent: '#10b981', tag: 'IEFP & CARREIRAS', icon: '💼', doorX: 198, doorY: 195, desc: 'D. Mariana (IEFP, 45 anos) — Centro de Emprego, Orientação e Dossier Curricular.' },
-    { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, desc: 'Inês — Vigília popular e assembleia pelo direito à habitação e turnos solidários.' },
-    { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco e carreiras financeiras.' },
+    { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, desc: 'Inês — Vigília popular, a tua tenda Quechua, cantina solidária e luta pelo direito à habitação.' },
+    { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco, depósitos e carreiras financeiras.' },
     { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira — Fatos de gala, alfaiataria, trajes académicos e ateliê de costura.' },
     { id: 'supermercado', name: 'Pingo Doce', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 478, doorY: 195, desc: 'D. Maria — Mantimentos e carreiras de supermercado.' },
     { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 70, w: 110, h: 125, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
@@ -1882,9 +1897,19 @@ const LIVING_NPCS = [
         name: 'Inês (Acampada)',
         x: 340, y: 247, radius: 20,
         quotes: [
-            "Habitação é um direito, não é um privilégio de fundos abutres!",
-            "Junta-te à nossa vigília popular no Rossio: partilhamos sopa quente e coragem.",
-            "Nenhum despejo sem alternativa digna em Lisboa!"
+            "«A Casa é um Direito, Não um Negócio!» — Vigília da Plataforma Casa Para Viver.",
+            "Junta-te à nossa tenda solidária: partilhamos sopa quente, cobertores e resistência.",
+            "«Nem Casas Sem Gente, Nem Gente Sem Casa!» — Referendo pela Habitação Já!"
+        ]
+    },
+    {
+        id: 'tenda_acampada',
+        name: 'A Tua Tenda Quechua',
+        x: 300, y: 245, radius: 18,
+        quotes: [
+            "A tua pequena tenda Quechua montada na marginal do Tejo: 0€ de renda e espírito de luta!",
+            "«Teto para Todos!» — Dormir aqui poupa centenas de euros e trava ordens de despejo.",
+            "O vento do Tejo é fresco, mas o saco-cama e a solidariedade dos companheiros aquecem a alma."
         ]
     }
 ];
@@ -1970,6 +1995,107 @@ function renderBoardLivingCharacters(ctx, animTimer) {
         const fAlpha = (1 - fProg) * 0.35;
         ctx.fillStyle = `rgba(226, 232, 240, ${fAlpha.toFixed(2)})`;
         ctx.fillRect(Math.round(fx), Math.round(fy), 2, 2);
+    }
+
+    // 2.A. A PEQUENA TENDA DA ACAMPADA (Resistência Popular pelo Direito à Habitação)
+    // Coordenadas: x: 286..312, y: 237..253 (Marginal ribeirinha junto ao Tejo)
+    const tx = 286;
+    const ty = 237;
+    const tw = 26;
+    const th = 16;
+
+    // Sombra de contacto da tenda na pedra da calçada ribeirinha
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.40)';
+    ctx.beginPath();
+    ctx.ellipse(tx + tw / 2, ty + th, tw / 2 + 3, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Lona exterior da tenda (Verde floresta / Quechua com costuras e reflexo)
+    ctx.fillStyle = '#14532d'; // Verde escuro sombra
+    ctx.beginPath();
+    ctx.moveTo(tx, ty + th);
+    ctx.quadraticCurveTo(tx + 2, ty + 2, tx + tw / 2, ty);
+    ctx.quadraticCurveTo(tx + tw - 2, ty + 2, tx + tw, ty + th);
+    ctx.closePath();
+    ctx.fill();
+
+    // Painel frontal iluminado (Verde vibrante Quechua)
+    ctx.fillStyle = '#15803d';
+    ctx.beginPath();
+    ctx.moveTo(tx + 2, ty + th);
+    ctx.quadraticCurveTo(tx + 4, ty + 3, tx + tw / 2, ty + 1);
+    ctx.quadraticCurveTo(tx + tw - 4, ty + 3, tx + tw - 2, ty + th);
+    ctx.closePath();
+    ctx.fill();
+
+    // Fita refletora laranja (Estilo tenda clássica de protesto)
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(tx + 1, ty + th);
+    ctx.quadraticCurveTo(tx + tw / 2, ty - 1, tx + tw - 1, ty + th);
+    ctx.stroke();
+
+    // Abertura / Porta triangular da tenda (Entrada em tecido escuro)
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.moveTo(tx + 7, ty + th);
+    ctx.lineTo(tx + tw / 2, ty + 4);
+    ctx.lineTo(tx + 19, ty + th);
+    ctx.closePath();
+    ctx.fill();
+
+    // Saco-cama turquesa e isolador térmico dourado no interior da tenda
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(tx + 9, ty + th - 4, 8, 3);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(tx + 11, ty + th - 2, 5, 1);
+
+    // Cordas de tensão / Esticadores brancos presos ao chão
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(tx + 3, ty + 5);
+    ctx.lineTo(tx - 3, ty + th);
+    ctx.moveTo(tx + tw - 3, ty + 5);
+    ctx.lineTo(tx + tw + 3, ty + th);
+    ctx.stroke();
+
+    // Estacas metálicas de fixação no empedrado
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(tx - 3, ty + th - 1, 2, 2);
+    ctx.fillRect(tx + tw + 2, ty + th - 1, 2, 2);
+
+    // Mini-Placa de Cartão de Protesto cravada ao lado da tenda ("CASA P/ VIVER")
+    const signX = tx - 8;
+    const signY = ty + th - 10;
+    ctx.fillStyle = '#78350f'; // Estaca de madeira
+    ctx.fillRect(signX + 4, signY + 4, 1, 6);
+    ctx.fillStyle = '#d97706'; // Retângulo de cartão
+    ctx.fillRect(signX, signY, 9, 6);
+    ctx.fillStyle = '#451a03'; // Micro-letras pixel art
+    ctx.fillRect(signX + 1, signY + 1, 7, 1);
+    ctx.fillRect(signX + 2, signY + 3, 5, 1);
+
+    // Efeito de Noite: Lanterna acesa dentro da tenda
+    if (isNight) {
+        const tentGlow = 0.35 + Math.sin(animTimer * 4) * 0.1;
+        const tentGrad = ctx.createRadialGradient(tx + tw / 2, ty + th - 3, 1, tx + tw / 2, ty + th - 3, 14);
+        tentGrad.addColorStop(0, `rgba(253, 224, 71, ${tentGlow.toFixed(2)})`);
+        tentGrad.addColorStop(1, 'rgba(253, 224, 71, 0)');
+        ctx.fillStyle = tentGrad;
+        ctx.beginPath();
+        ctx.arc(tx + tw / 2, ty + th - 3, 14, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Se o jogador dormiu na Acampada (player.sleptAcampada), efeito Zzz a flutuar
+    if (player && player.sleptAcampada) {
+        const zProg = (animTimer * 1.5) % 2.5;
+        const zAlpha = 1 - (zProg / 2.5);
+        ctx.fillStyle = `rgba(254, 240, 138, ${zAlpha.toFixed(2)})`;
+        ctx.font = '8px "Press Start 2P"';
+        ctx.fillText("z", tx + tw / 2 + Math.sin(zProg * 3) * 3, ty - 2 - zProg * 10);
     }
 
     // Reflexo suave dourado na montra da alfaiataria Modas Chiado
@@ -2238,7 +2364,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '3.4';
+const ASSET_VER = '3.5';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -4181,13 +4307,13 @@ const NPC_INFO = {
     },
     banco: {
         name: "Dr. Alcoviteiro",
-        role: "Gestor de Poupança & Alfaiate",
+        role: "Gestor de Conta & Microcrédito",
         quote: () => {
             if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
-                return "Inadmissível! A Caixa Geral não tolera nudismo no balcão nobre! Vá já comprar roupa de gente!";
+                return "Inadmissível! A Caixa Geral não tolera nudismo no balcão nobre! Vá já comprar roupa de gente nas Modas Chiado!";
             }
             if (player.clothing.formality < 3) {
-                return "Atenção ao decoro: para trabalhar na Caixa ou ser promovido, tem de vestir Fato Pombalino do alfaiate parceiro!";
+                return "Atenção ao decoro: para trabalhar na Caixa ou ser promovido, tem de vestir Fato Pombalino adquirido nas Modas Chiado!";
             }
             const job = WORKPLACES.banco.careers[player.careerRanks.banco || 0];
             if (player.currentWorkplace === 'banco') {
@@ -4196,7 +4322,7 @@ const NPC_INFO = {
             if (player.ects < 20) {
                 return "Para estagiar na Caixa exigimos pelo menos 20 ECTS universitários. Estuda no Politec/IST e volta cá!";
             }
-            return "Taxas de juro sob controlo. Deposita as tuas poupanças ou veste o Fato Pombalino e junta-te à carreira bancária!";
+            return "Taxas de juro sob controlo. Deposita as tuas poupanças, gere microcréditos ou veste o Fato Pombalino das Modas Chiado para entrar na carreira bancária!";
         },
         color: "#854d0e"
     },
@@ -4211,12 +4337,12 @@ const NPC_INFO = {
         role: "Acampada pelo Direito à Habitação",
         quote: () => {
             if (player.houseIndex === 0) {
-                return "Quem não tem teto luta pelo teto! Junta-te à vigília, come da nossa panela e passa a noite connosco em resistência!";
+                return "Quem não tem teto luta pelo teto! A tua pequena tenda está montada na marginal do Tejo. Come da nossa panela e passa a noite em resistência!";
             }
             if (player.daysUntilRent <= 2) {
-                return "O senhorio está a apertar? Se tentarem despejar-te, a comissão de moradores bloqueia a porta! Nenhum despejo sem alternativa!";
+                return "O senhorio está a ameaçar despejo? A Plataforma Casa Para Viver e o Referendo pela Habitação estão contigo: nenhum despejo sem alternativa!";
             }
-            return "Assembleia popular aberta: exigimos tetos máximos para as rendas, habitação pública e salários que cheguem até ao fim do mês!";
+            return "Assembleia popular permanente: exigimos o Referendo pela Habitação, tetos às rendas e habitação pública em vez de especulação para fundos abutres!";
         },
         color: "#dc2626"
     },
@@ -5431,13 +5557,6 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         actions.push({ label: "Depositar 50€ no Banco", deposit: 50, timeH: 0, timeM: 15, desc: "Protege o teu dinheiro contra assaltos noturnos." });
         actions.push({ label: "Levantar 50€ da Conta", withdraw: 50, timeH: 0, timeM: 15, desc: "Dinheiro vivo na mão para compras diárias." });
 
-        actions.push({
-            label: "Alfaiate da Caixa: Fato Pombalino",
-            cost: 180,
-            buyClothing: 'suit',
-            desc: "Fato e gravata de corte nobre. OBRIGATÓRIO para trabalhar no Banco!"
-        });
-
         const bankRank = (player.careerRanks && player.careerRanks.banco) || 0;
         const curBankJob = WORKPLACES.banco.careers[bankRank];
         const nextBankJob = WORKPLACES.banco.careers[bankRank + 1];
@@ -5638,51 +5757,51 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         ];
     } else if (id === 'acampada') {
         // ====================================================================
-        // ACAMPADA ROSSIO: RESISTÊNCIA POPULAR, PERNOITA & TURNOS SOLIDÁRIOS
+        // ACAMPADA ROSSIO / MARGINAL: RESISTÊNCIA POPULAR, TENDA & SOLIDARIEDADE
         // ====================================================================
         actions = [
             {
-                label: "Pernoitar na Acampada (Passar Noite em Luta)",
+                label: "Dormir na Pequena Tenda (Pernoita em Luta)",
                 cost: 0,
                 sleepAcampada: true,
-                desc: "Passa a noite na tenda do Rossio! +40 Sanidade, +35 Comida grátis e CONGELA despejo!"
+                desc: "Descansa na tua pequena tenda Quechua à beira-Tejo. +45 Sanidade, +35 Sopa Comunitária e CONGELA despejo!"
             },
             {
-                label: "Turno: Cantina & Cozinha Popular Solidária (3h)",
+                label: "Cantina Popular: Caldo Verde & Grão (3h)",
                 workCommunityShift: 'cozinha',
-                gain: 18,
-                hunger: 40,
-                sanity: 20,
+                gain: 20,
+                hunger: 45,
+                sanity: 25,
                 timeH: 3,
                 timeM: 0,
-                desc: "Preparar sopa comunitária e servir refeições. +18€ solidários, +40 Comida e +20 Sanidade."
+                desc: "Cozinhar refeições quentes e pão fresco para o acampamento. +20€ solidários, +45 Nutrição e +25 Sanidade."
             },
             {
-                label: "Turno: Vigília & Segurança Noturna (4h)",
+                label: "Vigília Noturna: Ronda & Faixas (4h)",
                 workCommunityShift: 'vigilia',
-                gain: 24,
+                gain: 25,
                 sanity: 25,
                 timeH: 4,
                 timeM: 0,
-                desc: "Guardar o acampamento popular e proteger as tendas. +24€ de apoio e +25 Sanidade."
+                desc: "Pintar 'Casa Para Viver' em lençóis e vigiar as tendas na marginal. +25€ de apoio e +25 Sanidade."
             },
             {
-                label: "Assembleia Popular da Habitação (2h)",
+                label: "Assembleia Popular: Referendo Habitação (2h)",
                 cost: 0,
                 timeH: 2,
                 timeM: 0,
-                sanity: 30,
+                sanity: 35,
                 participateAssembly: true,
-                desc: "Debater tetos às rendas e trabalho com direitos. +30 Sanidade e união comunitária."
+                desc: "Debater tetos às rendas, apoio jurídico contra fundos e recolha de assinaturas. +35 Sanidade e união."
             },
             {
-                label: "Donativo p/ Cantina Popular (5€)",
+                label: "Donativo Solidário p/ Cantina da Acampada (5€)",
                 cost: 5,
                 timeH: 0,
                 timeM: 15,
                 sanity: 20,
                 donateAcampada: true,
-                desc: "Apoia a panela de sopa comunitária com 5€. +20 Sanidade e apoio mútuo."
+                desc: "Apoia o fundo comum para botijas de gás e ingredientes da sopa. +20 Sanidade e solidariedade ativa."
             }
         ];
     } else if (id === 'loja_roupa') {
@@ -6462,14 +6581,14 @@ function executeAction(act) {
     // Ações da Acampada pelo Direito à Habitação & Emprego
     if (act.sleepAcampada) {
         player.sleptAcampada = true;
-        player.sanity = Math.min(100, player.sanity + 40);
+        player.sanity = Math.min(100, player.sanity + 45);
         player.hunger = Math.min(100, player.hunger + 35);
         wearClothing(5);
         player.daysUntilRent = Math.max(player.daysUntilRent, Math.min(7, player.daysUntilRent + 1));
         sfxAction();
-        showToast("⛺ Passaste a noite na Acampada do Rossio! +40 Sanidade, +35 Comida e Despejo travado!");
+        showToast("⛺ Passaste a noite na tua pequena tenda na Acampada! +45 Sanidade, +35 Sopa Solidária e Despejo travado!");
         spawnParticle("✊ Resistência!", '#ef4444');
-        endDay("Dormiste na tenda da Acampada do Rossio em vigília popular.");
+        endDay("Dormiste na tua pequena tenda na Acampada da Habitação em vigília popular.");
         return;
     }
 
