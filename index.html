@@ -3044,7 +3044,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '6.1';
+const ASSET_VER = '6.2';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3082,6 +3082,22 @@ const catiaBustImg = new Image();
 catiaBustImg.src = `assets/portrait_catia_bust.png?v=${ASSET_VER}`;
 const catiaPortraitImg = new Image();
 catiaPortraitImg.src = `assets/portrait_catia.png?v=${ASSET_VER}`;
+
+// Retrato Exclusivo em Camadas da D. Zulmira (Loja de Roupa / Alfaiataria do Chiado, Senhora de Idade Distinta)
+const zulmiraBgImg = new Image();
+zulmiraBgImg.src = `assets/portrait_zulmira_bg.png?v=${ASSET_VER}`;
+const zulmiraBustImg = new Image();
+zulmiraBustImg.src = `assets/portrait_zulmira_bust.png?v=${ASSET_VER}`;
+const zulmiraPortraitImg = new Image();
+zulmiraPortraitImg.src = `assets/portrait_zulmira.png?v=${ASSET_VER}`;
+
+// Retrato Exclusivo em Camadas da Inês (Acampada da Habitação / Vigília Popular do Cais do Sodré)
+const acampadaBgImg = new Image();
+acampadaBgImg.src = `assets/portrait_acampada_bg.png?v=${ASSET_VER}`;
+const acampadaBustImg = new Image();
+acampadaBustImg.src = `assets/portrait_acampada_bust.png?v=${ASSET_VER}`;
+const acampadaPortraitImg = new Image();
+acampadaPortraitImg.src = `assets/portrait_acampada.png?v=${ASSET_VER}`;
 
 // Splash Screen Bitmapped 16-Bit Deslumbrante de Lisboa
 const splashImg = new Image();
@@ -6930,6 +6946,16 @@ function drawNpcPortrait(id, x, y, size) {
         bustImg = (catiaBustImg.complete && catiaBustImg.naturalWidth > 0) ? catiaBustImg : null;
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
+    } else if (id === 'loja_roupa' && zulmiraBgImg.complete && zulmiraBgImg.naturalWidth > 0) {
+        bgImg = zulmiraBgImg;
+        bustImg = (zulmiraBustImg.complete && zulmiraBustImg.naturalWidth > 0) ? zulmiraBustImg : null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
+    } else if (id === 'acampada' && acampadaBgImg.complete && acampadaBgImg.naturalWidth > 0) {
+        bgImg = acampadaBgImg;
+        bustImg = (acampadaBustImg.complete && acampadaBustImg.naturalWidth > 0) ? acampadaBustImg : null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
     } else if (id === 'startup' && iefpBgImg.complete && iefpBgImg.naturalWidth > 0) {
         bgImg = iefpBgImg;
         bustImg = (iefpBustImg.complete && iefpBustImg.naturalWidth > 0) ? iefpBustImg : null;
@@ -6980,9 +7006,9 @@ function drawNpcPortrait(id, x, y, size) {
                 banco:        { lx: 56, rx: 70, y: 34, w: 5, h: 2, c: '#1a1520' },
                 faculdade:    { lx: 52, rx: 68, y: 48, w: 5, h: 2, c: '#202020' },
                 miradouro:    { lx: 54, rx: 72, y: 40, w: 5, h: 2, c: '#181216' },
-                acampada:     { lx: 54, rx: 72, y: 46, w: 5, h: 2, c: '#261520' },
+                acampada:     { lx: 53, rx: 70, y: 44, w: 5, h: 2, c: '#09090b' },
                 casa:         { lx: 54, rx: 72, y: 40, w: 5, h: 2, c: '#302015' },
-                loja_roupa:   { lx: 56, rx: 72, y: 47, w: 5, h: 2, c: '#271710' }
+                loja_roupa:   { lx: 54, rx: 72, y: 44, w: 5, h: 2, c: '#271710' }
             };
             const ec = eyeCoords[id] || eyeCoords.senhorio;
             const byOff = offsetPx;
@@ -7032,6 +7058,18 @@ function drawNpcPortrait(id, x, y, size) {
             ctx.fillStyle = '#86efac';
             ctx.font = 'bold 7px "Fira Code"';
             ctx.fillText("PD", x + size - 18, y + size - 7);
+        } else if (id === 'loja_roupa') {
+            ctx.fillStyle = 'rgba(219, 39, 119, 0.4)';
+            ctx.fillRect(x + size - 26, y + size - 16, 22, 12);
+            ctx.fillStyle = '#f472b6';
+            ctx.font = 'bold 7px "Fira Code"';
+            ctx.fillText("MODAS", x + size - 25, y + size - 7);
+        } else if (id === 'acampada') {
+            ctx.fillStyle = 'rgba(220, 38, 38, 0.4)';
+            ctx.fillRect(x + size - 22, y + size - 16, 18, 12);
+            ctx.fillStyle = '#f87171';
+            ctx.font = 'bold 7px "Fira Code"';
+            ctx.fillText("TETO", x + size - 21, y + size - 7);
         } else if (id === 'senhorio') {
             ctx.fillStyle = 'rgba(185, 28, 28, 0.4)';
             ctx.fillRect(x + size - 18, y + size - 18, 14, 14);
