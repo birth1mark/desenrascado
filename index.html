@@ -2340,7 +2340,7 @@ const BUILDINGS = [
     { id: 'startup', name: 'IEFP / Emprego', x: 175, y: 35, w: 48, h: 155, color: '#065f46', accent: '#10b981', tag: 'IEFP & CARREIRAS', icon: '💼', doorX: 198, doorY: 195, desc: 'D. Mariana (IEFP, 45 anos) — Centro de Emprego, Orientação e Dossier Curricular.' },
     { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, desc: 'Inês — Vigília popular, a tua tenda Quechua, cantina solidária e luta pelo direito à habitação.' },
     { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco, depósitos e carreiras financeiras.' },
-    { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira — Fatos de gala, alfaiataria, trajes académicos e ateliê de costura.' },
+    { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira (50 anos) — Mestre alfaiate charmosa, atrevida e elegante. Fatos pombalinos e ateliê.' },
     { id: 'supermercado', name: 'Pingo Doce', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 478, doorY: 195, desc: 'Cátia (28 anos) — Encarregada bonita, curvilínea e carismática. Mantimentos e carreiras.' },
     { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 70, w: 110, h: 125, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
     { id: 'casa', name: 'O Teu Teto', x: 340, y: 15, w: 120, h: 65, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 376, doorY: 195, desc: 'Dorme para recuperar sanidade, fome e energia.' },
@@ -3044,7 +3044,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '6.2';
+const ASSET_VER = '6.3';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -6897,19 +6897,19 @@ const NPC_INFO = {
         color: "#dc2626"
     },
     loja_roupa: {
-        name: "D. Zulmira",
+        name: "D. Zulmira (50 anos)",
         role: "Alfaiataria do Chiado",
         quote: () => {
             if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
-                return "Ai credo em cruz, Zé! Sem roupa na loja?! Veste já um fato antes que venha a polícia!";
+                return "Assim tão desinibido na minha alfaiataria, Zé?! Tira as medidas com os olhos, mas veste um fato antes que perca a compostura!";
             }
             if (player.clothing.id === 'suit') {
-                return "Que porte distinto! Esse Fato Pombalino assenta que nem uma luva para a banca!";
+                return "Que homem distinto! Esse Fato Pombalino desenha-te o porte que a banca exige... e que a mim me agrada!";
             }
             if (player.clothing.id === 'shorts') {
-                return "Esses calções servem para a praia, mas para subir na vida precisas de alfaiataria a sério!";
+                return "Esses calções servem para a praia, rapaz. Para subir na vida e impressionar em Lisboa precisas de um corte à minha medida!";
             }
-            return "Bem-vindo à alfaiataria do Chiado! Polos de linho, fatos pombalinos e ateliê de costura.";
+            return "Bem-vindo às Modas Chiado! Deixa-me passar a fita métrica pelas tuas medidas... O bom gosto veste-se aqui.";
         },
         color: "#db2777"
     }
