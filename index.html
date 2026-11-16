@@ -2817,6 +2817,7 @@ function renderBoardLivingCharacters(ctx, animTimer) {
 }
 
 let speechBubbles = [];
+const MAX_SPEECH_BUBBLES = 2;
 
 function updateSpeechBubbles(dt) {
     for (let i = speechBubbles.length - 1; i >= 0; i--) {
@@ -2827,13 +2828,17 @@ function updateSpeechBubbles(dt) {
 }
 
 function spawnSpeechBubble(x, y, text, speaker) {
+    // Limite rígido anti-bloqueio: remove balões antigos para nunca ter mais de MAX_SPEECH_BUBBLES
+    while (speechBubbles.length >= MAX_SPEECH_BUBBLES) {
+        speechBubbles.shift();
+    }
     speechBubbles = speechBubbles.filter(b => Math.hypot(b.x - x, b.y - y) > 25);
     speechBubbles.push({
         x: Math.max(90, Math.min(canvas.width - 90, x)),
         y: Math.max(35, y),
         text,
         speaker,
-        timer: 3.8
+        timer: 3.0
     });
 }
 
@@ -2884,6 +2889,11 @@ function renderSpeechBubbles() {
         if (bx + bw > 632) bx = 632 - bw;
         if (by + bh > 290) by = 290 - bh;
         if (by < 8) by = 8;
+
+        b.bx = bx;
+        b.by = by;
+        b.bw = bw;
+        b.bh = bh;
 
         // 5. Caixa com fundo escuro e rebordo retro âmbar
         ctx.fillStyle = 'rgba(15, 23, 42, 0.96)';
@@ -3034,7 +3044,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '5.0';
+const ASSET_VER = '5.1';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -4086,6 +4096,7 @@ function renderStreetWalkers(ctx, animTimer) {
 let activeEncounter = null;
 
 function openStreetWalkerEncounter(w) {
+    speechBubbles = []; // Limpa balões para desimpedir o diálogo do encontro
     w.vx = 0; // Pausa o peão durante a conversa
     let encounter = {
         walker: w,
@@ -4718,6 +4729,7 @@ function unlockAchievement(id) {
 }
 
 function openAchievementsModal() {
+    speechBubbles = [];
     sfxAction();
     loadAchievements();
     const container = document.getElementById('ach-content');
@@ -6874,25 +6886,72 @@ const NPC_INFO = {
     }
 };
 
-// Renderizador de Retratos em Pixel Art 16-Bit Suave e Sem Flickering
+// Scratch canvas para animação do busto do personagem (reutilizável, zero alocações por frame)
+let portraitBustCanvas = null;
+let portraitMaskCanvas = null;
+
+function getPortraitMask() {
+    if (!portraitMaskCanvas && typeof document !== 'undefined' && document.createElement) {
+        try {
+            portraitMaskCanvas = document.createElement('canvas');
+            portraitMaskCanvas.width = 128;
+            portraitMaskCanvas.height = 128;
+            const mctx = portraitMaskCanvas.getContext('2d');
+            if (mctx) {
+                mctx.fillStyle = '#ffffff';
+                mctx.fillRect(0, 0, 128, 128);
+
+                // Esbater lateral esquerda (colunas 0..22 esbatem até 0)
+                const gradL = mctx.createLinearGradient(0, 0, 22, 0);
+                gradL.addColorStop(0, 'rgba(0,0,0,1)');
+                gradL.addColorStop(1, 'rgba(0,0,0,0)');
+                mctx.globalCompositeOperation = 'destination-out';
+                mctx.fillStyle = gradL;
+                mctx.fillRect(0, 0, 22, 128);
+
+                // Esbater lateral direita (colunas 106..128 esbatem até 0)
+                const gradR = mctx.createLinearGradient(128, 0, 106, 0);
+                gradR.addColorStop(0, 'rgba(0,0,0,1)');
+                gradR.addColorStop(1, 'rgba(0,0,0,0)');
+                mctx.fillStyle = gradR;
+                mctx.fillRect(106, 0, 22, 128);
+
+                // Esbater topo (linhas 0..18 esbatem até 0 para que a parede superior fique imóvel)
+                const gradT = mctx.createLinearGradient(0, 0, 0, 18);
+                gradT.addColorStop(0, 'rgba(0,0,0,1)');
+                gradT.addColorStop(1, 'rgba(0,0,0,0)');
+                mctx.fillStyle = gradT;
+                mctx.fillRect(0, 0, 128, 18);
+
+                mctx.globalCompositeOperation = 'source-over';
+            }
+        } catch (e) {
+            portraitMaskCanvas = null;
+        }
+    }
+    return portraitMaskCanvas;
+}
+
+function getPortraitBustCanvas() {
+    if (!portraitBustCanvas && typeof document !== 'undefined' && document.createElement) {
+        try {
+            portraitBustCanvas = document.createElement('canvas');
+            portraitBustCanvas.width = 128;
+            portraitBustCanvas.height = 128;
+        } catch (e) {
+            portraitBustCanvas = null;
+        }
+    }
+    return portraitBustCanvas;
+}
+
+// Renderizador de Retratos em Pixel Art 16-Bit com Fundo Estático e Busto Animado
 function drawNpcPortrait(id, x, y, size) {
     const npc = NPC_INFO[id] || NPC_INFO.senhorio;
 
-    // 1. Moldura Externa Elegante com Borda Dourada / Temática
+    // 1. Fundo de segurança escuro dentro da moldura
     ctx.fillStyle = '#090d16';
-    ctx.fillRect(x - 2, y - 2, size + 4, size + 4);
-    
-    // Borda elegante com a cor de assinatura do NPC
-    ctx.strokeStyle = npc.color;
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(x - 2, y - 2, size + 4, size + 4);
-
-    // Cantos decorativos de estilo retro RPG
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillRect(x - 3, y - 3, 3, 3);
-    ctx.fillRect(x + size, y - 3, 3, 3);
-    ctx.fillRect(x - 3, y + size, 3, 3);
-    ctx.fillRect(x + size, y + size, 3, 3);
+    ctx.fillRect(x, y, size, size);
 
     const npcCoords = {
         senhorio: { col: 0, row: 0 },
@@ -6906,47 +6965,83 @@ function drawNpcPortrait(id, x, y, size) {
         acampada: { col: 2, row: 0 },
         loja_roupa: { col: 3, row: 0 }
     };
-
     const coord = npcCoords[id] || npcCoords.senhorio;
 
-    // Respiração Suave (1 pixel de deslocamento arredondado, sem jitter subpixel)
-    const breathY = Math.round(Math.sin(animTimer * 2.0));
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(x + 1, y + 1, size - 2, size - 2);
-    ctx.clip();
+    let targetImg = null;
+    let sx = 0, sy = 0;
 
     if (id === 'startup' && iefpPortraitImg.complete && iefpPortraitImg.naturalWidth > 0) {
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(
-            iefpPortraitImg,
-            0, 0, 128, 128,
-            x + 1, y + 1 + breathY, size - 2, size - 2
-        );
-        ctx.restore();
-        return;
+        targetImg = iefpPortraitImg;
+        sx = 0; sy = 0;
     } else if (id === 'supermercado' && soraiaPortraitImg.complete && soraiaPortraitImg.naturalWidth > 0) {
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(
-            soraiaPortraitImg,
-            0, 0, 128, 128,
-            x + 1, y + 1 + breathY, size - 2, size - 2
-        );
-        ctx.restore();
-        return;
+        targetImg = soraiaPortraitImg;
+        sx = 0; sy = 0;
     } else if (portraitsSheetImg.complete && portraitsSheetImg.naturalWidth > 0) {
+        targetImg = portraitsSheetImg;
+        sx = coord.col * 128;
+        sy = coord.row * 128;
+    }
+
+    if (targetImg) {
+        ctx.save();
         ctx.imageSmoothingEnabled = false;
-        // Desenha o sprite 128x128 com respiração natural de 1px
-        ctx.drawImage(
-            portraitsSheetImg,
-            coord.col * 128, coord.row * 128, 128, 128,
-            x + 1, y + 1 + breathY, size - 2, size - 2
-        );
+
+        // Clip exato ao interior da moldura (x, y, size, size)
+        ctx.beginPath();
+        ctx.rect(x, y, size, size);
+        ctx.clip();
+
+        // PASSO A: O FUNDO NUNCA SE MEXE E PREENCHE 100% DO QUADRADO
+        // Desenha a imagem base estática com preenchimento total e zero quebras/gaps
+        ctx.drawImage(targetImg, sx, sy, 128, 128, x, y, size, size);
+
+        // PASSO B: ANIMAÇÃO DE RESPIRAÇÃO SUAVE APENAS DO PERSONAGEM (sem mover o fundo)
+        // O busto respira 1px com máscara esbatida para manter paredes, estantes e bordos 100% estáticos
+        const breathY = Math.round(Math.sin(animTimer * 2.2));
+        const maskCanvas = getPortraitMask();
+        const bustCanvas = getPortraitBustCanvas();
+        if (breathY !== 0 && maskCanvas && bustCanvas) {
+            const bCtx = bustCanvas.getContext('2d');
+            if (bCtx) {
+                bCtx.imageSmoothingEnabled = false;
+                bCtx.clearRect(0, 0, 128, 128);
+                bCtx.drawImage(targetImg, sx, sy, 128, 128, 0, 0, 128, 128);
+                bCtx.globalCompositeOperation = 'destination-in';
+                bCtx.drawImage(maskCanvas, 0, 0);
+                bCtx.globalCompositeOperation = 'source-over';
+
+                const scale = size / 128;
+                const offsetPx = Math.round(breathY * scale);
+                ctx.drawImage(bustCanvas, 0, 0, 128, 128, x, y + offsetPx, size, size);
+            }
+        }
+
+        // PASSO C: PISCAR DE OLHOS NATURAL ESTILO LUCASARTS SCUMM
+        // A cada ~3.6s, os olhos piscam durante ~120ms (estilo Monkey Island 2 / Fate of Atlantis)
+        const blinkCycle = (animTimer % 3.6) / 3.6;
+        if (blinkCycle < 0.035) {
+            const eyeCoords = {
+                senhorio:     { lx: 57, rx: 71, y: 39, w: 6, h: 2, c: '#451a03' },
+                tasca:        { lx: 55, rx: 69, y: 38, w: 6, h: 2, c: '#451a03' },
+                startup:      { lx: 54, rx: 70, y: 38, w: 6, h: 2, c: '#3b2f2f' },
+                supermercado: { lx: 56, rx: 68, y: 41, w: 6, h: 2, c: '#271710' },
+                banco:        { lx: 55, rx: 71, y: 37, w: 6, h: 2, c: '#292524' },
+                faculdade:    { lx: 55, rx: 71, y: 37, w: 6, h: 2, c: '#292524' },
+                miradouro:    { lx: 54, rx: 70, y: 41, w: 6, h: 2, c: '#1c1917' },
+                acampada:     { lx: 55, rx: 71, y: 40, w: 6, h: 2, c: '#1c1917' },
+                casa:         { lx: 57, rx: 71, y: 39, w: 6, h: 2, c: '#451a03' },
+                loja_roupa:   { lx: 56, rx: 68, y: 41, w: 6, h: 2, c: '#271710' }
+            };
+            const ec = eyeCoords[id] || eyeCoords.senhorio;
+            const scale = size / 128;
+            const byOff = (breathY !== 0 ? breathY : 0) * scale;
+            ctx.fillStyle = ec.c;
+            ctx.fillRect(Math.round(x + ec.lx * scale), Math.round(y + ec.y * scale + byOff), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
+            ctx.fillRect(Math.round(x + ec.rx * scale), Math.round(y + ec.y * scale + byOff), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
+        }
 
         // Acessórios e Efeitos Ambientais Elegantes nos Cantos (sem tapar o rosto):
         if (id === 'banco') {
-            // Brilho dourado suave no canto da moldura (fade suave a cada 3.5s)
             const glintCycle = (animTimer % 3.5) / 3.5;
             if (glintCycle < 0.25) {
                 const alpha = Math.sin((glintCycle / 0.25) * Math.PI);
@@ -6956,28 +7051,24 @@ function drawNpcPortrait(id, x, y, size) {
                 ctx.fillRect(gx, gy - 4, 2, 9);
             }
         } else if (id === 'startup') {
-            // LED de status online ciano pulsante no canto
             const pulse = (Math.sin(animTimer * 4.0) + 1) / 2;
             ctx.fillStyle = `rgba(56, 189, 248, ${0.4 + pulse * 0.55})`;
             ctx.beginPath();
             ctx.arc(x + 10, y + 10, 3, 0, Math.PI * 2);
             ctx.fill();
         } else if (id === 'miradouro') {
-            // Notas musicais com subida contínua e fade out gradual
             const t1 = (animTimer * 0.4) % 1.0;
             const t2 = ((animTimer * 0.4) + 0.5) % 1.0;
             const ny1 = y + size - 10 - (t1 * 50);
             const ny2 = y + size - 10 - (t2 * 50);
             const a1 = Math.sin(t1 * Math.PI);
             const a2 = Math.sin(t2 * Math.PI);
-
             ctx.font = 'bold 10px "Press Start 2P"';
             ctx.fillStyle = `rgba(56, 189, 248, ${a1 * 0.9})`;
             ctx.fillText("♪", x + size - 16, ny1);
             ctx.fillStyle = `rgba(250, 204, 21, ${a2 * 0.9})`;
             ctx.fillText("♫", x + size - 24, ny2);
         } else if (id === 'tasca') {
-            // Badge artesanal no canto com caneca de imperial
             ctx.fillStyle = 'rgba(217, 119, 6, 0.35)';
             ctx.fillRect(x + size - 18, y + size - 18, 14, 14);
             ctx.fillStyle = '#f59e0b';
@@ -6985,14 +7076,12 @@ function drawNpcPortrait(id, x, y, size) {
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(x + size - 17, y + size - 16, 10, 3);
         } else if (id === 'supermercado') {
-            // Mini badge de desconto Poupa Mais no canto
             ctx.fillStyle = 'rgba(21, 128, 61, 0.4)';
             ctx.fillRect(x + size - 20, y + size - 16, 16, 12);
             ctx.fillStyle = '#86efac';
             ctx.font = 'bold 7px "Fira Code"';
             ctx.fillText("PD", x + size - 18, y + size - 7);
         } else if (id === 'senhorio') {
-            // Selo de contrato com carimbo vermelho no canto
             ctx.fillStyle = 'rgba(185, 28, 28, 0.4)';
             ctx.fillRect(x + size - 18, y + size - 18, 14, 14);
             ctx.strokeStyle = '#ef4444';
@@ -7001,14 +7090,26 @@ function drawNpcPortrait(id, x, y, size) {
             ctx.fillStyle = '#fca5a5';
             ctx.fillRect(x + size - 14, y + size - 14, 6, 6);
         }
+
         ctx.restore();
-        return;
+    } else {
+        // Fallback procedural clássico enquanto a spritesheet carrega
+        ctx.fillStyle = npc.color + '44';
+        ctx.fillRect(x, y, size, size);
     }
 
-    // Fallback procedural clássico enquanto a spritesheet carrega
-    ctx.fillStyle = npc.color + '44';
-    ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
-    ctx.restore();
+    // Moldura exterior retro SCUMM com cantos dourados
+    // A moldura encaixa milimetricamente no contorno do retrato sem criar margens pretas
+    ctx.strokeStyle = npc.color;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x, y, size, size);
+
+    // Cantos decorativos de estilo retro RPG
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(x - 1, y - 1, 3, 3);
+    ctx.fillRect(x + size - 2, y - 1, 3, 3);
+    ctx.fillRect(x - 1, y + size - 2, 3, 3);
+    ctx.fillRect(x + size - 2, y + size - 2, 3, 3);
 }
 
 function renderInteriorScene(ctx, id, animTimer, player, HOUSES, WORKPLACES, getPlayerJob) {
@@ -8788,12 +8889,16 @@ canvas.addEventListener('click', (e) => {
 
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+        speechBubbles = [];
         closeCurriculumModal();
         closeLeaderboard();
         closeSubmitModal();
         closeAchievementsModal();
         if (state === 'MODAL') closeModal();
         if (activeEncounter) activeEncounter = null;
+    }
+    if (e.key === ' ' || e.key === 'Enter') {
+        if (speechBubbles.length > 0) speechBubbles = [];
     }
     if (activeEncounter) {
         if (e.key === '1') {
@@ -8809,6 +8914,17 @@ window.addEventListener('keydown', (e) => {
 function handleCanvasClick(cx, cy) {
     if (activeEncounter) {
         if (handleStreetEncounterClick(cx, cy)) return;
+    }
+
+    // Fechar balão de fala se o jogador clicar diretamente nele
+    if (speechBubbles.length > 0) {
+        for (let i = speechBubbles.length - 1; i >= 0; i--) {
+            const b = speechBubbles[i];
+            if (b.bx && cx >= b.bx && cx <= b.bx + b.bw && cy >= b.by && cy <= b.by + b.bh) {
+                speechBubbles.splice(i, 1);
+                return;
+            }
+        }
     }
 
     if (state === 'TITLE') {
@@ -8998,12 +9114,14 @@ function walkToBuilding(b) {
 }
 
 function openBuilding(b) {
+    speechBubbles = [];
     sfxAction();
     modalBuilding = b;
     state = 'MODAL';
 }
 
 function closeModal() {
+    speechBubbles = [];
     modalBuilding = null;
     state = 'BOARD';
 }
@@ -9838,6 +9956,7 @@ function shareImageCard() {
 // 8.1 DOSSIER CURRICULAR (ESTILO AVENTURA LUCASARTS SCUMM)
 // ============================================================================
 function openCurriculumModal() {
+    speechBubbles = [];
     initAudio();
     sfxAction();
     const modal = document.getElementById('curriculum-modal');
@@ -9986,6 +10105,7 @@ function closeCurriculumModal() {
 let isScoreSubmitted = false;
 
 function openLeaderboard() {
+    speechBubbles = [];
     const modal = document.getElementById('leaderboard-modal');
     if (!modal) return;
     modal.style.display = 'flex';
