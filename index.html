@@ -1236,6 +1236,61 @@ function sfxScooterBell() {
     setTimeout(() => playBeep(1600, 'sine', 0.12, 0.08), 90);
 }
 
+function sfxBarcodeScan() {
+    if (!soundEnabled) return;
+    initAudio();
+    playBeep(2400, 'sine', 0.05, 0.08);
+    setTimeout(() => playBeep(2800, 'sine', 0.06, 0.09), 30);
+}
+
+function sfxGuitarNote(freq = 440) {
+    if (!soundEnabled || !audioCtx) return;
+    initAudio();
+    try {
+        const now = audioCtx.currentTime;
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+
+        osc1.type = 'sawtooth';
+        osc2.type = 'triangle';
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.frequency.setValueAtTime(freq * 1.0035, now);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(3400, now);
+        filter.frequency.exponentialRampToValueAtTime(750, now + 0.38);
+
+        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.45);
+
+        osc1.connect(filter);
+        osc2.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.45);
+        osc2.stop(now + 0.45);
+    } catch(e) {}
+}
+
+function sfxKarenVoice() {
+    if (!soundEnabled) return;
+    initAudio();
+    playBeep(780, 'sawtooth', 0.10, 0.08);
+    setTimeout(() => playBeep(920, 'sawtooth', 0.14, 0.10), 80);
+}
+
+function sfxInfluencerCamera() {
+    if (!soundEnabled) return;
+    initAudio();
+    playBeep(1900, 'square', 0.03, 0.05);
+    setTimeout(() => playBeep(2500, 'triangle', 0.06, 0.07), 35);
+}
+
 // ============================================================================
 // 1.1 MÚSICA CHIPTUNE PROCEDURAL (Web Audio API)
 // ============================================================================
@@ -1244,9 +1299,10 @@ let musicInterval = null;
 let musicStep = 0;
 
 const BGM_NOTES = {
+    A2: 110.00, B2: 123.47,
     C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
     C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
-    C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99
+    C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00
 };
 
 const BGM_TRACK = [
@@ -1268,6 +1324,26 @@ const BGM_TRACK = [
     { lead: null,           bass: null }
 ];
 
+// Melodia Noturna Serenata de Fado Alfacinha (Lá Menor / Ré Menor / Mi 7ª)
+const BGM_TRACK_NIGHT = [
+    { lead: BGM_NOTES.A4, bass: BGM_NOTES.A3 },
+    { lead: BGM_NOTES.C5, bass: null },
+    { lead: BGM_NOTES.E5, bass: BGM_NOTES.E3 },
+    { lead: BGM_NOTES.D5, bass: null },
+    { lead: BGM_NOTES.F4, bass: BGM_NOTES.D3 },
+    { lead: BGM_NOTES.A4, bass: null },
+    { lead: BGM_NOTES.D5, bass: BGM_NOTES.F3 },
+    { lead: BGM_NOTES.C5, bass: null },
+    { lead: BGM_NOTES.B4, bass: BGM_NOTES.E3 },
+    { lead: BGM_NOTES.G4, bass: null },
+    { lead: BGM_NOTES.E4, bass: BGM_NOTES.B3 },
+    { lead: BGM_NOTES.F4, bass: null },
+    { lead: BGM_NOTES.E4, bass: BGM_NOTES.E3 },
+    { lead: BGM_NOTES.D4, bass: null },
+    { lead: BGM_NOTES.C4, bass: BGM_NOTES.A3 },
+    { lead: null,           bass: null }
+];
+
 function startBGM() {
     if (musicInterval || !musicEnabled) return;
     initAudio();
@@ -1276,7 +1352,9 @@ function startBGM() {
         if (!musicEnabled || !audioCtx || audioCtx.state !== 'running') return;
         if (state !== 'BOARD' && state !== 'MODAL') return;
 
-        const note = BGM_TRACK[musicStep];
+        const isNightTime = typeof player !== 'undefined' && player && (player.timeHour >= 20 || player.timeHour < 7);
+        const curTrack = isNightTime ? BGM_TRACK_NIGHT : BGM_TRACK;
+        const note = curTrack[musicStep % curTrack.length];
         const now = audioCtx.currentTime;
 
         // Lead synth (square wave, filtrado e suave)
@@ -1284,14 +1362,14 @@ function startBGM() {
             try {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                osc.type = 'square';
+                osc.type = isNightTime ? 'triangle' : 'square';
                 osc.frequency.setValueAtTime(note.lead, now);
-                gain.gain.setValueAtTime(0.018, now);
-                gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.12);
+                gain.gain.setValueAtTime(isNightTime ? 0.025 : 0.018, now);
+                gain.gain.exponentialRampToValueAtTime(0.0005, now + (isNightTime ? 0.16 : 0.12));
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 osc.start(now);
-                osc.stop(now + 0.12);
+                osc.stop(now + (isNightTime ? 0.16 : 0.12));
             } catch(e) {}
         }
 
@@ -1311,7 +1389,7 @@ function startBGM() {
             } catch(e) {}
         }
 
-        musicStep = (musicStep + 1) % BGM_TRACK.length;
+        musicStep = (musicStep + 1) % curTrack.length;
     }, 145);
 }
 
@@ -2654,7 +2732,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '4.4';
+const ASSET_VER = '4.5';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -2892,6 +2970,23 @@ function renderWeather(ctx) {
             }
         });
 
+        // Poças de água reflexivas no empedrado da rua
+        const puddles = [
+            { x: 195, y: 211, rx: 18, ry: 4.5 },
+            { x: 265, y: 213, rx: 24, ry: 5 },
+            { x: 465, y: 211, rx: 20, ry: 4.5 }
+        ];
+        puddles.forEach((pud, idx) => {
+            const ripple = Math.sin(animTimer * 3 + idx * 2) * 1.5;
+            ctx.fillStyle = 'rgba(186, 230, 253, 0.26)';
+            ctx.beginPath();
+            ctx.ellipse(pud.x, pud.y, pud.rx + ripple, pud.ry + ripple * 0.3, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(224, 242, 254, 0.35)';
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+        });
+
         const wetShimmer = 0.08 + Math.sin(animTimer * 2.5) * 0.03;
         ctx.fillStyle = `rgba(224, 242, 254, ${wetShimmer.toFixed(2)})`;
         ctx.fillRect(0, 196, 148, 22);
@@ -2910,9 +3005,10 @@ function renderWeather(ctx) {
                 ctx.lineWidth = 0.5;
                 ctx.strokeRect(-p.size, -p.size * 0.7, p.size * 2, p.size * 1.4);
             } else {
-                ctx.fillStyle = (p.size > 3.5) ? '#b45309' : '#15803d';
+                // Pétalas de Jacarandá violeta/lilás de Lisboa a esvoaçar
+                ctx.fillStyle = (p.size > 3.5) ? '#a855f7' : '#c084fc';
                 ctx.beginPath();
-                ctx.ellipse(0, 0, p.size, p.size * 0.5, 0, 0, Math.PI * 2);
+                ctx.ellipse(0, 0, p.size, p.size * 0.55, 0, 0, Math.PI * 2);
                 ctx.fill();
             }
             ctx.restore();
@@ -2940,7 +3036,7 @@ function renderWeather(ctx) {
 }
 
 // ============================================================================
-// 4.2 PERSONAGENS ANDANTES & ENCONTROS DE RUA (Catálogo de 10 Habitantes de Lisboa)
+// 4.2 PERSONAGENS ANDANTES & ENCONTROS DE RUA (Catálogo de 12 Habitantes de Lisboa)
 // ============================================================================
 const STREET_WALKER_CATALOG = [
     {
@@ -3079,6 +3175,38 @@ const STREET_WALKER_CATALOG = [
             "Miau! *olha desconfiado para um pombo na calçada*",
             "*esfrega-se carinhosamente no lancil da calçada* ... Miau!",
             "*ronrom... ronrom...* *trota alegremente*"
+        ]
+    },
+    {
+        id: 'influencer',
+        name: 'Ashley (Influencer de LA)',
+        type: 'influencer',
+        speed: 18,
+        width: 32,
+        height: 42,
+        canExitRight: true,
+        quotes: [
+            "OMG Lisbon is so aesthetic! Literally living my best life!",
+            "Excuse me, you just totally ruined my golden hour reel!",
+            "Is oat milk flat white available in this super cute tasca?!",
+            "Dropping my Lisbon Hidden Gems travel guide on TikTok! Link in bio!",
+            "Wait, someone take a photo of me candidly eating a pastel de nata!"
+        ]
+    },
+    {
+        id: 'karen',
+        name: 'D. Maria de Fátima (A Queixosa)',
+        type: 'karen',
+        speed: 15,
+        width: 30,
+        height: 40,
+        canExitRight: true,
+        quotes: [
+            "Isto é uma vergonha inadmissível! Quero falar com o gerente do bairro imediatamente!",
+            "Esta calçada irregular destruiu-me os saltos de 400 euros! Onde está o presidente da Junta?!",
+            "Você não sabe com quem está a falar! O meu falecido marido era Comendador!",
+            "Vou chamar a ASAE, a Polícia Municipal e o Correio da Manhã!",
+            "Que pouca vergonha esta gente acampada na promenade! Que falta de elegância!"
         ]
     }
 ];
@@ -3517,6 +3645,110 @@ function renderStreetWalkers(ctx, animTimer) {
                 ctx.fillRect(-11, py - 32, 5, 17);
                 ctx.fillStyle = '#d97706';
                 ctx.fillRect(-10, py - 25, 3, 2);
+            } else if (w.type === 'influencer') {
+                // 🤳 ASHLEY - TRAVEL INFLUENCER DE LA (ESTADOS UNIDOS)
+                // Cabelo comprido ondulado com mechas loiras/douradas
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(-7, py - 39, 14, 5);
+                ctx.fillRect(-8, py - 36, 4, 12);
+                ctx.fillRect(4, py - 36, 4, 12);
+                ctx.fillStyle = '#fde68a';
+                ctx.fillRect(-6, py - 37, 2, 8);
+                ctx.fillRect(5, py - 37, 2, 8);
+
+                // Óculos de sol redondos oversized pretos
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, py - 34, 4, 3);
+                ctx.fillRect(5, py - 34, 4, 3);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(1, py - 33, 1, 1);
+
+                // Crop top rosa pastel
+                ctx.fillStyle = '#f472b6';
+                ctx.fillRect(-5, py - 26, 10, 6);
+                ctx.fillStyle = '#fbcfe8';
+                ctx.fillRect(-3, py - 25, 6, 2);
+
+                // Calções de ganga azuis claros
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(-5, py - 20, 10, 4);
+
+                // 🤳 Selfie Stick estendido com smartphone e mini ring-light a piscar!
+                const stickBob = Math.sin(animTimer * 5) * 1.5;
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(3, py - 22);
+                ctx.lineTo(16, py - 38 + stickBob);
+                ctx.stroke();
+
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(14, py - 44 + stickBob, 6, 9);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(15, py - 43 + stickBob, 4, 7);
+
+                const isRec = (Math.sin(animTimer * 8) > 0);
+                ctx.fillStyle = isRec ? '#ef4444' : '#ffffff';
+                ctx.fillRect(16, py - 46 + stickBob, 2, 2);
+                if (isRec) {
+                    ctx.fillStyle = 'rgba(239, 68, 68, 0.25)';
+                    ctx.beginPath();
+                    ctx.arc(17, py - 45 + stickBob, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            } else if (w.type === 'karen') {
+                // 📢 D. MARIA DE FÁTIMA - A QUEIXOSA DO BAIRRO (63 ANOS)
+                // Cabelo loiro armado e volumoso com laca anos 80
+                ctx.fillStyle = '#facc15';
+                ctx.beginPath();
+                ctx.arc(0, py - 36, 8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#fde047';
+                ctx.fillRect(-7, py - 42, 14, 6);
+                ctx.fillRect(-8, py - 38, 4, 7);
+
+                // Óculos escuros caros empoleirados no topo do cabelo
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(-5, py - 43, 4, 2);
+                ctx.fillRect(1, py - 43, 4, 2);
+                ctx.fillRect(-1, py - 43, 2, 1);
+
+                // Lenço de seda estampado com motivos dourados ao pescoço
+                ctx.fillStyle = '#eab308';
+                ctx.fillRect(-4, py - 28, 8, 3);
+                ctx.fillStyle = '#ca8a04';
+                ctx.fillRect(-2, py - 27, 4, 3);
+
+                // Casaco de malha coral chique
+                ctx.fillStyle = '#f87171';
+                ctx.fillRect(-5, py - 25, 10, 9);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(-1, py - 25, 2, 9);
+
+                // Calças de corte clássico azul marinho
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(-5, py - 16, 10, 10);
+
+                // Sapatos de salto agulha finos
+                ctx.fillStyle = '#7f1d1d';
+                ctx.fillRect(-3, py - 4, 3, 4);
+                ctx.fillRect(1, py - 4, 3, 4);
+
+                // Carteira de marca de luxo no braço
+                ctx.fillStyle = '#7c2d12';
+                ctx.fillRect(-10, py - 24, 6, 7);
+                ctx.fillStyle = '#eab308';
+                ctx.fillRect(-8, py - 22, 2, 2);
+
+                // Dedo indicador esticado no ar a apontar furiosa!
+                const pointWag = Math.sin(animTimer * 6) * 1.5;
+                ctx.strokeStyle = '#fcd34d';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(3, py - 23);
+                ctx.lineTo(12, py - 32 + pointWag);
+                ctx.lineTo(16, py - 34 + pointWag);
+                ctx.stroke();
             }
 
             ctx.restore();
@@ -3526,18 +3758,410 @@ function renderStreetWalkers(ctx, animTimer) {
                 const bob = Math.sin(animTimer * 7) * 2;
                 ctx.font = '10px "Press Start 2P"';
                 ctx.textAlign = 'center';
-                const icon = (w.type === 'estafeta' ? "🚲" :
+                const icon = (w.type === 'influencer' ? "🤳" :
+                             (w.type === 'karen' ? "📢" :
+                             (w.type === 'estafeta' ? "🚲" :
                              (w.type === 'turista_foto' ? "📸" :
                              (w.type === 'vizinha' ? "🥖" :
                              (w.type === 'turista_mala' ? "🧳" :
                              (w.type === 'tuna' ? "🎵" :
-                             (w.type === 'estudante' ? "📐" : "💬"))))));
+                             (w.type === 'estudante' ? "📐" : "💬"))))))));
                 ctx.fillText(icon, px, py - 46 + bob);
             }
         }
     });
 
     ctx.restore();
+}
+
+// ============================================================================
+// 4.2.1 ENCONTROS INTERATIVOS SCUMM COM OS HABITANTES DE LISBOA
+// ============================================================================
+let activeEncounter = null;
+
+function openStreetWalkerEncounter(w) {
+    w.vx = 0; // Pausa o peão durante a conversa
+    let encounter = {
+        walker: w,
+        name: w.name,
+        type: w.type,
+        icon: (w.type === 'influencer' ? "🤳" :
+              (w.type === 'karen' ? "📢" :
+              (w.type === 'castanheiro' ? "🌰" :
+              (w.type === 'trotinete' ? "🛴" :
+              (w.type === 'turista_mala' ? "🧳" :
+              (w.type === 'estudante' ? "🎓" :
+              (w.type === 'vizinha' ? "🥖" :
+              (w.type === 'estafeta' ? "🚲" :
+              (w.type === 'reformado' ? "🧓" :
+              (w.type === 'turista_foto' ? "📸" :
+              (w.type === 'tuna' ? "🎸" : "🐈"))))))))))),
+        prompt: "",
+        opt1Text: "",
+        opt1Action: null,
+        opt2Text: "",
+        opt2Action: null
+    };
+
+    if (w.type === 'influencer') {
+        sfxInfluencerCamera();
+        encounter.prompt = "«OMG! Podes tirar-me uma foto segurando este pastel de nata com o elétrico amarelo atrás?! O feed vai explodir!»";
+        encounter.opt1Text = "► 1. Tirar foto de ângulo profissional (+12.00€ gorjeta, +5 Reputação)";
+        encounter.opt1Action = () => {
+            player.wallet += 12.00;
+            player.reputation = Math.min(100, player.reputation + 5);
+            sfxWin();
+            spawnParticle("🤳 +12.00€ +5 Rep", "#38bdf8", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«OMG you're an angel! Tagging @LisbonVibes! Love it!»", w.name);
+        };
+        encounter.opt2Text = "► 2. «Minha senhora, saia dos carris que vem aí o Elétrico 28!» (+12 Sanidade)";
+        encounter.opt2Action = () => {
+            player.sanity = Math.min(100, player.sanity + 12);
+            sfxTramBell();
+            spawnParticle("🚋 +12 Sanidade!", "#facc15", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Wait what?! *salta da linha assustada* So dramatic!»", w.name);
+        };
+    } else if (w.type === 'karen') {
+        sfxKarenVoice();
+        encounter.prompt = "«Isto é uma vergonha inadmissível! Esta calçada irregular estragou-me os sapatos caríssimos! Onde está o gerente?!»";
+        encounter.opt1Text = "► 1. Ouvir com paciência e acenar (+2.00€ atirados com desdém, -3 Energia)";
+        encounter.opt1Action = () => {
+            player.wallet += 2.00;
+            player.energy = Math.max(0, player.energy - 3);
+            sfxCoin();
+            spawnParticle("🪙 +2.00€ -3 Energia", "#f59e0b", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Tome lá para um café e não me maça mais com conversas!»", w.name);
+        };
+        encounter.opt2Text = "► 2. «Minha senhora, a vida correu-lhe mal mas a culpa não é do empedrado!» (+14 Sanidade)";
+        encounter.opt2Action = () => {
+            player.sanity = Math.min(100, player.sanity + 14);
+            sfxAction();
+            spawnParticle("📢 +14 Sanidade!", "#ef4444", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«O quê?! Mas você sabe quem eu sou?! Vou já chamar o Correio da Manhã!»", w.name);
+        };
+    } else if (w.type === 'castanheiro') {
+        encounter.prompt = "«Quentes e boas! Quem quer castanhas assadas na brasa para aquecer a alma e a carcaça?!»";
+        encounter.opt1Text = `► 1. Comprar cartucho de castanhas a estalar (-${w.chestnutPrice.toFixed(2)}€, +25 Fome, +15 Sanidade)`;
+        encounter.opt1Action = () => {
+            if (player.wallet >= w.chestnutPrice) {
+                player.wallet -= w.chestnutPrice;
+                player.hunger = Math.min(100, player.hunger + 25);
+                player.sanity = Math.min(100, player.sanity + 15);
+                sfxCoin();
+                w.state = 'ROASTING';
+                w.timer = 5;
+                spawnParticle("🌰 +25 Fome +15 Sanidade", "#f59e0b", w.x, w.y - 44);
+                spawnSpeechBubble(w.x, w.y - 48, "Castanhas quentinhas a estalar! Bom proveito, rapaz!", w.name);
+                unlockAchievement('quentes_e_boas');
+            } else {
+                sfxAlert();
+                spawnSpeechBubble(w.x, w.y - 48, "Sem 2.50€ na algibeira? Volta quando tiveres trocos, Zé!", w.name);
+            }
+        };
+        encounter.opt2Text = "► 2. Aquecer as mãos no fogareiro e ouvir um pregão antigo (Grátis, +6 Sanidade)";
+        encounter.opt2Action = () => {
+            player.sanity = Math.min(100, player.sanity + 6);
+            sfxAction();
+            spawnParticle("🔥 +6 Sanidade", "#f97316", w.x, w.y - 44);
+            spawnSpeechBubble(w.x, w.y - 48, "Aquece lá as mãos ao lume, Zé! O frio de Lisboa cala fundo!", w.name);
+        };
+    } else if (w.type === 'trotinete') {
+        sfxScooterBell();
+        encounter.prompt = "«Hey bro! Loving Lisbon's synergy! Ever thought of pivoting your hustle into decentralized AI?!»";
+        encounter.opt1Text = "► 1. Ouvir o pitch de Web3 (-2 Sanidade, +3.00€ por mentoria de café)";
+        encounter.opt1Action = () => {
+            player.wallet += 3.00;
+            player.sanity = Math.max(0, player.sanity - 2);
+            sfxCoin();
+            spawnParticle("⚡ +3.00€ -2 Sanidade", "#38bdf8", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Great chat, bro! Let's sync up asynchronously on Slack!»", w.name);
+        };
+        encounter.opt2Text = "► 2. «O meu irmão em Cristo, anda de metro e deixa o passeio para os peões!» (+10 Sanidade)";
+        encounter.opt2Action = () => {
+            player.sanity = Math.min(100, player.sanity + 10);
+            sfxAction();
+            spawnParticle("🛴 +10 Sanidade!", "#22c55e", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Whoa, harsh feedback! Cruising to Chiado anyway, peace!»", w.name);
+        };
+    } else if (w.type === 'turista_mala') {
+        sfxCoin();
+        encounter.prompt = "«Good heavens! These cobblestones are dreadfully bumpy. Which way to the historic Castle?!»";
+        encounter.opt1Text = "► 1. Indicar o Elétrico 28 e a rota certa (+6.00€ gorjeta, +5 Reputação)";
+        encounter.opt1Action = () => {
+            player.wallet += 6.00;
+            player.reputation = Math.min(100, player.reputation + 5);
+            sfxWin();
+            spawnParticle("🧳 +6.00€ +5 Rep", "#38bdf8", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Brilliant! Thank you kindly young man, cheers!»", w.name);
+        };
+        encounter.opt2Text = "► 2. «Go straight into Cova da Moura, mate! Very historic!» (+12 Sanidade, -2 Reputação)";
+        encounter.opt2Action = () => {
+            player.sanity = Math.min(100, player.sanity + 12);
+            player.reputation = Math.max(0, player.reputation - 2);
+            sfxAction();
+            spawnParticle("🗺️ +12 Sanidade -2 Rep", "#f59e0b", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Splendid! Off to explore the hidden quarter then!»", w.name);
+        };
+    } else if (w.type === 'estudante') {
+        sfxStep();
+        encounter.prompt = "«Zé! Estou em pânico com o projeto de Sistemas Operativos... não durmo há 36 horas no Técnico!»";
+        encounter.opt1Text = "► 1. Trocar apontamentos e esquemas da matéria (+20% avanço na cadeira do IST)";
+        encounter.opt1Action = () => {
+            if (player.enrolledCourse && COURSES[player.enrolledCourse]) {
+                const cur = COURSES[player.enrolledCourse].subjects[player.courseSubjectIndex];
+                if (cur) {
+                    player.subjectProgress = Math.min(100, (player.subjectProgress || 0) + 20);
+                    spawnParticle("📐 +20% na Cadeira!", "#38bdf8", w.x, w.y - 45);
+                }
+            } else {
+                player.knowledge = Math.min(100, player.knowledge + 6);
+                spawnParticle("🎓 +6 Conhecimento", "#38bdf8", w.x, w.y - 45);
+            }
+            sfxWin();
+            spawnSpeechBubble(w.x, w.y - 48, "«Salvaste-me o semestre! Vou já compilar esta biblioteca!»", w.name);
+        };
+        encounter.opt2Text = "► 2. Pagar-lhe um café curto e dar força moral (-0.80€, +12 Sanidade)";
+        encounter.opt2Action = () => {
+            if (player.wallet >= 0.80) {
+                player.wallet -= 0.80;
+                player.sanity = Math.min(100, player.sanity + 12);
+                sfxCoin();
+                spawnParticle("☕ +12 Sanidade", "#f59e0b", w.x, w.y - 45);
+                spawnSpeechBubble(w.x, w.y - 48, "«Uma bica com cheirinho salva qualquer engenheiro! Obrigado!»", w.name);
+            } else {
+                player.sanity = Math.min(100, player.sanity + 5);
+                spawnSpeechBubble(w.x, w.y - 48, "«Força rapaz, o Técnico é duro mas a gente aguenta!»", w.name);
+            }
+        };
+    } else if (w.type === 'vizinha') {
+        sfxCoin();
+        encounter.prompt = "«Olha o Zé! Levo uma carcaça de pão de Mafra ainda a deitar fumo do forno!»";
+        encounter.opt1Text = "► 1. Aceitar a côdea de pão quente (+12 Fome, +8 Sanidade)";
+        encounter.opt1Action = () => {
+            player.hunger = Math.min(100, player.hunger + 12);
+            player.sanity = Math.min(100, player.sanity + 8);
+            sfxCoin();
+            spawnParticle("🥖 Pão Quente! +12 Fome", "#f59e0b", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Come enquanto está quente, Zé! A côdea é que tem a vitamina!»", w.name);
+        };
+        encounter.opt2Text = "► 2. Ajudar a carregar o saco de compras até ao lancil (+10 Sanidade, +5 Reputação)";
+        encounter.opt2Action = () => {
+            player.sanity = Math.min(100, player.sanity + 10);
+            player.reputation = Math.min(100, player.reputation + 5);
+            sfxAction();
+            spawnParticle("👵 +10 Sanidade +5 Rep", "#ec4899", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Que rapaz tão bem-educado! Já não se fazem vizinhos como tu!»", w.name);
+        };
+    } else if (w.type === 'estafeta') {
+        sfxScooterBell();
+        encounter.prompt = "«Ufa, três entregas atrasadas! Mas trago aqui uma bifana no saco que o cliente cancelou!»";
+        encounter.opt1Text = "► 1. Comprar a bifana cancelada por preço de amigo (-3.00€, +40 Fome!)";
+        encounter.opt1Action = () => {
+            if (player.wallet >= 3.00) {
+                player.wallet -= 3.00;
+                player.hunger = Math.min(100, player.hunger + 40);
+                sfxCoin();
+                spawnParticle("🥩 Bifana! +40 Fome", "#22c55e", w.x, w.y - 45);
+                spawnSpeechBubble(w.x, w.y - 48, "«Safaste-me o turno, Zé! Bom proveito!»", w.name);
+            } else {
+                sfxAlert();
+                spawnSpeechBubble(w.x, w.y - 48, "«Sem 3 euros? Tenho de a comer eu no fim do turno!»", w.name);
+            }
+        };
+        encounter.opt2Text = "► 2. «Atenção ao carril molhado do 28 na curva, rapaz!» (+6 Sanidade, +4 Reputação)";
+        encounter.opt2Action = () => {
+            player.sanity = Math.min(100, player.sanity + 6);
+            player.reputation = Math.min(100, player.reputation + 4);
+            sfxAction();
+            spawnParticle("🚲 +6 Sanidade +4 Rep", "#22c55e", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Ufa, bem visto! Aquele ferro escorrega que é uma desgraça!»", w.name);
+        };
+    } else if (w.type === 'reformado') {
+        sfxStep();
+        encounter.prompt = "«Olá rapaz. Senta-te um bocadinho no banco da praça. A vida não é só correr atrás do euro.»";
+        encounter.opt1Text = "► 1. Pedir um conselho sobre as rendas e o segredo da calma (+10 Sanidade)";
+        encounter.opt1Action = () => {
+            player.sanity = Math.min(100, player.sanity + 10);
+            sfxAction();
+            spawnParticle("🧓 +10 Sanidade", "#cbd5e1", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«A cidade tem séculos de história, rapaz. Quem tem paciência vence tudo.»", w.name);
+        };
+        encounter.opt2Text = "► 2. Comentar o golo anulado no jogo de domingo (+8 Sanidade)";
+        encounter.opt2Action = () => {
+            player.sanity = Math.min(100, player.sanity + 8);
+            sfxAction();
+            spawnParticle("⚽ +8 Sanidade", "#38bdf8", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Aquilo era penalty claro como a água do Tejo! O árbitro é que é cego!»", w.name);
+        };
+    } else if (w.type === 'turista_foto') {
+        sfxAction();
+        encounter.prompt = "«Bonjour! Regardez la belle lumière sur les azulejos! Pourriez-vous me prendre en photo?»";
+        encounter.opt1Text = "► 1. Tirar foto artística com enquadramento perfeito (+8.00€ de gorjeta)";
+        encounter.opt1Action = () => {
+            player.wallet += 8.00;
+            sfxWin();
+            spawnParticle("📸 +8.00€ Gorjeta", "#fde047", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Magnifique! Un cadrage digne du musée du Louvre! Merci!»", w.name);
+        };
+        encounter.opt2Text = "► 2. Apontar para o Elétrico 28 que vem a subir (+5.00€ gorjeta, +4 Sanidade)";
+        encounter.opt2Action = () => {
+            player.wallet += 5.00;
+            player.sanity = Math.min(100, player.sanity + 4);
+            sfxTramBell();
+            spawnParticle("🚋 +5.00€ +4 San", "#fde047", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Ah, le tramway jaune! C'est la carte postale parfaite!»", w.name);
+        };
+    } else if (w.type === 'tuna') {
+        sfxAction();
+        encounter.prompt = "«Ó rapaz! Junta a tua voz à Tuna! Traje negro traçado e uma serenata às janelas de Lisboa!»";
+        encounter.opt1Text = "► 1. Acompanhar o refrão com alma (+12 Sanidade, +6 Aptidão Musical)";
+        encounter.opt1Action = () => {
+            player.sanity = Math.min(100, player.sanity + 12);
+            player.aptidaoMusical = Math.min(100, player.aptidaoMusical + 6);
+            sfxGuitarNote(440);
+            spawnParticle("🎵 +12 Sanidade +6 Música", "#c084fc", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Tens voz de fadista, Zé! A noite lisboeta corre-te nas veias!»", w.name);
+        };
+        encounter.opt2Text = "► 2. Pedir uma trova rápida de incentivo para os teus estudos (+8 Sanidade)";
+        encounter.opt2Action = () => {
+            player.sanity = Math.min(100, player.sanity + 8);
+            sfxGuitarNote(330);
+            spawnParticle("🎸 +8 Sanidade", "#c084fc", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Passar o semestre é dever, mas viver a boémia é saber!»", w.name);
+        };
+    } else if (w.type === 'gato') {
+        sfxPigeon();
+        encounter.prompt = "«Miau... *Faísca olha para ti com os olhos verdes brilhantes e abana a cauda preta.*»";
+        encounter.opt1Text = "► 1. Fazer festinhas macias atrás das orelhas (+10 Sanidade)";
+        encounter.opt1Action = () => {
+            player.sanity = Math.min(100, player.sanity + 10);
+            sfxPigeon();
+            spawnParticle("🐾 +10 Sanidade", "#f472b6", w.x, w.y - 25);
+            spawnSpeechBubble(w.x, w.y - 30, "*Ronrom... ronrom...* Faísca esfrega-se no teu calçado!", w.name);
+        };
+        encounter.opt2Text = "► 2. Oferecer uma lasca de atum da despensa (+16 Sanidade)";
+        encounter.opt2Action = () => {
+            if (player.groceries > 0) player.groceries--;
+            player.sanity = Math.min(100, player.sanity + 16);
+            sfxWin();
+            spawnParticle("🐟 +16 Sanidade!", "#f472b6", w.x, w.y - 25);
+            spawnSpeechBubble(w.x, w.y - 30, "*Miau meigo!* Faísca devora o atum e fica teu fiel amigo!", w.name);
+        };
+    }
+
+    activeEncounter = encounter;
+}
+
+function renderStreetEncounter(ctx, animTimer) {
+    if (!activeEncounter) return;
+
+    const ex = 40;
+    const ey = 190;
+    const ew = 560;
+    const eh = 100;
+
+    // Fundo SCUMM Translúcido Elegante
+    ctx.fillStyle = 'rgba(9, 13, 22, 0.95)';
+    ctx.fillRect(ex, ey, ew, eh);
+
+    // Borda retro dourada/ciano
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(ex, ey, ew, eh);
+
+    // Cantos ornamentais
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(ex - 2, ey - 2, 4, 4);
+    ctx.fillRect(ex + ew - 2, ey - 2, 4, 4);
+    ctx.fillRect(ex - 2, ey + eh - 2, 4, 4);
+    ctx.fillRect(ex + ew - 2, ey + eh - 2, 4, 4);
+
+    // Cabeçalho com Nome e Ícone
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(ex, ey, ew, 22);
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText(`${activeEncounter.icon} ${activeEncounter.name.toUpperCase()}`, ex + 10, ey + 15);
+
+    // Botão Fechar ✕
+    const isHoverClose = (mouse.x >= ex + ew - 26 && mouse.x <= ex + ew - 6 && mouse.y >= ey + 2 && mouse.y <= ey + 20);
+    ctx.fillStyle = isHoverClose ? '#fca5a5' : '#ef4444';
+    ctx.font = 'bold 13px "Fira Code"';
+    ctx.textAlign = 'center';
+    ctx.fillText("✕", ex + ew - 16, ey + 16);
+
+    // Linha de Diálogo do NPC
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 9.5px "Fira Code"';
+    ctx.textAlign = 'left';
+    ctx.fillText(activeEncounter.prompt, ex + 12, ey + 38, ew - 24);
+
+    // Opção 1
+    const opt1Y = ey + 48;
+    const isHoverOpt1 = (mouse.x >= ex + 10 && mouse.x <= ex + ew - 10 && mouse.y >= opt1Y && mouse.y <= opt1Y + 22);
+    ctx.fillStyle = isHoverOpt1 ? '#0369a1' : 'rgba(30, 41, 59, 0.85)';
+    ctx.fillRect(ex + 10, opt1Y, ew - 20, 22);
+    ctx.strokeStyle = isHoverOpt1 ? '#38bdf8' : '#475569';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(ex + 10, opt1Y, ew - 20, 22);
+
+    ctx.fillStyle = isHoverOpt1 ? '#ffffff' : '#86efac';
+    ctx.font = 'bold 9px "Fira Code"';
+    ctx.fillText(activeEncounter.opt1Text, ex + 18, opt1Y + 15, ew - 36);
+
+    // Opção 2
+    const opt2Y = ey + 73;
+    const isHoverOpt2 = (mouse.x >= ex + 10 && mouse.x <= ex + ew - 10 && mouse.y >= opt2Y && mouse.y <= opt2Y + 22);
+    ctx.fillStyle = isHoverOpt2 ? '#0369a1' : 'rgba(30, 41, 59, 0.85)';
+    ctx.fillRect(ex + 10, opt2Y, ew - 20, 22);
+    ctx.strokeStyle = isHoverOpt2 ? '#38bdf8' : '#475569';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(ex + 10, opt2Y, ew - 20, 22);
+
+    ctx.fillStyle = isHoverOpt2 ? '#ffffff' : '#38bdf8';
+    ctx.font = 'bold 9px "Fira Code"';
+    ctx.fillText(activeEncounter.opt2Text, ex + 18, opt2Y + 15, ew - 36);
+}
+
+function handleStreetEncounterClick(cx, cy) {
+    if (!activeEncounter) return false;
+
+    const ex = 40;
+    const ey = 190;
+    const ew = 560;
+    const eh = 100;
+
+    // Botão Fechar ✕
+    if (cx >= ex + ew - 26 && cx <= ex + ew - 6 && cy >= ey + 2 && cy <= ey + 20) {
+        activeEncounter = null;
+        return true;
+    }
+
+    // Opção 1
+    const opt1Y = ey + 48;
+    if (cx >= ex + 10 && cx <= ex + ew - 10 && cy >= opt1Y && cy <= opt1Y + 22) {
+        if (activeEncounter.opt1Action) activeEncounter.opt1Action();
+        activeEncounter = null;
+        return true;
+    }
+
+    // Opção 2
+    const opt2Y = ey + 73;
+    if (cx >= ex + 10 && cx <= ex + ew - 10 && cy >= opt2Y && cy <= opt2Y + 22) {
+        if (activeEncounter.opt2Action) activeEncounter.opt2Action();
+        activeEncounter = null;
+        return true;
+    }
+
+    // Clique dentro da caixa não propaga
+    if (cx >= ex && cx <= ex + ew && cy >= ey && cy <= ey + eh) {
+        return true;
+    }
+
+    // Clique fora fecha o encontro
+    activeEncounter = null;
+    return true;
 }
 
 function handleStreetWalkerClick(cx, cy) {
@@ -3550,93 +4174,8 @@ function handleStreetWalkerClick(cx, cy) {
         const hitRadius = (w.type === 'castanheiro') ? 28 : (w.type === 'gato' ? 18 : 22);
         if (Math.hypot(cx - w.x, cy - (w.y - (w.type === 'gato' ? 10 : 18))) < hitRadius) {
             triggerHaptic([30, 20, 30]);
-
-            if (w.type === 'castanheiro') {
-                if (player.wallet >= w.chestnutPrice) {
-                    player.wallet -= w.chestnutPrice;
-                    player.hunger = Math.min(100, player.hunger + 25);
-                    player.sanity = Math.min(100, player.sanity + 15);
-                    sfxCoin();
-                    w.state = 'ROASTING';
-                    w.timer = 5;
-                    w.vx = 0;
-                    spawnParticle("🌰 +25 Fome +15 Sanidade", "#f59e0b", w.x, w.y - 44);
-                    spawnSpeechBubble(w.x, w.y - 48, "Castanhas quentinhas a estalar! Bom proveito, rapaz!", w.name);
-                    unlockAchievement('quentes_e_boas');
-                } else {
-                    sfxAlert();
-                    spawnSpeechBubble(w.x, w.y - 48, "Sem 2.50€ na algibeira? Volta quando tiveres trocos, Zé!", w.name);
-                }
-                return true;
-            }
-
-            if (w.type === 'trotinete') {
-                sfxScooterBell();
-                spawnParticle("⚡ Glide!", "#38bdf8", w.x, w.y - 44);
-                spawnSpeechBubble(w.x, w.y - 48, "Hey bro, loving the Lisbon sunlight! Have a productive day!", w.name);
-                return true;
-            }
-
-            if (w.type === 'turista_mala') {
-                sfxCoin();
-                spawnParticle("🧳 Clack-clack!", "#38bdf8", w.x, w.y - 40);
-                spawnSpeechBubble(w.x, w.y - 46, "Hello! Which tram goes up to the São Jorge Castle? These cobbles are wild!", w.name);
-                return true;
-            }
-
-            if (w.type === 'estudante') {
-                sfxStep();
-                player.sanity = Math.min(100, player.sanity + 3);
-                spawnParticle("📐 +3 Sanidade", "#38bdf8", w.x, w.y - 40);
-                spawnSpeechBubble(w.x, w.y - 46, "Não me atrases, Zé! O professor de Análise Matemática não tolera atrasos!", w.name);
-                return true;
-            }
-
-            if (w.type === 'vizinha') {
-                sfxCoin();
-                player.sanity = Math.min(100, player.sanity + 6);
-                spawnParticle("🥖 Pão Quente! +6 Sanidade", "#f59e0b", w.x, w.y - 40);
-                spawnSpeechBubble(w.x, w.y - 46, "Toma lá um pedaço de côdea de pão quente, Zé! Faz bem à carcaça!", w.name);
-                return true;
-            }
-
-            if (w.type === 'estafeta') {
-                sfxScooterBell();
-                spawnParticle("🚲 Dimm-dimm!", "#22c55e", w.x, w.y - 44);
-                spawnSpeechBubble(w.x, w.y - 46, "Cuidado com a bike, Zé! Mais três entregas e bati o recorde diário!", w.name);
-                return true;
-            }
-
-            if (w.type === 'reformado') {
-                sfxStep();
-                player.sanity = Math.min(100, player.sanity + 4);
-                spawnParticle("👴 +4 Sanidade", "#cbd5e1", w.x, w.y - 40);
-                spawnSpeechBubble(w.x, w.y - 46, "Tem calma na vida, rapaz. A cidade não foge e as coisas resolvem-se!", w.name);
-                return true;
-            }
-
-            if (w.type === 'turista_foto') {
-                sfxAction();
-                spawnParticle("📸 *Clic!*", "#fde047", w.x, w.y - 40);
-                spawnSpeechBubble(w.x, w.y - 46, "Bonjour! Pourriez-vous nous prendre en photo avec le tramway en arrière-plan?", w.name);
-                return true;
-            }
-
-            if (w.type === 'tuna') {
-                sfxAction();
-                player.sanity = Math.min(100, player.sanity + 5);
-                spawnParticle("🎵 Serenata! +5 Sanidade", "#c084fc", w.x, w.y - 40);
-                spawnSpeechBubble(w.x, w.y - 46, "Ó rapaz, junta-te à Tuna! A vida académica em Lisboa é uma festa!", w.name);
-                return true;
-            }
-
-            if (w.type === 'gato') {
-                sfxPigeon();
-                player.sanity = Math.min(100, player.sanity + 8);
-                spawnParticle("🐾 Miau! +8 Sanidade", "#f472b6", w.x, w.y - 24);
-                spawnSpeechBubble(w.x, w.y - 28, "*Ronrom...* Faísca roça-se nas tuas pernas com carinho!", w.name);
-                return true;
-            }
+            openStreetWalkerEncounter(w);
+            return true;
         }
     }
     return false;
@@ -3974,9 +4513,560 @@ function renderBeerMinigame() {
 }
 
 // ============================================================================
+// 4.3.1 MINIJOGO: CAIXA RÁPIDA DO PINGO DOCE
+// ============================================================================
+let checkoutMinigame = {
+    state: 'READY', // READY, SCANNING, FINISHED
+    items: [],
+    speed: 135,
+    scannedCount: 0,
+    targetX: 320,
+    targetWindow: 34,
+    feedback: '',
+    feedbackColor: '#ffffff',
+    feedbackTimer: 0,
+    totalEarned: 0
+};
+
+function startCheckoutMinigame() {
+    state = 'MINIGAME_CHECKOUT';
+    checkoutMinigame.state = 'READY';
+    checkoutMinigame.items = [
+        { name: "Lata de Atum", icon: "🐟", price: 1.85, x: 580, scanned: false },
+        { name: "Maçã de Alcobaça", icon: "🍎", price: 0.95, x: 730, scanned: false },
+        { name: "Leite Gordo", icon: "🥛", price: 1.10, x: 880, scanned: false },
+        { name: "Pão de Mafra", icon: "🥖", price: 1.40, x: 1030, scanned: false },
+        { name: "Azeite Virgem", icon: "🫒", price: 6.50, x: 1180, scanned: false }
+    ];
+    checkoutMinigame.scannedCount = 0;
+    checkoutMinigame.feedback = '';
+    checkoutMinigame.feedbackTimer = 0;
+    checkoutMinigame.totalEarned = 0;
+}
+
+function updateCheckoutMinigame(dt) {
+    if (checkoutMinigame.feedbackTimer > 0) checkoutMinigame.feedbackTimer -= dt;
+
+    if (checkoutMinigame.state === 'SCANNING') {
+        let allPassed = true;
+        checkoutMinigame.items.forEach(it => {
+            it.x -= checkoutMinigame.speed * dt;
+            if (it.x > -60) allPassed = false;
+        });
+
+        if (allPassed) {
+            checkoutMinigame.state = 'FINISHED';
+            const baseSalary = 14;
+            const scanBonus = checkoutMinigame.scannedCount * 2.50;
+            const tip = checkoutMinigame.scannedCount === 5 ? 5.00 : 0;
+            checkoutMinigame.totalEarned = baseSalary + scanBonus + tip;
+            player.wallet += checkoutMinigame.totalEarned;
+            player.reputation = Math.min(100, player.reputation + 4);
+            player.hunger = Math.max(0, player.hunger - 10);
+            advanceTime(1, 0);
+            sfxWin();
+            if (checkoutMinigame.scannedCount === 5) unlockAchievement('mestre_caixa');
+        }
+    }
+}
+
+function handleCheckoutMinigameClick(cx, cy) {
+    if (checkoutMinigame.state === 'READY') {
+        checkoutMinigame.state = 'SCANNING';
+        return;
+    }
+
+    if (checkoutMinigame.state === 'SCANNING') {
+        let hitItem = null;
+        for (let i = 0; i < checkoutMinigame.items.length; i++) {
+            const it = checkoutMinigame.items[i];
+            if (!it.scanned && Math.abs(it.x - checkoutMinigame.targetX) < checkoutMinigame.targetWindow) {
+                hitItem = it;
+                break;
+            }
+        }
+
+        if (hitItem) {
+            hitItem.scanned = true;
+            checkoutMinigame.scannedCount++;
+            sfxBarcodeScan();
+            checkoutMinigame.feedback = `✓ BIP! ${hitItem.name} registado!`;
+            checkoutMinigame.feedbackColor = '#4ade80';
+            checkoutMinigame.feedbackTimer = 0.8;
+            spawnParticle("BIP! +2.50€", "#4ade80", checkoutMinigame.targetX, 150);
+        } else {
+            sfxAlert();
+            checkoutMinigame.feedback = "✕ FORA DA MIRA DO SCANNER!";
+            checkoutMinigame.feedbackColor = '#ef4444';
+            checkoutMinigame.feedbackTimer = 0.6;
+        }
+        return;
+    }
+
+    if (checkoutMinigame.state === 'FINISHED') {
+        closeCheckoutMinigame();
+    }
+}
+
+function closeCheckoutMinigame() {
+    if (modalBuilding && modalBuilding.id === 'supermercado') {
+        state = 'MODAL';
+    } else {
+        state = 'BOARD';
+    }
+}
+
+function renderCheckoutMinigame() {
+    ctx.fillStyle = '#064e3b';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#047857';
+    ctx.fillRect(0, 0, canvas.width, 160);
+    ctx.fillStyle = '#065f46';
+    ctx.fillRect(0, 156, canvas.width, 4);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '10px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("🛒 PINGO DOCE · LINHA DE CAIXA RÁPIDA", canvas.width / 2, 28);
+
+    // Ecrã LCD da Caixa Registadora
+    ctx.fillStyle = '#090d16';
+    ctx.fillRect(440, 48, 175, 80);
+    ctx.strokeStyle = '#22c55e';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(440, 48, 175, 80);
+    ctx.fillStyle = '#4ade80';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText("CAIXA 04: ATIVA", 450, 68);
+    ctx.font = 'bold 11px "Fira Code"';
+    ctx.fillText(`Artigos: ${checkoutMinigame.scannedCount}/5`, 450, 92);
+    ctx.fillStyle = '#fde047';
+    ctx.fillText(`Faturação: ${(checkoutMinigame.scannedCount * 2.50).toFixed(2)}€`, 450, 114);
+
+    // Passadeira Rolante (Conveyor Belt)
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(0, 180, canvas.width, 85);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 180, canvas.width, 5);
+    ctx.fillRect(0, 260, canvas.width, 5);
+
+    const rollOff = (animTimer * 120) % 24;
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1.5;
+    for (let rx = -24; rx < canvas.width + 24; rx += 24) {
+        ctx.beginPath();
+        ctx.moveTo(rx - rollOff, 185);
+        ctx.lineTo(rx - rollOff, 260);
+        ctx.stroke();
+    }
+
+    // Leitor de Código de Barras Laser Central
+    const tx = checkoutMinigame.targetX;
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.2)';
+    ctx.fillRect(tx - checkoutMinigame.targetWindow, 185, checkoutMinigame.targetWindow * 2, 75);
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(tx - checkoutMinigame.targetWindow, 185, checkoutMinigame.targetWindow * 2, 75);
+
+    const laserAlpha = 0.6 + Math.sin(animTimer * 16) * 0.35;
+    ctx.strokeStyle = `rgba(239, 68, 68, ${laserAlpha})`;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(tx, 175);
+    ctx.lineTo(tx, 270);
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '7px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("▲ MIRA LASER ▲", tx, 172);
+
+    // Artigos a rolar na passadeira
+    checkoutMinigame.items.forEach(it => {
+        if (it.x > -50 && it.x < canvas.width + 50) {
+            ctx.save();
+            ctx.translate(it.x, 222);
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.beginPath();
+            ctx.ellipse(0, 20, 16, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.font = '24px serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(it.icon, 0, 10);
+
+            ctx.fillStyle = it.scanned ? '#22c55e' : '#ffffff';
+            ctx.fillRect(-12, 14, 24, 8);
+            ctx.fillStyle = '#000000';
+            for (let b = -10; b <= 8; b += 3) {
+                ctx.fillRect(b, 14, 1.5, 8);
+            }
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 8px "Fira Code"';
+            ctx.fillText(it.name, 0, -18);
+            ctx.fillStyle = '#fde047';
+            ctx.fillText(`${it.price.toFixed(2)}€`, 0, -8);
+
+            ctx.restore();
+        }
+    });
+
+    if (checkoutMinigame.feedbackTimer > 0) {
+        ctx.fillStyle = checkoutMinigame.feedbackColor;
+        ctx.font = 'bold 12px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(checkoutMinigame.feedback, canvas.width / 2, 148);
+    }
+
+    const bY = 285;
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, bY, canvas.width, 75);
+    ctx.strokeStyle = '#22c55e';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(0, bY, canvas.width, 75);
+
+    if (checkoutMinigame.state === 'READY') {
+        ctx.fillStyle = '#fde047';
+        ctx.font = '9px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText("PREPARA-TE PARA PASSAR OS ARTIGOS NA MIRA LASER!", canvas.width / 2, bY + 28);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px "Fira Code"';
+        ctx.fillText("TOCA / CLICA OU PRIMA [ESPAÇO] PARA INICIAR A CAIXA", canvas.width / 2, bY + 50);
+    } else if (checkoutMinigame.state === 'SCANNING') {
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '9px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText("PRIME [ESPAÇO] OU TOCA QUANDO O ARTIGO ESTIVER NA LINHA VERMELHA!", canvas.width / 2, bY + 38);
+    } else if (checkoutMinigame.state === 'FINISHED') {
+        ctx.fillStyle = '#4ade80';
+        ctx.font = '9px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(`TURNO CONCLUÍDO! RECEBESTE +${checkoutMinigame.totalEarned.toFixed(2)}€!`, canvas.width / 2, bY + 24);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px "Fira Code"';
+        ctx.fillText(`Artigos validados: ${checkoutMinigame.scannedCount}/5 · D. Maria: "Excelente agilidade!"`, canvas.width / 2, bY + 44);
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 9px "Fira Code"';
+        ctx.fillText("[CLICA OU ESPAÇO PARA VOLTAR]", canvas.width / 2, bY + 60);
+    }
+}
+
+// ============================================================================
+// 4.3.2 MINIJOGO: RAPSÓDIA DE FADO NO MIRADOURO
+// ============================================================================
+let guitarMinigame = {
+    state: 'READY', // READY, PLAYING, FINISHED
+    notes: [],
+    speed: 155,
+    targetX: 180,
+    hitWindow: 26,
+    score: 0,
+    combo: 0,
+    coinsEarned: 0,
+    feedback: '',
+    feedbackTimer: 0,
+    particles: []
+};
+
+function startGuitarMinigame() {
+    state = 'MINIGAME_GUITAR';
+    guitarMinigame.state = 'READY';
+    guitarMinigame.notes = [
+        { x: 500, freq: 220.00, chord: 'Lá menor', hit: false },
+        { x: 640, freq: 293.66, chord: 'Ré menor', hit: false },
+        { x: 780, freq: 329.63, chord: 'Mi 7ª', hit: false },
+        { x: 920, freq: 440.00, chord: 'Lá menor', hit: false },
+        { x: 1060, freq: 392.00, chord: 'Sol Maior', hit: false },
+        { x: 1200, freq: 523.25, chord: 'Dó Maior', hit: false },
+        { x: 1340, freq: 329.63, chord: 'Mi 7ª', hit: false },
+        { x: 1480, freq: 440.00, chord: 'Lá Final', hit: false }
+    ];
+    guitarMinigame.score = 0;
+    guitarMinigame.combo = 0;
+    guitarMinigame.coinsEarned = 0;
+    guitarMinigame.feedback = '';
+    guitarMinigame.feedbackTimer = 0;
+    guitarMinigame.particles = [];
+}
+
+function updateGuitarMinigame(dt) {
+    if (guitarMinigame.feedbackTimer > 0) guitarMinigame.feedbackTimer -= dt;
+
+    if (guitarMinigame.state === 'PLAYING') {
+        let allPassed = true;
+        guitarMinigame.notes.forEach(n => {
+            n.x -= guitarMinigame.speed * dt;
+            if (n.x > -50) allPassed = false;
+        });
+
+        if (allPassed) {
+            guitarMinigame.state = 'FINISHED';
+            const baseCoins = 8.00;
+            const perfBonus = (guitarMinigame.score / 800) * 12.00;
+            guitarMinigame.coinsEarned = parseFloat((baseCoins + perfBonus).toFixed(2));
+            player.wallet += guitarMinigame.coinsEarned;
+            player.aptidaoMusical = Math.min(100, player.aptidaoMusical + 12);
+            player.sanity = Math.min(100, player.sanity + 15);
+            player.hunger = Math.max(0, player.hunger - 6);
+            advanceTime(1, 0);
+            sfxFanfare();
+            if (guitarMinigame.score >= 600) unlockAchievement('fadista_alfacinha');
+        }
+    }
+
+    for (let i = guitarMinigame.particles.length - 1; i >= 0; i--) {
+        const p = guitarMinigame.particles[i];
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.alpha -= dt * 1.5;
+        if (p.alpha <= 0) guitarMinigame.particles.splice(i, 1);
+    }
+}
+
+function handleGuitarMinigameClick(cx, cy) {
+    if (guitarMinigame.state === 'READY') {
+        guitarMinigame.state = 'PLAYING';
+        return;
+    }
+
+    if (guitarMinigame.state === 'PLAYING') {
+        let hitNote = null;
+        for (let i = 0; i < guitarMinigame.notes.length; i++) {
+            const n = guitarMinigame.notes[i];
+            if (!n.hit && Math.abs(n.x - guitarMinigame.targetX) < guitarMinigame.hitWindow) {
+                hitNote = n;
+                break;
+            }
+        }
+
+        if (hitNote) {
+            hitNote.hit = true;
+            guitarMinigame.score += 100;
+            guitarMinigame.combo++;
+            sfxGuitarNote(hitNote.freq);
+            guitarMinigame.feedback = `♪ ${hitNote.chord.toUpperCase()}! ♪`;
+            guitarMinigame.feedbackTimer = 0.7;
+
+            for (let k = 0; k < 6; k++) {
+                guitarMinigame.particles.push({
+                    x: guitarMinigame.targetX,
+                    y: 215,
+                    vx: (Math.random() - 0.5) * 60,
+                    vy: -(Math.random() * 50 + 30),
+                    alpha: 1,
+                    char: "🎵"
+                });
+            }
+        } else {
+            sfxGuitarBad();
+            guitarMinigame.combo = 0;
+            guitarMinigame.feedback = "DESAFINADO!";
+            guitarMinigame.feedbackTimer = 0.5;
+        }
+        return;
+    }
+
+    if (guitarMinigame.state === 'FINISHED') {
+        closeGuitarMinigame();
+    }
+}
+
+function closeGuitarMinigame() {
+    if (modalBuilding && modalBuilding.id === 'miradouro') {
+        state = 'MODAL';
+    } else {
+        state = 'BOARD';
+    }
+}
+
+function renderGuitarMinigame() {
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, 160);
+    skyGrad.addColorStop(0, '#312e81');
+    skyGrad.addColorStop(0.4, '#c026d3');
+    skyGrad.addColorStop(0.7, '#f97316');
+    skyGrad.addColorStop(1, '#fde047');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, canvas.width, 160);
+
+    ctx.fillStyle = '#1e1b4b';
+    ctx.fillRect(80, 110, 4, 40);
+    ctx.fillRect(180, 95, 5, 55);
+    ctx.fillRect(0, 130, canvas.width, 2);
+    ctx.beginPath();
+    ctx.arc(520, 120, 18, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(254, 240, 138, 0.7)';
+    ctx.fill();
+
+    const waterGrad = ctx.createLinearGradient(0, 150, 0, 200);
+    waterGrad.addColorStop(0, '#f59e0b');
+    waterGrad.addColorStop(0.5, '#0284c7');
+    waterGrad.addColorStop(1, '#0c4a6e');
+    ctx.fillStyle = waterGrad;
+    ctx.fillRect(0, 150, canvas.width, 50);
+
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(0, 190, canvas.width, 20);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(0, 190, canvas.width, 4);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '10px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("🌅 MIRADOURO · FADO À GUITARRA PORTUGUESA", canvas.width / 2, 26);
+
+    ctx.fillStyle = 'rgba(11, 15, 26, 0.85)';
+    ctx.fillRect(440, 44, 180, 68);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(440, 44, 180, 68);
+    ctx.fillStyle = '#fde047';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText("COMPASSO: 4/4 FADO", 450, 62);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 10px "Fira Code"';
+    ctx.fillText(`Pontos: ${guitarMinigame.score}`, 450, 80);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`Combo: x${guitarMinigame.combo} ♪`, 450, 98);
+
+    const neckY = 210;
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(0, neckY, canvas.width, 65);
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(0, neckY, canvas.width, 4);
+    ctx.fillRect(0, neckY + 61, canvas.width, 4);
+
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    for (let fx = 40; fx < canvas.width; fx += 65) {
+        ctx.beginPath();
+        ctx.moveTo(fx, neckY + 4);
+        ctx.lineTo(fx, neckY + 61);
+        ctx.stroke();
+    }
+
+    const stringY = [neckY + 12, neckY + 22, neckY + 32, neckY + 42, neckY + 52];
+    stringY.forEach(sy => {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(0, sy);
+        ctx.lineTo(canvas.width, sy);
+        ctx.stroke();
+    });
+
+    const gx = guitarMinigame.targetX;
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.25)';
+    ctx.beginPath();
+    ctx.arc(gx, neckY + 32, 28, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(gx, neckY + 32, 28, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = '#fde047';
+    ctx.font = '7px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("▲ TOCA AQUI ▲", gx, neckY - 6);
+
+    guitarMinigame.notes.forEach(n => {
+        if (n.x > -40 && n.x < canvas.width + 40) {
+            ctx.save();
+            ctx.translate(n.x, neckY + 32);
+
+            ctx.fillStyle = n.hit ? '#4ade80' : '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(0, 0, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 8px "Press Start 2P"';
+            ctx.textAlign = 'center';
+            ctx.fillText("♪", 0, 3);
+
+            ctx.fillStyle = '#fef08a';
+            ctx.font = 'bold 8px "Fira Code"';
+            ctx.fillText(n.chord, 0, -18);
+
+            ctx.restore();
+        }
+    });
+
+    guitarMinigame.particles.forEach(p => {
+        ctx.fillStyle = `rgba(254, 240, 138, ${p.alpha})`;
+        ctx.font = '14px serif';
+        ctx.fillText(p.char, p.x, p.y);
+    });
+
+    if (guitarMinigame.feedbackTimer > 0) {
+        ctx.fillStyle = '#fef08a';
+        ctx.font = 'bold 12px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(guitarMinigame.feedback, canvas.width / 2, neckY - 14);
+    }
+
+    const gbarY = 285;
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, gbarY, canvas.width, 75);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(0, gbarY, canvas.width, 75);
+
+    if (guitarMinigame.state === 'READY') {
+        ctx.fillStyle = '#fde047';
+        ctx.font = '9px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText("AFINA A GUITARRA PARA A RAPSÓDIA DE FADO!", canvas.width / 2, gbarY + 28);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px "Fira Code"';
+        ctx.fillText("CLICA OU PRIMA [ESPAÇO] PARA COMEÇAR A TOCAR", canvas.width / 2, gbarY + 50);
+    } else if (guitarMinigame.state === 'PLAYING') {
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '9px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText("PRIME [ESPAÇO] OU TOCA QUANDO A NOTA ENTRAR NO ALVO DOURADO!", canvas.width / 2, gbarY + 38);
+    } else if (guitarMinigame.state === 'FINISHED') {
+        ctx.fillStyle = '#4ade80';
+        ctx.font = '9px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(`ESPETÁCULO TERMINADO! GANHASTE +${guitarMinigame.coinsEarned.toFixed(2)}€ EM GORJETAS!`, canvas.width / 2, gbarY + 24);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px "Fira Code"';
+        ctx.fillText("Os turistas aplaudiram com comoção! +12 Aptidão Musical · +15 Sanidade", canvas.width / 2, gbarY + 44);
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 9px "Fira Code"';
+        ctx.fillText("[CLICA OU ESPAÇO PARA GUARDAR A VIOLA]", canvas.width / 2, gbarY + 60);
+    }
+}
+
+// ============================================================================
 // 4.4 LIVRO DE CONQUISTAS DA ODISSEIA ALFACINHA (Sistema 5)
 // ============================================================================
 const ACHIEVEMENTS = [
+    {
+        id: 'mestre_caixa',
+        title: 'Mestre da Caixa',
+        desc: 'Regista todos os 5 artigos sem falhas na caixa rápida do Pingo Doce.',
+        icon: '🛒',
+        reward: '+10 Reputação'
+    },
+    {
+        id: 'fadista_alfacinha',
+        title: 'Fadista de Santa Catarina',
+        desc: 'Toca uma rapsódia afinada na guitarra portuguesa no Miradouro.',
+        icon: '🎸',
+        reward: '+15 Sanidade'
+    },
     {
         id: 'primeira_imperial',
         title: 'A Primeira Imperial',
@@ -4140,6 +5230,89 @@ function gameLoop(now) {
     requestAnimationFrame(gameLoop);
 }
 
+let streetEventTimer = 90; // Primeiro evento aos 90 segundos de jogo na rua
+
+function updatePurgatorioStreetEvents(dt) {
+    if (state !== 'BOARD' || activeEncounter || (typeof modalBuilding !== 'undefined' && modalBuilding)) return;
+    streetEventTimer -= dt;
+    if (streetEventTimer <= 0) {
+        streetEventTimer = 180 + Math.random() * 120; // Repete a cada 3 a 5 minutos
+
+        const eventRoll = Math.floor(Math.random() * 3);
+        if (eventRoll === 0) {
+            // O Vendedor de Louro do Rossio
+            sfxAlert();
+            activeEncounter = {
+                name: "Vendedor Suspeito do Rossio",
+                type: "louro",
+                icon: "🌿",
+                prompt: "«Psst! Ei rapaz, do bom de Marrocos... dez euros cada pacotinho de erva da boa!»",
+                opt1Text: "► 1. «Isso é louro picado com orégãos da despensa da tua avó!» (+8 Sanidade)",
+                opt1Action: () => {
+                    player.sanity = Math.min(100, player.sanity + 8);
+                    sfxWin();
+                    spawnParticle("🌿 +8 Sanidade!", "#22c55e", player.x, player.y - 45);
+                    spawnSpeechBubble(player.x, player.y - 48, "«Ah garoto esperto! Já não se engana ninguém em Lisboa!»", "Vendedor do Rossio");
+                },
+                opt2Text: "► 2. «Sou alérgico a condimentos de feijoada à transmontana.» (+5 Sanidade)",
+                opt2Action: () => {
+                    player.sanity = Math.min(100, player.sanity + 5);
+                    sfxAction();
+                    spawnParticle("🍲 +5 Sanidade", "#f59e0b", player.x, player.y - 45);
+                    spawnSpeechBubble(player.x, player.y - 48, "«Pronto, vai lá com Deus e não faças escândalo!»", "Vendedor do Rossio");
+                }
+            };
+        } else if (eventRoll === 1) {
+            // Fiscal da EMEL
+            sfxAlert();
+            activeEncounter = {
+                name: "Agente Silva (Fiscal da EMEL)",
+                type: "emel",
+                icon: "📋",
+                prompt: "«Este cavalheiro é o proprietário desta trotinete abandonada em cima da calçada portuguesa?!»",
+                opt1Text: "► 1. Apontar para o nómada digital: «É daquele com auriculares na tasca!» (+6 Reputação)",
+                opt1Action: () => {
+                    player.reputation = Math.min(100, player.reputation + 6);
+                    sfxCoin();
+                    spawnParticle("📋 +6 Reputação!", "#38bdf8", player.x, player.y - 45);
+                    spawnSpeechBubble(player.x, player.y - 48, "«Muito obrigado pela cidadania! Vai já levar com um bloqueador de 60€!»", "Fiscal da EMEL");
+                },
+                opt2Text: "► 2. Fingir que estás atrasado para o exame do IST e dar de frosques (+5 Sanidade)",
+                opt2Action: () => {
+                    player.sanity = Math.min(100, player.sanity + 5);
+                    sfxStep();
+                    spawnParticle("🏃 +5 Sanidade", "#cbd5e1", player.x, player.y - 45);
+                    spawnSpeechBubble(player.x, player.y - 48, "«Espere aí! Não corra! Não pise as juntas da calçada!»", "Fiscal da EMEL");
+                }
+            };
+        } else {
+            // Avaria do Elétrico 28
+            sfxTramBell();
+            activeEncounter = {
+                name: "Guarda-Freio do Elétrico 28",
+                type: "eletrico",
+                icon: "🚋",
+                prompt: "«Sineta! O 28 engatou na curva dos carris com o empedrado molhado! Alguém dê uma mãozinha!»",
+                opt1Text: "► 1. Ajudar a empurrar o elétrico com os passageiros (-4 Energia, +12 Reputação)",
+                opt1Action: () => {
+                    player.energy = Math.max(0, player.energy - 4);
+                    player.reputation = Math.min(100, player.reputation + 12);
+                    sfxWin();
+                    spawnParticle("🚋 +12 Reputação! -4 Energia", "#fde047", player.x, player.y - 45);
+                    spawnSpeechBubble(player.x, player.y - 48, "«Obrigado rapazes! O espírito do bairro ainda está vivo em Lisboa!»", "Guarda-Freio");
+                },
+                opt2Text: "► 2. Tirar uma selfie com o elétrico atravessado nos carris (+6 Sanidade)",
+                opt2Action: () => {
+                    player.sanity = Math.min(100, player.sanity + 6);
+                    sfxInfluencerCamera();
+                    spawnParticle("📸 +6 Sanidade", "#f472b6", player.x, player.y - 45);
+                    spawnSpeechBubble(player.x, player.y - 48, "«Mais um postal para as redes sociais! Viva a Carris!»", "Passageiro");
+                }
+            };
+        }
+    }
+}
+
 function update(dt) {
     // 0. Sistemas Dinâmicos de Lisboa
     updateWeather(dt);
@@ -4149,6 +5322,17 @@ function update(dt) {
         updateBeerMinigame(dt);
         return;
     }
+    if (state === 'MINIGAME_CHECKOUT') {
+        updateCheckoutMinigame(dt);
+        return;
+    }
+    if (state === 'MINIGAME_GUITAR') {
+        updateGuitarMinigame(dt);
+        return;
+    }
+
+    // Eventos aleatórios e espontâneos do Purgatório na rua
+    updatePurgatorioStreetEvents(dt);
 
     // Animação dos Pombos
     PIGEONS.forEach(p => {
@@ -4392,6 +5576,10 @@ function render() {
         renderNewsScreen();
     } else if (state === 'MINIGAME_BEER') {
         renderBeerMinigame();
+    } else if (state === 'MINIGAME_CHECKOUT') {
+        renderCheckoutMinigame();
+    } else if (state === 'MINIGAME_GUITAR') {
+        renderGuitarMinigame();
     } else if (state === 'BOARD' || state === 'MODAL') {
         if (state === 'MODAL' && modalBuilding) {
             // Sais da rua, do tabuleiro principal e ficas dentro da loja!
@@ -4407,6 +5595,9 @@ function render() {
             renderParticles();
             renderLisbonLight();
             renderHUD();
+            if (activeEncounter) {
+                renderStreetEncounter(ctx, animTimer);
+            }
         }
     } else if (state === 'GAMEOVER') {
         renderGameOverScreen();
@@ -4802,18 +5993,76 @@ function renderBoard() {
     // 3. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
     renderBuildingOverlays();
 
-    // 4. Halos de Luz dos Candeeiros Históricos à Noite na Calçada
+    // 4. Halos de Luz dos Candeeiros Históricos e Janelas Iluminadas à Noite
     if (isNight) {
-        LANTERNS.forEach(l => {
-            const grad = ctx.createRadialGradient(l.x, l.y + 6, 2, l.x, l.y + 16, 28);
-            grad.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
-            grad.addColorStop(0.5, 'rgba(245, 158, 11, 0.15)');
+        // Janelas dos edifícios históricos iluminadas com luz quente âmbar interior
+        const warmWindows = [
+            { x: 38, y: 72, w: 9, h: 13 },
+            { x: 58, y: 72, w: 9, h: 13 },
+            { x: 78, y: 72, w: 9, h: 13 },
+            { x: 58, y: 44, w: 8, h: 11 },
+            { x: 165, y: 55, w: 8, h: 12 },
+            { x: 195, y: 55, w: 8, h: 12 },
+            { x: 245, y: 55, w: 8, h: 12 },
+            { x: 275, y: 55, w: 8, h: 12 },
+            { x: 345, y: 55, w: 8, h: 12 },
+            { x: 375, y: 55, w: 8, h: 12 },
+            { x: 445, y: 55, w: 8, h: 12 },
+            { x: 475, y: 55, w: 8, h: 12 },
+            { x: 555, y: 55, w: 8, h: 12 },
+            { x: 595, y: 55, w: 8, h: 12 }
+        ];
+
+        warmWindows.forEach((win, idx) => {
+            const flicker = Math.sin(animTimer * 2.8 + idx * 1.7) * 0.08;
+            ctx.fillStyle = `rgba(254, 240, 138, ${0.55 + flicker})`;
+            ctx.fillRect(win.x, win.y, win.w, win.h);
+            ctx.strokeStyle = '#78350f';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(win.x, win.y, win.w, win.h);
+            ctx.beginPath();
+            ctx.moveTo(win.x, win.y + win.h / 2); ctx.lineTo(win.x + win.w, win.y + win.h / 2);
+            ctx.moveTo(win.x + win.w / 2, win.y); ctx.lineTo(win.x + win.w / 2, win.y + win.h);
+            ctx.stroke();
+        });
+
+        // Luz derramada na soleira da Tasca Ti Zé
+        const doorSpill = ctx.createLinearGradient(585, 175, 585, 206);
+        doorSpill.addColorStop(0, 'rgba(245, 158, 11, 0.45)');
+        doorSpill.addColorStop(1, 'rgba(245, 158, 11, 0)');
+        ctx.fillStyle = doorSpill;
+        ctx.beginPath();
+        ctx.moveTo(575, 175); ctx.lineTo(595, 175); ctx.lineTo(610, 206); ctx.lineTo(560, 206);
+        ctx.fill();
+
+        // 4 Candeeiros Históricos de ferro fundido com poças douradas na calçada
+        const ALL_LANTERNS = [
+            { x: 130, y: 165 },
+            { x: 192, y: 165 },
+            { x: 412, y: 155 },
+            { x: 610, y: 175 }
+        ];
+        ALL_LANTERNS.forEach(l => {
+            const grad = ctx.createRadialGradient(l.x, l.y + 6, 2, l.x, l.y + 16, 32);
+            grad.addColorStop(0, 'rgba(254, 240, 138, 0.55)');
+            grad.addColorStop(0.5, 'rgba(245, 158, 11, 0.20)');
             grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
             ctx.fillStyle = grad;
             ctx.beginPath();
-            ctx.arc(l.x, l.y + 16, 28, 0, Math.PI * 2);
+            ctx.arc(l.x, l.y + 16, 32, 0, Math.PI * 2);
             ctx.fill();
         });
+
+        // Reflexo ondulado da Lua no Rio Tejo (y: 265..285)
+        for (let rw = 0; rw < 4; rw++) {
+            const rY = 266 + rw * 5;
+            const rX = 220 + Math.sin(animTimer * 1.8 + rw) * 20;
+            const rGrad = ctx.createRadialGradient(rX, rY, 1, rX, rY, 35);
+            rGrad.addColorStop(0, 'rgba(254, 240, 138, 0.25)');
+            rGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+            ctx.fillStyle = rGrad;
+            ctx.fillRect(rX - 35, rY - 1, 70, 3);
+        }
     }
 
     // 5. Clima Dinâmico e Efeitos Atmosféricos de Lisboa
@@ -7319,6 +8568,11 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         // ====================================================================
         // PINGO DOCE: MERCEARIAS, CARREIRAS DE RETALHO & TÊXTIL BÁSICO
         // ====================================================================
+        actions.push({
+            label: "⚡ MINIJOGO: Caixa Rápida do Pingo Doce",
+            startCheckoutMinigame: true,
+            desc: "Passa 5 artigos no leitor laser! Ganha salário base + gorjetas por precisão!"
+        });
         actions.push({ label: "Saco de Mercearia (2 Ref.)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições nutritivas para a despensa." });
         actions.push({ label: "Cabaz Económico (5 Ref.)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para abastecer a casa." });
 
@@ -7479,6 +8733,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         else if (musicLvl >= 20) buskDesc = `Qualidade: Fadista Amador (${musicLvl}%) · Melodia afinada, moedas a cair no chapéu!`;
 
         actions = [
+            { label: "🎵 MINIJOGO: Rapsódia de Fado no Miradouro", startGuitarMinigame: true, desc: "Toca os acordes na guitarra ao ritmo do Tejo! Ganha gorjetas e sobe a Aptidão Musical!" },
             { label: "Ver o Tejo ao Pôr-do-Sol", cost: 0, timeH: 1, timeM: 0, sanity: 25, desc: "Ar fresco lisboeta e vista sobre o rio. +25 Sanidade mental." },
             { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Tertúlia à beira-rio com finos frescos. +50 Sanidade." },
             { label: "🎸 Tocar Guitarra no Miradouro (3h)", buskingMusic: true, timeH: 3, timeM: 0, desc: buskDesc }
@@ -7878,11 +9133,29 @@ window.addEventListener('keydown', (e) => {
         closeAchievementsModal();
         if (state === 'MODAL') closeModal();
         if (state === 'MINIGAME_BEER') closeBeerMinigame();
+        if (state === 'MINIGAME_CHECKOUT') closeCheckoutMinigame();
+        if (state === 'MINIGAME_GUITAR') closeGuitarMinigame();
+        if (activeEncounter) activeEncounter = null;
     }
     if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter') {
         if (state === 'MINIGAME_BEER') {
             e.preventDefault();
             handleBeerMinigameClick(canvas.width / 2, canvas.height / 2);
+        } else if (state === 'MINIGAME_CHECKOUT') {
+            e.preventDefault();
+            handleCheckoutMinigameClick(canvas.width / 2, canvas.height / 2);
+        } else if (state === 'MINIGAME_GUITAR') {
+            e.preventDefault();
+            handleGuitarMinigameClick(canvas.width / 2, canvas.height / 2);
+        }
+    }
+    if (activeEncounter) {
+        if (e.key === '1') {
+            if (activeEncounter.opt1Action) activeEncounter.opt1Action();
+            activeEncounter = null;
+        } else if (e.key === '2') {
+            if (activeEncounter.opt2Action) activeEncounter.opt2Action();
+            activeEncounter = null;
         }
     }
 });
@@ -7891,6 +9164,18 @@ function handleCanvasClick(cx, cy) {
     if (state === 'MINIGAME_BEER') {
         handleBeerMinigameClick(cx, cy);
         return;
+    }
+    if (state === 'MINIGAME_CHECKOUT') {
+        handleCheckoutMinigameClick(cx, cy);
+        return;
+    }
+    if (state === 'MINIGAME_GUITAR') {
+        handleGuitarMinigameClick(cx, cy);
+        return;
+    }
+
+    if (activeEncounter) {
+        if (handleStreetEncounterClick(cx, cy)) return;
     }
 
     if (state === 'TITLE') {
@@ -8091,6 +9376,14 @@ function closeModal() {
 function executeAction(act) {
     if (act.beerChallenge) {
         startBeerMinigame();
+        return;
+    }
+    if (act.startCheckoutMinigame) {
+        startCheckoutMinigame();
+        return;
+    }
+    if (act.startGuitarMinigame) {
+        startGuitarMinigame();
         return;
     }
 
