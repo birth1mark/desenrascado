@@ -296,6 +296,15 @@
             background: #1d4ed8;
             color: #fff;
         }
+        .arcade-btn.btn-achievements {
+            border-color: #f59e0b;
+            color: #fde68a;
+            min-width: 114px;
+        }
+        .arcade-btn.btn-achievements:hover {
+            background: #b45309;
+            color: #fff;
+        }
 
         /* Moldura do Ecrã de Jogo */
         #game-wrapper {
@@ -670,6 +679,102 @@
             color: #94a3b8;
         }
 
+        /* Modal de Conquistas (Estilo Medalhas & Selos de Lisboa) */
+        .ach-box {
+            max-width: 630px;
+            max-height: 88vh;
+            background: #0f172a;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 0 35px rgba(245, 158, 11, 0.35), 0 20px 50px rgba(0, 0, 0, 0.95);
+        }
+        .ach-tagline {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.44rem;
+            color: #fde68a;
+            padding: 6px 16px;
+            background: rgba(245, 158, 11, 0.12);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .ach-container {
+            padding: 12px 16px;
+            overflow-y: auto;
+            max-height: 58vh;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 10px;
+        }
+        .ach-card {
+            background: rgba(30, 41, 59, 0.75);
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 10px 12px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        .ach-card.unlocked {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(30, 41, 59, 0.85) 100%);
+            border-color: #fbbf24;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
+        }
+        .ach-icon-box {
+            width: 38px;
+            height: 38px;
+            border-radius: 5px;
+            background: #090d16;
+            border: 1px solid #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        .ach-card.unlocked .ach-icon-box {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.2);
+        }
+        .ach-details {
+            flex-grow: 1;
+        }
+        .ach-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.48rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+        .ach-card.unlocked .ach-title {
+            color: #fbbf24;
+        }
+        .ach-desc {
+            font-size: 0.68rem;
+            color: #64748b;
+            line-height: 1.25;
+        }
+        .ach-card.unlocked .ach-desc {
+            color: #cbd5e1;
+        }
+        .ach-badge {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.38rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+            align-self: flex-start;
+        }
+        .ach-badge.locked {
+            background: #1e293b;
+            color: #64748b;
+            border: 1px solid #334155;
+        }
+        .ach-badge.unlocked {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid #10b981;
+        }
+
         /* SEO & Screen Reader Accessible Content */
         .sr-only {
             position: absolute;
@@ -705,6 +810,7 @@
                 <button class="arcade-btn btn-acampada" onclick="quickVisit('acampada')">⛺ Acampada</button>
                 <button class="arcade-btn btn-roupa" onclick="quickVisit('loja_roupa')">👗 Loja de Roupa</button>
                 <button class="arcade-btn btn-curriculum" onclick="openCurriculumModal()" id="btn-curriculum">📜 Currículo</button>
+                <button class="arcade-btn btn-achievements" onclick="openAchievementsModal()" id="btn-achievements">🎖️ Conquistas</button>
                 <button class="arcade-btn" onclick="openLeaderboard()" id="btn-leaderboard">🏆 Top 10</button>
                 <button class="arcade-btn" onclick="toggleMusic()" id="btn-music">🎵 BGM: ON</button>
                 <button class="arcade-btn" onclick="toggleAudio()" id="btn-audio">🔊 SFX: ON</button>
@@ -729,6 +835,26 @@
                     </div>
                     <div class="overlay-actions">
                         <button class="retro-btn" onclick="closeCurriculumModal()">FECHAR DOSSIER [ESC]</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal: Livro de Conquistas da Odisseia Alfacinha -->
+            <div id="achievements-modal" class="game-overlay" style="display: none;">
+                <div class="overlay-box ach-box">
+                    <div class="overlay-header">
+                        <span class="overlay-title">🎖️ LIVRO DE CONQUISTAS · LISBOA</span>
+                        <button class="overlay-close" onclick="closeAchievementsModal()">✕</button>
+                    </div>
+                    <div class="ach-tagline">
+                        <span id="ach-summary">0 / 10 CONQUISTAS DESBLOQUEADAS</span>
+                        <span style="color:#fbbf24;">🇵🇹 O PURGATÓRIO DE LISBOA</span>
+                    </div>
+                    <div class="ach-container" id="ach-content">
+                        <!-- Gerado dinamicamente via JS -->
+                    </div>
+                    <div class="overlay-actions">
+                        <button class="retro-btn" onclick="closeAchievementsModal()">VOLTAR AO JOGO [ESC]</button>
                     </div>
                 </div>
             </div>
@@ -1073,6 +1199,36 @@ function sfxWin() {
     notes.forEach((n, idx) => {
         setTimeout(() => playBeep(n, 'triangle', 0.2, 0.12), idx * 110);
     });
+}
+
+function sfxFanfare() {
+    if (!soundEnabled) return;
+    initAudio();
+    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+    notes.forEach((n, idx) => {
+        setTimeout(() => playBeep(n, 'triangle', 0.22, 0.12), idx * 85);
+    });
+}
+
+function sfxBeerPour() {
+    if (!soundEnabled) return;
+    initAudio();
+    playBeep(220, 'sine', 0.08, 0.04);
+}
+
+function sfxBeerSuccess() {
+    if (!soundEnabled) return;
+    initAudio();
+    playBeep(587.33, 'sine', 0.1, 0.08);
+    setTimeout(() => playBeep(783.99, 'sine', 0.12, 0.08), 80);
+    setTimeout(() => playBeep(987.77, 'triangle', 0.25, 0.10), 160);
+}
+
+function sfxScooterBell() {
+    if (!soundEnabled) return;
+    initAudio();
+    playBeep(1200, 'sine', 0.08, 0.06);
+    setTimeout(() => playBeep(1600, 'sine', 0.12, 0.08), 90);
 }
 
 // ============================================================================
@@ -2355,7 +2511,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '3.7';
+const ASSET_VER = '3.8';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -2443,6 +2599,1061 @@ function preRenderCalcada() {
 preRenderCalcada();
 
 // ============================================================================
+// 4.1 METEOROLOGIA & CLIMA DINÂMICO DE LISBOA (Sistema 4)
+// ============================================================================
+const WEATHER_CONFIG = {
+    SOL: {
+        name: "Sol Radioso",
+        icon: "☀️",
+        tempRange: [22, 27],
+        desc: "Céu limpo e a famosa luz dourada refletida nas águas do Tejo.",
+        energyDrain: 1.0
+    },
+    CHUVA: {
+        name: "Chuva Miudinha",
+        icon: "🌧️",
+        tempRange: [13, 17],
+        desc: "Chuva miudinha típica («molha-tolos») e calçada escorregadia.",
+        energyDrain: 1.15
+    },
+    VENTO: {
+        name: "Nortada do Tejo",
+        icon: "💨",
+        tempRange: [16, 20],
+        desc: "Nortada fresca que sopra do rio Tejo, fazendo esvoaçar folhas e papéis.",
+        energyDrain: 1.05
+    },
+    CALOR: {
+        name: "Canícula de Verão",
+        icon: "🔥",
+        tempRange: [32, 38],
+        desc: "Calor abrasador de Lisboa! Aumenta a sede e o cansaço na calçada.",
+        energyDrain: 1.3
+    }
+};
+
+let currentWeather = {
+    type: 'SOL',
+    name: "Sol Radioso",
+    icon: "☀️",
+    temp: 24,
+    desc: "Céu limpo e a famosa luz dourada refletida nas águas do Tejo.",
+    energyDrain: 1.0
+};
+
+let weatherParticles = [];
+
+function initWeatherParticles(type) {
+    weatherParticles = [];
+    if (type === 'CHUVA') {
+        for (let i = 0; i < 60; i++) {
+            weatherParticles.push({
+                x: Math.random() * 660 - 20,
+                y: Math.random() * 295,
+                len: Math.random() * 8 + 6,
+                speed: Math.random() * 180 + 260,
+                alpha: Math.random() * 0.4 + 0.35
+            });
+        }
+    } else if (type === 'VENTO') {
+        for (let i = 0; i < 24; i++) {
+            weatherParticles.push({
+                x: Math.random() * 660,
+                y: Math.random() * 240 + 30,
+                vx: -(Math.random() * 90 + 70),
+                vy: (Math.random() - 0.5) * 20,
+                rot: Math.random() * Math.PI * 2,
+                vrot: (Math.random() - 0.5) * 6,
+                type: Math.random() < 0.35 ? 'paper' : 'leaf',
+                size: Math.random() * 2.5 + 2.5
+            });
+        }
+    } else if (type === 'SOL') {
+        for (let i = 0; i < 18; i++) {
+            weatherParticles.push({
+                x: Math.random() * 640,
+                y: Math.random() * 26 + 268,
+                size: Math.random() * 2 + 1.5,
+                phase: Math.random() * Math.PI * 2,
+                speed: Math.random() * 3 + 2
+            });
+        }
+    }
+}
+
+function randomizeWeather() {
+    const roll = Math.random();
+    let type = 'SOL';
+    if (roll < 0.45) type = 'SOL';
+    else if (roll < 0.70) type = 'CHUVA';
+    else if (roll < 0.88) type = 'VENTO';
+    else type = 'CALOR';
+
+    const cfg = WEATHER_CONFIG[type];
+    const temp = Math.floor(Math.random() * (cfg.tempRange[1] - cfg.tempRange[0] + 1)) + cfg.tempRange[0];
+    currentWeather = {
+        type,
+        name: cfg.name,
+        icon: cfg.icon,
+        temp,
+        desc: cfg.desc,
+        energyDrain: cfg.energyDrain
+    };
+    initWeatherParticles(type);
+}
+
+function updateWeather(dt) {
+    if (!currentWeather) return;
+    if (currentWeather.type === 'CHUVA') {
+        weatherParticles.forEach(p => {
+            p.y += p.speed * dt;
+            p.x -= (p.speed * 0.28) * dt;
+            if (p.y > 295 || p.x < -20) {
+                p.y = -10;
+                p.x = Math.random() * 660 + 20;
+            }
+        });
+    } else if (currentWeather.type === 'VENTO') {
+        weatherParticles.forEach(p => {
+            p.x += p.vx * dt;
+            p.y += p.vy * dt + Math.sin(animTimer * 4 + p.rot) * 0.4;
+            p.rot += p.vrot * dt;
+            if (p.x < -20) {
+                p.x = 650;
+                p.y = Math.random() * 230 + 30;
+            }
+        });
+    }
+}
+
+function renderWeather(ctx) {
+    if (!currentWeather) return;
+
+    if (currentWeather.type === 'CHUVA') {
+        ctx.save();
+        ctx.lineWidth = 1;
+        weatherParticles.forEach(p => {
+            ctx.strokeStyle = `rgba(186, 230, 253, ${p.alpha.toFixed(2)})`;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p.x - 3, p.y + p.len);
+            ctx.stroke();
+
+            if (p.y > 190 && p.y < 280 && Math.random() < 0.08) {
+                ctx.fillStyle = 'rgba(224, 242, 254, 0.4)';
+                ctx.fillRect(p.x - 1, p.y, 3, 1);
+            }
+        });
+
+        const wetShimmer = 0.08 + Math.sin(animTimer * 2.5) * 0.03;
+        ctx.fillStyle = `rgba(224, 242, 254, ${wetShimmer.toFixed(2)})`;
+        ctx.fillRect(0, 196, 148, 22);
+        ctx.fillRect(307, 196, 333, 22);
+        ctx.restore();
+    } else if (currentWeather.type === 'VENTO') {
+        ctx.save();
+        weatherParticles.forEach(p => {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            if (p.type === 'paper') {
+                ctx.fillStyle = '#fef3c7';
+                ctx.fillRect(-p.size, -p.size * 0.7, p.size * 2, p.size * 1.4);
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 0.5;
+                ctx.strokeRect(-p.size, -p.size * 0.7, p.size * 2, p.size * 1.4);
+            } else {
+                ctx.fillStyle = (p.size > 3.5) ? '#b45309' : '#15803d';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, p.size, p.size * 0.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        });
+        ctx.restore();
+    } else if (currentWeather.type === 'SOL') {
+        ctx.save();
+        weatherParticles.forEach(p => {
+            const sparkle = (Math.sin(animTimer * p.speed + p.phase) + 1) / 2;
+            if (sparkle > 0.4) {
+                ctx.fillStyle = `rgba(254, 240, 138, ${(sparkle * 0.75).toFixed(2)})`;
+                ctx.fillRect(p.x - 1, p.y - 1, 2, 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${(sparkle * 0.9).toFixed(2)})`;
+                ctx.fillRect(p.x, p.y, 1, 1);
+            }
+        });
+        ctx.restore();
+    } else if (currentWeather.type === 'CALOR') {
+        ctx.save();
+        const heatAlpha = 0.08 + Math.sin(animTimer * 1.8) * 0.03;
+        ctx.fillStyle = `rgba(245, 158, 11, ${heatAlpha.toFixed(2)})`;
+        ctx.fillRect(0, 0, canvas.width, 295);
+        ctx.restore();
+    }
+}
+
+// ============================================================================
+// 4.2 PERSONAGENS ANDANTES & ENCONTROS DE RUA (Sistema 3)
+// ============================================================================
+let streetWalkers = [
+    {
+        id: 'castanheiro',
+        name: 'Ti Manel Castanheiro',
+        type: 'castanheiro',
+        x: 120,
+        y: 202,
+        vx: 11,
+        minX: 60,
+        maxX: 540,
+        facing: 'right',
+        shoutTimer: 6,
+        smokeParticles: [],
+        chestnutPrice: 2.50
+    },
+    {
+        id: 'trotinete',
+        name: 'Chad Nómada Digital',
+        type: 'trotinete',
+        x: -60,
+        y: 213,
+        vx: 72,
+        active: false,
+        cooldown: 8,
+        shoutTimer: 3
+    },
+    {
+        id: 'guarda_freio',
+        name: 'Mestre António (Guarda-Freio)',
+        type: 'guarda_freio',
+        x: 486,
+        y: 206,
+        state: 'BREAK',
+        timer: 14,
+        shoutTimer: 7
+    }
+];
+
+function updateStreetWalkers(dt) {
+    streetWalkers.forEach(w => {
+        if (w.type === 'castanheiro') {
+            w.x += w.vx * dt;
+            if (w.vx > 0 && w.x >= w.maxX) {
+                w.vx = -Math.abs(w.vx);
+                w.facing = 'left';
+            } else if (w.vx < 0 && w.x <= w.minX) {
+                w.vx = Math.abs(w.vx);
+                w.facing = 'right';
+            }
+
+            w.smokeParticles = w.smokeParticles || [];
+            if (Math.random() < 0.45) {
+                const chimX = w.facing === 'right' ? w.x - 4 : w.x + 4;
+                w.smokeParticles.push({
+                    x: chimX,
+                    y: w.y - 18,
+                    vx: (Math.random() - 0.5) * 5 - (currentWeather && currentWeather.type === 'VENTO' ? 25 : 4),
+                    vy: -(Math.random() * 12 + 10),
+                    radius: Math.random() * 1.5 + 1.2,
+                    alpha: 0.65
+                });
+            }
+            for (let i = w.smokeParticles.length - 1; i >= 0; i--) {
+                const sm = w.smokeParticles[i];
+                sm.x += sm.vx * dt;
+                sm.y += sm.vy * dt;
+                sm.radius += dt * 2.2;
+                sm.alpha -= dt * 0.45;
+                if (sm.alpha <= 0) w.smokeParticles.splice(i, 1);
+            }
+
+            w.shoutTimer -= dt;
+            if (w.shoutTimer <= 0 && state === 'BOARD') {
+                w.shoutTimer = 16 + Math.random() * 8;
+                const pregoes = [
+                    "Quentes e boas! Quem quer castanhas assadas na brasa?",
+                    "Castanhas a estalar, freguês! Para aquecer as mãos!",
+                    "Quem quer quentes e boas? Dois euros e cinquenta o cartucho!"
+                ];
+                spawnSpeechBubble(w.x, w.y - 12, pregoes[Math.floor(Math.random() * pregoes.length)], w.name);
+            }
+        } else if (w.type === 'trotinete') {
+            if (!w.active) {
+                w.cooldown -= dt;
+                if (w.cooldown <= 0) {
+                    w.active = true;
+                    w.x = -50;
+                    w.vx = 70 + Math.random() * 20;
+                    w.shoutTimer = 2.5;
+                }
+            } else {
+                w.x += w.vx * dt;
+                w.shoutTimer -= dt;
+                if (w.shoutTimer <= 0 && w.x > 180 && w.x < 460 && state === 'BOARD') {
+                    w.shoutTimer = 999;
+                    const nomadQuotes = [
+                        "Sorry team, taking this sync from my trotinete in Chiado!",
+                        "Lisbon is insane! Sun, pastries and 1 Gbps fiber!",
+                        "Where can I find an oat milk flat white nearby?!"
+                    ];
+                    spawnSpeechBubble(w.x, w.y - 12, nomadQuotes[Math.floor(Math.random() * nomadQuotes.length)], w.name);
+                }
+                if (Math.random() < 0.25) {
+                    spawnDust(w.x - 10, w.y + 4);
+                }
+                if (w.x > 690) {
+                    w.active = false;
+                    w.cooldown = 22 + Math.random() * 25;
+                }
+            }
+        } else if (w.type === 'guarda_freio') {
+            w.timer -= dt;
+            if (w.timer <= 0) {
+                if (w.state === 'BREAK') {
+                    w.state = 'IN_TRAM';
+                    w.timer = 20 + Math.random() * 15;
+                } else {
+                    w.state = 'BREAK';
+                    w.timer = 12 + Math.random() * 6;
+                }
+            }
+            if (w.state === 'BREAK') {
+                w.shoutTimer -= dt;
+                if (w.shoutTimer <= 0 && state === 'BOARD') {
+                    w.shoutTimer = 22;
+                    const tramQuotes = [
+                        "Mais uma avaria nas agulhas de São Bento... Hoje não chego a horas!",
+                        "O 28 hoje leva mais turistas do que a praia de Carcavelos!",
+                        "Ti Zé, tira aí uma bica curta que a calçada está escorregadia!"
+                    ];
+                    spawnSpeechBubble(w.x, w.y - 12, tramQuotes[Math.floor(Math.random() * tramQuotes.length)], w.name);
+                }
+            }
+        }
+    });
+}
+
+function renderStreetWalkers(ctx, animTimer) {
+    ctx.save();
+    const isNight = typeof player !== 'undefined' && player && (player.timeHour >= 20 || player.timeHour < 7);
+
+    streetWalkers.forEach(w => {
+        if (w.type === 'castanheiro') {
+            const wx = Math.round(w.x);
+            const wy = Math.round(w.y);
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+            ctx.beginPath();
+            ctx.ellipse(wx, wy + 7, 18, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (w.smokeParticles) {
+                w.smokeParticles.forEach(sm => {
+                    ctx.fillStyle = `rgba(241, 245, 249, ${sm.alpha.toFixed(2)})`;
+                    ctx.beginPath();
+                    ctx.arc(sm.x, sm.y, sm.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            const cartDir = w.facing === 'right' ? 1 : -1;
+            const cx = wx - (cartDir * 6);
+
+            ctx.fillStyle = '#451a03';
+            ctx.beginPath();
+            ctx.arc(cx - 7, wy + 3, 5, 0, Math.PI * 2);
+            ctx.arc(cx + 7, wy + 3, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#d97706';
+            ctx.fillRect(cx - 8, wy + 2, 2, 2);
+            ctx.fillRect(cx + 6, wy + 2, 2, 2);
+
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(cx - 10, wy - 9, 20, 10);
+            ctx.fillStyle = '#92400e';
+            ctx.fillRect(cx - 9, wy - 8, 18, 2);
+
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(cx - 5, wy - 13, 10, 5);
+            const emberColor = (Math.sin(animTimer * 8) > 0) ? '#ef4444' : '#f59e0b';
+            ctx.fillStyle = emberColor;
+            ctx.fillRect(cx - 3, wy - 11, 2, 2);
+            ctx.fillRect(cx + 1, wy - 12, 2, 2);
+
+            const chimX = cx + (cartDir * 2);
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(chimX - 1, wy - 20, 3, 8);
+            ctx.fillStyle = '#64748b';
+            ctx.fillRect(chimX - 2, wy - 21, 5, 2);
+
+            ctx.fillStyle = '#fef3c7';
+            ctx.fillRect(cx - (cartDir * 8), wy - 12, 4, 4);
+
+            const manX = wx + (cartDir * 8);
+            const stepBob = Math.sin(animTimer * 6) * 1.5;
+
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(manX - 3, wy - 2, 3, 6);
+            ctx.fillRect(manX + 1, wy - 2 + (stepBob > 0 ? 1 : -1), 3, 6);
+
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(manX - 4, wy - 7, 9, 6);
+            ctx.fillStyle = '#475569';
+            ctx.fillRect(manX - 4, wy - 14, 9, 8);
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(manX - 3, wy - 11, 7, 7);
+
+            ctx.fillStyle = '#fed7aa';
+            ctx.fillRect(manX - 3, wy - 19, 7, 6);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(manX - (cartDir === 1 ? 1 : 3), wy - 15, 4, 2);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(manX - 5, wy - 21, 11, 3);
+            ctx.fillRect(manX - 3, wy - 23, 7, 3);
+
+            if (state === 'BOARD' && Math.hypot(mouse.x - wx, mouse.y - wy) < 22) {
+                const bob = Math.sin(animTimer * 7) * 2;
+                ctx.font = '10px "Press Start 2P"';
+                ctx.textAlign = 'center';
+                ctx.fillText("🌰", wx, wy - 26 + bob);
+            }
+        } else if (w.type === 'trotinete' && w.active) {
+            const tx = Math.round(w.x);
+            const ty = Math.round(w.y);
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+            ctx.beginPath();
+            ctx.ellipse(tx, ty + 6, 14, 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#84cc16';
+            ctx.fillRect(tx - 10, ty + 2, 20, 2);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(tx - 11, ty + 3, 3, 3);
+            ctx.fillRect(tx + 8, ty + 3, 3, 3);
+
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(tx + 6, ty - 12, 2, 14);
+            ctx.fillRect(tx + 4, ty - 12, 6, 2);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(tx + 8, ty - 10, 2, 2);
+            if (isNight) {
+                const fGrad = ctx.createRadialGradient(tx + 18, ty + 3, 2, tx + 35, ty + 3, 20);
+                fGrad.addColorStop(0, 'rgba(255, 255, 255, 0.55)');
+                fGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                ctx.fillStyle = fGrad;
+                ctx.beginPath();
+                ctx.arc(tx + 25, ty + 3, 16, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.fillStyle = '#d4b996';
+            ctx.fillRect(tx - 2, ty - 5, 4, 8);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(tx - 3, ty + 1, 5, 2);
+
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillRect(tx - 4, ty - 14, 7, 10);
+
+            ctx.fillStyle = '#090d16';
+            ctx.fillRect(tx - 7, ty - 13, 4, 8);
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(tx - 6, ty - 10, 2, 2);
+
+            ctx.fillStyle = '#fed7aa';
+            ctx.fillRect(tx - 2, ty - 19, 6, 6);
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(tx, ty - 16, 4, 3);
+            ctx.fillStyle = '#0284c7';
+            ctx.fillRect(tx - 3, ty - 21, 8, 3);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(tx - 1, ty - 17, 2, 2);
+
+            if (state === 'BOARD' && Math.hypot(mouse.x - tx, mouse.y - ty) < 22) {
+                ctx.font = '9px "Press Start 2P"';
+                ctx.textAlign = 'center';
+                ctx.fillText("⚡", tx, ty - 25);
+            }
+        } else if (w.type === 'guarda_freio' && w.state === 'BREAK') {
+            const gx = Math.round(w.x);
+            const gy = Math.round(w.y);
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+            ctx.beginPath();
+            ctx.ellipse(gx, gy + 7, 10, 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(gx - 3, gy + 1, 3, 5);
+            ctx.fillRect(gx + 1, gy + 1, 3, 5);
+            ctx.fillStyle = '#1e3a8a';
+            ctx.fillRect(gx - 4, gy - 6, 9, 8);
+
+            ctx.fillStyle = '#1d4ed8';
+            ctx.fillRect(gx - 4, gy - 14, 9, 9);
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(gx - 1, gy - 12, 2, 2);
+            ctx.fillRect(gx - 1, gy - 8, 2, 2);
+
+            ctx.fillStyle = '#fed7aa';
+            ctx.fillRect(gx - 3, gy - 19, 7, 6);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(gx - 2, gy - 15, 5, 2);
+            ctx.fillStyle = '#1e3a8a';
+            ctx.fillRect(gx - 4, gy - 22, 9, 4);
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(gx - 2, gy - 20, 5, 1);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(gx + 6, gy - 10, 4, 4);
+            const steamProg = (animTimer * 1.5) % 1.5;
+            ctx.fillStyle = `rgba(255, 255, 255, ${(0.6 * (1 - steamProg / 1.5)).toFixed(2)})`;
+            ctx.fillRect(gx + 7, gy - 12 - (steamProg * 6), 2, 2);
+
+            if (state === 'BOARD' && Math.hypot(mouse.x - gx, mouse.y - gy) < 20) {
+                ctx.font = '9px "Press Start 2P"';
+                ctx.textAlign = 'center';
+                ctx.fillText("☕", gx, gy - 25);
+            }
+        }
+    });
+
+    ctx.restore();
+}
+
+function handleStreetWalkerClick(cx, cy) {
+    if (state !== 'BOARD') return false;
+
+    for (let i = 0; i < streetWalkers.length; i++) {
+        const w = streetWalkers[i];
+        if (w.type === 'castanheiro') {
+            if (Math.hypot(cx - w.x, cy - (w.y - 6)) < 24) {
+                if (player.wallet >= w.chestnutPrice) {
+                    player.wallet -= w.chestnutPrice;
+                    player.hunger = Math.min(100, player.hunger + 25);
+                    player.sanity = Math.min(100, player.sanity + 15);
+                    sfxCoin();
+                    triggerHaptic([30, 20, 30]);
+                    spawnParticle("🌰 +25 Fome +15 Sanidade", "#f59e0b", w.x, w.y - 20);
+                    spawnSpeechBubble(w.x, w.y - 12, "Castanhas quentinhas a estalar! Bom proveito, rapaz!", w.name);
+                    unlockAchievement('quentes_e_boas');
+                } else {
+                    sfxAlert();
+                    triggerHaptic([20]);
+                    spawnSpeechBubble(w.x, w.y - 12, "Sem 2.50€ na algibeira? Volta quando tiveres trocos, Zé!", w.name);
+                }
+                return true;
+            }
+        } else if (w.type === 'trotinete' && w.active) {
+            if (Math.hypot(cx - w.x, cy - (w.y - 10)) < 24) {
+                sfxScooterBell();
+                triggerHaptic([40]);
+                w.vx = Math.min(130, w.vx + 25);
+                spawnParticle("⚡ Zoom!", "#38bdf8", w.x, w.y - 22);
+                spawnSpeechBubble(w.x, w.y - 12, "Watch out bro! I'm zooming to an AI meetup at LX Factory!", w.name);
+                return true;
+            }
+        } else if (w.type === 'guarda_freio' && w.state === 'BREAK') {
+            if (Math.hypot(cx - w.x, cy - (w.y - 8)) < 20) {
+                sfxTramBell();
+                triggerHaptic([30, 40]);
+                spawnParticle("🔔 Plim-Plim!", "#fde047", w.x, w.y - 20);
+                const quotes = [
+                    "Cuidado com os carris quando chove, Zé! A calçada fica como manteiga!",
+                    "O 28 hoje vem cheio de bifes na Graça que nem cabem no estribo!",
+                    "Mais uma avaria nas agulhas de São Bento... Paciência alfacinha!"
+                ];
+                spawnSpeechBubble(w.x, w.y - 12, quotes[Math.floor(Math.random() * quotes.length)], w.name);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// ============================================================================
+// 4.3 MINIJOGO: A IMPERIAL PERFEITA DO TI ZÉ (Sistema 2)
+// ============================================================================
+let beerMinigame = {
+    state: 'READY',
+    fillLevel: 0,
+    pourSpeed: 38,
+    foamLevel: 0,
+    targetMin: 78,
+    targetMax: 88,
+    result: null,
+    resultText: '',
+    rewardText: '',
+    bubbles: [],
+    resultTimer: 0
+};
+
+function startBeerMinigame() {
+    state = 'MINIGAME_BEER';
+    beerMinigame.state = 'READY';
+    beerMinigame.fillLevel = 0;
+    beerMinigame.foamLevel = 0;
+    beerMinigame.result = null;
+    beerMinigame.resultText = '';
+    beerMinigame.rewardText = '';
+    beerMinigame.bubbles = [];
+    beerMinigame.resultTimer = 0;
+}
+
+function updateBeerMinigame(dt) {
+    if (beerMinigame.state === 'POURING') {
+        beerMinigame.fillLevel += beerMinigame.pourSpeed * dt;
+        sfxBeerPour();
+
+        if (Math.random() < 0.6) {
+            beerMinigame.bubbles.push({
+                x: 290 + Math.random() * 50,
+                y: 260,
+                targetY: 275 - (beerMinigame.fillLevel * 1.3),
+                radius: Math.random() * 2 + 1,
+                speed: Math.random() * 60 + 40
+            });
+        }
+
+        beerMinigame.foamLevel = Math.min(24, (beerMinigame.fillLevel * 0.22));
+
+        if (beerMinigame.fillLevel >= 100) {
+            stopBeerMinigame();
+        }
+    }
+
+    for (let i = beerMinigame.bubbles.length - 1; i >= 0; i--) {
+        const b = beerMinigame.bubbles[i];
+        b.y -= b.speed * dt;
+        if (b.y <= b.targetY) beerMinigame.bubbles.splice(i, 1);
+    }
+
+    if (beerMinigame.state === 'FINISHED') {
+        beerMinigame.resultTimer += dt;
+    }
+}
+
+function stopBeerMinigame() {
+    if (beerMinigame.state !== 'POURING') return;
+    beerMinigame.state = 'FINISHED';
+
+    const level = beerMinigame.fillLevel;
+    if (level >= beerMinigame.targetMin && level <= beerMinigame.targetMax) {
+        beerMinigame.result = 'PERFECT';
+        beerMinigame.resultText = "🏆 IMPERIAL PERFEITA! DOIS DEDOS DE ESPUMA!";
+        beerMinigame.rewardText = "+6.00€ Gorjeta · +18 Sanidade · +15 Fome";
+        sfxBeerSuccess();
+        triggerHaptic([40, 50, 40, 90]);
+        player.wallet += 6;
+        stats.totalEarned += 6;
+        player.sanity = Math.min(100, player.sanity + 18);
+        player.hunger = Math.min(100, player.hunger + 15);
+        unlockAchievement('primeira_imperial');
+        unlockAchievement('mestre_torneira');
+    } else if (level < beerMinigame.targetMin) {
+        beerMinigame.result = 'EARLY';
+        beerMinigame.resultText = "⚠️ MEIO COPO?! ISSO NEM MOLHA A GARGANTA!";
+        beerMinigame.rewardText = "+5 Sanidade (Beste a cerveja tímida)";
+        sfxAlert();
+        triggerHaptic([30, 20]);
+        player.sanity = Math.min(100, player.sanity + 5);
+        unlockAchievement('primeira_imperial');
+    } else {
+        beerMinigame.result = 'OVERFLOW';
+        beerMinigame.resultText = "❌ ENTORNASTE CERVEJA PELO BALCÃO TODO!";
+        beerMinigame.rewardText = "-8 Sanidade · Pano Amarelo e Ralhete do Ti Zé";
+        sfxAlert();
+        triggerHaptic([80, 80]);
+        player.sanity = Math.max(0, player.sanity - 8);
+    }
+}
+
+function handleBeerMinigameClick(cx, cy) {
+    if (cx >= 540 && cx <= 625 && cy >= 15 && cy <= 45) {
+        closeBeerMinigame();
+        return;
+    }
+
+    if (beerMinigame.state === 'READY') {
+        beerMinigame.state = 'POURING';
+        sfxAction();
+    } else if (beerMinigame.state === 'POURING') {
+        stopBeerMinigame();
+    } else if (beerMinigame.state === 'FINISHED') {
+        closeBeerMinigame();
+    }
+}
+
+function closeBeerMinigame() {
+    sfxAction();
+    if (modalBuilding && modalBuilding.id === 'tasca') {
+        state = 'MODAL';
+    } else {
+        state = 'BOARD';
+    }
+}
+
+function renderBeerMinigame() {
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const tileSize = 24;
+    for (let tx = 0; tx < canvas.width; tx += tileSize) {
+        for (let ty = 0; ty < 220; ty += tileSize) {
+            const isPattern = ((tx / tileSize + ty / tileSize) % 2 === 0);
+            ctx.fillStyle = isPattern ? '#1e3a8a' : '#f8fafc';
+            ctx.fillRect(tx, ty, tileSize, tileSize);
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 0.5;
+            ctx.strokeRect(tx, ty, tileSize, tileSize);
+        }
+    }
+
+    const bGrad = ctx.createLinearGradient(0, 220, 0, 360);
+    bGrad.addColorStop(0, '#78350f');
+    bGrad.addColorStop(0.3, '#451a03');
+    bGrad.addColorStop(1, '#1c0a00');
+    ctx.fillStyle = bGrad;
+    ctx.fillRect(0, 220, canvas.width, 140);
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(0, 220, canvas.width, 4);
+
+    ctx.fillStyle = '#fef3c7';
+    ctx.beginPath();
+    ctx.ellipse(315, 276, 52, 14, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    const tapGrad = ctx.createLinearGradient(375, 0, 415, 0);
+    tapGrad.addColorStop(0, '#94a3b8');
+    tapGrad.addColorStop(0.4, '#f8fafc');
+    tapGrad.addColorStop(0.7, '#64748b');
+    tapGrad.addColorStop(1, '#334155');
+    ctx.fillStyle = tapGrad;
+    ctx.fillRect(375, 75, 34, 150);
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(345, 115, 32, 10);
+    ctx.fillRect(335, 118, 12, 14);
+
+    const isPoured = (beerMinigame.state === 'POURING');
+    ctx.fillStyle = '#0f172a';
+    ctx.save();
+    ctx.translate(392, 75);
+    ctx.rotate(isPoured ? -0.35 : 0.05);
+    ctx.fillRect(-4, -45, 8, 45);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(-6, -55, 12, 16);
+    ctx.restore();
+
+    if (isPoured) {
+        const streamGrad = ctx.createLinearGradient(338, 0, 344, 0);
+        streamGrad.addColorStop(0, '#fbbf24');
+        streamGrad.addColorStop(0.5, '#f59e0b');
+        streamGrad.addColorStop(1, '#d97706');
+        ctx.fillStyle = streamGrad;
+        ctx.fillRect(338, 132, 6, 140 - (beerMinigame.fillLevel * 1.15));
+
+        ctx.fillStyle = '#fffbeb';
+        ctx.beginPath();
+        ctx.arc(341, 272 - (beerMinigame.fillLevel * 1.15), 5 + Math.random() * 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    const gx = 270, gy = 145, gw = 90, gh = 130;
+    const maxLiquidH = 110;
+    const curLiquidH = (beerMinigame.fillLevel / 100) * maxLiquidH;
+    const curFoamH = (beerMinigame.foamLevel / 30) * 26;
+
+    if (curLiquidH > 0) {
+        const beerGrad = ctx.createLinearGradient(0, gy + gh - curLiquidH, 0, gy + gh);
+        beerGrad.addColorStop(0, '#fde047');
+        beerGrad.addColorStop(0.3, '#f59e0b');
+        beerGrad.addColorStop(1, '#b45309');
+        ctx.fillStyle = beerGrad;
+        ctx.fillRect(gx + 12, gy + gh - curLiquidH, gw - 24, curLiquidH);
+
+        ctx.fillStyle = 'rgba(254, 240, 138, 0.75)';
+        beerMinigame.bubbles.forEach(b => {
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        ctx.fillStyle = '#fffbeb';
+        const foamY = gy + gh - curLiquidH - curFoamH;
+        ctx.fillRect(gx + 10, foamY, gw - 20, curFoamH + 4);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.ellipse(gx + gw / 2, foamY + 2, (gw - 20) / 2, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (beerMinigame.result === 'OVERFLOW') {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(gx + 6, foamY + 4, 5, 45);
+            ctx.fillRect(gx + gw - 11, foamY + 8, 5, 38);
+            ctx.fillStyle = 'rgba(251, 191, 36, 0.55)';
+            ctx.beginPath();
+            ctx.ellipse(315, 278, 62, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    ctx.strokeStyle = 'rgba(224, 242, 254, 0.85)';
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(gx + 10, gy + 15, gw - 20, gh - 15);
+    ctx.fillStyle = 'rgba(224, 242, 254, 0.4)';
+    ctx.fillRect(gx + 18, gy + gh - 4, gw - 36, 6);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+    ctx.fillRect(gx + 14, gy + 18, 3, gh - 24);
+
+    const mx = 55, my = 65, mw = 150, mh = 205;
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+    ctx.fillRect(mx, my, mw, mh);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(mx, my, mw, mh);
+
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '7.5px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("NÍVEL DO COPO", mx + mw / 2, my + 20);
+
+    const barX = mx + 20, barY = my + 32, barW = 24, barH = 145;
+    ctx.fillStyle = '#090d16';
+    ctx.fillRect(barX, barY, barW, barH);
+    ctx.strokeStyle = '#475569';
+    ctx.strokeRect(barX, barY, barW, barH);
+
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.35)';
+    ctx.fillRect(barX + 1, barY + 1, barW - 2, 18);
+
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.55)';
+    ctx.fillRect(barX + 1, barY + 18, barW - 2, 16);
+
+    const curBarFillH = (beerMinigame.fillLevel / 100) * (barH - 2);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(barX + 1, barY + barH - 1 - curBarFillH, barW - 2, curBarFillH);
+
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(barX - 4, barY + barH - 1 - curBarFillH);
+    ctx.lineTo(barX + barW + 4, barY + barH - 1 - curBarFillH);
+    ctx.stroke();
+
+    ctx.font = 'bold 8px "Fira Code"';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#ef4444';
+    ctx.fillText("▲ ENTORNA!", barX + barW + 8, barY + 12);
+    ctx.fillStyle = '#10b981';
+    ctx.fillText("★ 2 DEDOS", barX + barW + 8, barY + 28);
+    ctx.fillText("  PERFEITOS", barX + barW + 8, barY + 38);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText("▼ MEIO COPO", barX + barW + 8, barY + 120);
+
+    ctx.fillStyle = '#fef3c7';
+    ctx.font = '11px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("🍺 A IMPERIAL PERFEITA DO TI ZÉ 🍺", canvas.width / 2, 34);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'bold 9.5px "Fira Code"';
+    ctx.fillText("Torneira de Pressão Alfacinha · Acerta exatamente nos 2 Dedos de Espuma!", canvas.width / 2, 50);
+
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(540, 15, 85, 30);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.strokeRect(540, 15, 85, 30);
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText("SAIR ✕", 582, 34);
+
+    const ibW = 460, ibH = 46;
+    const ibX = (canvas.width - ibW) / 2, ibY = 300;
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+    ctx.fillRect(ibX, ibY, ibW, ibH);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(ibX, ibY, ibW, ibH);
+
+    ctx.textAlign = 'center';
+    if (beerMinigame.state === 'READY') {
+        const pulse = Math.sin(animTimer * 6) > 0;
+        ctx.fillStyle = pulse ? '#fbbf24' : '#ffffff';
+        ctx.font = '8.5px "Press Start 2P"';
+        ctx.fillText("[ESPAÇO] OU TOCA NO ECRÃ PARA ABRIR A TORNEIRA", canvas.width / 2, ibY + 28);
+    } else if (beerMinigame.state === 'POURING') {
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '8.5px "Press Start 2P"';
+        ctx.fillText("A ENCHER... SOLTA/TOCA PARA FECHAR A TORNEIRA!", canvas.width / 2, ibY + 28);
+    } else if (beerMinigame.state === 'FINISHED') {
+        const resCol = beerMinigame.result === 'PERFECT' ? '#10b981' : (beerMinigame.result === 'EARLY' ? '#f59e0b' : '#ef4444');
+        ctx.fillStyle = resCol;
+        ctx.font = '8px "Press Start 2P"';
+        ctx.fillText(beerMinigame.resultText, canvas.width / 2, ibY + 18);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px "Fira Code"';
+        ctx.fillText(`${beerMinigame.rewardText} · [CONTINUAR: CLICA / ESPAÇO]`, canvas.width / 2, ibY + 36);
+    }
+}
+
+// ============================================================================
+// 4.4 LIVRO DE CONQUISTAS DA ODISSEIA ALFACINHA (Sistema 5)
+// ============================================================================
+const ACHIEVEMENTS = [
+    {
+        id: 'primeira_imperial',
+        title: 'A Primeira Imperial',
+        desc: 'Bebe ou tira a tua primeira imperial fresca ao balcão da Tasca do Ti Zé.',
+        icon: '🍺',
+        reward: '+10 Sanidade'
+    },
+    {
+        id: 'mestre_torneira',
+        title: 'Mestre da Torneira',
+        desc: 'Tira uma imperial perfeita com exatamente dois dedos de espuma cremosa.',
+        icon: '⭐',
+        reward: '+6€ Gorjeta'
+    },
+    {
+        id: 'quentes_e_boas',
+        title: 'Quentes e Boas!',
+        desc: 'Compra um cartucho de castanhas assadas ao Ti Manel na calçada de Lisboa.',
+        icon: '🌰',
+        reward: '+25 Fome'
+    },
+    {
+        id: 'sino_do_28',
+        title: 'Sino do 28',
+        desc: 'Toca a tradicional sineta de bronze ("plim-plim") do histórico Elétrico 28.',
+        icon: '🔔',
+        reward: '+5 Sanidade'
+    },
+    {
+        id: 'fado_miradouro',
+        title: 'Fadista da Colina',
+        desc: 'Dedilha a guitarra portuguesa no Miradouro de Santa Catarina ao pôr-do-sol.',
+        icon: '🎸',
+        reward: '+Reputação'
+    },
+    {
+        id: 'teto_solidario',
+        title: 'Resistência Popular',
+        desc: 'Passa a noite na pequena tenda da Acampada pelo Direito à Habitação.',
+        icon: '⛺',
+        reward: 'Despejo Travado'
+    },
+    {
+        id: 'canudo_ist',
+        title: 'Engenheiro do Técnico',
+        desc: 'Conclui todas as cadeiras curriculares e defende a tese com distinção no IST.',
+        icon: '🎓',
+        reward: 'Canudo IST'
+    },
+    {
+        id: 'fato_executivo',
+        title: 'Doutor de Cascais',
+        desc: 'Adquire o elegante Fato Pombalino na alfaiataria Modas Chiado.',
+        icon: '👔',
+        reward: '+Elegância'
+    },
+    {
+        id: 'senhorio_em_dia',
+        title: 'Inquilino Exemplar',
+        desc: 'Regulariza o pagamento da renda semanal ao Sr. Jerónimo dentro do prazo.',
+        icon: '🗝️',
+        reward: 'Casa Salva'
+    },
+    {
+        id: 'rei_do_desenrasco',
+        title: 'Rei do Desenrasco',
+        desc: 'Sobrevive 30 dias em Lisboa com habitação nobre e topo de carreira alcançado.',
+        icon: '👑',
+        reward: 'Vitória Real'
+    }
+];
+
+let unlockedAchievements = [];
+
+function loadAchievements() {
+    try {
+        const raw = localStorage.getItem('desenrascado_achievements_v1');
+        if (raw) {
+            unlockedAchievements = JSON.parse(raw) || [];
+        }
+    } catch (e) {
+        unlockedAchievements = [];
+    }
+}
+
+function saveAchievements() {
+    try {
+        localStorage.setItem('desenrascado_achievements_v1', JSON.stringify(unlockedAchievements));
+    } catch (e) {}
+}
+
+function unlockAchievement(id) {
+    if (unlockedAchievements.includes(id)) return;
+    const ach = ACHIEVEMENTS.find(a => a.id === id);
+    if (!ach) return;
+
+    unlockedAchievements.push(id);
+    saveAchievements();
+
+    sfxFanfare();
+    triggerHaptic([40, 60, 40, 80]);
+    spawnParticle(`🎖️ ${ach.title}`, '#fbbf24');
+    showToast(`🎖️ CONQUISTA: ${ach.title} — ${ach.desc}`);
+
+    const btn = document.getElementById('btn-achievements');
+    if (btn) {
+        btn.style.boxShadow = '0 0 15px #f59e0b';
+        setTimeout(() => { if (btn) btn.style.boxShadow = ''; }, 3000);
+    }
+}
+
+function openAchievementsModal() {
+    sfxAction();
+    loadAchievements();
+    const container = document.getElementById('ach-content');
+    const summary = document.getElementById('ach-summary');
+    if (summary) {
+        summary.textContent = `${unlockedAchievements.length} / ${ACHIEVEMENTS.length} CONQUISTAS DESBLOQUEADAS`;
+    }
+    if (container) {
+        container.innerHTML = ACHIEVEMENTS.map(ach => {
+            const isUnlocked = unlockedAchievements.includes(ach.id);
+            return `
+                <div class="ach-card ${isUnlocked ? 'unlocked' : ''}">
+                    <div class="ach-icon-box">${ach.icon}</div>
+                    <div class="ach-details">
+                        <div class="ach-title">${ach.title}</div>
+                        <div class="ach-desc">${ach.desc}</div>
+                    </div>
+                    <div class="ach-badge ${isUnlocked ? 'unlocked' : 'locked'}">
+                        ${isUnlocked ? '✓ OBTIDA' : 'BLOQUEADA'}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    const modal = document.getElementById('achievements-modal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeAchievementsModal() {
+    sfxAction();
+    const modal = document.getElementById('achievements-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+// ============================================================================
 // 5. ATUALIZAÇÃO DA LÓGICA (UPDATE)
 // ============================================================================
 let lastTime = performance.now();
@@ -2460,6 +3671,15 @@ function gameLoop(now) {
 }
 
 function update(dt) {
+    // 0. Sistemas Dinâmicos de Lisboa
+    updateWeather(dt);
+    updateStreetWalkers(dt);
+
+    if (state === 'MINIGAME_BEER') {
+        updateBeerMinigame(dt);
+        return;
+    }
+
     // Animação dos Pombos
     PIGEONS.forEach(p => {
         if (p.scaredTimer > 0) {
@@ -2565,8 +3785,9 @@ function consumeTime(hours, minutes = 0) {
     }
     player.timeHour += hours;
 
-    player.hunger = Math.max(0, player.hunger - (hours * 2));
-    player.sanity = Math.max(0, player.sanity - (hours * 1));
+    const weatherDrain = (currentWeather && currentWeather.energyDrain) || 1.0;
+    player.hunger = Math.max(0, player.hunger - Math.round(hours * 2 * weatherDrain));
+    player.sanity = Math.max(0, player.sanity - Math.round(hours * 1 * (weatherDrain > 1.2 ? 1.2 : 1.0)));
 
     if (player.timeHour >= 24) {
         endDay("Meia-noite em Lisboa! O teu corpo desmaiou de sono.");
@@ -2580,6 +3801,7 @@ function endDay(motivo) {
     stats.daysSurvived = player.day;
     player.timeHour = 8;
     player.timeMinute = 0;
+    randomizeWeather();
 
     // Renda semanal
     if (player.houseIndex === 0) {
@@ -2594,6 +3816,7 @@ function endDay(motivo) {
                 stats.totalRentPaid += currentRent;
                 spawnParticle(`- ${currentRent}€ RENDA`, '#ef4444');
                 showToast("Renda semanal regularizada automaticamente da carteira.");
+                unlockAchievement('senhorio_em_dia');
             } else if ((player.wallet + player.bank) >= currentRent) {
                 const rem = currentRent - player.wallet;
                 player.wallet = 0;
@@ -2602,6 +3825,7 @@ function endDay(motivo) {
                 stats.totalRentPaid += currentRent;
                 spawnParticle(`- ${currentRent}€ RENDA`, '#ef4444');
                 showToast("Renda semanal debitada da conta bancária.");
+                unlockAchievement('senhorio_em_dia');
             } else {
                 player.houseIndex = 0;
                 player.daysUntilRent = 0;
@@ -2683,6 +3907,7 @@ function triggerGameOver(titulo, causa) {
 function triggerVictory() {
     state = 'VICTORY';
     sfxWin();
+    unlockAchievement('rei_do_desenrasco');
 }
 
 // ============================================================================
@@ -2695,6 +3920,8 @@ function render() {
         renderTitleScreen();
     } else if (state === 'NEWS') {
         renderNewsScreen();
+    } else if (state === 'MINIGAME_BEER') {
+        renderBeerMinigame();
     } else if (state === 'BOARD' || state === 'MODAL') {
         if (state === 'MODAL' && modalBuilding) {
             // Sais da rua, do tabuleiro principal e ficas dentro da loja!
@@ -2927,10 +4154,18 @@ function renderNewsScreen() {
         ctx.fillText(currentEvent.badge, jx + jw / 2, by + 16);
     }
 
+    // Previsão Meteorológica Oficial de Lisboa
+    if (currentWeather) {
+        ctx.fillStyle = '#475569';
+        ctx.font = 'bold 9px "Fira Code"';
+        ctx.textAlign = 'center';
+        ctx.fillText(`🌤️ METEOROLOGIA: ${currentWeather.name} (${currentWeather.temp}°C) · ${currentWeather.desc}`, jx + jw / 2, jy + 195);
+    }
+
     // Aviso de renda
     ctx.fillStyle = player.daysUntilRent <= 2 ? '#b91c1c' : '#854d0e';
     ctx.font = 'bold 10.5px "Fira Code"';
-    ctx.fillText(`⚠️ Faltam ${player.daysUntilRent} dias para o Senhorio cobrar ${HOUSES[player.houseIndex].rent}€ de renda.`, jx + jw / 2, jy + 212);
+    ctx.fillText(`⚠️ Faltam ${player.daysUntilRent} dias para o Senhorio cobrar ${HOUSES[player.houseIndex].rent}€ de renda.`, jx + jw / 2, jy + 215);
 
     // Botão Continuar
     ctx.fillStyle = '#b45309';
@@ -3084,6 +4319,9 @@ function renderBoard() {
     // 2. Personagens Nativas e Vivas de Lisboa Integradas no Tabuleiro
     renderBoardLivingCharacters(ctx, animTimer);
 
+    // 2.5 Personagens Andantes & Encontros de Rua (Castanheiro, Trotinete, Guarda-Freio)
+    renderStreetWalkers(ctx, animTimer);
+
     // 3. Placas, Banners e Efeitos Interativos de Edifícios (Estilo Stardew Valley)
     renderBuildingOverlays();
 
@@ -3099,6 +4337,25 @@ function renderBoard() {
             ctx.arc(l.x, l.y + 16, 28, 0, Math.PI * 2);
             ctx.fill();
         });
+    }
+
+    // 5. Clima Dinâmico e Efeitos Atmosféricos de Lisboa
+    renderWeather(ctx);
+
+    // 6. Badge Retro de Meteorologia no Tabuleiro (Canto Superior Esquerdo)
+    if (currentWeather) {
+        const bw = 150, bh = 18;
+        const bx = 10, by = 10;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        ctx.fillRect(bx, by, bw, bh);
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(bx, by, bw, bh);
+
+        ctx.fillStyle = '#fde68a';
+        ctx.font = 'bold 8px "Fira Code"';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${currentWeather.icon} ${currentWeather.temp}°C · ${currentWeather.name}`, bx + 6, by + 12);
     }
 }
 
@@ -4090,7 +5347,8 @@ function renderHUD() {
     ctx.fillStyle = '#f59e0b';
     ctx.font = '8px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(`DIA ${player.day}`, 14, hy + 24);
+    const weatherIcon = (currentWeather && currentWeather.icon) ? ` ${currentWeather.icon}` : '';
+    ctx.fillText(`DIA ${player.day}${weatherIcon}`, 14, hy + 24);
 
     const hh = String(player.timeHour).padStart(2, '0');
     const mm = String(player.timeMinute).padStart(2, '0');
@@ -5637,6 +6895,8 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         // ====================================================================
         // TASCA TI ZÉ: COMIDA, BALCÃO & CARREIRA NA RESTAURAÇÃO
         // ====================================================================
+        actions.push({ label: "🍺 Desafio: Imperial Perfeita!", beerChallenge: true, cost: 1.5, timeH: 0, timeM: 15, desc: "Minijogo da Torneira de Pressão! Acerta nos 2 dedos de espuma para gorjeta (+6€) e +18 Sanidade." });
+        actions.push({ label: "Imperial Fresca de Pressão", orderBeer: true, cost: 1.5, timeH: 0, timeM: 15, hunger: 10, sanity: 18, desc: "Caneca fresca com colarinho branco. +18 Sanidade e alívio do calor." });
         actions.push({ label: "Bica ao Balcão", cost: 1, timeH: 0, timeM: 15, hunger: 5, sanity: 15, desc: "+15 Sanidade em 15 minutos." });
         actions.push({ label: "Bitoque c/ Ovo a Cavalo", cost: 9, timeH: 1, timeM: 0, hunger: 85, sanity: 25, desc: "+85 Nutrição e +25 Sanidade." });
 
@@ -6133,11 +7393,24 @@ window.addEventListener('keydown', (e) => {
         closeCurriculumModal();
         closeLeaderboard();
         closeSubmitModal();
+        closeAchievementsModal();
         if (state === 'MODAL') closeModal();
+        if (state === 'MINIGAME_BEER') closeBeerMinigame();
+    }
+    if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter') {
+        if (state === 'MINIGAME_BEER') {
+            e.preventDefault();
+            handleBeerMinigameClick(canvas.width / 2, canvas.height / 2);
+        }
     }
 });
 
 function handleCanvasClick(cx, cy) {
+    if (state === 'MINIGAME_BEER') {
+        handleBeerMinigameClick(cx, cy);
+        return;
+    }
+
     if (state === 'TITLE') {
         if (cx >= 180 && cx <= 460 && cy >= 250 && cy <= 280) {
             sfxAction();
@@ -6236,6 +7509,11 @@ function handleCanvasClick(cx, cy) {
             return;
         }
 
+        // Interagir com Personagens Andantes de Rua (Castanheiro, Trotinete, Guarda-Freio)
+        if (handleStreetWalkerClick(cx, cy)) {
+            return;
+        }
+
         // Clicar numa Personagem Viva do Tabuleiro (Balão de Diálogo Estilo Aventura Gráfica)
         for (let i = 0; i < LIVING_NPCS.length; i++) {
             const n = LIVING_NPCS[i];
@@ -6253,6 +7531,7 @@ function handleCanvasClick(cx, cy) {
             sfxTramBell();
             triggerHaptic([30, 40, 30]);
             spawnParticle("🔔 Plim-Plim!", "#fde047", cx, cy - 12);
+            unlockAchievement('sino_do_28');
             return;
         }
 
@@ -6312,6 +7591,15 @@ function closeModal() {
 }
 
 function executeAction(act) {
+    if (act.beerChallenge) {
+        startBeerMinigame();
+        return;
+    }
+
+    if (act.orderBeer) {
+        unlockAchievement('primeira_imperial');
+    }
+
     if (act.rentPaid) {
         showToast(`A renda já está em dia! Faltam ${player.daysUntilRent} dias.`);
         return;
@@ -6356,6 +7644,7 @@ function executeAction(act) {
         player.daysUntilRent = 7;
         showToast("Renda semanal regularizada com sucesso! Recibo do Sr. Jerónimo.");
         spawnParticle("✓ Renda Paga!", '#10b981');
+        unlockAchievement('senhorio_em_dia');
     }
 
     if (act.hunger !== undefined) {
@@ -6404,6 +7693,7 @@ function executeAction(act) {
             triggerHaptic([50, 50, 50, 100]);
             spawnParticle("🎓 CANUDO OBTIDO!", '#fde047');
             showToast(`🎓 PARABÉNS! Concluíste com distinção o curso de ${COURSES[courseId].name}! O Canudo do IST é teu!`);
+            unlockAchievement('canudo_ist');
         } else {
             sfxCoin();
             spawnParticle(`✓ ${name.split('(')[0].trim()}`, '#38bdf8');
@@ -6495,6 +7785,9 @@ function executeAction(act) {
         };
         showToast(`Compraste ${tier.name}! Vestuário pronto a usar.`);
         spawnParticle(`👕 ${tier.name}`, '#10b981');
+        if (tier.id === 'suit' || tier.formality >= 3) {
+            unlockAchievement('fato_executivo');
+        }
     }
 
     // Remendar Roupa
@@ -6512,6 +7805,7 @@ function executeAction(act) {
 
     // Tocar Guitarra no Miradouro (Aptidão Musical Progressiva & Fado de Lisboa)
     if (act.buskingMusic) {
+        unlockAchievement('fado_miradouro');
         player.musicSkill = player.musicSkill || 0;
         // Evolução lenta: 2.5% a 3.8% por sessão de 3h (demora para atingir o topo)
         const skillDelta = +(Math.random() * 1.3 + 2.5).toFixed(1);
@@ -6572,6 +7866,7 @@ function executeAction(act) {
 
     // Ações da Acampada pelo Direito à Habitação & Emprego
     if (act.sleepAcampada) {
+        unlockAchievement('teto_solidario');
         player.sleptAcampada = true;
         player.sanity = Math.min(100, player.sanity + 45);
         player.hunger = Math.min(100, player.hunger + 35);
@@ -6670,6 +7965,7 @@ function executeAction(act) {
 }
 
 function resetGame() {
+    randomizeWeather();
     player.day = 1;
     player.timeHour = 8;
     player.timeMinute = 0;
@@ -7342,6 +8638,8 @@ function showToast(msg) {
     setTimeout(() => t.classList.remove('show'), 3500);
 }
 
+loadAchievements();
+initWeatherParticles(currentWeather.type);
 requestAnimationFrame(gameLoop);
 </script>
 </body>
