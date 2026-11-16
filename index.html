@@ -817,7 +817,7 @@
                 <button class="arcade-btn btn-achievements" onclick="openAchievementsModal()" id="btn-achievements">🎖️ Conquistas</button>
                 <button class="arcade-btn btn-leaderboard" onclick="openLeaderboard()" id="btn-leaderboard">🏆 Top 10</button>
                 <div class="toolbar-divider"></div>
-                <button class="arcade-btn btn-sys" onclick="toggleMusic()" id="btn-music">🎵 BGM: ON</button>
+                <button class="arcade-btn btn-sys" onclick="toggleMusic()" id="btn-music" title="Motor de Áudio Interativo LucasArts iMUSE">🎵 iMUSE: ON</button>
                 <button class="arcade-btn btn-sys" onclick="toggleAudio()" id="btn-audio">🔊 SFX: ON</button>
                 <button class="arcade-btn btn-sys" onclick="toggleCRT()" id="btn-crt">📺 CRT: ON</button>
             </div>
@@ -1292,20 +1292,22 @@ function sfxInfluencerCamera() {
 }
 
 // ============================================================================
-// 1.1 MÚSICA CHIPTUNE PROCEDURAL (Web Audio API)
+// 1.1 SISTEMA iMUSE À PORTUGUESA (ÁUDIO INTERATIVO PROCEDURAL LUCASARTS)
 // ============================================================================
 let musicEnabled = true;
 let musicInterval = null;
 let musicStep = 0;
+let lastImuseZone = 'STREET';
 
 const BGM_NOTES = {
     A2: 110.00, B2: 123.47,
-    C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
-    C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
-    C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00
+    C3: 130.81, Cs3: 138.59, D3: 146.83, Ds3: 155.56, E3: 164.81, F3: 174.61, Fs3: 185.00, G3: 196.00, Gs3: 207.65, A3: 220.00, As3: 233.08, B3: 246.94,
+    C4: 261.63, Cs4: 277.18, D4: 293.66, Ds4: 311.13, E4: 329.63, F4: 349.23, Fs4: 369.99, G4: 392.00, Gs4: 415.30, A4: 440.00, As4: 466.16, B4: 493.88,
+    C5: 523.25, Cs5: 554.37, D5: 587.33, Ds5: 622.25, E5: 659.25, F5: 698.46, Fs5: 739.99, G5: 783.99, Gs5: 830.61, A5: 880.00
 };
 
-const BGM_TRACK = [
+// 1. Tema Urbano Principal (Baixa, Calçada & Chiado)
+const BGM_TRACK_STREET = [
     { lead: BGM_NOTES.C4, bass: BGM_NOTES.C3 },
     { lead: BGM_NOTES.E4, bass: null },
     { lead: BGM_NOTES.G4, bass: BGM_NOTES.G3 },
@@ -1324,7 +1326,67 @@ const BGM_TRACK = [
     { lead: null,           bass: null }
 ];
 
-// Melodia Noturna Serenata de Fado Alfacinha (Lá Menor / Ré Menor / Mi 7ª)
+// 2. Tema da Tasca Ti Zé (Marcha Popular Alfacinha & Boémia de Balcão)
+const BGM_TRACK_TASCA = [
+    { lead: BGM_NOTES.G4, bass: BGM_NOTES.C3 },
+    { lead: BGM_NOTES.E4, bass: null },
+    { lead: BGM_NOTES.G4, bass: BGM_NOTES.G3 },
+    { lead: BGM_NOTES.C5, bass: null },
+    { lead: BGM_NOTES.B4, bass: BGM_NOTES.G3 },
+    { lead: BGM_NOTES.A4, bass: null },
+    { lead: BGM_NOTES.G4, bass: BGM_NOTES.C3 },
+    { lead: BGM_NOTES.E4, bass: null },
+    { lead: BGM_NOTES.A4, bass: BGM_NOTES.F3 },
+    { lead: BGM_NOTES.F4, bass: null },
+    { lead: BGM_NOTES.A4, bass: BGM_NOTES.C3 },
+    { lead: BGM_NOTES.D5, bass: null },
+    { lead: BGM_NOTES.C5, bass: BGM_NOTES.G3 },
+    { lead: BGM_NOTES.B4, bass: null },
+    { lead: BGM_NOTES.C5, bass: BGM_NOTES.C3 },
+    { lead: null,           bass: null }
+];
+
+// 3. Tema do Miradouro & Tejo (Fado Vadio com Guitarra Portuguesa em Lá Menor / Sol#)
+const BGM_TRACK_FADO = [
+    { lead: BGM_NOTES.A4, bass: BGM_NOTES.A2 },
+    { lead: BGM_NOTES.C5, bass: null },
+    { lead: BGM_NOTES.E5, bass: BGM_NOTES.E3 },
+    { lead: BGM_NOTES.D5, bass: null },
+    { lead: BGM_NOTES.C5, bass: BGM_NOTES.A3 },
+    { lead: BGM_NOTES.B4, bass: null },
+    { lead: BGM_NOTES.Gs4, bass: BGM_NOTES.E3 },
+    { lead: BGM_NOTES.B4, bass: null },
+    { lead: BGM_NOTES.D5, bass: BGM_NOTES.B2 },
+    { lead: BGM_NOTES.C5, bass: null },
+    { lead: BGM_NOTES.B4, bass: BGM_NOTES.E3 },
+    { lead: BGM_NOTES.A4, bass: null },
+    { lead: BGM_NOTES.Gs4, bass: BGM_NOTES.E3 },
+    { lead: BGM_NOTES.B4, bass: null },
+    { lead: BGM_NOTES.A4, bass: BGM_NOTES.A2 },
+    { lead: null,           bass: null }
+];
+
+// 4. Tema do IST Alameda (Solenidade Académica / Valsa do Técnico)
+const BGM_TRACK_IST = [
+    { lead: BGM_NOTES.C4, bass: BGM_NOTES.C3 },
+    { lead: BGM_NOTES.G4, bass: null },
+    { lead: BGM_NOTES.E4, bass: BGM_NOTES.G3 },
+    { lead: BGM_NOTES.C5, bass: null },
+    { lead: BGM_NOTES.G4, bass: BGM_NOTES.C3 },
+    { lead: BGM_NOTES.E4, bass: null },
+    { lead: BGM_NOTES.D4, bass: BGM_NOTES.G3 },
+    { lead: BGM_NOTES.F4, bass: null },
+    { lead: BGM_NOTES.E4, bass: BGM_NOTES.C3 },
+    { lead: BGM_NOTES.G4, bass: null },
+    { lead: BGM_NOTES.C5, bass: BGM_NOTES.A3 },
+    { lead: BGM_NOTES.B4, bass: null },
+    { lead: BGM_NOTES.A4, bass: BGM_NOTES.F3 },
+    { lead: BGM_NOTES.G4, bass: null },
+    { lead: BGM_NOTES.C4, bass: BGM_NOTES.C3 },
+    { lead: null,           bass: null }
+];
+
+// 5. Melodia Noturna Serenata de Fado Alfacinha (Lá Menor / Ré Menor / Mi 7ª)
 const BGM_TRACK_NIGHT = [
     { lead: BGM_NOTES.A4, bass: BGM_NOTES.A3 },
     { lead: BGM_NOTES.C5, bass: null },
@@ -1344,37 +1406,218 @@ const BGM_TRACK_NIGHT = [
     { lead: null,           bass: null }
 ];
 
+// Detector da Zona iMUSE com base na localização e contexto
+function getImuseZone() {
+    if (typeof state !== 'undefined' && state === 'MODAL' && modalBuilding) {
+        if (modalBuilding.id === 'miradouro' || modalBuilding.id === 'acampada') return 'MIRADOURO';
+        if (modalBuilding.id === 'tasca') return 'TASCA';
+        if (modalBuilding.id === 'faculdade') return 'IST';
+        return 'STREET';
+    }
+    if (typeof player === 'undefined' || !player) return 'STREET';
+
+    const px = player.x;
+    if (px <= 150) return 'IST';
+    if (px >= 510) return 'TASCA';
+    return 'STREET';
+}
+
+// Efeitos Ambientais Dinâmicos do iMUSE
+function sfxGlassClink(vol = 0.02) {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(3950, now);
+        osc.frequency.exponentialRampToValueAtTime(3720, now + 0.09);
+        gain.gain.setValueAtTime(vol, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.09);
+    } catch(e) {}
+}
+
+function sfxIstBell(vol = 0.035) {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+        const now = audioCtx.currentTime;
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc1.type = 'sine';
+        osc2.type = 'triangle';
+        osc1.frequency.setValueAtTime(440, now);
+        osc2.frequency.setValueAtTime(880, now);
+        gain.gain.setValueAtTime(vol, now);
+        gain.gain.exponentialRampToValueAtTime(0.0002, now + 1.1);
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 1.1);
+        osc2.stop(now + 1.1);
+    } catch(e) {}
+}
+
+function sfxNightCricket(vol = 0.012) {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(4600, now);
+        gain.gain.setValueAtTime(vol, now);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.04);
+        gain.gain.setValueAtTime(vol, now + 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.0003, now + 0.10);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.10);
+    } catch(e) {}
+}
+
+function sfxTejoWaterLap(vol = 0.018) {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(115, now);
+        osc.frequency.linearRampToValueAtTime(75, now + 0.55);
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(200, now);
+        gain.gain.setValueAtTime(vol, now);
+        gain.gain.exponentialRampToValueAtTime(0.0004, now + 0.55);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.55);
+    } catch(e) {}
+}
+
 function startBGM() {
     if (musicInterval || !musicEnabled) return;
     initAudio();
     musicStep = 0;
-    musicInterval = setInterval(() => {
+
+    const tickBGM = () => {
         if (!musicEnabled || !audioCtx || audioCtx.state !== 'running') return;
         if (state !== 'BOARD' && state !== 'MODAL') return;
 
         const isNightTime = typeof player !== 'undefined' && player && (player.timeHour >= 20 || player.timeHour < 7);
-        const curTrack = isNightTime ? BGM_TRACK_NIGHT : BGM_TRACK;
+        const zone = getImuseZone();
+        lastImuseZone = zone;
+
+        // Seleção do arranjo iMUSE dinâmico
+        let curTrack = BGM_TRACK_STREET;
+        if (isNightTime) {
+            curTrack = BGM_TRACK_NIGHT;
+        } else if (zone === 'TASCA') {
+            curTrack = BGM_TRACK_TASCA;
+        } else if (zone === 'MIRADOURO') {
+            curTrack = BGM_TRACK_FADO;
+        } else if (zone === 'IST') {
+            curTrack = BGM_TRACK_IST;
+        }
+
         const note = curTrack[musicStep % curTrack.length];
         const now = audioCtx.currentTime;
 
-        // Lead synth (square wave, filtrado e suave)
-        if (note.lead) {
+        // Efeitos Ambientais Espaciais iMUSE (a cada certos compassos)
+        if (isNightTime && (musicStep % 16 === 4 || musicStep % 16 === 12)) {
+            sfxNightCricket();
+        } else if (zone === 'TASCA' && musicStep % 16 === 10) {
+            sfxGlassClink();
+        } else if (zone === 'MIRADOURO' && musicStep % 16 === 8) {
+            sfxTejoWaterLap();
+        } else if (zone === 'IST' && musicStep % 32 === 0) {
+            sfxIstBell();
+        }
+
+        // Sintetizador Lead com timbre adaptado ao espaço
+        if (note && note.lead) {
             try {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = isNightTime ? 'triangle' : 'square';
-                osc.frequency.setValueAtTime(note.lead, now);
-                gain.gain.setValueAtTime(isNightTime ? 0.025 : 0.018, now);
-                gain.gain.exponentialRampToValueAtTime(0.0005, now + (isNightTime ? 0.16 : 0.12));
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now);
-                osc.stop(now + (isNightTime ? 0.16 : 0.12));
+                if (zone === 'MIRADOURO' || isNightTime) {
+                    // Timbre acoplado de Guitarra Portuguesa (arpeggio com filtro ressonante)
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    const filter = audioCtx.createBiquadFilter();
+
+                    osc1.type = 'sawtooth';
+                    osc2.type = 'triangle';
+                    osc1.frequency.setValueAtTime(note.lead, now);
+                    osc2.frequency.setValueAtTime(note.lead * 1.0035, now);
+
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(2800, now);
+                    filter.frequency.exponentialRampToValueAtTime(650, now + 0.28);
+
+                    const leadVol = isNightTime ? 0.022 : 0.030;
+                    gain.gain.setValueAtTime(leadVol, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0003, now + 0.32);
+
+                    osc1.connect(filter);
+                    osc2.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.32);
+                    osc2.stop(now + 0.32);
+                } else if (zone === 'TASCA') {
+                    // Timbre quente de alaúde / acordeão boémio
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(note.lead, now);
+                    gain.gain.setValueAtTime(0.032, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.14);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.14);
+                } else if (zone === 'IST') {
+                    // Timbre cristalino e erudito
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(note.lead, now);
+                    gain.gain.setValueAtTime(0.026, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.16);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.16);
+                } else {
+                    // Timbre citadino chiptune clássico
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(note.lead, now);
+                    gain.gain.setValueAtTime(0.016, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.12);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                }
             } catch(e) {}
         }
 
-        // Bass synth (triangle wave)
-        if (note.bass) {
+        // Sintetizador Bass
+        if (note && note.bass) {
             try {
                 const bOsc = audioCtx.createOscillator();
                 const bGain = audioCtx.createGain();
@@ -1389,8 +1632,10 @@ function startBGM() {
             } catch(e) {}
         }
 
-        musicStep = (musicStep + 1) % curTrack.length;
-    }, 145);
+        musicStep = (musicStep + 1) % 64;
+    };
+
+    musicInterval = setInterval(tickBGM, 145);
 }
 
 function stopBGM() {
@@ -1404,7 +1649,7 @@ function toggleMusic() {
     initAudio();
     musicEnabled = !musicEnabled;
     const btn = document.getElementById('btn-music');
-    if (btn) btn.textContent = musicEnabled ? '🎵 BGM: ON' : '🔇 BGM: OFF';
+    if (btn) btn.textContent = musicEnabled ? '🎵 iMUSE: ON' : '🔇 iMUSE: OFF';
     if (musicEnabled) {
         startBGM();
     } else {
@@ -2732,7 +2977,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '4.8';
+const ASSET_VER = '4.9';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
