@@ -1714,6 +1714,80 @@ const ROMANCE_PARTNERS = {
     }
 };
 
+function getRomanceStage(partnerId) {
+    if (!player.relationships) player.relationships = {};
+    if (!player.romanceAffinity) player.romanceAffinity = {};
+    if (!player.relationships[partnerId]) {
+        player.relationships[partnerId] = { points: player.romanceAffinity[partnerId] || 0 };
+    }
+    if (player.romanceAffinity[partnerId] !== undefined && player.romanceAffinity[partnerId] > player.relationships[partnerId].points) {
+        player.relationships[partnerId].points = player.romanceAffinity[partnerId];
+    }
+    player.romanceAffinity[partnerId] = player.relationships[partnerId].points;
+    return player.relationships[partnerId];
+}
+
+function getRomanceHearts(points) {
+    if (points >= 100) return '❤️❤️❤️❤️';
+    if (points >= 75)  return '❤️❤️❤️🤍';
+    if (points >= 50)  return '❤️❤️🤍🤍';
+    if (points >= 25)  return '❤️🤍🤍🤍';
+    return '🤍🤍🤍🤍';
+}
+
+function getRomanceAction(partnerId) {
+    if (player.partner) return null; // Já tem compromisso amoroso
+    const rel = getRomanceStage(partnerId);
+    const p = ROMANCE_PARTNERS[partnerId];
+    if (!p) return null;
+    const hearts = getRomanceHearts(rel.points);
+
+    if (rel.points < 25) {
+        // Stage 0: Primeiro contacto / Piropo
+        return {
+            label: `💬 Meter conversa c/ ${p.name} (1h)`,
+            cost: 0,
+            timeH: 1,
+            timeM: 0,
+            romanceFlirt: partnerId,
+            desc: `Elogiar e meter conversa com ${p.name}. Afinidade: [${hearts}] (0%) · Ninguém se apaixona à primeira cantada!`
+        };
+    } else if (rel.points < 50) {
+        // Stage 1: Convidar para café
+        return {
+            label: `☕ Convidar ${p.name} para um Café (1h, 2€)`,
+            cost: 2,
+            timeH: 1,
+            timeM: 0,
+            sanity: 15,
+            romanceCoffee: partnerId,
+            desc: `Conversar com calma à mesa para quebrar o gelo. Afinidade: [${hearts}] (25%) · Criar simpatia.`
+        };
+    } else if (rel.points < 100) {
+        // Stage 2: Encontro Romântico
+        return {
+            label: `🌅 Passeio Romântico c/ ${p.name} (1h30, 8€)`,
+            cost: 8,
+            timeH: 1,
+            timeM: 30,
+            sanity: 25,
+            romanceDate: partnerId,
+            desc: `Passeio a dois e lanche ao luar sobre o Tejo. Afinidade: [${hearts}] (50%) · Química no ar!`
+        };
+    } else {
+        // Stage 3: Pedido Oficial de Namoro!
+        return {
+            label: `💍 Pedir ${p.name} em Namoro! (2h, 20€)`,
+            cost: 20,
+            timeH: 2,
+            timeM: 0,
+            sanity: 40,
+            startRomance: partnerId,
+            desc: `Jantar romântico e pedido oficial: «Queres namorar comigo?». Afinidade: [${hearts}] (100%) · Estatuto de casal!`
+        };
+    }
+}
+
 function getCurrentRent(idx = (player ? player.houseIndex : 1)) {
     if (idx === 0) return 0;
     const base = HOUSES[idx] ? HOUSES[idx].rent : 0;
@@ -2340,7 +2414,7 @@ const BUILDINGS = [
     { id: 'startup', name: 'IEFP / Emprego', x: 175, y: 35, w: 48, h: 155, color: '#065f46', accent: '#10b981', tag: 'IEFP & CARREIRAS', icon: '💼', doorX: 198, doorY: 195, desc: 'D. Mariana (IEFP, 45 anos) — Centro de Emprego, Orientação e Dossier Curricular.' },
     { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, desc: 'Inês — Vigília popular, a tua tenda Quechua, cantina solidária e luta pelo direito à habitação.' },
     { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco, depósitos e carreiras financeiras.' },
-    { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira (50 anos) — Mestre alfaiate charmosa, atrevida e elegante. Fatos pombalinos e ateliê.' },
+    { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira (60 anos) — Mestre alfaiate voluptuosa, elegante, sexy e atrevida. Top de renda, blazer chique e ateliê pombalino.' },
     { id: 'supermercado', name: 'Pingo Doce', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 478, doorY: 195, desc: 'Cátia (28 anos) — Encarregada bonita, curvilínea e carismática. Mantimentos e carreiras.' },
     { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 70, w: 110, h: 125, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
     { id: 'casa', name: 'O Teu Teto', x: 340, y: 15, w: 120, h: 65, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 376, doorY: 195, desc: 'Dorme para recuperar sanidade, fome e energia.' },
@@ -3044,7 +3118,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '6.4';
+const ASSET_VER = '6.5';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3527,35 +3601,31 @@ const STREET_WALKER_CATALOG = [
         ]
     },
     {
-        id: 'influencer',
-        name: 'Ashley (Influencer de LA)',
-        type: 'influencer',
-        speed: 18,
-        width: 32,
-        height: 42,
+        id: 'guarda_freio',
+        name: 'Ti Chico (Guarda-Freio da Carris)',
+        type: 'guarda_freio',
+        speed: 15,
+        width: 39,
+        height: 44,
         canExitRight: true,
         quotes: [
-            "OMG Lisbon is so aesthetic! Literally living my best life!",
-            "Excuse me, you just totally ruined my golden hour reel!",
-            "Is oat milk flat white available in this super cute tasca?!",
-            "Dropping my Lisbon Hidden Gems travel guide on TikTok! Link in bio!",
-            "Wait, someone take a photo of me candidly eating a pastel de nata!"
+            "Próxima paragem: Estrela! Cuidado com os estribos ao subir!",
+            "Há trinta anos que conduzo este elétrico amarelo pelos carris de Lisboa!",
+            "Segurem-se bem nas curvas apertadas da Graça e de Alfama!"
         ]
     },
     {
-        id: 'karen',
-        name: 'D. Maria de Fátima (A Queixosa)',
-        type: 'karen',
-        speed: 15,
+        id: 'varina',
+        name: 'D. Rosa (A Varina de Lisboa)',
+        type: 'varina',
+        speed: 16,
         width: 30,
         height: 40,
         canExitRight: true,
         quotes: [
-            "Isto é uma vergonha inadmissível! Quero falar com o gerente do bairro imediatamente!",
-            "Esta calçada irregular destruiu-me os saltos de 400 euros! Onde está o presidente da Junta?!",
-            "Você não sabe com quem está a falar! O meu falecido marido era Comendador!",
-            "Vou chamar a ASAE, a Polícia Municipal e o Correio da Manhã!",
-            "Que pouca vergonha esta gente acampada na promenade! Que falta de elegância!"
+            "Olha a sardinha fresquinha da lota! Salta que nem viva!",
+            "Trago o carapau e a pescada mais fresca de Lisboa!",
+            "Quem quer peixe bom e barato para o almoço?!"
         ]
     }
 ];
@@ -3811,6 +3881,34 @@ function renderStreetWalkers(ctx, animTimer) {
                 ctx.textAlign = 'center';
                 ctx.fillText("⚡", tx, ty - 48);
             }
+        } else if (w.type === 'guarda_freio') {
+            const gx = w.x;
+            const gy = w.y;
+
+            // Sombra sob os pés
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+            ctx.beginPath();
+            ctx.ellipse(gx, gy + 1, 10, 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (hasSprites) {
+                const gFrame = Math.floor(w.walkDist / 6) % 4;
+                ctx.save();
+                if (w.facing === 'left') {
+                    ctx.translate(gx, 0);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(streetWalkersImg, gFrame * 39, 88, 39, 44, -19, gy - 42, 39, 44);
+                } else {
+                    ctx.drawImage(streetWalkersImg, gFrame * 39, 88, 39, 44, gx - 19, gy - 42, 39, 44);
+                }
+                ctx.restore();
+            }
+
+            if (state === 'BOARD' && Math.hypot(mouse.x - gx, mouse.y - (gy - 18)) < 24) {
+                ctx.font = '9px "Press Start 2P"';
+                ctx.textAlign = 'center';
+                ctx.fillText("🚋", gx, gy - 48);
+            }
         } else if (w.type === 'gato') {
             const gx = w.x;
             const gy = w.y;
@@ -3916,12 +4014,6 @@ function renderStreetWalkers(ctx, animTimer) {
                 ctx.strokeStyle = '#94a3b8';
                 ctx.lineWidth = 1;
                 ctx.beginPath(); ctx.moveTo(-18, py - 16); ctx.lineTo(-13, py - 24); ctx.stroke();
-                // Chapéu Panamá de palha
-                ctx.fillStyle = '#fef3c7';
-                ctx.fillRect(-8, py - 40, 16, 3);
-                ctx.fillRect(-6, py - 44, 12, 4);
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(-6, py - 41, 12, 1.5);
             } else if (w.type === 'estudante') {
                 // Casaco azul escuro do Técnico
                 ctx.fillStyle = '#1e3a8a';
@@ -3994,110 +4086,17 @@ function renderStreetWalkers(ctx, animTimer) {
                 ctx.fillRect(-11, py - 32, 5, 17);
                 ctx.fillStyle = '#d97706';
                 ctx.fillRect(-10, py - 25, 3, 2);
-            } else if (w.type === 'influencer') {
-                // 🤳 ASHLEY - TRAVEL INFLUENCER DE LA (ESTADOS UNIDOS)
-                // Cabelo comprido ondulado com mechas loiras/douradas
-                ctx.fillStyle = '#f59e0b';
-                ctx.fillRect(-7, py - 39, 14, 5);
-                ctx.fillRect(-8, py - 36, 4, 12);
-                ctx.fillRect(4, py - 36, 4, 12);
-                ctx.fillStyle = '#fde68a';
-                ctx.fillRect(-6, py - 37, 2, 8);
-                ctx.fillRect(5, py - 37, 2, 8);
-
-                // Óculos de sol redondos oversized pretos
+            } else if (w.type === 'varina') {
+                // Canastra de peixe fresco à cabeça
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(-7, py - 43, 14, 5);
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillRect(-5, py - 45, 10, 2);
+                // Xaile tradicional cruzado no peito
                 ctx.fillStyle = '#0f172a';
-                ctx.fillRect(0, py - 34, 4, 3);
-                ctx.fillRect(5, py - 34, 4, 3);
-                ctx.fillStyle = '#38bdf8';
-                ctx.fillRect(1, py - 33, 1, 1);
-
-                // Crop top rosa pastel
-                ctx.fillStyle = '#f472b6';
-                ctx.fillRect(-5, py - 26, 10, 6);
-                ctx.fillStyle = '#fbcfe8';
-                ctx.fillRect(-3, py - 25, 6, 2);
-
-                // Calções de ganga azuis claros
-                ctx.fillStyle = '#38bdf8';
-                ctx.fillRect(-5, py - 20, 10, 4);
-
-                // 🤳 Selfie Stick estendido com smartphone e mini ring-light a piscar!
-                const stickBob = Math.sin(animTimer * 5) * 1.5;
-                ctx.strokeStyle = '#94a3b8';
-                ctx.lineWidth = 1.2;
-                ctx.beginPath();
-                ctx.moveTo(3, py - 22);
-                ctx.lineTo(16, py - 38 + stickBob);
-                ctx.stroke();
-
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(14, py - 44 + stickBob, 6, 9);
-                ctx.fillStyle = '#38bdf8';
-                ctx.fillRect(15, py - 43 + stickBob, 4, 7);
-
-                const isRec = (Math.sin(animTimer * 8) > 0);
-                ctx.fillStyle = isRec ? '#ef4444' : '#ffffff';
-                ctx.fillRect(16, py - 46 + stickBob, 2, 2);
-                if (isRec) {
-                    ctx.fillStyle = 'rgba(239, 68, 68, 0.25)';
-                    ctx.beginPath();
-                    ctx.arc(17, py - 45 + stickBob, 5, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            } else if (w.type === 'karen') {
-                // 📢 D. MARIA DE FÁTIMA - A QUEIXOSA DO BAIRRO (63 ANOS)
-                // Cabelo loiro armado e volumoso com laca anos 80
-                ctx.fillStyle = '#facc15';
-                ctx.beginPath();
-                ctx.arc(0, py - 36, 8, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = '#fde047';
-                ctx.fillRect(-7, py - 42, 14, 6);
-                ctx.fillRect(-8, py - 38, 4, 7);
-
-                // Óculos escuros caros empoleirados no topo do cabelo
-                ctx.fillStyle = '#0f172a';
-                ctx.fillRect(-5, py - 43, 4, 2);
-                ctx.fillRect(1, py - 43, 4, 2);
-                ctx.fillRect(-1, py - 43, 2, 1);
-
-                // Lenço de seda estampado com motivos dourados ao pescoço
-                ctx.fillStyle = '#eab308';
-                ctx.fillRect(-4, py - 28, 8, 3);
-                ctx.fillStyle = '#ca8a04';
-                ctx.fillRect(-2, py - 27, 4, 3);
-
-                // Casaco de malha coral chique
-                ctx.fillStyle = '#f87171';
-                ctx.fillRect(-5, py - 25, 10, 9);
-                ctx.fillStyle = '#ef4444';
-                ctx.fillRect(-1, py - 25, 2, 9);
-
-                // Calças de corte clássico azul marinho
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(-5, py - 16, 10, 10);
-
-                // Sapatos de salto agulha finos
-                ctx.fillStyle = '#7f1d1d';
-                ctx.fillRect(-3, py - 4, 3, 4);
-                ctx.fillRect(1, py - 4, 3, 4);
-
-                // Carteira de marca de luxo no braço
-                ctx.fillStyle = '#7c2d12';
-                ctx.fillRect(-10, py - 24, 6, 7);
-                ctx.fillStyle = '#eab308';
-                ctx.fillRect(-8, py - 22, 2, 2);
-
-                // Dedo indicador esticado no ar a apontar furiosa!
-                const pointWag = Math.sin(animTimer * 6) * 1.5;
-                ctx.strokeStyle = '#fcd34d';
-                ctx.lineWidth = 1.5;
-                ctx.beginPath();
-                ctx.moveTo(3, py - 23);
-                ctx.lineTo(12, py - 32 + pointWag);
-                ctx.lineTo(16, py - 34 + pointWag);
-                ctx.stroke();
+                ctx.fillRect(-5, py - 26, 10, 10);
+                ctx.fillStyle = '#b91c1c';
+                ctx.fillRect(-3, py - 24, 6, 4);
             }
 
             ctx.restore();
@@ -4107,14 +4106,13 @@ function renderStreetWalkers(ctx, animTimer) {
                 const bob = Math.sin(animTimer * 7) * 2;
                 ctx.font = '10px "Press Start 2P"';
                 ctx.textAlign = 'center';
-                const icon = (w.type === 'influencer' ? "🤳" :
-                             (w.type === 'karen' ? "📢" :
+                const icon = (w.type === 'varina' ? "🐟" :
                              (w.type === 'estafeta' ? "🚲" :
                              (w.type === 'turista_foto' ? "📸" :
                              (w.type === 'vizinha' ? "🥖" :
                              (w.type === 'turista_mala' ? "🧳" :
                              (w.type === 'tuna' ? "🎵" :
-                             (w.type === 'estudante' ? "📐" : "💬"))))))));
+                             (w.type === 'estudante' ? "📐" : "💬")))))));
                 ctx.fillText(icon, px, py - 46 + bob);
             }
         }
@@ -4135,8 +4133,7 @@ function openStreetWalkerEncounter(w) {
         walker: w,
         name: w.name,
         type: w.type,
-        icon: (w.type === 'influencer' ? "🤳" :
-              (w.type === 'karen' ? "📢" :
+        icon: (w.type === 'guarda_freio' ? "🚋" :
               (w.type === 'castanheiro' ? "🌰" :
               (w.type === 'trotinete' ? "🛴" :
               (w.type === 'turista_mala' ? "🧳" :
@@ -4145,7 +4142,8 @@ function openStreetWalkerEncounter(w) {
               (w.type === 'estafeta' ? "🚲" :
               (w.type === 'reformado' ? "🧓" :
               (w.type === 'turista_foto' ? "📸" :
-              (w.type === 'tuna' ? "🎸" : "🐈"))))))))))),
+              (w.type === 'tuna' ? "🎸" :
+              (w.type === 'varina' ? "🐟" : "🐈"))))))))))),
         prompt: "",
         opt1Text: "",
         opt1Action: null,
@@ -4153,41 +4151,24 @@ function openStreetWalkerEncounter(w) {
         opt2Action: null
     };
 
-    if (w.type === 'influencer') {
-        sfxInfluencerCamera();
-        encounter.prompt = "«OMG! Podes tirar-me uma foto segurando este pastel de nata com o elétrico amarelo atrás?! O feed vai explodir!»";
-        encounter.opt1Text = "► 1. Tirar foto de ângulo profissional (+12.00€ gorjeta, +5 Reputação)";
+    if (w.type === 'guarda_freio') {
+        sfxTramBell();
+        encounter.prompt = "«Próxima paragem: Calhariz e Estrela! O Elétrico 28 não espera por ninguém, rapaz!»";
+        encounter.opt1Text = "► 1. Cumprimentar o Guarda-Freio e pedir indicações (+8 Sanidade, +2 Reputação)";
         encounter.opt1Action = () => {
-            player.wallet += 12.00;
-            player.reputation = Math.min(100, player.reputation + 5);
-            sfxWin();
-            spawnParticle("🤳 +12.00€ +5 Rep", "#38bdf8", w.x, w.y - 45);
-            spawnSpeechBubble(w.x, w.y - 48, "«OMG you're an angel! Tagging @LisbonVibes! Love it!»", w.name);
-        };
-        encounter.opt2Text = "► 2. «Minha senhora, saia dos carris que vem aí o Elétrico 28!» (+12 Sanidade)";
-        encounter.opt2Action = () => {
-            player.sanity = Math.min(100, player.sanity + 12);
+            player.sanity = Math.min(100, player.sanity + 8);
+            player.reputation = Math.min(100, player.reputation + 2);
             sfxTramBell();
-            spawnParticle("🚋 +12 Sanidade!", "#facc15", w.x, w.y - 45);
-            spawnSpeechBubble(w.x, w.y - 48, "«Wait what?! *salta da linha assustada* So dramatic!»", w.name);
+            spawnParticle("🚋 +8 Sanidade +2 Rep", "#facc15", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Boa viagem por Lisboa, rapaz! Agarra-te bem aos varões!»", w.name);
         };
-    } else if (w.type === 'karen') {
-        sfxKarenVoice();
-        encounter.prompt = "«Isto é uma vergonha inadmissível! Esta calçada irregular estragou-me os sapatos caríssimos! Onde está o gerente?!»";
-        encounter.opt1Text = "► 1. Ouvir com paciência e acenar (+2.00€ atirados com desdém, -3 Energia)";
-        encounter.opt1Action = () => {
-            player.wallet += 2.00;
-            player.energy = Math.max(0, player.energy - 3);
-            sfxCoin();
-            spawnParticle("🪙 +2.00€ -3 Energia", "#f59e0b", w.x, w.y - 45);
-            spawnSpeechBubble(w.x, w.y - 48, "«Tome lá para um café e não me maça mais com conversas!»", w.name);
-        };
-        encounter.opt2Text = "► 2. «Minha senhora, a vida correu-lhe mal mas a culpa não é do empedrado!» (+14 Sanidade)";
+        encounter.opt2Text = "► 2. Ajudar a desimpedir um caixote dos carris (+5.00€ gorjeta da Carris, +10 Sanidade)";
         encounter.opt2Action = () => {
-            player.sanity = Math.min(100, player.sanity + 14);
-            sfxAction();
-            spawnParticle("📢 +14 Sanidade!", "#ef4444", w.x, w.y - 45);
-            spawnSpeechBubble(w.x, w.y - 48, "«O quê?! Mas você sabe quem eu sou?! Vou já chamar o Correio da Manhã!»", w.name);
+            player.wallet += 5.00;
+            player.sanity = Math.min(100, player.sanity + 10);
+            sfxWin();
+            spawnParticle("🪙 +5.00€ +10 Sanidade", "#10b981", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Bem hajas, desenrascado! O 28 segue viagem sem atrasos!»", w.name);
         };
     } else if (w.type === 'castanheiro') {
         encounter.prompt = "«Quentes e boas! Quem quer castanhas assadas na brasa para aquecer a alma e a carcaça?!»";
@@ -4291,18 +4272,18 @@ function openStreetWalkerEncounter(w) {
                 sfxWin();
                 spawnSpeechBubble(w.x, w.y - 48, "«Salvaste-me o semestre! Vou já compilar esta biblioteca!»", w.name);
             };
-            encounter.opt2Text = (!player.partner) ? "► 2. Pagar-lhe uma bica e convidar a Marta para namorar (-1.50€)" : "► 2. Pagar-lhe um café curto e dar força moral (-0.80€, +12 Sanidade)";
+            encounter.opt2Text = (!player.partner) ? "► 2. Pagar-lhe uma bica e meter conversa (-1.50€, +25% Afinidade)" : "► 2. Pagar-lhe um café curto e dar força moral (-0.80€, +12 Sanidade)";
             encounter.opt2Action = () => {
                 if (!player.partner) {
                     if (player.wallet >= 1.50) {
                         player.wallet -= 1.50;
-                        player.partner = 'marta';
+                        const rel = getRomanceStage('marta');
+                        rel.points = Math.min(100, rel.points + 25);
                         player.sanity = Math.min(100, player.sanity + 25);
-                        sfxWin();
-                        spawnParticle("❤️ Marta namorada!", "#ec4899", w.x, w.y - 45);
-                        spawnSpeechBubble(w.x, w.y - 48, "«Aceito! Precisava mesmo deste escape ao Técnico. Vamos a isto!»", w.name);
-                        showToast("❤️ Começaste a namorar com a Marta (IST)! Agora dividem a vida!");
-                        unlockAchievement('amor_lisboeta');
+                        sfxCoin();
+                        spawnParticle("❤️ Marta (+25%)", "#ec4899", w.x, w.y - 45);
+                        spawnSpeechBubble(w.x, w.y - 48, "«Que simpático, Zé! É bom ter amigos assim no IST!»", w.name);
+                        showToast(`❤️ Afinidade com a Marta: ${rel.points}%! Ninguém namora à primeira cantada, continua a conhecê-la!`);
                     } else {
                         sfxAlert();
                         spawnSpeechBubble(w.x, w.y - 48, "«Sem trocos para o café? Fica para a próxima sessão de exames!»", w.name);
@@ -4463,18 +4444,18 @@ function openStreetWalkerEncounter(w) {
                 spawnParticle("🎵 +12 Sanidade +0.3% Música", "#c084fc", w.x, w.y - 45);
                 spawnSpeechBubble(w.x, w.y - 48, "«Tens voz de fadista, Zé! A noite lisboeta corre-te nas veias!»", w.name);
             };
-            encounter.opt2Text = (!player.partner) ? "► 2. Elogiar a trova e convidar o Gonçalo para namorar (-2.50€ de vinho)" : "► 2. Pedir uma trova rápida de incentivo para os teus estudos (+8 Sanidade)";
+            encounter.opt2Text = (!player.partner) ? "► 2. Elogiar a trova e meter conversa (-2.50€ de vinho, +25% Afinidade)" : "► 2. Pedir uma trova rápida de incentivo para os teus estudos (+8 Sanidade)";
             encounter.opt2Action = () => {
                 if (!player.partner) {
                     if (player.wallet >= 2.50) {
                         player.wallet -= 2.50;
-                        player.partner = 'goncalo';
+                        const rel = getRomanceStage('goncalo');
+                        rel.points = Math.min(100, rel.points + 25);
                         player.sanity = Math.min(100, player.sanity + 25);
-                        sfxWin();
-                        spawnParticle("❤️ Gonçalo namorado!", "#ec4899", w.x, w.y - 45);
-                        spawnSpeechBubble(w.x, w.y - 48, "«Canto ao amor e aceito a tua mão! Lisboa tem hoje mais encanto!»", w.name);
-                        showToast("❤️ Começaste a namorar com o Gonçalo (Tuna Académica)! Agora dividem a vida!");
-                        unlockAchievement('amor_lisboeta');
+                        sfxCoin();
+                        spawnParticle("❤️ Gonçalo (+25%)", "#ec4899", w.x, w.y - 45);
+                        spawnSpeechBubble(w.x, w.y - 48, "«Gostei da tua alma boémia! O fado tem mais vida acompanhado!»", w.name);
+                        showToast(`❤️ Afinidade com o Gonçalo: ${rel.points}%! Ninguém namora à primeira cantada, continua a conhecê-lo!`);
                     } else {
                         sfxAlert();
                         spawnSpeechBubble(w.x, w.y - 48, "«Sem moedas para o néctar dos deuses? Fica para a próxima serenata!»", w.name);
@@ -4504,6 +4485,28 @@ function openStreetWalkerEncounter(w) {
             sfxWin();
             spawnParticle("🐟 +16 Sanidade!", "#f472b6", w.x, w.y - 25);
             spawnSpeechBubble(w.x, w.y - 30, "*Miau meigo!* Faísca devora o atum e fica teu fiel amigo!", w.name);
+        };
+    } else if (w.type === 'varina') {
+        encounter.prompt = "«Olha a sardinha fresquinha da lota! Salta que nem viva para a brasa, rapaz!»";
+        encounter.opt1Text = "► 1. Comprar sardinha fresca para a despensa (-3.00€, +2 Mercearias)";
+        encounter.opt1Action = () => {
+            if (player.wallet >= 3.00) {
+                player.wallet -= 3.00;
+                player.groceries += 2;
+                sfxCoin();
+                spawnParticle("🐟 +2 Refeições", "#38bdf8", w.x, w.y - 45);
+                spawnSpeechBubble(w.x, w.y - 48, "«Sardinha gorda que pinga no pão! Bom proveito, Zé!»", w.name);
+            } else {
+                sfxAlert();
+                spawnSpeechBubble(w.x, w.y - 48, "«Sem 3 euros para o peixe? Volta quando tiveres troco, rapaz!»", w.name);
+            }
+        };
+        encounter.opt2Text = "► 2. Elogiar o pregão tradicional de Lisboa (+10 Sanidade)";
+        encounter.opt2Action = () => {
+            player.sanity = Math.min(100, player.sanity + 10);
+            sfxAction();
+            spawnParticle("🐟 +10 Sanidade", "#10b981", w.x, w.y - 45);
+            spawnSpeechBubble(w.x, w.y - 48, "«Bem hajas, rapaz! A voz da varina é a alma desta cidade!»", w.name);
         };
     }
 
@@ -6901,7 +6904,7 @@ const NPC_INFO = {
         color: "#dc2626"
     },
     loja_roupa: {
-        name: "D. Zulmira (50 anos)",
+        name: "D. Zulmira (60 anos)",
         role: "Alfaiataria do Chiado",
         quote: () => {
             if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
@@ -6986,19 +6989,12 @@ function drawNpcPortrait(id, x, y, size) {
         ctx.rect(x, y, size, size);
         ctx.clip();
 
-        // CAMADA 1: FUNDO 100% ESTÁTICO (Nunca se mexe, preenche 100% da moldura sem qualquer quebra)
+        // CAMADA 1: RETRATO SCUMM 16-BIT ESTÁTICO (Fundo e personagem 100% imóveis, preenchendo a moldura sem tremores)
         ctx.drawImage(bgImg, bgSx, bgSy, 128, 128, x, y, size, size);
 
-        // CAMADA 2: BUSTO COM TRANSPARÊNCIA (Apenas o personagem respira; o fundo fica perfeitamente imóvel)
-        const breathY = Math.round(Math.sin(animTimer * 2.2));
         const scale = size / 128;
-        const offsetPx = Math.round(breathY * scale);
 
-        if (bustImg) {
-            ctx.drawImage(bustImg, bustSx, bustSy, 128, 128, x, y + offsetPx, size, size);
-        }
-
-        // CAMADA 3: PISCAR DE OLHOS NATURAL ESTILO LUCASARTS SCUMM
+        // CAMADA 2: PISCAR DE OLHOS NATURAL ESTILO LUCASARTS SCUMM
         // A cada ~3.6s, os olhos piscam durante ~120ms (estilo Monkey Island 2 / Fate of Atlantis)
         const blinkCycle = (animTimer % 3.6) / 3.6;
         if (blinkCycle < 0.035) {
@@ -7015,10 +7011,9 @@ function drawNpcPortrait(id, x, y, size) {
                 loja_roupa:   { lx: 54, rx: 72, y: 44, w: 5, h: 2, c: '#271710' }
             };
             const ec = eyeCoords[id] || eyeCoords.senhorio;
-            const byOff = offsetPx;
             ctx.fillStyle = ec.c;
-            ctx.fillRect(Math.round(x + ec.lx * scale), Math.round(y + ec.y * scale + byOff), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
-            ctx.fillRect(Math.round(x + ec.rx * scale), Math.round(y + ec.y * scale + byOff), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
+            ctx.fillRect(Math.round(x + ec.lx * scale), Math.round(y + ec.y * scale), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
+            ctx.fillRect(Math.round(x + ec.rx * scale), Math.round(y + ec.y * scale), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
         }
 
         // Acessórios e Efeitos Ambientais Elegantes nos Cantos (sem tapar o rosto):
@@ -8177,16 +8172,9 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                 desc: "Capa e batina tradicional do IST (Durabilidade: 90). Dá prestígio!"
             });
 
-            if (!player.partner) {
-                actions.push({
-                    label: "Convidar a Marta (IST) para um café (1h, 2€)",
-                    cost: 2,
-                    timeH: 1,
-                    timeM: 0,
-                    sanity: 15,
-                    startRomance: 'marta',
-                    desc: "Pausa dos estudos com a Marta. Se fores aluno do IST, ela aceita namorar!"
-                });
+            const romActMarta = getRomanceAction('marta');
+            if (romActMarta) {
+                actions.push(romActMarta);
             } else if (player.partner === 'marta') {
                 actions.push({
                     label: "Estudar e Namorar com a Marta (2h, +25 Sanidade)",
@@ -8292,16 +8280,9 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             });
         }
 
-        if (!player.partner) {
-            actions.push({
-                label: "Mete conversa e oferece café à Cátia (1h, 2€)",
-                cost: 2,
-                timeH: 1,
-                timeM: 0,
-                sanity: 15,
-                startRomance: 'catia',
-                desc: "Elogia o sorriso da Cátia da caixa. Se estiveres são e arranjado, começam a namorar!"
-            });
+        const romActCatia = getRomanceAction('catia');
+        if (romActCatia) {
+            actions.push(romActCatia);
         } else if (player.partner === 'catia') {
             actions.push({
                 label: "Encontro Romântico com a Cátia (1h, 10€)",
@@ -8430,16 +8411,9 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             { label: "🎸 Tocar Guitarra no Miradouro (3h)", buskingMusic: true, timeH: 3, timeM: 0, desc: buskDesc }
         ];
 
-        if (!player.partner) {
-            actions.push({
-                label: "Dueto e Flirt com o Gonçalo ao Pôr-do-Sol (1h, 3€)",
-                cost: 3,
-                timeH: 1,
-                timeM: 0,
-                sanity: 20,
-                startRomance: 'goncalo',
-                desc: "Partilhar uma mini e afinar trovas com o fadista da Tuna. Começam a namorar!"
-            });
+        const romActGoncalo = getRomanceAction('goncalo');
+        if (romActGoncalo) {
+            actions.push(romActGoncalo);
         } else if (player.partner === 'goncalo') {
             actions.push({
                 label: "Serenata Romântica a Dois com o Gonçalo (1h, +30 Sanidade)",
@@ -8684,11 +8658,20 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         } else if (act.repairClothing) {
             btnText = "REMENDAR";
             btnColor = "#10b981";
+        } else if (act.romanceFlirt) {
+            btnText = "FLIRT";
+            btnColor = "#ec4899";
+        } else if (act.romanceCoffee) {
+            btnText = "CAFÉ";
+            btnColor = "#ec4899";
+        } else if (act.romanceDate) {
+            btnText = "ENCONTRO";
+            btnColor = "#ec4899";
         } else if (act.startRomance) {
-            btnText = "NAMORAR";
+            btnText = "PEDIDO";
             btnColor = "#ec4899";
         } else if (act.datePartner) {
-            btnText = "ENCONTRO";
+            btnText = "CASAL";
             btnColor = "#ec4899";
         } else if (act.endRomance) {
             btnText = "TERMINAR";
@@ -9328,8 +9311,8 @@ function executeAction(act) {
         spawnParticle("✂️ Remendado!", '#10b981');
     }
 
-    // Romance & Caras-Metades em Lisboa (Inclusivo & Sem Complicações)
-    if (act.startRomance) {
+    // Romance & Caras-Metades em Lisboa (Progressivo & Autêntico: Flirt -> Café -> Encontro -> Pedido de Namoro)
+    if (act.romanceFlirt) {
         if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
             sfxAlert();
             showToast("Não podes meter conversa com ninguém em fato de Adão! Veste-te nas Modas Chiado.");
@@ -9340,12 +9323,74 @@ function executeAction(act) {
             showToast("Estás em esgotamento mental e com tremores. Descansa um pouco antes de tentar o amor!");
             return;
         }
-        player.partner = act.startRomance;
-        const pObj = ROMANCE_PARTNERS[act.startRomance] || { name: 'tua cara-metade' };
+        const target = act.romanceFlirt;
+        const rel = getRomanceStage(target);
+        rel.points = Math.min(100, (rel.points || 0) + 25);
+        if (!player.romanceAffinity) player.romanceAffinity = {};
+        player.romanceAffinity[target] = rel.points;
+        const pObj = ROMANCE_PARTNERS[target];
+        sfxCoin();
+        const quotes = {
+            catia: "Cátia sorri de canto: «Ahah, és despachado, rapaz... Mas calma lá com as cantadas, que aqui trabalha-se!»",
+            marta: "Marta ajeita os óculos e ri-se: «Obrigada pela simpatia... Mas eu agora tenho de compilar Algoritmos!»",
+            goncalo: "Gonçalo dedilha um acorde: «Bem metida essa trova! Mas para serenatas a sério ainda tens de afinar o ouvido!»"
+        };
+        showToast(`❤️ Afinidade com ${pObj.name}: ${rel.points}%! ${quotes[target] || ''}`);
+        spawnParticle(`❤️ ${pObj.name} (${rel.points}%)`, '#ec4899');
+        return;
+    }
+
+    if (act.romanceCoffee) {
+        const target = act.romanceCoffee;
+        const rel = getRomanceStage(target);
+        rel.points = Math.min(100, (rel.points || 0) + 25);
+        if (!player.romanceAffinity) player.romanceAffinity = {};
+        player.romanceAffinity[target] = rel.points;
+        const pObj = ROMANCE_PARTNERS[target];
+        sfxCoin();
+        const quotes = {
+            catia: "Cátia bebe a bica e suspira: «A tua conversa até tem piada. Começo a achar-te um rapaz interessante!»",
+            marta: "Marta bebe o galão e sorri: «Este café soube mesmo bem. Já nos entendemos melhor nos intervalos das aulas!»",
+            goncalo: "Gonçalo ergue a chávena: «Uma bica com boa tertúlia é o melhor de Lisboa! Já somos bons comparsas.»"
+        };
+        showToast(`❤️ Afinidade com ${pObj.name}: ${rel.points}%! ${quotes[target] || ''}`);
+        spawnParticle(`❤️ ${pObj.name} (${rel.points}%)`, '#ec4899');
+        return;
+    }
+
+    if (act.romanceDate) {
+        const target = act.romanceDate;
+        const rel = getRomanceStage(target);
+        rel.points = Math.min(100, (rel.points || 0) + 25);
+        if (!player.romanceAffinity) player.romanceAffinity = {};
+        player.romanceAffinity[target] = rel.points;
+        const pObj = ROMANCE_PARTNERS[target];
         sfxWin();
-        showToast(`❤️ Começaste a namorar com ${pObj.name}! «Dividimos as despesas e a vida em Lisboa!»`);
-        spawnParticle(`❤️ ${pObj.name}!`, '#ec4899');
+        const quotes = {
+            catia: "Cátia encosta a cabeça no teu ombro: «O pôr-do-sol no Tejo contigo foi maravilhoso... Sinto uma química enorme entre nós!»",
+            marta: "Marta dá-te a mão no miradouro: «Esqueci os exames por duas horas... Foi o melhor momento que passei em Lisboa este mês!»",
+            goncalo: "Gonçalo canta um fado baixinho: «Que sintonia perfeita! As cordas da guitarra vibram quando estamos juntos.»"
+        };
+        showToast(`💖 Afinidade com ${pObj.name}: ${rel.points}%! Cumplicidade total atingida! Já podes pedir em namoro!`);
+        spawnParticle(`💖 Afinidade ${rel.points}%!`, '#ec4899');
+        return;
+    }
+
+    if (act.startRomance) {
+        const target = act.startRomance;
+        const rel = getRomanceStage(target);
+        if (rel.points < 100) {
+            sfxAlert();
+            showToast("Ninguém namora à primeira cantada! Precisas de construir cumplicidade até aos 100%.");
+            return;
+        }
+        player.partner = target;
+        const pObj = ROMANCE_PARTNERS[target] || { name: 'tua cara-metade' };
+        sfxWin();
+        showToast(`💍 Começaste oficialmente a namorar com ${pObj.name}! «Dividimos as despesas e a vida em Lisboa!» (35% desconto de casal na renda!)`);
+        spawnParticle(`💍 ${pObj.name}!`, '#ec4899');
         unlockAchievement('amor_lisboeta');
+        return;
     }
 
     if (act.datePartner) {
@@ -9356,7 +9401,13 @@ function executeAction(act) {
     }
 
     if (act.endRomance) {
-        player.partner = null;
+        if (player.partner) {
+            const oldP = player.partner;
+            player.partner = null;
+            if (player.relationships && player.relationships[oldP]) {
+                player.relationships[oldP].points = 50; // voltam a amigos de café
+            }
+        }
         sfxAction();
         showToast("Terminaste o namoro amigavelmente. Segues a tua vida a solo em Lisboa.");
         spawnParticle("💔 Solteiro/a", '#94a3b8');
