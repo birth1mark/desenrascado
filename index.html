@@ -1669,6 +1669,62 @@ const HOUSES = [
 ];
 
 // ============================================================================
+// SISTEMA DE ROMANCE & CARAS-METADES DE LISBOA (Inclusivo & Autêntico)
+// ============================================================================
+const ROMANCE_PARTNERS = {
+    soraia: {
+        id: 'soraia',
+        name: 'Soraia',
+        fullName: 'Soraia (Pingo Doce)',
+        gender: 'f',
+        role: 'Encarregada do Pingo Doce',
+        desc: 'Curvilínea, sexy, carismática e trabalhadora. Divide o cabaz e o coração.',
+        icon: '🛒',
+        color: '#15803d'
+    },
+    marta: {
+        id: 'marta',
+        name: 'Marta',
+        fullName: 'Marta (IST)',
+        gender: 'f',
+        role: 'Estudante de Engenharia no IST',
+        desc: 'Brilhante, focada, companheira de noitadas de estudo e cafés no Técnico.',
+        icon: '🎓',
+        color: '#38bdf8'
+    },
+    rui: {
+        id: 'rui',
+        name: 'Rui',
+        fullName: 'Rui (Estafeta Ciclista)',
+        gender: 'm',
+        role: 'Estafeta Ciclista da Baixa',
+        desc: 'Atlético, bem-humorado, ecológico e especialista em atalhos e bifanas.',
+        icon: '🚲',
+        color: '#22c55e'
+    },
+    goncalo: {
+        id: 'goncalo',
+        name: 'Gonçalo',
+        fullName: 'Gonçalo (Tuna Académica)',
+        gender: 'm',
+        role: 'Boémio da Tuna Académica',
+        desc: 'Fadista trovador de capa negra, alma nobre e serenatas sobre o Tejo.',
+        icon: '🎸',
+        color: '#c084fc'
+    }
+};
+
+function getCurrentRent(idx = (player ? player.houseIndex : 1)) {
+    if (idx === 0) return 0;
+    const base = HOUSES[idx] ? HOUSES[idx].rent : 0;
+    if (typeof player !== 'undefined' && player && player.partner) {
+        // Desconto de 35% ao dividir as despesas da habitação em Lisboa com a cara-metade!
+        return Math.round(base * 0.65);
+    }
+    return base;
+}
+
+// ============================================================================
 // SISTEMA DE CURSOS UNIVERSITÁRIOS (IST - Alameda & Politécnico)
 // 4 Cadeiras Sequenciais por Curso com Tese e Obtenção de Canudo
 // ============================================================================
@@ -1793,7 +1849,7 @@ const WORKPLACES = {
         name: 'Pingo Doce',
         shortName: 'Pingo Doce',
         tag: 'RETALHO & SUPERMERCADO',
-        boss: 'D. Maria',
+        boss: 'Soraia',
         icon: '🛒',
         color: '#15803d',
         careers: [
@@ -2150,7 +2206,7 @@ function generateMorningEvent(p) {
     if (p.currentWorkplace === 'pingo_doce') {
         possibleEvents.push({
             title: "Quebra de Palete de Atum no Pingo Doce",
-            desc: "Um porta-paletes tombou no corredor 3 do Pingo Doce. Ajudaste a arrumar 300 latas e a D. Maria ofereceu-te um bónus de assiduidade e conservas!",
+            desc: "Um porta-paletes tombou no corredor 3 do Pingo Doce. Ajudaste a arrumar 300 latas e a Soraia ofereceu-te um sorriso radiante, um bónus de assiduidade e conservas!",
             effect: (player) => {
                 player.wallet += 22;
                 player.groceries += 1;
@@ -2285,7 +2341,7 @@ const BUILDINGS = [
     { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, desc: 'Inês — Vigília popular, a tua tenda Quechua, cantina solidária e luta pelo direito à habitação.' },
     { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco, depósitos e carreiras financeiras.' },
     { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira — Fatos de gala, alfaiataria, trajes académicos e ateliê de costura.' },
-    { id: 'supermercado', name: 'Pingo Doce', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 478, doorY: 195, desc: 'D. Maria — Mantimentos e carreiras de supermercado.' },
+    { id: 'supermercado', name: 'Pingo Doce', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 478, doorY: 195, desc: 'Soraia (28 anos) — Encarregada bonita, curvilínea e carismática. Mantimentos e carreiras.' },
     { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 70, w: 110, h: 125, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
     { id: 'casa', name: 'O Teu Teto', x: 340, y: 15, w: 120, h: 65, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 376, doorY: 195, desc: 'Dorme para recuperar sanidade, fome e energia.' },
     { id: 'senhorio', name: 'Senhorio', x: 530, y: 15, w: 110, h: 65, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 585, doorY: 195, desc: 'Sr. Jerónimo — Rendas, contratos de habitação e biscates de manutenção.' }
@@ -2373,7 +2429,7 @@ const LIVING_NPCS = [
         x: 476, y: 172, radius: 20,
         quotes: [
             "O azeite está a preço de ouro! Vim só buscar pão e gastei uma fortuna.",
-            "As promoções da D. Maria salvam qualquer fim de mês em Lisboa."
+            "As promoções da Soraia salvam qualquer fim de mês em Lisboa."
         ]
     },
     {
@@ -2956,6 +3012,7 @@ let player = {
     daysUntilRent: 7,
     hungerDays: 0,
     sleptAcampada: false,
+    partner: null, // 'soraia' | 'marta' | 'rui' | 'goncalo' | null
     avatarName: "Zé Desenrasca",
     deathTitle: "",
     deathCause: ""
@@ -2977,7 +3034,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '4.9';
+const ASSET_VER = '5.0';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -2998,6 +3055,10 @@ streetWalkersImg.src = `assets/street_walkers.png?v=${ASSET_VER}`;
 // Retrato Exclusivo em Pixel Art da D. Mariana (IEFP / 45 anos, Loura, Óculos e Blazer)
 const iefpPortraitImg = new Image();
 iefpPortraitImg.src = `assets/portrait_iefp.png?v=${ASSET_VER}`;
+
+// Retrato Exclusivo em Pixel Art da Soraia (Pingo Doce / 28 anos, Curvilínea, Carismática)
+const soraiaPortraitImg = new Image();
+soraiaPortraitImg.src = `assets/portrait_soraia.png?v=${ASSET_VER}`;
 
 // Splash Screen Bitmapped 16-Bit Deslumbrante de Lisboa
 const splashImg = new Image();
@@ -4149,35 +4210,73 @@ function openStreetWalkerEncounter(w) {
         };
     } else if (w.type === 'estudante') {
         sfxStep();
-        encounter.prompt = "«Zé! Estou em pânico com o projeto de Sistemas Operativos... não durmo há 36 horas no Técnico!»";
-        encounter.opt1Text = "► 1. Trocar apontamentos e esquemas da matéria (+20% avanço na cadeira do IST)";
-        encounter.opt1Action = () => {
-            if (player.enrolledCourse && COURSES[player.enrolledCourse]) {
-                const cur = COURSES[player.enrolledCourse].subjects[player.courseSubjectIndex];
-                if (cur) {
-                    player.subjectProgress = Math.min(100, (player.subjectProgress || 0) + 20);
-                    spawnParticle("📐 +20% na Cadeira!", "#38bdf8", w.x, w.y - 45);
-                }
-            } else {
-                player.knowledge = Math.min(100, player.knowledge + 6);
-                spawnParticle("🎓 +6 Conhecimento", "#38bdf8", w.x, w.y - 45);
-            }
-            sfxWin();
-            spawnSpeechBubble(w.x, w.y - 48, "«Salvaste-me o semestre! Vou já compilar esta biblioteca!»", w.name);
-        };
-        encounter.opt2Text = "► 2. Pagar-lhe um café curto e dar força moral (-0.80€, +12 Sanidade)";
-        encounter.opt2Action = () => {
-            if (player.wallet >= 0.80) {
-                player.wallet -= 0.80;
+        if (player.partner === 'marta') {
+            encounter.prompt = "«Olá meu bem! Fiz uma pausa no Técnico só para te ver. O código compila melhor contigo por perto!»";
+            encounter.opt1Text = "► 1. Abraço reconfortante e beijo na Alameda (+25 Sanidade, +10 Nutrição)";
+            encounter.opt1Action = () => {
+                player.sanity = Math.min(100, player.sanity + 25);
+                player.hunger = Math.min(100, player.hunger + 10);
+                sfxWin();
+                spawnParticle("❤️ +25 Sanidade!", "#ec4899", w.x, w.y - 45);
+                spawnSpeechBubble(w.x, w.y - 48, "«Adoro-te! Agora volto aos estudos com a alma cheia!»", w.name);
+            };
+            encounter.opt2Text = "► 2. Trocar esquemas de algoritmos (+15% avanço na cadeira, +12 Sanidade)";
+            encounter.opt2Action = () => {
                 player.sanity = Math.min(100, player.sanity + 12);
-                sfxCoin();
-                spawnParticle("☕ +12 Sanidade", "#f59e0b", w.x, w.y - 45);
-                spawnSpeechBubble(w.x, w.y - 48, "«Uma bica com cheirinho salva qualquer engenheiro! Obrigado!»", w.name);
-            } else {
-                player.sanity = Math.min(100, player.sanity + 5);
-                spawnSpeechBubble(w.x, w.y - 48, "«Força rapaz, o Técnico é duro mas a gente aguenta!»", w.name);
-            }
-        };
+                if (player.enrolledCourse && COURSES[player.enrolledCourse]) {
+                    player.subjectProgress = Math.min(100, (player.subjectProgress || 0) + 15);
+                }
+                sfxWin();
+                spawnParticle("📐 +15% Cadeira!", "#38bdf8", w.x, w.y - 45);
+                spawnSpeechBubble(w.x, w.y - 48, "«Excelente ideia de algoritmo! Somos uma super equipa!»", w.name);
+            };
+        } else {
+            encounter.prompt = "«Zé! Estou em pânico com o projeto de Sistemas Operativos... não durmo há 36 horas no Técnico!»";
+            encounter.opt1Text = "► 1. Trocar apontamentos e esquemas da matéria (+20% avanço na cadeira do IST)";
+            encounter.opt1Action = () => {
+                if (player.enrolledCourse && COURSES[player.enrolledCourse]) {
+                    const cur = COURSES[player.enrolledCourse].subjects[player.courseSubjectIndex];
+                    if (cur) {
+                        player.subjectProgress = Math.min(100, (player.subjectProgress || 0) + 20);
+                        spawnParticle("📐 +20% na Cadeira!", "#38bdf8", w.x, w.y - 45);
+                    }
+                } else {
+                    player.knowledge = Math.min(100, player.knowledge + 6);
+                    spawnParticle("🎓 +6 Conhecimento", "#38bdf8", w.x, w.y - 45);
+                }
+                sfxWin();
+                spawnSpeechBubble(w.x, w.y - 48, "«Salvaste-me o semestre! Vou já compilar esta biblioteca!»", w.name);
+            };
+            encounter.opt2Text = (!player.partner) ? "► 2. Pagar-lhe uma bica e convidar a Marta para namorar (-1.50€)" : "► 2. Pagar-lhe um café curto e dar força moral (-0.80€, +12 Sanidade)";
+            encounter.opt2Action = () => {
+                if (!player.partner) {
+                    if (player.wallet >= 1.50) {
+                        player.wallet -= 1.50;
+                        player.partner = 'marta';
+                        player.sanity = Math.min(100, player.sanity + 25);
+                        sfxWin();
+                        spawnParticle("❤️ Marta namorada!", "#ec4899", w.x, w.y - 45);
+                        spawnSpeechBubble(w.x, w.y - 48, "«Aceito! Precisava mesmo deste escape ao Técnico. Vamos a isto!»", w.name);
+                        showToast("❤️ Começaste a namorar com a Marta (IST)! Agora dividem a vida!");
+                        unlockAchievement('amor_lisboeta');
+                    } else {
+                        sfxAlert();
+                        spawnSpeechBubble(w.x, w.y - 48, "«Sem trocos para o café? Fica para a próxima sessão de exames!»", w.name);
+                    }
+                } else {
+                    if (player.wallet >= 0.80) {
+                        player.wallet -= 0.80;
+                        player.sanity = Math.min(100, player.sanity + 12);
+                        sfxCoin();
+                        spawnParticle("☕ +12 Sanidade", "#f59e0b", w.x, w.y - 45);
+                        spawnSpeechBubble(w.x, w.y - 48, "«Uma bica com cheirinho salva qualquer engenheiro! Obrigado!»", w.name);
+                    } else {
+                        player.sanity = Math.min(100, player.sanity + 5);
+                        spawnSpeechBubble(w.x, w.y - 48, "«Força rapaz, o Técnico é duro mas a gente aguenta!»", w.name);
+                    }
+                }
+            };
+        }
     } else if (w.type === 'vizinha') {
         sfxCoin();
         encounter.prompt = "«Olha o Zé! Levo uma carcaça de pão de Mafra ainda a deitar fumo do forno!»";
@@ -4199,28 +4298,63 @@ function openStreetWalkerEncounter(w) {
         };
     } else if (w.type === 'estafeta') {
         sfxScooterBell();
-        encounter.prompt = "«Ufa, três entregas atrasadas! Mas trago aqui uma bifana no saco que o cliente cancelou!»";
-        encounter.opt1Text = "► 1. Comprar a bifana cancelada por preço de amigo (-3.00€, +40 Fome!)";
-        encounter.opt1Action = () => {
-            if (player.wallet >= 3.00) {
-                player.wallet -= 3.00;
+        if (player.partner === 'rui') {
+            encounter.prompt = "«Olá meu lindo! Guardei esta bifana quentinha para nós e pedalar por Lisboa contigo é outra alegria!»";
+            encounter.opt1Text = "► 1. Beijo carinhoso e dividir a bifana à beira do passeio (+40 Fome, +20 Sanidade)";
+            encounter.opt1Action = () => {
                 player.hunger = Math.min(100, player.hunger + 40);
-                sfxCoin();
-                spawnParticle("🥩 Bifana! +40 Fome", "#22c55e", w.x, w.y - 45);
-                spawnSpeechBubble(w.x, w.y - 48, "«Safaste-me o turno, Zé! Bom proveito!»", w.name);
-            } else {
-                sfxAlert();
-                spawnSpeechBubble(w.x, w.y - 48, "«Sem 3 euros? Tenho de a comer eu no fim do turno!»", w.name);
-            }
-        };
-        encounter.opt2Text = "► 2. «Atenção ao carril molhado do 28 na curva, rapaz!» (+6 Sanidade, +4 Reputação)";
-        encounter.opt2Action = () => {
-            player.sanity = Math.min(100, player.sanity + 6);
-            player.reputation = Math.min(100, player.reputation + 4);
-            sfxAction();
-            spawnParticle("🚲 +6 Sanidade +4 Rep", "#22c55e", w.x, w.y - 45);
-            spawnSpeechBubble(w.x, w.y - 48, "«Ufa, bem visto! Aquele ferro escorrega que é uma desgraça!»", w.name);
-        };
+                player.sanity = Math.min(100, player.sanity + 20);
+                sfxWin();
+                spawnParticle("❤️ +40 Fome +20 San", "#ec4899", w.x, w.y - 45);
+                spawnSpeechBubble(w.x, w.y - 48, "«Sabe pela vida! Logo à noite dividimos o jantar em casa!»", w.name);
+            };
+            encounter.opt2Text = "► 2. Ajudar a segurar a bicicleta e dar incentivo moral (+18 Sanidade)";
+            encounter.opt2Action = () => {
+                player.sanity = Math.min(100, player.sanity + 18);
+                sfxAction();
+                spawnParticle("🚲 +18 Sanidade!", "#22c55e", w.x, w.y - 45);
+                spawnSpeechBubble(w.x, w.y - 48, "«Obrigado meu amor! Mais duas entregas e vou ter contigo!»", w.name);
+            };
+        } else {
+            encounter.prompt = "«Ufa, três entregas atrasadas! Mas trago aqui uma bifana no saco que o cliente cancelou!»";
+            encounter.opt1Text = "► 1. Comprar a bifana cancelada por preço de amigo (-3.00€, +40 Fome!)";
+            encounter.opt1Action = () => {
+                if (player.wallet >= 3.00) {
+                    player.wallet -= 3.00;
+                    player.hunger = Math.min(100, player.hunger + 40);
+                    sfxCoin();
+                    spawnParticle("🥩 Bifana! +40 Fome", "#22c55e", w.x, w.y - 45);
+                    spawnSpeechBubble(w.x, w.y - 48, "«Safaste-me o turno, Zé! Bom proveito!»", w.name);
+                } else {
+                    sfxAlert();
+                    spawnSpeechBubble(w.x, w.y - 48, "«Sem 3 euros? Tenho de a comer eu no fim do turno!»", w.name);
+                }
+            };
+            encounter.opt2Text = (!player.partner) ? "► 2. Mandar piropo simpático e convidar o Rui para namorar (-2.00€ de cerveja)" : "► 2. «Atenção ao carril molhado do 28 na curva, rapaz!» (+6 Sanidade, +4 Reputação)";
+            encounter.opt2Action = () => {
+                if (!player.partner) {
+                    if (player.wallet >= 2.00) {
+                        player.wallet -= 2.00;
+                        player.partner = 'rui';
+                        player.sanity = Math.min(100, player.sanity + 25);
+                        sfxWin();
+                        spawnParticle("❤️ Rui namorado!", "#ec4899", w.x, w.y - 45);
+                        spawnSpeechBubble(w.x, w.y - 48, "«Olha que sim! Companhia para as subidas de Lisboa é tudo o que eu queria!»", w.name);
+                        showToast("❤️ Começaste a namorar com o Rui (Estafeta Ciclista)! Agora dividem a vida!");
+                        unlockAchievement('amor_lisboeta');
+                    } else {
+                        sfxAlert();
+                        spawnSpeechBubble(w.x, w.y - 48, "«Sem moedas para a cerveja? Tenho de pedalar até ao próximo turno!»", w.name);
+                    }
+                } else {
+                    player.sanity = Math.min(100, player.sanity + 6);
+                    player.reputation = Math.min(100, player.reputation + 4);
+                    sfxAction();
+                    spawnParticle("🚲 +6 Sanidade +4 Rep", "#22c55e", w.x, w.y - 45);
+                    spawnSpeechBubble(w.x, w.y - 48, "«Ufa, bem visto! Aquele ferro escorrega que é uma desgraça!»", w.name);
+                }
+            };
+        }
     } else if (w.type === 'reformado') {
         sfxStep();
         encounter.prompt = "«Olá rapaz. Senta-te um bocadinho no banco da praça. A vida não é só correr atrás do euro.»";
@@ -4258,22 +4392,57 @@ function openStreetWalkerEncounter(w) {
         };
     } else if (w.type === 'tuna') {
         sfxAction();
-        encounter.prompt = "«Ó rapaz! Junta a tua voz à Tuna! Traje negro traçado e uma serenata às janelas de Lisboa!»";
-        encounter.opt1Text = "► 1. Acompanhar o refrão com alma (+12 Sanidade, +0.3% Perícia Musical)";
-        encounter.opt1Action = () => {
-            player.sanity = Math.min(100, player.sanity + 12);
-            player.musicSkill = Math.min(100, +((player.musicSkill || 0) + 0.3).toFixed(1));
-            sfxGuitarNote(440);
-            spawnParticle("🎵 +12 Sanidade +0.3% Música", "#c084fc", w.x, w.y - 45);
-            spawnSpeechBubble(w.x, w.y - 48, "«Tens voz de fadista, Zé! A noite lisboeta corre-te nas veias!»", w.name);
-        };
-        encounter.opt2Text = "► 2. Pedir uma trova rápida de incentivo para os teus estudos (+8 Sanidade)";
-        encounter.opt2Action = () => {
-            player.sanity = Math.min(100, player.sanity + 8);
-            sfxGuitarNote(330);
-            spawnParticle("🎸 +8 Sanidade", "#c084fc", w.x, w.y - 45);
-            spawnSpeechBubble(w.x, w.y - 48, "«Passar o semestre é dever, mas viver a boémia é saber!»", w.name);
-        };
+        if (player.partner === 'goncalo') {
+            encounter.prompt = "«O meu amor no meio da multidão! A minha capa negra pertence-te e esta serenata é toda tua!»";
+            encounter.opt1Text = "► 1. Cantar a meias e abraçar sob a capa traçada (+25 Sanidade, +0.3% Música)";
+            encounter.opt1Action = () => {
+                player.sanity = Math.min(100, player.sanity + 25);
+                player.musicSkill = Math.min(100, +((player.musicSkill || 0) + 0.3).toFixed(1));
+                sfxGuitarNote(440);
+                spawnParticle("❤️ +25 Sanidade +0.3% Música", "#ec4899", w.x, w.y - 45);
+                spawnSpeechBubble(w.x, w.y - 48, "«Que harmonia divina! Lisboa inteira inveja o nosso amor!»", w.name);
+            };
+            encounter.opt2Text = "► 2. Sorrir apaixonado e aplaudir a atuação (+18 Sanidade)";
+            encounter.opt2Action = () => {
+                player.sanity = Math.min(100, player.sanity + 18);
+                sfxWin();
+                spawnParticle("🎸 +18 Sanidade!", "#c084fc", w.x, w.y - 45);
+                spawnSpeechBubble(w.x, w.y - 48, "«O teu sorriso é o meu maior aplauso, meu bem!»", w.name);
+            };
+        } else {
+            encounter.prompt = "«Ó rapaz! Junta a tua voz à Tuna! Traje negro traçado e uma serenata às janelas de Lisboa!»";
+            encounter.opt1Text = "► 1. Acompanhar o refrão com alma (+12 Sanidade, +0.3% Perícia Musical)";
+            encounter.opt1Action = () => {
+                player.sanity = Math.min(100, player.sanity + 12);
+                player.musicSkill = Math.min(100, +((player.musicSkill || 0) + 0.3).toFixed(1));
+                sfxGuitarNote(440);
+                spawnParticle("🎵 +12 Sanidade +0.3% Música", "#c084fc", w.x, w.y - 45);
+                spawnSpeechBubble(w.x, w.y - 48, "«Tens voz de fadista, Zé! A noite lisboeta corre-te nas veias!»", w.name);
+            };
+            encounter.opt2Text = (!player.partner) ? "► 2. Elogiar a trova e convidar o Gonçalo para namorar (-2.50€ de vinho)" : "► 2. Pedir uma trova rápida de incentivo para os teus estudos (+8 Sanidade)";
+            encounter.opt2Action = () => {
+                if (!player.partner) {
+                    if (player.wallet >= 2.50) {
+                        player.wallet -= 2.50;
+                        player.partner = 'goncalo';
+                        player.sanity = Math.min(100, player.sanity + 25);
+                        sfxWin();
+                        spawnParticle("❤️ Gonçalo namorado!", "#ec4899", w.x, w.y - 45);
+                        spawnSpeechBubble(w.x, w.y - 48, "«Canto ao amor e aceito a tua mão! Lisboa tem hoje mais encanto!»", w.name);
+                        showToast("❤️ Começaste a namorar com o Gonçalo (Tuna Académica)! Agora dividem a vida!");
+                        unlockAchievement('amor_lisboeta');
+                    } else {
+                        sfxAlert();
+                        spawnSpeechBubble(w.x, w.y - 48, "«Sem moedas para o néctar dos deuses? Fica para a próxima serenata!»", w.name);
+                    }
+                } else {
+                    player.sanity = Math.min(100, player.sanity + 8);
+                    sfxGuitarNote(330);
+                    spawnParticle("🎸 +8 Sanidade", "#c084fc", w.x, w.y - 45);
+                    spawnSpeechBubble(w.x, w.y - 48, "«Passar o semestre é dever, mas viver a boémia é saber!»", w.name);
+                }
+            };
+        }
     } else if (w.type === 'gato') {
         sfxPigeon();
         encounter.prompt = "«Miau... *Faísca olha para ti com os olhos verdes brilhantes e abana a cauda preta.*»";
@@ -4492,6 +4661,13 @@ const ACHIEVEMENTS = [
         desc: 'Regulariza o pagamento da renda semanal ao Sr. Jerónimo dentro do prazo.',
         icon: '🗝️',
         reward: 'Casa Salva'
+    },
+    {
+        id: 'amor_lisboeta',
+        title: 'Amor Lisboeta',
+        desc: 'Conquista o coração de uma cara-metade e divide as contas da capital a dois.',
+        icon: '❤️',
+        reward: '-35% Renda'
     },
     {
         id: 'rei_do_desenrasco',
@@ -4812,14 +4988,15 @@ function endDay(motivo) {
         player.daysUntilRent = 0;
     } else {
         player.daysUntilRent--;
-        const currentRent = HOUSES[player.houseIndex].rent;
+        const currentRent = getCurrentRent(player.houseIndex);
         if (player.daysUntilRent <= 0) {
+            const partnerNote = (player.partner && ROMANCE_PARTNERS[player.partner]) ? ` (divisão c/ ${ROMANCE_PARTNERS[player.partner].name}!)` : "";
             if (player.wallet >= currentRent) {
                 player.wallet -= currentRent;
                 player.daysUntilRent = 7;
                 stats.totalRentPaid += currentRent;
                 spawnParticle(`- ${currentRent}€ RENDA`, '#ef4444');
-                showToast("Renda semanal regularizada automaticamente da carteira.");
+                showToast(`Renda semanal regularizada automaticamente da carteira${partnerNote}.`);
                 unlockAchievement('senhorio_em_dia');
             } else if ((player.wallet + player.bank) >= currentRent) {
                 const rem = currentRent - player.wallet;
@@ -4828,7 +5005,7 @@ function endDay(motivo) {
                 player.daysUntilRent = 7;
                 stats.totalRentPaid += currentRent;
                 spawnParticle(`- ${currentRent}€ RENDA`, '#ef4444');
-                showToast("Renda semanal debitada da conta bancária.");
+                showToast(`Renda semanal debitada da conta bancária${partnerNote}.`);
                 unlockAchievement('senhorio_em_dia');
             } else {
                 player.houseIndex = 0;
@@ -4841,6 +5018,15 @@ function endDay(motivo) {
 
     player.hunger = Math.max(0, player.hunger - 18);
     player.sanity = Math.max(0, Math.min(100, player.sanity - HOUSES[player.houseIndex].sanityDrain));
+
+    // Bónus diário de aconchego com a cara-metade
+    if (player.partner) {
+        if (player.houseIndex >= 1) {
+            player.sanity = Math.min(100, player.sanity + 8);
+        } else {
+            player.sanity = Math.max(0, player.sanity - 5);
+        }
+    }
 
     // Comer da despensa
     if (player.hunger < 40 && player.groceries > 0) {
@@ -5173,7 +5359,8 @@ function renderNewsScreen() {
     // Aviso de renda semanal
     ctx.fillStyle = player.daysUntilRent <= 2 ? '#b91c1c' : '#854d0e';
     ctx.font = 'bold 10px "Fira Code"';
-    const rentTxt = `⚠️ Faltam ${player.daysUntilRent} dias para o Senhorio cobrar ${HOUSES[player.houseIndex].rent}€ de renda.`;
+    const curR = getCurrentRent(player.houseIndex);
+    const rentTxt = player.partner ? `⚠️ Faltam ${player.daysUntilRent} dias para a renda de ${curR}€ (c/ desconto de casal).` : `⚠️ Faltam ${player.daysUntilRent} dias para o Senhorio cobrar ${curR}€ de renda.`;
     ctx.fillText(rentTxt, jx + jw / 2, jy + 224, jw - 40);
 
     // Botão Continuar
@@ -6456,7 +6643,7 @@ function renderHUD() {
         const rentColor = player.daysUntilRent <= 2 ? '#ef4444' : (player.daysUntilRent <= 3 ? '#f59e0b' : '#10b981');
         ctx.fillStyle = rentColor;
         ctx.font = 'bold 9px "Fira Code"';
-        ctx.fillText(`Renda (${HOUSES[player.houseIndex].rent}€): ${player.daysUntilRent}d`, 218, hy + 45, 114);
+        ctx.fillText(`Renda (${getCurrentRent(player.houseIndex)}€): ${player.daysUntilRent}d`, 218, hy + 45, 114);
     }
 
     // Slot 4: Emprego Atual & Curso (x: 342, w: 110)
@@ -6558,13 +6745,14 @@ const NPC_INFO = {
             if (player.daysUntilRent > 3) {
                 return `A tua renda está em dia, Zé! Faltam ${player.daysUntilRent} dias. Volta cá só quando o prazo apertar!`;
             }
+            const cRent = getCurrentRent(player.houseIndex);
             if (player.daysUntilRent > 1) {
-                return `Atenção, Zé! Faltam apenas ${player.daysUntilRent} dias para a renda de ${HOUSES[player.houseIndex].rent}€. Não te atrases!`;
+                return `Atenção, Zé! Faltam apenas ${player.daysUntilRent} dias para a renda de ${cRent}€. Não te atrases!`;
             }
             if (player.daysUntilRent === 1) {
-                return `É amanhã, Zé! Amanhã quero os ${HOUSES[player.houseIndex].rent}€ na mão sem desculpas nem conversa fiada!`;
+                return `É amanhã, Zé! Amanhã quero os ${cRent}€ na mão sem desculpas nem conversa fiada!`;
             }
-            return `O prazo da renda acabou HOJE! Ou pagas os ${HOUSES[player.houseIndex].rent}€ já ou mando os teus sacos para a rua!`;
+            return `O prazo da renda acabou HOJE! Ou pagas os ${cRent}€ já ou mando os teus sacos para a rua!`;
         },
         color: "#991b1b"
     },
@@ -6609,17 +6797,20 @@ const NPC_INFO = {
         color: "#9a3412"
     },
     supermercado: {
-        name: "D. Maria da Caixa",
-        role: "Pingo Doce de Bairro",
+        name: "Soraia (Pingo Doce)",
+        role: "Encarregada do Supermercado",
         quote: () => {
             if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
-                return "Virgem Santíssima, homem! Em fato de Adão nos congelados?! Compra roupa nas Modas Chiado!";
+                return "Ai filho, assim tão despido ao pé das arcas frigoríficas apanhas uma constipação! Passa pelas Modas Chiado antes que a fiscalização te veja!";
+            }
+            if (player.partner === 'soraia') {
+                return "Olá meu amor! Guardei os melhores iogurtes para nós e divido as contas contigo de coração cheio. Bom trabalho!";
             }
             const job = WORKPLACES.pingo_doce.careers[player.careerRanks.pingo_doce || 0];
             if (player.currentWorkplace === 'pingo_doce') {
-                return `Olá Zé! Como ${job.title}, o teu turno faz a diferença no corredor. Bom trabalho!`;
+                return `Olá colega! Como ${job.title}, os teus corredores estão um brinco. Orgulho nesta equipa!`;
             }
-            return "Sabe bem pagar tão pouco! Leva mantimentos ou candidata-te à equipa de reposição!";
+            return "Sabe bem pagar tão pouco, e ainda melhor com boa companhia! Precisas de mantimentos ou queres meter conversa no balcão?";
         },
         color: "#15803d"
     },
@@ -6730,6 +6921,15 @@ function drawNpcPortrait(id, x, y, size) {
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(
             iefpPortraitImg,
+            0, 0, 128, 128,
+            x + 1, y + 1 + breathY, size - 2, size - 2
+        );
+        ctx.restore();
+        return;
+    } else if (id === 'supermercado' && soraiaPortraitImg.complete && soraiaPortraitImg.naturalWidth > 0) {
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(
+            soraiaPortraitImg,
             0, 0, 128, 128,
             x + 1, y + 1 + breathY, size - 2, size - 2
         );
@@ -7719,13 +7919,27 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                 { label: "Remendar Roupa (Linha e Agulha)", cost: 12, timeH: 0, timeM: 30, repairClothing: true, desc: `Roupa atual: ${player.clothing.name} (${player.clothing.durability}%). +40% Durabilidade.` }
             ];
         }
+
+        if (player.partner) {
+            const pName = ROMANCE_PARTNERS[player.partner] ? ROMANCE_PARTNERS[player.partner].name : 'a tua cara-metade';
+            actions.push({
+                label: `Terminar Namoro c/ ${pName}`,
+                cost: 0,
+                timeH: 0,
+                timeM: 15,
+                endRomance: true,
+                desc: "Conversa séria e amigável para seguir a solo em Lisboa. Voltar a solteiro(a)."
+            });
+        }
     } else if (id === 'senhorio') {
         const nextHouse = HOUSES[Math.min(HOUSES.length - 1, player.houseIndex + 1)];
-        const currentRent = HOUSES[player.houseIndex].rent;
+        const currentRent = getCurrentRent(player.houseIndex);
+        const nextRent = getCurrentRent(Math.min(HOUSES.length - 1, player.houseIndex + 1));
+        const partnerNote = player.partner ? " (35% desconto de casal!)" : "";
 
         if (player.houseIndex === 0) {
             actions = [
-                { label: `Alugar: ${nextHouse.name}`, cost: nextHouse.rent, timeH: 1, timeM: 0, upgradeHouse: true, desc: `${nextHouse.rent}€/sem · ${nextHouse.qual}` }
+                { label: `Alugar: ${nextHouse.name}`, cost: nextRent, timeH: 1, timeM: 0, upgradeHouse: true, desc: `${nextRent}€/sem${partnerNote} · ${nextHouse.qual}` }
             ];
         } else {
             if (player.daysUntilRent > 3) {
@@ -7741,18 +7955,18 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                     payRent: true,
                     timeH: 0,
                     timeM: 15,
-                    desc: `Vence em ${player.daysUntilRent} dia(s) · Renova o contrato por 7 dias.`
+                    desc: `Vence em ${player.daysUntilRent} dia(s) · Renova o contrato por 7 dias${partnerNote}.`
                 });
             }
 
             if (player.houseIndex < HOUSES.length - 1) {
                 actions.push({
                     label: `Mudar: ${nextHouse.name}`,
-                    cost: nextHouse.rent,
+                    cost: nextRent,
                     timeH: 1,
                     timeM: 0,
                     upgradeHouse: true,
-                    desc: `${nextHouse.rent}€/sem · ${nextHouse.qual}`
+                    desc: `${nextRent}€/sem${partnerNote} · ${nextHouse.qual}`
                 });
             }
 
@@ -7868,6 +8082,29 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                 buyClothing: 'academic',
                 desc: "Capa e batina tradicional do IST (Durabilidade: 90). Dá prestígio!"
             });
+
+            if (!player.partner) {
+                actions.push({
+                    label: "Convidar a Marta (IST) para um café (1h, 2€)",
+                    cost: 2,
+                    timeH: 1,
+                    timeM: 0,
+                    sanity: 15,
+                    startRomance: 'marta',
+                    desc: "Pausa dos estudos com a Marta. Se fores aluno do IST, ela aceita namorar!"
+                });
+            } else if (player.partner === 'marta') {
+                actions.push({
+                    label: "Estudar e Namorar com a Marta (2h, +25 Sanidade)",
+                    cost: 0,
+                    timeH: 2,
+                    timeM: 0,
+                    sanity: 25,
+                    ectsBonus: 1,
+                    datePartner: 'marta',
+                    desc: "Revisão de matéria a dois no anfiteatro com beijinhos. +25 Sanidade e +1 ECTS!"
+                });
+            }
         }
     } else if (id === 'banco') {
         // ====================================================================
@@ -7958,6 +8195,29 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                 label: "Candidatar: Repositor de Prateleiras",
                 applyJob: 'pingo_doce',
                 desc: "Entrada livre! Não exige curso nem fato formal. 7.50€/h!"
+            });
+        }
+
+        if (!player.partner) {
+            actions.push({
+                label: "Mete conversa e oferece café à Soraia (1h, 2€)",
+                cost: 2,
+                timeH: 1,
+                timeM: 0,
+                sanity: 15,
+                startRomance: 'soraia',
+                desc: "Elogia o sorriso da Soraia da caixa. Se estiveres são e arranjado, começam a namorar!"
+            });
+        } else if (player.partner === 'soraia') {
+            actions.push({
+                label: "Encontro Romântico com a Soraia (1h, 10€)",
+                cost: 10,
+                timeH: 1,
+                timeM: 0,
+                hunger: 25,
+                sanity: 30,
+                datePartner: 'soraia',
+                desc: "Lanche especial e passeio de mão dada. +30 Sanidade e +25 Nutrição!"
             });
         }
     } else if (id === 'tasca') {
@@ -8075,6 +8335,28 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             { label: "Imperial com Amigos", cost: 3, timeH: 2, timeM: 0, sanity: 50, desc: "Tertúlia à beira-rio com finos frescos. +50 Sanidade." },
             { label: "🎸 Tocar Guitarra no Miradouro (3h)", buskingMusic: true, timeH: 3, timeM: 0, desc: buskDesc }
         ];
+
+        if (!player.partner) {
+            actions.push({
+                label: "Dueto e Flirt com o Gonçalo ao Pôr-do-Sol (1h, 3€)",
+                cost: 3,
+                timeH: 1,
+                timeM: 0,
+                sanity: 20,
+                startRomance: 'goncalo',
+                desc: "Partilhar uma mini e afinar trovas com o fadista da Tuna. Começam a namorar!"
+            });
+        } else if (player.partner === 'goncalo') {
+            actions.push({
+                label: "Serenata Romântica a Dois com o Gonçalo (1h, +30 Sanidade)",
+                cost: 0,
+                timeH: 1,
+                timeM: 0,
+                sanity: 30,
+                datePartner: 'goncalo',
+                desc: "Fado e carinho com vista sobre o Tejo. +30 Sanidade e cumplicidade boémia!"
+            });
+        }
     } else if (id === 'acampada') {
         // ====================================================================
         // ACAMPADA ROSSIO / MARGINAL: RESISTÊNCIA POPULAR, TENDA & SOLIDARIEDADE
@@ -8308,6 +8590,15 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         } else if (act.repairClothing) {
             btnText = "REMENDAR";
             btnColor = "#10b981";
+        } else if (act.startRomance) {
+            btnText = "NAMORAR";
+            btnColor = "#ec4899";
+        } else if (act.datePartner) {
+            btnText = "ENCONTRO";
+            btnColor = "#ec4899";
+        } else if (act.endRomance) {
+            btnText = "TERMINAR";
+            btnColor = "#ef4444";
         } else {
             btnText = "EXECUTAR";
         }
@@ -8404,7 +8695,11 @@ function renderVictoryScreen() {
     ctx.fillStyle = '#e2e8f0';
     ctx.font = '11px "Fira Code"';
     ctx.fillText("Sobreviveste a 30 dias de precariedade, conquistaste um T1 no Chiado,", 320, 96);
-    ctx.fillText(`e alcançaste o topo como ${curVicJob.title} no ${curVicWp.name}!`, 320, 114);
+    if (player.partner && ROMANCE_PARTNERS[player.partner]) {
+        ctx.fillText(`e celebras este triunfo radiante ao lado de ${ROMANCE_PARTNERS[player.partner].name}!`, 320, 114);
+    } else {
+        ctx.fillText(`e alcançaste o topo como ${curVicJob.title} no ${curVicWp.name}!`, 320, 114);
+    }
 
     // Cartão de Estatísticas Triunfais em Grelha
     const gx = 100, gy = 135, gw = 440, gh = 125;
@@ -8922,6 +9217,40 @@ function executeAction(act) {
         spawnParticle("✂️ Remendado!", '#10b981');
     }
 
+    // Romance & Caras-Metades em Lisboa (Inclusivo & Sem Complicações)
+    if (act.startRomance) {
+        if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
+            sfxAlert();
+            showToast("Não podes meter conversa com ninguém em fato de Adão! Veste-te nas Modas Chiado.");
+            return;
+        }
+        if (player.sanity < 20) {
+            sfxAlert();
+            showToast("Estás em esgotamento mental e com tremores. Descansa um pouco antes de tentar o amor!");
+            return;
+        }
+        player.partner = act.startRomance;
+        const pObj = ROMANCE_PARTNERS[act.startRomance] || { name: 'tua cara-metade' };
+        sfxWin();
+        showToast(`❤️ Começaste a namorar com ${pObj.name}! «Dividimos as despesas e a vida em Lisboa!»`);
+        spawnParticle(`❤️ ${pObj.name}!`, '#ec4899');
+        unlockAchievement('amor_lisboeta');
+    }
+
+    if (act.datePartner) {
+        const pObj = (player.partner && ROMANCE_PARTNERS[player.partner]) ? ROMANCE_PARTNERS[player.partner] : { name: 'a tua cara-metade' };
+        sfxWin();
+        showToast(`❤️ Encontro maravilhoso com ${pObj.name}! +${act.sanity || 25} Sanidade!`);
+        spawnParticle(`❤️ ${pObj.name}`, '#ec4899');
+    }
+
+    if (act.endRomance) {
+        player.partner = null;
+        sfxAction();
+        showToast("Terminaste o namoro amigavelmente. Segues a tua vida a solo em Lisboa.");
+        spawnParticle("💔 Solteiro/a", '#94a3b8');
+    }
+
     // Tocar Guitarra no Miradouro (Aptidão Musical Progressiva & Fado de Lisboa)
     if (act.buskingMusic) {
         unlockAchievement('fado_miradouro');
@@ -9153,6 +9482,7 @@ function resetGame() {
     player.totalShiftsWorked = 0;
     player.daysUntilRent = 7;
     player.hungerDays = 0;
+    player.partner = null;
     player.x = 335;
     player.y = 195;
     player.targetX = 335;
@@ -9378,14 +9708,16 @@ function generateStoryCanvas() {
 
     // Dados Forenses do Cidadão
     const infoX = 430;
-    const infoY = 340;
+    const infoY = 325;
 
     sctx.textAlign = 'left';
     const curStoryJob = getPlayerJob();
     const curStoryWp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
+    const partnerDisplay = player.partner ? (ROMANCE_PARTNERS[player.partner] ? ROMANCE_PARTNERS[player.partner].fullName : player.partner) : "Solteiro Convicto";
     const infoRows = [
         ["TEMPO SOBREVIVIDO:", `${stats.daysSurvived} DIAS`],
         [isVic ? "IMÓVEL CONQUISTADO:" : "ÚLTIMO ABRIGO:", HOUSES[player.houseIndex].name],
+        ["CARA-METADE:", partnerDisplay],
         ["OCUPAÇÃO:", `${curStoryJob.title} (${curStoryWp.shortName})`],
         ["ECTS ACUMULADOS:", `${player.ects} / 180 (${getCurriculumDegree()})`],
         ["RENDA TOTAL PAGA:", `${stats.totalRentPaid} €`],
@@ -9394,13 +9726,13 @@ function generateStoryCanvas() {
     ];
 
     infoRows.forEach(([lbl, val], idx) => {
-        const ry = infoY + idx * 46;
+        const ry = infoY + idx * 42;
         sctx.fillStyle = '#94a3b8';
-        sctx.font = 'bold 18px "Fira Code", monospace';
+        sctx.font = 'bold 17px "Fira Code", monospace';
         sctx.fillText(lbl, infoX, ry);
 
         sctx.fillStyle = '#ffffff';
-        sctx.font = '22px "Fira Code", monospace';
+        sctx.font = '20px "Fira Code", monospace';
         sctx.fillText(val, infoX + 260, ry);
     });
 
@@ -9618,6 +9950,12 @@ function openCurriculumModal() {
                 <div class="cv-chip">
                     <div class="cv-chip-label">Grau Académico</div>
                     <div class="cv-chip-val" style="color:#60a5fa;">${curDegree} (${player.ects} ECTS)</div>
+                </div>
+                <div class="cv-chip">
+                    <div class="cv-chip-label">Estado Civil / Romance</div>
+                    <div class="cv-chip-val" style="color:${player.partner ? '#f472b6' : '#94a3b8'};">
+                        ${player.partner ? `❤️ Namoro c/ ${(ROMANCE_PARTNERS[player.partner] || {}).name || player.partner}` : 'Solteiro(a) Convicto(a)'}
+                    </div>
                 </div>
             </div>
         </div>
