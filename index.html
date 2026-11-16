@@ -2516,7 +2516,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '3.9';
+const ASSET_VER = '4.0';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -2529,6 +2529,10 @@ portraitsSheetImg.src = `assets/portraits_sheet.png?v=${ASSET_VER}`;
 // Spritesheet Autêntica em Pixel Art 16-Bit dos NPCs de Lisboa (Estilo LucasArts SCUMM)
 const npcsLucasImg = new Image();
 npcsLucasImg.src = `assets/npcs_lucasarts.png?v=${ASSET_VER}`;
+
+// Spritesheet Autêntica em Pixel Art 16-Bit das Personagens Andantes de Lisboa (Castanheiro, Trotinete, Guarda-Freio)
+const streetWalkersImg = new Image();
+streetWalkersImg.src = `assets/street_walkers.png?v=${ASSET_VER}`;
 
 // Retrato Exclusivo em Pixel Art da D. Mariana (IEFP / 45 anos, Loura, Óculos e Blazer)
 const iefpPortraitImg = new Image();
@@ -2852,10 +2856,10 @@ function updateStreetWalkers(dt) {
 
             w.smokeParticles = w.smokeParticles || [];
             if (Math.random() < 0.45) {
-                const chimX = w.facing === 'right' ? w.x - 4 : w.x + 4;
+                const chimX = w.facing === 'right' ? (w.x + 28) : (w.x - 28);
                 w.smokeParticles.push({
                     x: chimX,
-                    y: w.y - 18,
+                    y: w.y - 42,
                     vx: (Math.random() - 0.5) * 5 - (currentWeather && currentWeather.type === 'VENTO' ? 25 : 4),
                     vy: -(Math.random() * 12 + 10),
                     radius: Math.random() * 1.5 + 1.2,
@@ -2879,7 +2883,7 @@ function updateStreetWalkers(dt) {
                     "Castanhas a estalar, freguês! Para aquecer as mãos!",
                     "Quem quer quentes e boas? Dois euros e cinquenta o cartucho!"
                 ];
-                spawnSpeechBubble(w.x, w.y - 12, pregoes[Math.floor(Math.random() * pregoes.length)], w.name);
+                spawnSpeechBubble(w.x, w.y - 48, pregoes[Math.floor(Math.random() * pregoes.length)], w.name);
             }
         } else if (w.type === 'trotinete') {
             if (!w.active) {
@@ -2900,7 +2904,7 @@ function updateStreetWalkers(dt) {
                         "Lisbon is insane! Sun, pastries and 1 Gbps fiber!",
                         "Where can I find an oat milk flat white nearby?!"
                     ];
-                    spawnSpeechBubble(w.x, w.y - 12, nomadQuotes[Math.floor(Math.random() * nomadQuotes.length)], w.name);
+                    spawnSpeechBubble(w.x, w.y - 48, nomadQuotes[Math.floor(Math.random() * nomadQuotes.length)], w.name);
                 }
                 if (Math.random() < 0.25) {
                     spawnDust(w.x - 10, w.y + 4);
@@ -2930,7 +2934,7 @@ function updateStreetWalkers(dt) {
                         "O 28 hoje leva mais turistas do que a praia de Carcavelos!",
                         "Ti Zé, tira aí uma bica curta que a calçada está escorregadia!"
                     ];
-                    spawnSpeechBubble(w.x, w.y - 12, tramQuotes[Math.floor(Math.random() * tramQuotes.length)], w.name);
+                    spawnSpeechBubble(w.x, w.y - 48, tramQuotes[Math.floor(Math.random() * tramQuotes.length)], w.name);
                 }
             }
         }
@@ -2940,17 +2944,20 @@ function updateStreetWalkers(dt) {
 function renderStreetWalkers(ctx, animTimer) {
     ctx.save();
     const isNight = typeof player !== 'undefined' && player && (player.timeHour >= 20 || player.timeHour < 7);
+    const hasSprites = streetWalkersImg.complete && streetWalkersImg.naturalWidth > 0;
 
     streetWalkers.forEach(w => {
         if (w.type === 'castanheiro') {
             const wx = Math.round(w.x);
             const wy = Math.round(w.y);
 
+            // Sombra suave sob o carrinho e o castanheiro na calçada
             ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
             ctx.beginPath();
-            ctx.ellipse(wx, wy + 7, 18, 5, 0, 0, Math.PI * 2);
+            ctx.ellipse(wx, wy + 2, 26, 6, 0, 0, Math.PI * 2);
             ctx.fill();
 
+            // Renderizar partículas de fumo da chaminé
             if (w.smokeParticles) {
                 w.smokeParticles.forEach(sm => {
                     ctx.fillStyle = `rgba(241, 245, 249, ${sm.alpha.toFixed(2)})`;
@@ -2960,166 +2967,86 @@ function renderStreetWalkers(ctx, animTimer) {
                 });
             }
 
-            const cartDir = w.facing === 'right' ? 1 : -1;
-            const cx = wx - (cartDir * 6);
+            if (hasSprites) {
+                // Animação autêntica 16-bit LucasArts: 2 frames (86x44)
+                const cFrame = Math.floor(animTimer * 3.5) % 2;
+                ctx.save();
+                if (w.facing === 'left') {
+                    ctx.translate(wx, 0);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(streetWalkersImg, cFrame * 86, 0, 86, 44, -43, wy - 42, 86, 44);
+                } else {
+                    ctx.drawImage(streetWalkersImg, cFrame * 86, 0, 86, 44, wx - 43, wy - 42, 86, 44);
+                }
+                ctx.restore();
+            }
 
-            ctx.fillStyle = '#451a03';
-            ctx.beginPath();
-            ctx.arc(cx - 7, wy + 3, 5, 0, Math.PI * 2);
-            ctx.arc(cx + 7, wy + 3, 5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#d97706';
-            ctx.fillRect(cx - 8, wy + 2, 2, 2);
-            ctx.fillRect(cx + 6, wy + 2, 2, 2);
-
-            ctx.fillStyle = '#78350f';
-            ctx.fillRect(cx - 10, wy - 9, 20, 10);
-            ctx.fillStyle = '#92400e';
-            ctx.fillRect(cx - 9, wy - 8, 18, 2);
-
-            ctx.fillStyle = '#1e293b';
-            ctx.fillRect(cx - 5, wy - 13, 10, 5);
-            const emberColor = (Math.sin(animTimer * 8) > 0) ? '#ef4444' : '#f59e0b';
-            ctx.fillStyle = emberColor;
-            ctx.fillRect(cx - 3, wy - 11, 2, 2);
-            ctx.fillRect(cx + 1, wy - 12, 2, 2);
-
-            const chimX = cx + (cartDir * 2);
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillRect(chimX - 1, wy - 20, 3, 8);
-            ctx.fillStyle = '#64748b';
-            ctx.fillRect(chimX - 2, wy - 21, 5, 2);
-
-            ctx.fillStyle = '#fef3c7';
-            ctx.fillRect(cx - (cartDir * 8), wy - 12, 4, 4);
-
-            const manX = wx + (cartDir * 8);
-            const stepBob = Math.sin(animTimer * 6) * 1.5;
-
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(manX - 3, wy - 2, 3, 6);
-            ctx.fillRect(manX + 1, wy - 2 + (stepBob > 0 ? 1 : -1), 3, 6);
-
-            ctx.fillStyle = '#1e293b';
-            ctx.fillRect(manX - 4, wy - 7, 9, 6);
-            ctx.fillStyle = '#475569';
-            ctx.fillRect(manX - 4, wy - 14, 9, 8);
-
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillRect(manX - 3, wy - 11, 7, 7);
-
-            ctx.fillStyle = '#fed7aa';
-            ctx.fillRect(manX - 3, wy - 19, 7, 6);
-            ctx.fillStyle = '#cbd5e1';
-            ctx.fillRect(manX - (cartDir === 1 ? 1 : 3), wy - 15, 4, 2);
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(manX - 5, wy - 21, 11, 3);
-            ctx.fillRect(manX - 3, wy - 23, 7, 3);
-
-            if (state === 'BOARD' && Math.hypot(mouse.x - wx, mouse.y - wy) < 22) {
+            // Ícone interativo em hover
+            if (state === 'BOARD' && Math.hypot(mouse.x - wx, mouse.y - (wy - 18)) < 28) {
                 const bob = Math.sin(animTimer * 7) * 2;
                 ctx.font = '10px "Press Start 2P"';
                 ctx.textAlign = 'center';
-                ctx.fillText("🌰", wx, wy - 26 + bob);
+                ctx.fillText("🌰", wx, wy - 48 + bob);
             }
         } else if (w.type === 'trotinete' && w.active) {
             const tx = Math.round(w.x);
             const ty = Math.round(w.y);
 
+            // Sombra oval na calçada
             ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
             ctx.beginPath();
-            ctx.ellipse(tx, ty + 6, 14, 4, 0, 0, Math.PI * 2);
+            ctx.ellipse(tx, ty + 2, 14, 4.5, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#84cc16';
-            ctx.fillRect(tx - 10, ty + 2, 20, 2);
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(tx - 11, ty + 3, 3, 3);
-            ctx.fillRect(tx + 8, ty + 3, 3, 3);
-
-            ctx.fillStyle = '#1e293b';
-            ctx.fillRect(tx + 6, ty - 12, 2, 14);
-            ctx.fillRect(tx + 4, ty - 12, 6, 2);
-
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(tx + 8, ty - 10, 2, 2);
+            // Farol dianteiro aceso à noite
             if (isNight) {
-                const fGrad = ctx.createRadialGradient(tx + 18, ty + 3, 2, tx + 35, ty + 3, 20);
-                fGrad.addColorStop(0, 'rgba(255, 255, 255, 0.55)');
+                const fGrad = ctx.createRadialGradient(tx + 18, ty - 14, 2, tx + 40, ty - 10, 24);
+                fGrad.addColorStop(0, 'rgba(255, 255, 255, 0.65)');
                 fGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
                 ctx.fillStyle = fGrad;
                 ctx.beginPath();
-                ctx.arc(tx + 25, ty + 3, 16, 0, Math.PI * 2);
+                ctx.arc(tx + 28, ty - 12, 20, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            ctx.fillStyle = '#d4b996';
-            ctx.fillRect(tx - 2, ty - 5, 4, 8);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(tx - 3, ty + 1, 5, 2);
+            if (hasSprites) {
+                // Animação 16-bit LucasArts: 4 frames (34x44)
+                const tFrame = Math.floor(animTimer * 8) % 4;
+                ctx.drawImage(streetWalkersImg, tFrame * 34, 44, 34, 44, tx - 17, ty - 42, 34, 44);
+            }
 
-            ctx.fillStyle = '#06b6d4';
-            ctx.fillRect(tx - 4, ty - 14, 7, 10);
-
-            ctx.fillStyle = '#090d16';
-            ctx.fillRect(tx - 7, ty - 13, 4, 8);
-            ctx.fillStyle = '#38bdf8';
-            ctx.fillRect(tx - 6, ty - 10, 2, 2);
-
-            ctx.fillStyle = '#fed7aa';
-            ctx.fillRect(tx - 2, ty - 19, 6, 6);
-            ctx.fillStyle = '#78350f';
-            ctx.fillRect(tx, ty - 16, 4, 3);
-            ctx.fillStyle = '#0284c7';
-            ctx.fillRect(tx - 3, ty - 21, 8, 3);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(tx - 1, ty - 17, 2, 2);
-
-            if (state === 'BOARD' && Math.hypot(mouse.x - tx, mouse.y - ty) < 22) {
+            // Ícone interativo em hover
+            if (state === 'BOARD' && Math.hypot(mouse.x - tx, mouse.y - (ty - 18)) < 24) {
                 ctx.font = '9px "Press Start 2P"';
                 ctx.textAlign = 'center';
-                ctx.fillText("⚡", tx, ty - 25);
+                ctx.fillText("⚡", tx, ty - 48);
             }
         } else if (w.type === 'guarda_freio' && w.state === 'BREAK') {
             const gx = Math.round(w.x);
             const gy = Math.round(w.y);
 
+            // Sombra oval na calçada
             ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
             ctx.beginPath();
-            ctx.ellipse(gx, gy + 7, 10, 4, 0, 0, Math.PI * 2);
+            ctx.ellipse(gx, gy + 2, 12, 4.5, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(gx - 3, gy + 1, 3, 5);
-            ctx.fillRect(gx + 1, gy + 1, 3, 5);
-            ctx.fillStyle = '#1e3a8a';
-            ctx.fillRect(gx - 4, gy - 6, 9, 8);
+            if (hasSprites) {
+                // Animação 16-bit LucasArts: 4 frames (39x44)
+                const gFrame = Math.floor(animTimer * 2) % 4;
+                ctx.drawImage(streetWalkersImg, gFrame * 39, 88, 39, 44, gx - 19, gy - 42, 39, 44);
+            }
 
-            ctx.fillStyle = '#1d4ed8';
-            ctx.fillRect(gx - 4, gy - 14, 9, 9);
-            ctx.fillStyle = '#f59e0b';
-            ctx.fillRect(gx - 1, gy - 12, 2, 2);
-            ctx.fillRect(gx - 1, gy - 8, 2, 2);
-
-            ctx.fillStyle = '#fed7aa';
-            ctx.fillRect(gx - 3, gy - 19, 7, 6);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(gx - 2, gy - 15, 5, 2);
-            ctx.fillStyle = '#1e3a8a';
-            ctx.fillRect(gx - 4, gy - 22, 9, 4);
-            ctx.fillStyle = '#f59e0b';
-            ctx.fillRect(gx - 2, gy - 20, 5, 1);
-
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(gx + 6, gy - 10, 4, 4);
+            // Vapor da bica de café
             const steamProg = (animTimer * 1.5) % 1.5;
             ctx.fillStyle = `rgba(255, 255, 255, ${(0.6 * (1 - steamProg / 1.5)).toFixed(2)})`;
-            ctx.fillRect(gx + 7, gy - 12 - (steamProg * 6), 2, 2);
+            ctx.fillRect(gx + 6, gy - 20 - (steamProg * 6), 2, 2);
 
-            if (state === 'BOARD' && Math.hypot(mouse.x - gx, mouse.y - gy) < 20) {
+            // Ícone interativo em hover
+            if (state === 'BOARD' && Math.hypot(mouse.x - gx, mouse.y - (gy - 18)) < 24) {
                 ctx.font = '9px "Press Start 2P"';
                 ctx.textAlign = 'center';
-                ctx.fillText("☕", gx, gy - 25);
+                ctx.fillText("☕", gx, gy - 48);
             }
         }
     });
@@ -3133,43 +3060,43 @@ function handleStreetWalkerClick(cx, cy) {
     for (let i = 0; i < streetWalkers.length; i++) {
         const w = streetWalkers[i];
         if (w.type === 'castanheiro') {
-            if (Math.hypot(cx - w.x, cy - (w.y - 6)) < 24) {
+            if (Math.hypot(cx - w.x, cy - (w.y - 18)) < 28) {
                 if (player.wallet >= w.chestnutPrice) {
                     player.wallet -= w.chestnutPrice;
                     player.hunger = Math.min(100, player.hunger + 25);
                     player.sanity = Math.min(100, player.sanity + 15);
                     sfxCoin();
                     triggerHaptic([30, 20, 30]);
-                    spawnParticle("🌰 +25 Fome +15 Sanidade", "#f59e0b", w.x, w.y - 20);
-                    spawnSpeechBubble(w.x, w.y - 12, "Castanhas quentinhas a estalar! Bom proveito, rapaz!", w.name);
+                    spawnParticle("🌰 +25 Fome +15 Sanidade", "#f59e0b", w.x, w.y - 44);
+                    spawnSpeechBubble(w.x, w.y - 48, "Castanhas quentinhas a estalar! Bom proveito, rapaz!", w.name);
                     unlockAchievement('quentes_e_boas');
                 } else {
                     sfxAlert();
                     triggerHaptic([20]);
-                    spawnSpeechBubble(w.x, w.y - 12, "Sem 2.50€ na algibeira? Volta quando tiveres trocos, Zé!", w.name);
+                    spawnSpeechBubble(w.x, w.y - 48, "Sem 2.50€ na algibeira? Volta quando tiveres trocos, Zé!", w.name);
                 }
                 return true;
             }
         } else if (w.type === 'trotinete' && w.active) {
-            if (Math.hypot(cx - w.x, cy - (w.y - 10)) < 24) {
+            if (Math.hypot(cx - w.x, cy - (w.y - 18)) < 24) {
                 sfxScooterBell();
                 triggerHaptic([40]);
                 w.vx = Math.min(130, w.vx + 25);
-                spawnParticle("⚡ Zoom!", "#38bdf8", w.x, w.y - 22);
-                spawnSpeechBubble(w.x, w.y - 12, "Watch out bro! I'm zooming to an AI meetup at LX Factory!", w.name);
+                spawnParticle("⚡ Zoom!", "#38bdf8", w.x, w.y - 44);
+                spawnSpeechBubble(w.x, w.y - 48, "Watch out bro! I'm zooming to an AI meetup at LX Factory!", w.name);
                 return true;
             }
         } else if (w.type === 'guarda_freio' && w.state === 'BREAK') {
-            if (Math.hypot(cx - w.x, cy - (w.y - 8)) < 20) {
+            if (Math.hypot(cx - w.x, cy - (w.y - 18)) < 24) {
                 sfxTramBell();
                 triggerHaptic([30, 40]);
-                spawnParticle("🔔 Plim-Plim!", "#fde047", w.x, w.y - 20);
+                spawnParticle("🔔 Plim-Plim!", "#fde047", w.x, w.y - 44);
                 const quotes = [
                     "Cuidado com os carris quando chove, Zé! A calçada fica como manteiga!",
                     "O 28 hoje vem cheio de bifes na Graça que nem cabem no estribo!",
                     "Mais uma avaria nas agulhas de São Bento... Paciência alfacinha!"
                 ];
-                spawnSpeechBubble(w.x, w.y - 12, quotes[Math.floor(Math.random() * quotes.length)], w.name);
+                spawnSpeechBubble(w.x, w.y - 48, quotes[Math.floor(Math.random() * quotes.length)], w.name);
                 return true;
             }
         }
@@ -4096,57 +4023,59 @@ function renderNewsScreen() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Folha de Jornal
-    const jx = 65, jy = 22, jw = 510, jh = 265;
+    const jx = 45, jy = 14, jw = 550, jh = 278;
     ctx.fillStyle = '#fef3c7';
     ctx.strokeStyle = '#b45309';
     ctx.lineWidth = 4;
     ctx.fillRect(jx, jy, jw, jh);
     ctx.strokeRect(jx, jy, jw, jh);
 
+    // Cabeçalho do Jornal
     ctx.fillStyle = '#1e293b';
     ctx.font = '13px "Press Start 2P"';
     ctx.textAlign = 'center';
-    ctx.fillText("O CORREIO DO PURGATÓRIO", jx + jw / 2, jy + 32);
+    ctx.fillText("O CORREIO DO PURGATÓRIO", jx + jw / 2, jy + 28, jw - 40);
 
     ctx.strokeStyle = '#1e293b';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(jx + 20, jy + 44);
-    ctx.lineTo(jx + jw - 20, jy + 44);
+    ctx.moveTo(jx + 20, jy + 38);
+    ctx.lineTo(jx + jw - 20, jy + 38);
     ctx.stroke();
 
     ctx.fillStyle = '#991b1b';
     ctx.font = '9px "Press Start 2P"';
-    ctx.fillText(`EDIÇÃO DE LISBOA — DIA ${player.day}`, jx + jw / 2, jy + 64);
+    ctx.fillText(`EDIÇÃO DE LISBOA — DIA ${player.day}`, jx + jw / 2, jy + 56, jw - 40);
 
     const titleText = currentEvent ? currentEvent.title : "Chegada a Lisboa";
     const descText = currentEvent ? currentEvent.desc : "Começa a tua jornada em Lisboa. Encontra trabalho e não te atrases na renda semanal!";
 
-    // Título da Notícia
+    // Título da Notícia (largura rigorosamente limitada à mancha do jornal)
     ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 13px "Fira Code"';
-    ctx.fillText(`📰 ${titleText}`, jx + jw / 2, jy + 92);
+    ctx.font = 'bold 12px "Fira Code"';
+    ctx.fillText(`📰 ${titleText}`, jx + jw / 2, jy + 80, jw - 40);
 
-    // Corpo da Notícia
-    wrapTextCanvas(
+    // Corpo da Notícia (quebra de linha com limite inferior para não colidir com o selo)
+    const endY = wrapTextCanvas(
         ctx,
         `"${descText}"`,
         jx + jw / 2,
-        jy + 116,
+        jy + 102,
         jw - 50,
-        18,
-        '11.5px "Fira Code"',
+        15,
+        '10.5px "Fira Code"',
         '#334155',
-        'center'
+        'center',
+        jy + 152
     );
 
-    // Selo de Impacto do Evento
+    // Selo de Impacto do Evento (posicionado dinamicamente abaixo do texto)
     if (currentEvent && currentEvent.badge) {
         const badgeColor = currentEvent.good ? '#15803d' : '#b91c1c';
         const badgeBg = currentEvent.good ? '#dcfce7' : '#fee2e2';
-        const bw = 350, bh = 24;
+        const bw = Math.min(420, jw - 50), bh = 22;
         const bx = jx + (jw - bw) / 2;
-        const by = jy + 165;
+        const by = Math.max(endY + 12, jy + 154);
 
         ctx.fillStyle = badgeBg;
         ctx.fillRect(bx, by, bw, bh);
@@ -4155,27 +4084,29 @@ function renderNewsScreen() {
         ctx.strokeRect(bx, by, bw, bh);
 
         ctx.fillStyle = badgeColor;
-        ctx.font = 'bold 10px "Fira Code"';
-        ctx.fillText(currentEvent.badge, jx + jw / 2, by + 16);
+        ctx.font = 'bold 9.5px "Fira Code"';
+        ctx.fillText(currentEvent.badge, jx + jw / 2, by + 15, bw - 16);
     }
 
-    // Previsão Meteorológica Oficial de Lisboa
+    // Previsão Meteorológica Oficial de Lisboa (largura estritamente limitada ao jornal)
     if (currentWeather) {
         ctx.fillStyle = '#475569';
-        ctx.font = 'bold 9px "Fira Code"';
+        ctx.font = 'bold 8.5px "Fira Code"';
         ctx.textAlign = 'center';
-        ctx.fillText(`🌤️ METEOROLOGIA: ${currentWeather.name} (${currentWeather.temp}°C) · ${currentWeather.desc}`, jx + jw / 2, jy + 195);
+        const weatherTxt = `${currentWeather.icon} PREVISÃO: ${currentWeather.name} (${currentWeather.temp}°C) · ${currentWeather.desc}`;
+        ctx.fillText(weatherTxt, jx + jw / 2, jy + 198, jw - 40);
     }
 
-    // Aviso de renda
+    // Aviso de renda semanal
     ctx.fillStyle = player.daysUntilRent <= 2 ? '#b91c1c' : '#854d0e';
-    ctx.font = 'bold 10.5px "Fira Code"';
-    ctx.fillText(`⚠️ Faltam ${player.daysUntilRent} dias para o Senhorio cobrar ${HOUSES[player.houseIndex].rent}€ de renda.`, jx + jw / 2, jy + 215);
+    ctx.font = 'bold 10px "Fira Code"';
+    const rentTxt = `⚠️ Faltam ${player.daysUntilRent} dias para o Senhorio cobrar ${HOUSES[player.houseIndex].rent}€ de renda.`;
+    ctx.fillText(rentTxt, jx + jw / 2, jy + 224, jw - 40);
 
     // Botão Continuar
     ctx.fillStyle = '#b45309';
     ctx.font = '9px "Press Start 2P"';
-    ctx.fillText("CLICA PARA SAIR DA CAMA ➔", jx + jw / 2, jy + 242);
+    ctx.fillText("CLICA PARA SAIR DA CAMA ➔", jx + jw / 2, jy + 256, jw - 40);
 }
 
 
