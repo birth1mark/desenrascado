@@ -229,20 +229,27 @@
             width: 100%;
             display: flex;
             gap: 6px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             align-items: center;
             justify-content: center;
             text-align: center;
+        }
+
+        .toolbar-divider {
+            width: 1px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.15);
+            margin: 0 3px;
         }
 
         .arcade-btn {
             background: linear-gradient(180deg, #1e2433 0%, #0c101a 100%);
             border: 1px solid #78350f;
             color: #fbbf24;
-            padding: 6px 10px;
+            padding: 5px 9px;
             border-radius: 3px;
             font-family: 'Press Start 2P', monospace;
-            font-size: 0.50rem;
+            font-size: 0.46rem;
             cursor: pointer;
             transition: all 0.15s ease;
             box-shadow: 0 2px 0 #020617, inset 0 1px 0 rgba(251, 191, 36, 0.15);
@@ -252,7 +259,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: 28px;
+            min-height: 26px;
         }
         .arcade-btn:hover {
             border-color: #fbbf24;
@@ -265,45 +272,42 @@
             transform: translateY(1px);
             box-shadow: 0 0 0;
         }
-        #btn-music { min-width: 114px; }
-        #btn-audio { min-width: 114px; }
-        #btn-crt { min-width: 110px; }
-        #btn-leaderboard { min-width: 90px; }
-        #btn-curriculum { min-width: 114px; }
-        .arcade-btn.btn-acampada {
-            border-color: #dc2626;
-            color: #fca5a5;
-            min-width: 110px;
-        }
-        .arcade-btn.btn-acampada:hover {
-            background: #991b1b;
-            color: #fff;
-        }
-        .arcade-btn.btn-roupa {
-            border-color: #db2777;
-            color: #fbcfe8;
-            min-width: 124px;
-        }
-        .arcade-btn.btn-roupa:hover {
-            background: #be185d;
-            color: #fff;
-        }
-        .arcade-btn.btn-curriculum {
+        #btn-curriculum {
             border-color: #3b82f6;
             color: #93c5fd;
+            min-width: 86px;
         }
-        .arcade-btn.btn-curriculum:hover {
+        #btn-curriculum:hover {
             background: #1d4ed8;
             color: #fff;
         }
-        .arcade-btn.btn-achievements {
+        #btn-achievements {
             border-color: #f59e0b;
             color: #fde68a;
-            min-width: 114px;
+            min-width: 90px;
         }
-        .arcade-btn.btn-achievements:hover {
+        #btn-achievements:hover {
             background: #b45309;
             color: #fff;
+        }
+        #btn-leaderboard {
+            border-color: #8b5cf6;
+            color: #ddd6fe;
+            min-width: 74px;
+        }
+        #btn-leaderboard:hover {
+            background: #6d28d9;
+            color: #fff;
+        }
+        .arcade-btn.btn-sys {
+            border-color: #334155;
+            color: #94a3b8;
+            min-width: 76px;
+        }
+        .arcade-btn.btn-sys:hover {
+            border-color: #64748b;
+            color: #f8fafc;
+            background: #1e293b;
         }
 
         /* Moldura do Ecrã de Jogo */
@@ -377,8 +381,10 @@
             #arcade-marquee { padding: 4px 6px; }
             .marquee-title { font-size: 0.85rem; }
             .marquee-subtitle { font-size: 0.56rem; }
-            #arcade-toolbar { justify-content: center; }
-            .arcade-btn { padding: 4px 6px; font-size: 0.44rem; }
+            #arcade-toolbar { justify-content: center; padding: 2px 4px; }
+            .arcade-actions { gap: 3px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+            .arcade-btn { padding: 4px 5px; font-size: 0.38rem; min-height: 22px; min-width: auto !important; }
+            .toolbar-divider { display: none; }
             #arcade-plaque { flex-direction: column; text-align: center; gap: 4px; font-size: 0.60rem; }
         }
 
@@ -807,14 +813,13 @@
         <div id="arcade-toolbar">
             <a href="https://pormenores.net/" target="_blank" class="arcade-link">← pormenores.net</a>
             <div class="arcade-actions">
-                <button class="arcade-btn btn-acampada" onclick="quickVisit('acampada')">⛺ Acampada</button>
-                <button class="arcade-btn btn-roupa" onclick="quickVisit('loja_roupa')">👗 Loja de Roupa</button>
                 <button class="arcade-btn btn-curriculum" onclick="openCurriculumModal()" id="btn-curriculum">📜 Currículo</button>
                 <button class="arcade-btn btn-achievements" onclick="openAchievementsModal()" id="btn-achievements">🎖️ Conquistas</button>
-                <button class="arcade-btn" onclick="openLeaderboard()" id="btn-leaderboard">🏆 Top 10</button>
-                <button class="arcade-btn" onclick="toggleMusic()" id="btn-music">🎵 BGM: ON</button>
-                <button class="arcade-btn" onclick="toggleAudio()" id="btn-audio">🔊 SFX: ON</button>
-                <button class="arcade-btn" onclick="toggleCRT()" id="btn-crt">📺 CRT: ON</button>
+                <button class="arcade-btn btn-leaderboard" onclick="openLeaderboard()" id="btn-leaderboard">🏆 Top 10</button>
+                <div class="toolbar-divider"></div>
+                <button class="arcade-btn btn-sys" onclick="toggleMusic()" id="btn-music">🎵 BGM: ON</button>
+                <button class="arcade-btn btn-sys" onclick="toggleAudio()" id="btn-audio">🔊 SFX: ON</button>
+                <button class="arcade-btn btn-sys" onclick="toggleCRT()" id="btn-crt">📺 CRT: ON</button>
             </div>
         </div>
 
@@ -2511,7 +2516,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '3.8';
+const ASSET_VER = '3.9';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
