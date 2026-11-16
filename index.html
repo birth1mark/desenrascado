@@ -3118,7 +3118,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '6.6';
+const ASSET_VER = '6.7';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3601,20 +3601,6 @@ const STREET_WALKER_CATALOG = [
         ]
     },
     {
-        id: 'guarda_freio',
-        name: 'Ti Chico (Guarda-Freio da Carris)',
-        type: 'guarda_freio',
-        speed: 15,
-        width: 39,
-        height: 44,
-        canExitRight: true,
-        quotes: [
-            "Próxima paragem: Estrela! Cuidado com os estribos ao subir!",
-            "Há trinta anos que conduzo este elétrico amarelo pelos carris de Lisboa!",
-            "Segurem-se bem nas curvas apertadas da Graça e de Alfama!"
-        ]
-    },
-    {
         id: 'varina',
         name: 'D. Rosa (A Varina de Lisboa)',
         type: 'varina',
@@ -3881,34 +3867,6 @@ function renderStreetWalkers(ctx, animTimer) {
                 ctx.textAlign = 'center';
                 ctx.fillText("⚡", tx, ty - 48);
             }
-        } else if (w.type === 'guarda_freio') {
-            const gx = w.x;
-            const gy = w.y;
-
-            // Sombra sob os pés
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
-            ctx.beginPath();
-            ctx.ellipse(gx, gy + 1, 10, 4, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            if (hasSprites) {
-                const gFrame = Math.floor(w.walkDist / 6) % 4;
-                ctx.save();
-                if (w.facing === 'left') {
-                    ctx.translate(gx, 0);
-                    ctx.scale(-1, 1);
-                    ctx.drawImage(streetWalkersImg, gFrame * 39, 88, 39, 44, -19, gy - 42, 39, 44);
-                } else {
-                    ctx.drawImage(streetWalkersImg, gFrame * 39, 88, 39, 44, gx - 19, gy - 42, 39, 44);
-                }
-                ctx.restore();
-            }
-
-            if (state === 'BOARD' && Math.hypot(mouse.x - gx, mouse.y - (gy - 18)) < 24) {
-                ctx.font = '9px "Press Start 2P"';
-                ctx.textAlign = 'center';
-                ctx.fillText("🚋", gx, gy - 48);
-            }
         } else if (w.type === 'gato') {
             const gx = w.x;
             const gy = w.y;
@@ -4133,8 +4091,7 @@ function openStreetWalkerEncounter(w) {
         walker: w,
         name: w.name,
         type: w.type,
-        icon: (w.type === 'guarda_freio' ? "🚋" :
-              (w.type === 'castanheiro' ? "🌰" :
+        icon: (w.type === 'castanheiro' ? "🌰" :
               (w.type === 'trotinete' ? "🛴" :
               (w.type === 'turista_mala' ? "🧳" :
               (w.type === 'estudante' ? "🎓" :
@@ -4143,7 +4100,7 @@ function openStreetWalkerEncounter(w) {
               (w.type === 'reformado' ? "🧓" :
               (w.type === 'turista_foto' ? "📸" :
               (w.type === 'tuna' ? "🎸" :
-              (w.type === 'varina' ? "🐟" : "🐈"))))))))))),
+              (w.type === 'varina' ? "🐟" : "🐈")))))))))),
         prompt: "",
         opt1Text: "",
         opt1Action: null,
@@ -4151,26 +4108,7 @@ function openStreetWalkerEncounter(w) {
         opt2Action: null
     };
 
-    if (w.type === 'guarda_freio') {
-        sfxTramBell();
-        encounter.prompt = "«Próxima paragem: Calhariz e Estrela! O Elétrico 28 não espera por ninguém, rapaz!»";
-        encounter.opt1Text = "► 1. Cumprimentar o Guarda-Freio e pedir indicações (+8 Sanidade, +2 Reputação)";
-        encounter.opt1Action = () => {
-            player.sanity = Math.min(100, player.sanity + 8);
-            player.reputation = Math.min(100, player.reputation + 2);
-            sfxTramBell();
-            spawnParticle("🚋 +8 Sanidade +2 Rep", "#facc15", w.x, w.y - 45);
-            spawnSpeechBubble(w.x, w.y - 48, "«Boa viagem por Lisboa, rapaz! Agarra-te bem aos varões!»", w.name);
-        };
-        encounter.opt2Text = "► 2. Ajudar a desimpedir um caixote dos carris (+5.00€ gorjeta da Carris, +10 Sanidade)";
-        encounter.opt2Action = () => {
-            player.wallet += 5.00;
-            player.sanity = Math.min(100, player.sanity + 10);
-            sfxWin();
-            spawnParticle("🪙 +5.00€ +10 Sanidade", "#10b981", w.x, w.y - 45);
-            spawnSpeechBubble(w.x, w.y - 48, "«Bem hajas, desenrascado! O 28 segue viagem sem atrasos!»", w.name);
-        };
-    } else if (w.type === 'castanheiro') {
+    if (w.type === 'castanheiro') {
         encounter.prompt = "«Quentes e boas! Quem quer castanhas assadas na brasa para aquecer a alma e a carcaça?!»";
         encounter.opt1Text = `► 1. Comprar cartucho de castanhas a estalar (-${w.chestnutPrice.toFixed(2)}€, +25 Fome, +15 Sanidade)`;
         encounter.opt1Action = () => {
