@@ -2047,7 +2047,7 @@ const LIVING_NPCS = [
     {
         id: 'cliente_pingo_doce',
         name: 'Cliente do Pingo Doce',
-        x: 494, y: 164, radius: 20,
+        x: 476, y: 172, radius: 20,
         quotes: [
             "O azeite está a preço de ouro! Vim só buscar pão e gastei uma fortuna.",
             "As promoções da D. Maria salvam qualquer fim de mês em Lisboa."
@@ -2138,9 +2138,9 @@ function renderBoardBackgroundLiving(ctx, animTimer) {
         const istFrame = (Math.floor(animTimer * 0.5) % 5 === 3) ? 1 : 0;
         ctx.drawImage(npcsLucasImg, istFrame * 48, 0, 48, 48, 66, 152, 48, 48);
 
-        // D. Cliente do Pingo Doce (Row 3: sy=144, sw=48, sh=48)
+        // D. Cliente do Pingo Doce (Row 3: sy=144, sw=48, sh=48 — soleira de entrada, desimpedido das caixas de fruta)
         const pingoFrame = (Math.floor(animTimer * 0.6) % 4 === 2) ? 1 : 0;
-        ctx.drawImage(npcsLucasImg, pingoFrame * 48, 144, 48, 48, 474, 142, 48, 48);
+        ctx.drawImage(npcsLucasImg, pingoFrame * 48, 144, 48, 48, 452, 148, 48, 48);
     }
 
     ctx.restore();
@@ -2654,7 +2654,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '4.3';
+const ASSET_VER = '4.4';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
