@@ -3044,7 +3044,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '6.0';
+const ASSET_VER = '6.1';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -6973,16 +6973,16 @@ function drawNpcPortrait(id, x, y, size) {
         const blinkCycle = (animTimer % 3.6) / 3.6;
         if (blinkCycle < 0.035) {
             const eyeCoords = {
-                senhorio:     { lx: 57, rx: 71, y: 39, w: 6, h: 2, c: '#451a03' },
-                tasca:        { lx: 55, rx: 69, y: 38, w: 6, h: 2, c: '#451a03' },
-                startup:      { lx: 54, rx: 70, y: 38, w: 6, h: 2, c: '#3b2f2f' },
-                supermercado: { lx: 56, rx: 68, y: 41, w: 6, h: 2, c: '#271710' },
-                banco:        { lx: 55, rx: 71, y: 37, w: 6, h: 2, c: '#292524' },
-                faculdade:    { lx: 55, rx: 71, y: 37, w: 6, h: 2, c: '#292524' },
-                miradouro:    { lx: 54, rx: 70, y: 41, w: 6, h: 2, c: '#1c1917' },
-                acampada:     { lx: 55, rx: 71, y: 40, w: 6, h: 2, c: '#1c1917' },
-                casa:         { lx: 57, rx: 71, y: 39, w: 6, h: 2, c: '#451a03' },
-                loja_roupa:   { lx: 56, rx: 68, y: 41, w: 6, h: 2, c: '#271710' }
+                senhorio:     { lx: 57, rx: 69, y: 47, w: 5, h: 2, c: '#3b1d11' },
+                tasca:        { lx: 50, rx: 66, y: 38, w: 5, h: 2, c: '#3b1d11' },
+                startup:      { lx: 54, rx: 72, y: 46, w: 5, h: 2, c: '#261520' },
+                supermercado: { lx: 56, rx: 72, y: 47, w: 5, h: 2, c: '#271710' },
+                banco:        { lx: 56, rx: 70, y: 34, w: 5, h: 2, c: '#1a1520' },
+                faculdade:    { lx: 52, rx: 68, y: 48, w: 5, h: 2, c: '#202020' },
+                miradouro:    { lx: 54, rx: 72, y: 40, w: 5, h: 2, c: '#181216' },
+                acampada:     { lx: 54, rx: 72, y: 46, w: 5, h: 2, c: '#261520' },
+                casa:         { lx: 54, rx: 72, y: 40, w: 5, h: 2, c: '#302015' },
+                loja_roupa:   { lx: 56, rx: 72, y: 47, w: 5, h: 2, c: '#271710' }
             };
             const ec = eyeCoords[id] || eyeCoords.senhorio;
             const byOff = offsetPx;
