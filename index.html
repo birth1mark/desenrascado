@@ -1672,10 +1672,10 @@ const HOUSES = [
 // SISTEMA DE ROMANCE & CARAS-METADES DE LISBOA (Inclusivo & Autêntico)
 // ============================================================================
 const ROMANCE_PARTNERS = {
-    soraia: {
-        id: 'soraia',
-        name: 'Soraia',
-        fullName: 'Soraia (Pingo Doce)',
+    catia: {
+        id: 'catia',
+        name: 'Cátia',
+        fullName: 'Cátia (Pingo Doce)',
         gender: 'f',
         role: 'Encarregada do Pingo Doce',
         desc: 'Curvilínea, sexy, carismática e trabalhadora. Divide o cabaz e o coração.',
@@ -1849,7 +1849,7 @@ const WORKPLACES = {
         name: 'Pingo Doce',
         shortName: 'Pingo Doce',
         tag: 'RETALHO & SUPERMERCADO',
-        boss: 'Soraia',
+        boss: 'Cátia',
         icon: '🛒',
         color: '#15803d',
         careers: [
@@ -2206,7 +2206,7 @@ function generateMorningEvent(p) {
     if (p.currentWorkplace === 'pingo_doce') {
         possibleEvents.push({
             title: "Quebra de Palete de Atum no Pingo Doce",
-            desc: "Um porta-paletes tombou no corredor 3 do Pingo Doce. Ajudaste a arrumar 300 latas e a Soraia ofereceu-te um sorriso radiante, um bónus de assiduidade e conservas!",
+            desc: "Um porta-paletes tombou no corredor 3 do Pingo Doce. Ajudaste a arrumar 300 latas e a Cátia ofereceu-te um sorriso radiante, um bónus de assiduidade e conservas!",
             effect: (player) => {
                 player.wallet += 22;
                 player.groceries += 1;
@@ -2341,7 +2341,7 @@ const BUILDINGS = [
     { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, desc: 'Inês — Vigília popular, a tua tenda Quechua, cantina solidária e luta pelo direito à habitação.' },
     { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco, depósitos e carreiras financeiras.' },
     { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira — Fatos de gala, alfaiataria, trajes académicos e ateliê de costura.' },
-    { id: 'supermercado', name: 'Pingo Doce', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 478, doorY: 195, desc: 'Soraia (28 anos) — Encarregada bonita, curvilínea e carismática. Mantimentos e carreiras.' },
+    { id: 'supermercado', name: 'Pingo Doce', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 478, doorY: 195, desc: 'Cátia (28 anos) — Encarregada bonita, curvilínea e carismática. Mantimentos e carreiras.' },
     { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 70, w: 110, h: 125, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
     { id: 'casa', name: 'O Teu Teto', x: 340, y: 15, w: 120, h: 65, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 376, doorY: 195, desc: 'Dorme para recuperar sanidade, fome e energia.' },
     { id: 'senhorio', name: 'Senhorio', x: 530, y: 15, w: 110, h: 65, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 585, doorY: 195, desc: 'Sr. Jerónimo — Rendas, contratos de habitação e biscates de manutenção.' }
@@ -2429,7 +2429,7 @@ const LIVING_NPCS = [
         x: 476, y: 172, radius: 20,
         quotes: [
             "O azeite está a preço de ouro! Vim só buscar pão e gastei uma fortuna.",
-            "As promoções da Soraia salvam qualquer fim de mês em Lisboa."
+            "As promoções da Cátia salvam qualquer fim de mês em Lisboa."
         ]
     },
     {
@@ -3022,7 +3022,7 @@ let player = {
     daysUntilRent: 7,
     hungerDays: 0,
     sleptAcampada: false,
-    partner: null, // 'soraia' | 'marta' | 'rui' | 'goncalo' | null
+    partner: null, // 'catia' | 'marta' | 'rui' | 'goncalo' | null
     avatarName: "Zé Desenrasca",
     deathTitle: "",
     deathCause: ""
@@ -3044,15 +3044,22 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '5.1';
+const ASSET_VER = '6.0';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
 const zeSheetImg = new Image();
 zeSheetImg.src = `assets/ze_spritesheet.png?v=${ASSET_VER}`;
 
+// Spritesheets de Retratos em Camadas (Fundo Estático + Busto Transparente)
 const portraitsSheetImg = new Image();
 portraitsSheetImg.src = `assets/portraits_sheet.png?v=${ASSET_VER}`;
+
+const portraitsBgSheetImg = new Image();
+portraitsBgSheetImg.src = `assets/portraits_bg_sheet.png?v=${ASSET_VER}`;
+
+const portraitsBustSheetImg = new Image();
+portraitsBustSheetImg.src = `assets/portraits_bust_sheet.png?v=${ASSET_VER}`;
 
 // Spritesheet Autêntica em Pixel Art 16-Bit dos NPCs de Lisboa (Estilo LucasArts SCUMM)
 const npcsLucasImg = new Image();
@@ -3062,13 +3069,19 @@ npcsLucasImg.src = `assets/npcs_lucasarts.png?v=${ASSET_VER}`;
 const streetWalkersImg = new Image();
 streetWalkersImg.src = `assets/street_walkers.png?v=${ASSET_VER}`;
 
-// Retrato Exclusivo em Pixel Art da D. Mariana (IEFP / 45 anos, Loura, Óculos e Blazer)
-const iefpPortraitImg = new Image();
-iefpPortraitImg.src = `assets/portrait_iefp.png?v=${ASSET_VER}`;
+// Retrato Exclusivo em Camadas da D. Mariana (IEFP / 45 anos, Loura, Óculos e Blazer)
+const iefpBgImg = new Image();
+iefpBgImg.src = `assets/portrait_iefp_bg.png?v=${ASSET_VER}`;
+const iefpBustImg = new Image();
+iefpBustImg.src = `assets/portrait_iefp_bust.png?v=${ASSET_VER}`;
 
-// Retrato Exclusivo em Pixel Art da Soraia (Pingo Doce / 28 anos, Curvilínea, Carismática)
-const soraiaPortraitImg = new Image();
-soraiaPortraitImg.src = `assets/portrait_soraia.png?v=${ASSET_VER}`;
+// Retrato Exclusivo em Camadas da Cátia (Pingo Doce / 28 anos, Curvilínea, Decote Perfeito)
+const catiaBgImg = new Image();
+catiaBgImg.src = `assets/portrait_catia_bg.png?v=${ASSET_VER}`;
+const catiaBustImg = new Image();
+catiaBustImg.src = `assets/portrait_catia_bust.png?v=${ASSET_VER}`;
+const catiaPortraitImg = new Image();
+catiaPortraitImg.src = `assets/portrait_catia.png?v=${ASSET_VER}`;
 
 // Splash Screen Bitmapped 16-Bit Deslumbrante de Lisboa
 const splashImg = new Image();
@@ -6809,13 +6822,13 @@ const NPC_INFO = {
         color: "#9a3412"
     },
     supermercado: {
-        name: "Soraia (Pingo Doce)",
+        name: "Cátia (Pingo Doce)",
         role: "Encarregada do Supermercado",
         quote: () => {
             if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
                 return "Ai filho, assim tão despido ao pé das arcas frigoríficas apanhas uma constipação! Passa pelas Modas Chiado antes que a fiscalização te veja!";
             }
-            if (player.partner === 'soraia') {
+            if (player.partner === 'catia') {
                 return "Olá meu amor! Guardei os melhores iogurtes para nós e divido as contas contigo de coração cheio. Bom trabalho!";
             }
             const job = WORKPLACES.pingo_doce.careers[player.careerRanks.pingo_doce || 0];
@@ -6886,66 +6899,7 @@ const NPC_INFO = {
     }
 };
 
-// Scratch canvas para animação do busto do personagem (reutilizável, zero alocações por frame)
-let portraitBustCanvas = null;
-let portraitMaskCanvas = null;
-
-function getPortraitMask() {
-    if (!portraitMaskCanvas && typeof document !== 'undefined' && document.createElement) {
-        try {
-            portraitMaskCanvas = document.createElement('canvas');
-            portraitMaskCanvas.width = 128;
-            portraitMaskCanvas.height = 128;
-            const mctx = portraitMaskCanvas.getContext('2d');
-            if (mctx) {
-                mctx.fillStyle = '#ffffff';
-                mctx.fillRect(0, 0, 128, 128);
-
-                // Esbater lateral esquerda (colunas 0..22 esbatem até 0)
-                const gradL = mctx.createLinearGradient(0, 0, 22, 0);
-                gradL.addColorStop(0, 'rgba(0,0,0,1)');
-                gradL.addColorStop(1, 'rgba(0,0,0,0)');
-                mctx.globalCompositeOperation = 'destination-out';
-                mctx.fillStyle = gradL;
-                mctx.fillRect(0, 0, 22, 128);
-
-                // Esbater lateral direita (colunas 106..128 esbatem até 0)
-                const gradR = mctx.createLinearGradient(128, 0, 106, 0);
-                gradR.addColorStop(0, 'rgba(0,0,0,1)');
-                gradR.addColorStop(1, 'rgba(0,0,0,0)');
-                mctx.fillStyle = gradR;
-                mctx.fillRect(106, 0, 22, 128);
-
-                // Esbater topo (linhas 0..18 esbatem até 0 para que a parede superior fique imóvel)
-                const gradT = mctx.createLinearGradient(0, 0, 0, 18);
-                gradT.addColorStop(0, 'rgba(0,0,0,1)');
-                gradT.addColorStop(1, 'rgba(0,0,0,0)');
-                mctx.fillStyle = gradT;
-                mctx.fillRect(0, 0, 128, 18);
-
-                mctx.globalCompositeOperation = 'source-over';
-            }
-        } catch (e) {
-            portraitMaskCanvas = null;
-        }
-    }
-    return portraitMaskCanvas;
-}
-
-function getPortraitBustCanvas() {
-    if (!portraitBustCanvas && typeof document !== 'undefined' && document.createElement) {
-        try {
-            portraitBustCanvas = document.createElement('canvas');
-            portraitBustCanvas.width = 128;
-            portraitBustCanvas.height = 128;
-        } catch (e) {
-            portraitBustCanvas = null;
-        }
-    }
-    return portraitBustCanvas;
-}
-
-// Renderizador de Retratos em Pixel Art 16-Bit com Fundo Estático e Busto Animado
+// Renderizador de Retratos em Pixel Art 16-Bit em Camadas (Fundo Estático + Busto Transparente)
 function drawNpcPortrait(id, x, y, size) {
     const npc = NPC_INFO[id] || NPC_INFO.senhorio;
 
@@ -6967,22 +6921,33 @@ function drawNpcPortrait(id, x, y, size) {
     };
     const coord = npcCoords[id] || npcCoords.senhorio;
 
-    let targetImg = null;
-    let sx = 0, sy = 0;
+    let bgImg = null, bustImg = null;
+    let bgSx = 0, bgSy = 0;
+    let bustSx = 0, bustSy = 0;
 
-    if (id === 'startup' && iefpPortraitImg.complete && iefpPortraitImg.naturalWidth > 0) {
-        targetImg = iefpPortraitImg;
-        sx = 0; sy = 0;
-    } else if (id === 'supermercado' && soraiaPortraitImg.complete && soraiaPortraitImg.naturalWidth > 0) {
-        targetImg = soraiaPortraitImg;
-        sx = 0; sy = 0;
+    if (id === 'supermercado' && catiaBgImg.complete && catiaBgImg.naturalWidth > 0) {
+        bgImg = catiaBgImg;
+        bustImg = (catiaBustImg.complete && catiaBustImg.naturalWidth > 0) ? catiaBustImg : null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
+    } else if (id === 'startup' && iefpBgImg.complete && iefpBgImg.naturalWidth > 0) {
+        bgImg = iefpBgImg;
+        bustImg = (iefpBustImg.complete && iefpBustImg.naturalWidth > 0) ? iefpBustImg : null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
+    } else if (portraitsBgSheetImg.complete && portraitsBgSheetImg.naturalWidth > 0) {
+        bgImg = portraitsBgSheetImg;
+        bustImg = (portraitsBustSheetImg.complete && portraitsBustSheetImg.naturalWidth > 0) ? portraitsBustSheetImg : null;
+        bgSx = coord.col * 128; bgSy = coord.row * 128;
+        bustSx = coord.col * 128; bustSy = coord.row * 128;
     } else if (portraitsSheetImg.complete && portraitsSheetImg.naturalWidth > 0) {
-        targetImg = portraitsSheetImg;
-        sx = coord.col * 128;
-        sy = coord.row * 128;
+        // Fallback robusto se as camadas ainda estiverem a carregar
+        bgImg = portraitsSheetImg;
+        bustImg = null;
+        bgSx = coord.col * 128; bgSy = coord.row * 128;
     }
 
-    if (targetImg) {
+    if (bgImg) {
         ctx.save();
         ctx.imageSmoothingEnabled = false;
 
@@ -6991,32 +6956,19 @@ function drawNpcPortrait(id, x, y, size) {
         ctx.rect(x, y, size, size);
         ctx.clip();
 
-        // PASSO A: O FUNDO NUNCA SE MEXE E PREENCHE 100% DO QUADRADO
-        // Desenha a imagem base estática com preenchimento total e zero quebras/gaps
-        ctx.drawImage(targetImg, sx, sy, 128, 128, x, y, size, size);
+        // CAMADA 1: FUNDO 100% ESTÁTICO (Nunca se mexe, preenche 100% da moldura sem qualquer quebra)
+        ctx.drawImage(bgImg, bgSx, bgSy, 128, 128, x, y, size, size);
 
-        // PASSO B: ANIMAÇÃO DE RESPIRAÇÃO SUAVE APENAS DO PERSONAGEM (sem mover o fundo)
-        // O busto respira 1px com máscara esbatida para manter paredes, estantes e bordos 100% estáticos
+        // CAMADA 2: BUSTO COM TRANSPARÊNCIA (Apenas o personagem respira; o fundo fica perfeitamente imóvel)
         const breathY = Math.round(Math.sin(animTimer * 2.2));
-        const maskCanvas = getPortraitMask();
-        const bustCanvas = getPortraitBustCanvas();
-        if (breathY !== 0 && maskCanvas && bustCanvas) {
-            const bCtx = bustCanvas.getContext('2d');
-            if (bCtx) {
-                bCtx.imageSmoothingEnabled = false;
-                bCtx.clearRect(0, 0, 128, 128);
-                bCtx.drawImage(targetImg, sx, sy, 128, 128, 0, 0, 128, 128);
-                bCtx.globalCompositeOperation = 'destination-in';
-                bCtx.drawImage(maskCanvas, 0, 0);
-                bCtx.globalCompositeOperation = 'source-over';
+        const scale = size / 128;
+        const offsetPx = Math.round(breathY * scale);
 
-                const scale = size / 128;
-                const offsetPx = Math.round(breathY * scale);
-                ctx.drawImage(bustCanvas, 0, 0, 128, 128, x, y + offsetPx, size, size);
-            }
+        if (bustImg) {
+            ctx.drawImage(bustImg, bustSx, bustSy, 128, 128, x, y + offsetPx, size, size);
         }
 
-        // PASSO C: PISCAR DE OLHOS NATURAL ESTILO LUCASARTS SCUMM
+        // CAMADA 3: PISCAR DE OLHOS NATURAL ESTILO LUCASARTS SCUMM
         // A cada ~3.6s, os olhos piscam durante ~120ms (estilo Monkey Island 2 / Fate of Atlantis)
         const blinkCycle = (animTimer % 3.6) / 3.6;
         if (blinkCycle < 0.035) {
@@ -7033,8 +6985,7 @@ function drawNpcPortrait(id, x, y, size) {
                 loja_roupa:   { lx: 56, rx: 68, y: 41, w: 6, h: 2, c: '#271710' }
             };
             const ec = eyeCoords[id] || eyeCoords.senhorio;
-            const scale = size / 128;
-            const byOff = (breathY !== 0 ? breathY : 0) * scale;
+            const byOff = offsetPx;
             ctx.fillStyle = ec.c;
             ctx.fillRect(Math.round(x + ec.lx * scale), Math.round(y + ec.y * scale + byOff), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
             ctx.fillRect(Math.round(x + ec.rx * scale), Math.round(y + ec.y * scale + byOff), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
@@ -7093,7 +7044,7 @@ function drawNpcPortrait(id, x, y, size) {
 
         ctx.restore();
     } else {
-        // Fallback procedural clássico enquanto a spritesheet carrega
+        // Fallback procedural clássico enquanto as imagens carregam
         ctx.fillStyle = npc.color + '44';
         ctx.fillRect(x, y, size, size);
     }
@@ -8301,23 +8252,23 @@ function renderBuildingActions(id, mx, my, mw, mh) {
 
         if (!player.partner) {
             actions.push({
-                label: "Mete conversa e oferece café à Soraia (1h, 2€)",
+                label: "Mete conversa e oferece café à Cátia (1h, 2€)",
                 cost: 2,
                 timeH: 1,
                 timeM: 0,
                 sanity: 15,
-                startRomance: 'soraia',
-                desc: "Elogia o sorriso da Soraia da caixa. Se estiveres são e arranjado, começam a namorar!"
+                startRomance: 'catia',
+                desc: "Elogia o sorriso da Cátia da caixa. Se estiveres são e arranjado, começam a namorar!"
             });
-        } else if (player.partner === 'soraia') {
+        } else if (player.partner === 'catia') {
             actions.push({
-                label: "Encontro Romântico com a Soraia (1h, 10€)",
+                label: "Encontro Romântico com a Cátia (1h, 10€)",
                 cost: 10,
                 timeH: 1,
                 timeM: 0,
                 hunger: 25,
                 sanity: 30,
-                datePartner: 'soraia',
+                datePartner: 'catia',
                 desc: "Lanche especial e passeio de mão dada. +30 Sanidade e +25 Nutrição!"
             });
         }
