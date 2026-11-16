@@ -1513,7 +1513,7 @@ let currentEvent = null;
 let newspaperDb = null;
 
 // Carregamento assíncrono da Base de Dados JSON do Jornal
-fetch('assets/newspaper_database.json?v=3.5')
+fetch('assets/newspaper_database.json?v=3.6')
     .then(r => r.json())
     .then(d => {
         if (d && d.events) {
@@ -1895,27 +1895,18 @@ const LIVING_NPCS = [
     {
         id: 'ines_acampada',
         name: 'Inês (Acampada)',
-        x: 340, y: 247, radius: 20,
+        x: 340, y: 247, radius: 16,
         quotes: [
             "«A Casa é um Direito, Não um Negócio!» — Vigília da Plataforma Casa Para Viver.",
             "Junta-te à nossa tenda solidária: partilhamos sopa quente, cobertores e resistência.",
             "«Nem Casas Sem Gente, Nem Gente Sem Casa!» — Referendo pela Habitação Já!"
-        ]
-    },
-    {
-        id: 'tenda_acampada',
-        name: 'A Tua Tenda Quechua',
-        x: 300, y: 245, radius: 18,
-        quotes: [
-            "A tua pequena tenda Quechua montada na marginal do Tejo: 0€ de renda e espírito de luta!",
-            "«Teto para Todos!» — Dormir aqui poupa centenas de euros e trava ordens de despejo.",
-            "O vento do Tejo é fresco, mas o saco-cama e a solidariedade dos companheiros aquecem a alma."
         ]
     }
 ];
 
 function renderBoardLivingCharacters(ctx, animTimer) {
     ctx.save();
+    const isNight = typeof player !== 'undefined' && player && (player.timeHour >= 20 || player.timeHour < 7);
 
     // 1. ESPLANADA DA TASCA DO TI ZÉ (x: 585 a 635, y: 175 a 195)
     const drinkCycle = animTimer % 4.8;
@@ -2364,7 +2355,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '3.5';
+const ASSET_VER = '3.6';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
