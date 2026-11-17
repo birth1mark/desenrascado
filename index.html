@@ -3217,7 +3217,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '6.9';
+const ASSET_VER = '7.0';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -8212,15 +8212,41 @@ function renderInteriorPingoDoce(ctx, animTimer) {
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(640, y); ctx.stroke();
     }
 
-    // Letreiros de Secção da Mercearia
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 11px "Press Start 2P"';
+    // Tabuleta e Logótipo Ornamental da Mercearia Tradicional de Lisboa
+    // Cartouche em madeira nobre com moldura em talha dourada e rosetas
+    ctx.fillStyle = '#3e2723'; // Moldura de nogueira escura
+    ctx.fillRect(80, 14, 480, 54);
+    ctx.strokeStyle = '#f59e0b'; // Filete de ouro pombalino
+    ctx.lineWidth = 2;
+    ctx.strokeRect(80, 14, 480, 54);
+    ctx.strokeStyle = 'rgba(254, 240, 138, 0.6)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(83, 17, 474, 48);
+
+    // Fundo do painel em verde floresta clássico
+    ctx.fillStyle = '#064e3b';
+    ctx.fillRect(84, 18, 472, 46);
+
+    // Rosetas e Emblemas dourados de canto
+    ctx.fillStyle = '#fde047';
+    ctx.fillRect(87, 21, 4, 4);
+    ctx.fillRect(549, 21, 4, 4);
+    ctx.fillRect(87, 57, 4, 4);
+    ctx.fillRect(549, 57, 4, 4);
+
+    // Tipografia da Mercearia em 2 Níveis com Hierarquia e Nobreza
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 8.5px "Fira Code"';
     ctx.textAlign = 'center';
-    ctx.fillText("🛒 MERCEARIA DA CÁTIA · FRESCOS & TRADIÇÃO", 320, 36);
+    ctx.fillText("⚜  MERCEARIA TRADICIONAL  ⚜", 320, 31);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 13px "Press Start 2P"';
+    ctx.fillText("C Á T I A", 320, 48);
 
     ctx.fillStyle = '#86efac';
-    ctx.font = 'bold 9px "Fira Code"';
-    ctx.fillText("PRODUTOS FRESCOS DO DIA · CONSERVAS TRADICIONAIS & PÃO QUENTE", 320, 58);
+    ctx.font = 'bold 8px "Fira Code"';
+    ctx.fillText("~ FRESCOS DA HORTA · CONSERVAS DE LISBOA · PÃO QUENTE DESDE 1928 ~", 320, 60);
 
     // Chão Quadriculado de Supermercado em Perspetiva
     for (let y = 150; y < 295; y += 18) {

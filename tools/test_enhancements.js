@@ -3,7 +3,7 @@ const assert = require('assert');
 const vm = require('vm');
 
 console.log("=================================================================");
-console.log("SUITE DE TESTES AUTOMATIZADOS: DESENRASCADO v6.9");
+console.log("SUITE DE TESTES AUTOMATIZADOS: DESENRASCADO v7.0");
 console.log("=================================================================\n");
 
 const html = fs.readFileSync('/home/pedro/Projects/desenrascado/index.html', 'utf8');
@@ -244,8 +244,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '6.9', "ASSET_VER incrementado para 6.8");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '6.9' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.0', "ASSET_VER incrementado para 6.8");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.0' confirmado!");
 
 console.log("\n=================================================================");
 console.log("RESULTADO FINAL: TODOS OS 7 TESTES PASSARAM COM 100% SUCESSO!");
