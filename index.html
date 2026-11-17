@@ -47,7 +47,7 @@
       "name": "Desenrascado",
       "alternateName": "Desenrascado: A Aventura Gráfica da Sobrevivência em Lisboa",
       "headline": "Aventura Gráfica Retro 16-Bit de Sobrevivência Urbana em Lisboa",
-      "description": "Simulador de sobrevivência urbana e aventura gráfica retro estilo LucasArts SCUMM ambientado em Lisboa. O jogador assume o papel de Zé Desenrasca, tendo de conciliar estudos universitários no IST, empregos na Tasca Ti Zé ou na Mercearia do Bairro, gestão de rendas semanais, compra de vestuário no Chiado e participação na Acampada popular pelo direito à habitação.",
+      "description": "Simulador de sobrevivência urbana e aventura gráfica retro estilo LucasArts SCUMM ambientado em Lisboa. O jogador assume o papel de Zé Desenrasca, tendo de conciliar estudos universitários no IST, empregos na Tasca Ti Zé ou na Mercearia da Cátia, gestão de rendas semanais, compra de vestuário no Chiado e participação na Acampada popular pelo direito à habitação.",
       "url": "https://desenrascado.pormenores.net/",
       "image": "https://desenrascado.pormenores.net/assets/splash.png",
       "inLanguage": "pt-PT",
@@ -933,7 +933,7 @@
                 <li><strong>Instituto Superior Técnico (IST / Alameda):</strong> Estuda engenharia informática, gestão ou ciências no polo universitário da Alameda. Conclui cadeiras sequenciais como Álgebra Linear, Análise Matemática e Sistemas Operativos para obteres o teu canudo universitário e desbloqueares cargos de topo.</li>
                 <li><strong>IEFP (Instituto do Emprego e Formação Profissional):</strong> Orienta-te com a D. Mariana, consulta vagas no mercado de trabalho e acede ao teu Dossier Curricular oficial de Lisboa.</li>
                 <li><strong>Tasca do Ti Zé (Alfama / Mouraria):</strong> Pede o prato do dia, bitoques à casa, imperiais geladas ou trabalha em turnos de balcão e copa para ganhar euros no final do dia.</li>
-                <li><strong>Mercearia do Bairro (Mercearia Tradicional):</strong> Abastece a despensa com conservas de atum, maçãs e pão fresco para não desmaiares de fraqueza, ou trabalha como repositor e operador de caixa.</li>
+                <li><strong>Mercearia da Cátia:</strong> Abastece a despensa com conservas de atum, maçãs e pão fresco para não desmaiares de fraqueza, ou trabalha como repositor e operador de caixa.</li>
                 <li><strong>Caixa Geral / Banco Multibanco:</strong> Gere a tua conta bancária, poupanças e crédito. Consulta o saldo no ecrã luminoso do Multibanco e sobe na carreira de finanças pombalinas.</li>
                 <li><strong>Modas Chiado (Pronto-a-Vestir e Alfaiataria):</strong> No Chiado histórico, compra trajes formais, fatos pombalinos ou trajes académicos com capa negra. O vestuário sofre desgaste diário e não podes trabalhar na banca de calções e chinelos.</li>
                 <li><strong>Acampada Popular do Rossio (Direito à Habitação):</strong> Participa na vigília popular com a Inês e ativistas pelo direito a uma habitação digna. Toma turnos solidários de assembleia, divide sopa comunitária e resiste aos despejos dos fundos imobiliários.</li>
@@ -1759,7 +1759,7 @@ const ROMANCE_PARTNERS = {
     catia: {
         id: 'catia',
         name: 'Cátia',
-        fullName: 'Cátia (Mercearia do Bairro)',
+        fullName: 'Cátia',
         gender: 'f',
         role: 'Encarregada da Mercearia',
         desc: 'Curvilínea, sexy, carismática e atenta. Mercearia tradicional de bairro, divide o cabaz e o coração.',
@@ -1938,7 +1938,7 @@ const COURSES = {
         shortName: 'Gestão & Logística',
         icon: '📦',
         faculty: 'IST / DEG',
-        desc: 'Cadeias de Abastecimento e Retalho Tradicional. Exigido para Chefia e Gerência na Mercearia do Bairro.',
+        desc: 'Cadeias de Abastecimento e Retalho Tradicional. Exigido para Chefia e Gerência na Mercearia da Cátia.',
         subjects: [
             { id: 'retalho', name: "Gestão das Cadeias de Retalho", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "Fluxos de mercadorias da horta às prateleiras." },
             { id: 'stocks', name: "Logística & Controlo de Inventários", cost: 35, timeH: 5, timeM: 0, ects: 20, desc: "Just-in-time e quebras de supermercado." },
@@ -2004,7 +2004,7 @@ const WORKPLACES = {
     pingo_doce: {
         id: 'pingo_doce',
         buildingId: 'supermercado',
-        name: 'Mercearia do Bairro',
+        name: 'Mercearia da Cátia',
         shortName: 'Mercearia',
         tag: 'MERCEARIA & RETALHO',
         boss: 'Cátia',
@@ -2174,7 +2174,7 @@ function getPlayerJob(workplaceKey = player.currentWorkplace) {
             title: "Desempregado",
             wagePerHour: 0,
             hoursPerShift: 0,
-            desc: "Sem emprego ativo. Visita o IEFP, a Mercearia do Bairro, Tasca ou Caixa para começar a trabalhar!"
+            desc: "Sem emprego ativo. Visita o IEFP, a Mercearia da Cátia, Tasca ou Caixa para começar a trabalhar!"
         };
     }
     const wp = WORKPLACES[workplaceKey];
@@ -2364,7 +2364,7 @@ function generateMorningEvent(p) {
     if (p.currentWorkplace === 'pingo_doce') {
         possibleEvents.push({
             title: "Quebra de Palete de Atum na Mercearia",
-            desc: "Um porta-paletes tombou no corredor da Mercearia do Bairro. Ajudaste a arrumar 300 latas e a Cátia ofereceu-te um sorriso radiante, um bónus de assiduidade e conservas!",
+            desc: "Um porta-paletes tombou no corredor da Mercearia da Cátia. Ajudaste a arrumar 300 latas e a Cátia ofereceu-te um sorriso radiante, um bónus de assiduidade e conservas!",
             effect: (player) => {
                 player.wallet += 22;
                 player.groceries += 1;
@@ -2498,8 +2498,8 @@ const BUILDINGS = [
     { id: 'startup', name: 'IEFP / Emprego', x: 175, y: 35, w: 48, h: 155, color: '#065f46', accent: '#10b981', tag: 'IEFP & CARREIRAS', icon: '💼', doorX: 198, doorY: 195, desc: 'D. Mariana (IEFP, 45 anos) — Centro de Emprego, Orientação e Dossier Curricular.' },
     { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, desc: 'Inês — Vigília popular, a tua tenda Quechua, cantina solidária e luta pelo direito à habitação.' },
     { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco, depósitos e carreiras financeiras.' },
-    { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira (60 anos) — Mestre alfaiate voluptuosa, elegante, sexy e atrevida. Top de renda, blazer chique e ateliê pombalino.' },
-    { id: 'supermercado', name: 'Mercearia do Bairro', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'MERCEARIA TRADICIONAL', icon: '🛒', doorX: 478, doorY: 195, desc: 'Cátia (28 anos) — Encarregada simpática e carismática. Mercearia tradicional de bairro, mantimentos e carreiras.' },
+    { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira — Mestre alfaiate voluptuosa, elegante, sexy e atrevida. Top de renda, blazer chique e ateliê pombalino.' },
+    { id: 'supermercado', name: 'Mercearia da Cátia', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'MERCEARIA TRADICIONAL', icon: '🛒', doorX: 478, doorY: 195, desc: 'Cátia — Encarregada da mercearia. Mantimentos frescos, conservas e bens essenciais.' },
     { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 70, w: 110, h: 125, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
     { id: 'casa', name: 'O Teu Teto', x: 340, y: 15, w: 120, h: 65, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 376, doorY: 195, desc: 'Dorme para recuperar sanidade, fome e energia.' },
     { id: 'senhorio', name: 'Senhorio', x: 530, y: 15, w: 110, h: 65, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 585, doorY: 195, desc: 'Sr. Jerónimo — Rendas, contratos de habitação e biscates de manutenção.' }
@@ -2563,7 +2563,7 @@ const LIVING_NPCS = [
     },
     {
         id: 'cliente_loja_roupa',
-        name: 'D. Zulmira (Modas Chiado)',
+        name: 'D. Zulmira',
         x: 376, y: 182, radius: 18,
         quotes: [
             "Para ser gerente ou trabalhar na banca é preciso fato e gravata bem engomados!",
@@ -2586,7 +2586,7 @@ const LIVING_NPCS = [
         name: 'Cliente da Mercearia',
         x: 476, y: 172, radius: 20,
         quotes: [
-            "O azeite está a preço de ouro! Mas o pão da Mercearia do Bairro continua estaladiço.",
+            "O azeite está a preço de ouro! Mas o pão da Mercearia da Cátia continua estaladiço.",
             "A simpatia da Cátia salva qualquer fim de mês em Lisboa."
         ]
     },
@@ -2675,7 +2675,7 @@ function renderBoardBackgroundLiving(ctx, animTimer) {
         const istFrame = (Math.floor(animTimer * 0.5) % 5 === 3) ? 1 : 0;
         ctx.drawImage(npcsLucasImg, istFrame * 48, 0, 48, 48, 66, 152, 48, 48);
 
-        // D. Cliente da Mercearia do Bairro (Row 3: sy=144, sw=48, sh=48 — soleira de entrada, desimpedido das caixas de fruta)
+        // D. Cliente da Mercearia da Cátia (Row 3: sy=144, sw=48, sh=48 — soleira de entrada, desimpedido das caixas de fruta)
         const pingoFrame = (Math.floor(animTimer * 0.6) % 4 === 2) ? 1 : 0;
         ctx.drawImage(npcsLucasImg, pingoFrame * 48, 144, 48, 48, 452, 148, 48, 48);
     }
@@ -3217,7 +3217,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '6.8';
+const ASSET_VER = '6.9';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3248,7 +3248,7 @@ iefpBgImg.src = `assets/portrait_iefp_bg.png?v=${ASSET_VER}`;
 const iefpBustImg = new Image();
 iefpBustImg.src = `assets/portrait_iefp_bust.png?v=${ASSET_VER}`;
 
-// Retrato Exclusivo em Camadas da Cátia (Mercearia do Bairro / 28 anos, Curvilínea, Decote Perfeito)
+// Retrato Exclusivo em Camadas da Cátia (Mercearia da Cátia / 28 anos, Curvilínea, Decote Perfeito)
 const catiaBgImg = new Image();
 catiaBgImg.src = `assets/portrait_catia_bg.png?v=${ASSET_VER}`;
 const catiaBustImg = new Image();
@@ -4685,14 +4685,14 @@ function handleStreetWalkerClick(cx, cy) {
 const DIALOGUE_TREES = {
     catia: {
         id: 'catia',
-        name: 'Cátia (Mercearia do Bairro)',
+        name: 'Cátia',
         role: 'Encarregada da Mercearia',
         portraitId: 'supermercado',
         color: '#86efac',
         initialNode: 'start',
         nodes: {
             start: {
-                text: "«Olá Zé! Bem-vindo à Mercearia do Bairro. O que te traz por cá hoje? Temos pão quentinho e as melhores conservas de Lisboa!»",
+                text: "«Olá Zé! Bem-vindo à Mercearia da Cátia. O que te traz por cá hoje? Temos pão quentinho e as melhores conservas de Lisboa!»",
                 choices: [
                     { text: "«Como vão as coisas aqui pela mercearia do bairro?»", nextNode: 'mercearia_negocio' },
                     { text: "«A mercearia tem sempre outro brilho quando estás ao balcão...»", nextNode: 'flirt_catia' },
@@ -4989,7 +4989,7 @@ const DIALOGUE_TREES = {
                 ]
             },
             dicas_mercado: {
-                text: "«Para liquidez imediata sem exigência de fato ou canudo, a Mercearia do Bairro e a Tasca Ti Zé contratam sempre para reposição e copa. Para carreiras de gestão ou banca, o polo formal e os ECTS no IST são indispensáveis!»",
+                text: "«Para liquidez imediata sem exigência de fato ou canudo, a Mercearia da Cátia e a Tasca Ti Zé contratam sempre para reposição e copa. Para carreiras de gestão ou banca, o polo formal e os ECTS no IST são indispensáveis!»",
                 action: (p) => {
                     p.knowledge = Math.min(100, (p.knowledge || 0) + 6);
                 },
@@ -7078,7 +7078,7 @@ function drawBuilding(b) {
     }
 
     // ------------------------------------------------------------------------
-    // [05] MERCEARIA DO BAIRRO: Mercearia Tradicional com Caixas de Fruta
+    // [05] MERCEARIA DA CÁTIA: Mercearia Tradicional com Caixas de Fruta
     // ------------------------------------------------------------------------
     if (b.id === 'supermercado') {
         // Fachada Verde e Laranja Oficial
@@ -7112,7 +7112,7 @@ function drawBuilding(b) {
         ctx.fillStyle = '#38bdf8';
         ctx.fillRect(b.x + b.w - 26, b.y + b.h - 22, 18, 22);
 
-        drawStoreSign(b, isHovered, '#86efac', 'MERCEARIA DO BAIRRO');
+        drawStoreSign(b, isHovered, '#86efac', 'MERCEARIA DA CÁTIA');
         return;
     }
 
@@ -7772,7 +7772,7 @@ const NPC_INFO = {
         color: "#9a3412"
     },
     supermercado: {
-        name: "Cátia (Mercearia do Bairro)",
+        name: "Cátia",
         role: "Encarregada da Mercearia",
         quote: () => {
             if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
@@ -7831,7 +7831,7 @@ const NPC_INFO = {
         color: "#dc2626"
     },
     loja_roupa: {
-        name: "D. Zulmira (60 anos)",
+        name: "D. Zulmira",
         role: "Alfaiataria do Chiado",
         quote: () => {
             if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
@@ -8188,7 +8188,7 @@ function renderInteriorLojaRoupa(ctx, animTimer) {
     ctx.strokeRect(510, 45, 80, 145);
 }
 
-// 1. MERCEARIA DO BAIRRO (INTERIOR RETRO)
+// 1. MERCEARIA DA CÁTIA (INTERIOR RETRO)
 function renderInteriorPingoDoce(ctx, animTimer) {
     // Teto & Luzes fluorescentes
     ctx.fillStyle = '#0f172a';
@@ -8216,7 +8216,7 @@ function renderInteriorPingoDoce(ctx, animTimer) {
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 11px "Press Start 2P"';
     ctx.textAlign = 'center';
-    ctx.fillText("🛒 MERCEARIA DO BAIRRO · FRESCOS & TRADIÇÃO", 320, 36);
+    ctx.fillText("🛒 MERCEARIA DA CÁTIA · FRESCOS & TRADIÇÃO", 320, 36);
 
     ctx.fillStyle = '#86efac';
     ctx.font = 'bold 9px "Fira Code"';
@@ -9167,9 +9167,9 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         }
     } else if (id === 'supermercado') {
         // ====================================================================
-        // MERCEARIA DO BAIRRO: MERCEARIAS, CARREIRAS DE RETALHO & TÊXTIL BÁSICO
+        // MERCEARIA DA CÁTIA: MERCEARIAS, CARREIRAS DE RETALHO & TÊXTIL BÁSICO
         // ====================================================================
-        actions.unshift({ label: "💬 Diálogo c/ Cátia (Árvore SCUMM)", openDialogueTree: 'catia', desc: "Diálogo interativo em árvore: vida no bairro, mercearia e cortejo amoroso." });
+        actions.unshift({ label: "💬 Diálogo c/ Cátia", openDialogueTree: 'catia', desc: "Diálogo interativo em árvore: vida no bairro, mercearia e cortejo amoroso." });
         actions.push({ label: "Saco de Mercearia (2 Ref.)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições nutritivas para a despensa." });
         actions.push({ label: "Cabaz Económico (5 Ref.)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para abastecer a casa." });
 
@@ -9224,7 +9224,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             actions.push(romActCatia);
         } else if (player.partner === 'catia') {
             actions.push({
-                label: "Encontro Romântico com a Cátia (1h, 10€)",
+                label: "Encontro Romântico com a Cátia",
                 cost: 10,
                 timeH: 1,
                 timeM: 0,
@@ -10612,7 +10612,7 @@ function executeAction(act) {
             spawnParticle("🍲 +45 Comida", '#10b981');
         } else {
             sfxAlert();
-            showToast("A despensa está vazia! Compra mercearias na Mercearia do Bairro.");
+            showToast("A despensa está vazia! Compra mercearias na Mercearia da Cátia.");
             return;
         }
     }

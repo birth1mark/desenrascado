@@ -3,7 +3,7 @@ const assert = require('assert');
 const vm = require('vm');
 
 console.log("=================================================================");
-console.log("SUITE DE TESTES AUTOMATIZADOS: DESENRASCADO v6.8");
+console.log("SUITE DE TESTES AUTOMATIZADOS: DESENRASCADO v6.9");
 console.log("=================================================================\n");
 
 const html = fs.readFileSync('/home/pedro/Projects/desenrascado/index.html', 'utf8');
@@ -118,20 +118,21 @@ try {
 const BUILDINGS = vm.runInContext("BUILDINGS", sandbox);
 const mercBuilding = BUILDINGS.find(b => b.id === 'supermercado');
 assert(mercBuilding, "Edifício 'supermercado' existe");
-assert.strictEqual(mercBuilding.name, "Mercearia do Bairro", "Nome do edifício atualizado para 'Mercearia do Bairro'");
+assert.strictEqual(mercBuilding.name, "Mercearia da Cátia", "Nome do edifício atualizado para 'Mercearia da Cátia'");
 assert.strictEqual(mercBuilding.tag, "MERCEARIA TRADICIONAL", "Tag atualizada para 'MERCEARIA TRADICIONAL'");
 
 const wp = vm.runInContext("WORKPLACES.pingo_doce", sandbox);
 assert(wp, "Local de trabalho pingo_doce existe");
-assert.strictEqual(wp.name, "Mercearia do Bairro", "Nome do local de trabalho atualizado");
+assert.strictEqual(wp.name, "Mercearia da Cátia", "Nome do local de trabalho atualizado");
 assert.strictEqual(wp.shortName, "Mercearia", "shortName atualizado");
 assert.strictEqual(wp.tag, "MERCEARIA & RETALHO", "tag de retalho atualizada");
 
 const npcInfo = vm.runInContext("NPC_INFO.supermercado", sandbox);
 assert(npcInfo, "NPC_INFO.supermercado existe");
-assert.strictEqual(npcInfo.name, "Cátia (Mercearia do Bairro)", "Nome do NPC atualizado");
+assert.strictEqual(npcInfo.name, "Cátia", "Nome do NPC atualizado para apenas Cátia");
+assert.strictEqual(vm.runInContext("NPC_INFO.loja_roupa.name", sandbox), "D. Zulmira", "Nome de D. Zulmira sem parenteses ou 60 anos");
 assert.strictEqual(npcInfo.role, "Encarregada da Mercearia", "Papel do NPC atualizado");
-console.log("✓ 2. Renomeação da Mercearia do Bairro: 100% Validada em BUILDINGS, WORKPLACES e NPC_INFO!");
+console.log("✓ 2. Renomeação da Mercearia da Cátia: 100% Validada em BUILDINGS, WORKPLACES e NPC_INFO!");
 
 // -----------------------------------------------------------------------------
 // TESTE 2: ANTI-CROWDING & CONTROLO DE BALÕES
@@ -243,8 +244,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '6.8', "ASSET_VER incrementado para 6.8");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '6.8' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '6.9', "ASSET_VER incrementado para 6.8");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '6.9' confirmado!");
 
 console.log("\n=================================================================");
 console.log("RESULTADO FINAL: TODOS OS 7 TESTES PASSARAM COM 100% SUCESSO!");
