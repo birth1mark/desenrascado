@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Desenrascado | A Aventura Gráfica da Sobrevivência em Lisboa (16-Bit Retro)</title>
     <meta name="description" content="Sobrevive 30 dias em Lisboa no jogo retro 16-bit estilo LucasArts SCUMM. Estuda no IST, trabalha na Tasca Ti Zé, compra roupa no Chiado, negoceia com o Senhorio e resiste à crise da habitação.">
-    <meta name="keywords" content="desenrascado, jogo lisboa, aventura grafica portugal, lucasarts lisboa, scumm jogo retro, crise habitacao lisboa, ist tecnico alfacinha, pingo doce jogo, tasca ti ze, jogos indie portugueses, retro pixel art game">
+    <meta name="keywords" content="desenrascado, jogo lisboa, aventura grafica portugal, lucasarts lisboa, scumm jogo retro, crise habitacao lisboa, ist tecnico alfacinha, mercearia de bairro jogo, tasca ti ze, jogos indie portugueses, retro pixel art game">
     <link rel="canonical" href="https://desenrascado.pormenores.net/">
     <meta name="author" content="Pedro Ribeiro">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -47,7 +47,7 @@
       "name": "Desenrascado",
       "alternateName": "Desenrascado: A Aventura Gráfica da Sobrevivência em Lisboa",
       "headline": "Aventura Gráfica Retro 16-Bit de Sobrevivência Urbana em Lisboa",
-      "description": "Simulador de sobrevivência urbana e aventura gráfica retro estilo LucasArts SCUMM ambientado em Lisboa. O jogador assume o papel de Zé Desenrasca, tendo de conciliar estudos universitários no IST, empregos na Tasca Ti Zé ou Pingo Doce, gestão de rendas semanais, compra de vestuário no Chiado e participação na Acampada popular pelo direito à habitação.",
+      "description": "Simulador de sobrevivência urbana e aventura gráfica retro estilo LucasArts SCUMM ambientado em Lisboa. O jogador assume o papel de Zé Desenrasca, tendo de conciliar estudos universitários no IST, empregos na Tasca Ti Zé ou na Mercearia do Bairro, gestão de rendas semanais, compra de vestuário no Chiado e participação na Acampada popular pelo direito à habitação.",
       "url": "https://desenrascado.pormenores.net/",
       "image": "https://desenrascado.pormenores.net/assets/splash.png",
       "inLanguage": "pt-PT",
@@ -933,7 +933,7 @@
                 <li><strong>Instituto Superior Técnico (IST / Alameda):</strong> Estuda engenharia informática, gestão ou ciências no polo universitário da Alameda. Conclui cadeiras sequenciais como Álgebra Linear, Análise Matemática e Sistemas Operativos para obteres o teu canudo universitário e desbloqueares cargos de topo.</li>
                 <li><strong>IEFP (Instituto do Emprego e Formação Profissional):</strong> Orienta-te com a D. Mariana, consulta vagas no mercado de trabalho e acede ao teu Dossier Curricular oficial de Lisboa.</li>
                 <li><strong>Tasca do Ti Zé (Alfama / Mouraria):</strong> Pede o prato do dia, bitoques à casa, imperiais geladas ou trabalha em turnos de balcão e copa para ganhar euros no final do dia.</li>
-                <li><strong>Pingo Doce (Supermercado de Bairro):</strong> Abastece a despensa com conservas de atum, café e pão fresco para não desmaiares de fraqueza, ou trabalha como repositor e operador de caixa.</li>
+                <li><strong>Mercearia do Bairro (Mercearia Tradicional):</strong> Abastece a despensa com conservas de atum, maçãs e pão fresco para não desmaiares de fraqueza, ou trabalha como repositor e operador de caixa.</li>
                 <li><strong>Caixa Geral / Banco Multibanco:</strong> Gere a tua conta bancária, poupanças e crédito. Consulta o saldo no ecrã luminoso do Multibanco e sobe na carreira de finanças pombalinas.</li>
                 <li><strong>Modas Chiado (Pronto-a-Vestir e Alfaiataria):</strong> No Chiado histórico, compra trajes formais, fatos pombalinos ou trajes académicos com capa negra. O vestuário sofre desgaste diário e não podes trabalhar na banca de calções e chinelos.</li>
                 <li><strong>Acampada Popular do Rossio (Direito à Habitação):</strong> Participa na vigília popular com a Inês e ativistas pelo direito a uma habitação digna. Toma turnos solidários de assembleia, divide sopa comunitária e resiste aos despejos dos fundos imobiliários.</li>
@@ -1289,6 +1289,90 @@ function sfxInfluencerCamera() {
     initAudio();
     playBeep(1900, 'square', 0.03, 0.05);
     setTimeout(() => playBeep(2500, 'triangle', 0.06, 0.07), 35);
+}
+
+// ============================================================================
+// 1.0.1 EFEITOS SONOROS DE VINHETAS CINEMATOGRÁFICAS & DIÁLOGOS SCUMM
+// ============================================================================
+function sfxTypewriterBlip() {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(460 + Math.random() * 80, now);
+        gain.gain.setValueAtTime(0.015, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.035);
+    } catch(e) {}
+}
+
+function sfxCutsceneCue(cueType) {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+        const now = audioCtx.currentTime;
+        if (cueType === 'eviction') {
+            // Ominous dramatic minor chord progression (despejo / perigo)
+            [110, 130.81, 164.81, 220].forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+                gain.gain.setValueAtTime(0.035, now + idx * 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.12 + 1.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.12);
+                osc.stop(now + idx * 0.12 + 1.2);
+            });
+        } else if (cueType === 'graduation') {
+            // Triumphant academic fanfare (IST Canudo)
+            [261.63, 329.63, 392.00, 523.25, 659.25].forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                gain.gain.setValueAtTime(0.03, now + idx * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.1 + 0.8);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.1);
+                osc.stop(now + idx * 0.1 + 0.8);
+            });
+        } else if (cueType === 'romance') {
+            // Warm romantic arpeggio (namoro no Tejo)
+            [349.23, 440.00, 523.25, 698.46].forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.14);
+                gain.gain.setValueAtTime(0.045, now + idx * 0.14);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.14 + 1.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.14);
+                osc.stop(now + idx * 0.14 + 1.3);
+            });
+        } else {
+            // Nova Habitação / Conquista citadina
+            [261.63, 329.63, 392.00, 523.25].forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.15);
+                gain.gain.setValueAtTime(0.04, now + idx * 0.15);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.15 + 1.0);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.15);
+                osc.stop(now + idx * 0.15 + 1.0);
+            });
+        }
+    } catch(e) {}
 }
 
 // ============================================================================
@@ -1675,10 +1759,10 @@ const ROMANCE_PARTNERS = {
     catia: {
         id: 'catia',
         name: 'Cátia',
-        fullName: 'Cátia (Pingo Doce)',
+        fullName: 'Cátia (Mercearia do Bairro)',
         gender: 'f',
-        role: 'Encarregada do Pingo Doce',
-        desc: 'Curvilínea, sexy, carismática e trabalhadora. Divide o cabaz e o coração.',
+        role: 'Encarregada da Mercearia',
+        desc: 'Curvilínea, sexy, carismática e atenta. Mercearia tradicional de bairro, divide o cabaz e o coração.',
         icon: '🛒',
         color: '#15803d'
     },
@@ -1854,7 +1938,7 @@ const COURSES = {
         shortName: 'Gestão & Logística',
         icon: '📦',
         faculty: 'IST / DEG',
-        desc: 'Cadeias de Abastecimento e Retalho. Exigido para Chefia e Gerência no Pingo Doce.',
+        desc: 'Cadeias de Abastecimento e Retalho Tradicional. Exigido para Chefia e Gerência na Mercearia do Bairro.',
         subjects: [
             { id: 'retalho', name: "Gestão das Cadeias de Retalho", cost: 25, timeH: 4, timeM: 0, ects: 15, desc: "Fluxos de mercadorias da horta às prateleiras." },
             { id: 'stocks', name: "Logística & Controlo de Inventários", cost: 35, timeH: 5, timeM: 0, ects: 20, desc: "Just-in-time e quebras de supermercado." },
@@ -1920,9 +2004,9 @@ const WORKPLACES = {
     pingo_doce: {
         id: 'pingo_doce',
         buildingId: 'supermercado',
-        name: 'Pingo Doce',
-        shortName: 'Pingo Doce',
-        tag: 'RETALHO & SUPERMERCADO',
+        name: 'Mercearia do Bairro',
+        shortName: 'Mercearia',
+        tag: 'MERCEARIA & RETALHO',
         boss: 'Cátia',
         icon: '🛒',
         color: '#15803d',
@@ -1930,7 +2014,7 @@ const WORKPLACES = {
             { id: 0, title: "Repositor de Prateleiras", reqShifts: 0, minFormality: 1, reqCourse: null, minCourseEcts: 0, wagePerHour: 7.5, hoursPerShift: 4, desc: "Arrumar latas de atum e caixas de leite nos corredores." },
             { id: 1, title: "Operador de Caixa", reqShifts: 3, minFormality: 2, reqCourse: null, minCourseEcts: 0, wagePerHour: 9.5, hoursPerShift: 5, desc: "Registar compras com polo limpo. Requer 3 turnos de repositor." },
             { id: 2, title: "Chefe de Secção & Frescos", reqShifts: 7, minFormality: 2, reqCourse: 'gestao', minCourseEcts: 35, wagePerHour: 14, hoursPerShift: 6, desc: "Gerir stocks de frescos. Requer 35 ECTS em Gestão e 7 turnos." },
-            { id: 3, title: "Gerente de Supermercado", reqShifts: 12, minFormality: 3, reqCourse: 'gestao', minCourseEcts: 90, wagePerHour: 22, hoursPerShift: 6, desc: "Gestão executiva da loja. OBRIGATÓRIO FATO e Licenciatura (90 ECTS em Gestão)!" }
+            { id: 3, title: "Gerente da Mercearia", reqShifts: 12, minFormality: 3, reqCourse: 'gestao', minCourseEcts: 90, wagePerHour: 22, hoursPerShift: 6, desc: "Gestão executiva da mercearia. OBRIGATÓRIO FATO e Licenciatura (90 ECTS em Gestão)!" }
         ]
     },
     tasca: {
@@ -2090,7 +2174,7 @@ function getPlayerJob(workplaceKey = player.currentWorkplace) {
             title: "Desempregado",
             wagePerHour: 0,
             hoursPerShift: 0,
-            desc: "Sem emprego ativo. Visita a Agência de Emprego, Pingo Doce, Tasca ou Caixa para começar a trabalhar!"
+            desc: "Sem emprego ativo. Visita o IEFP, a Mercearia do Bairro, Tasca ou Caixa para começar a trabalhar!"
         };
     }
     const wp = WORKPLACES[workplaceKey];
@@ -2279,8 +2363,8 @@ function generateMorningEvent(p) {
     // 3. Acontecimentos no Local de Trabalho Atual (100% Verdadeiros à Empresa Ativa)
     if (p.currentWorkplace === 'pingo_doce') {
         possibleEvents.push({
-            title: "Quebra de Palete de Atum no Pingo Doce",
-            desc: "Um porta-paletes tombou no corredor 3 do Pingo Doce. Ajudaste a arrumar 300 latas e a Cátia ofereceu-te um sorriso radiante, um bónus de assiduidade e conservas!",
+            title: "Quebra de Palete de Atum na Mercearia",
+            desc: "Um porta-paletes tombou no corredor da Mercearia do Bairro. Ajudaste a arrumar 300 latas e a Cátia ofereceu-te um sorriso radiante, um bónus de assiduidade e conservas!",
             effect: (player) => {
                 player.wallet += 22;
                 player.groceries += 1;
@@ -2290,7 +2374,7 @@ function generateMorningEvent(p) {
             good: true
         });
         possibleEvents.push({
-            title: "Inspeção Surpresa da ASAE no Pingo Doce",
+            title: "Inspeção Surpresa da ASAE na Mercearia",
             desc: "Os inspetores verificaram todas as validades do armazém da loja. O turno foi uma correria stressante de horas extra!",
             effect: (player) => { player.sanity = Math.max(0, player.sanity - 10); },
             badge: "IMPACTO: -10 Sanidade (Correria da ASAE)",
@@ -2415,7 +2499,7 @@ const BUILDINGS = [
     { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, desc: 'Inês — Vigília popular, a tua tenda Quechua, cantina solidária e luta pelo direito à habitação.' },
     { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco, depósitos e carreiras financeiras.' },
     { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira (60 anos) — Mestre alfaiate voluptuosa, elegante, sexy e atrevida. Top de renda, blazer chique e ateliê pombalino.' },
-    { id: 'supermercado', name: 'Pingo Doce', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'DESPENSA & RETALHO', icon: '🛒', doorX: 478, doorY: 195, desc: 'Cátia (28 anos) — Encarregada bonita, curvilínea e carismática. Mantimentos e carreiras.' },
+    { id: 'supermercado', name: 'Mercearia do Bairro', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'MERCEARIA TRADICIONAL', icon: '🛒', doorX: 478, doorY: 195, desc: 'Cátia (28 anos) — Encarregada simpática e carismática. Mercearia tradicional de bairro, mantimentos e carreiras.' },
     { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 70, w: 110, h: 125, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
     { id: 'casa', name: 'O Teu Teto', x: 340, y: 15, w: 120, h: 65, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 376, doorY: 195, desc: 'Dorme para recuperar sanidade, fome e energia.' },
     { id: 'senhorio', name: 'Senhorio', x: 530, y: 15, w: 110, h: 65, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 585, doorY: 195, desc: 'Sr. Jerónimo — Rendas, contratos de habitação e biscates de manutenção.' }
@@ -2499,11 +2583,11 @@ const LIVING_NPCS = [
     },
     {
         id: 'cliente_pingo_doce',
-        name: 'Cliente do Pingo Doce',
+        name: 'Cliente da Mercearia',
         x: 476, y: 172, radius: 20,
         quotes: [
-            "O azeite está a preço de ouro! Vim só buscar pão e gastei uma fortuna.",
-            "As promoções da Cátia salvam qualquer fim de mês em Lisboa."
+            "O azeite está a preço de ouro! Mas o pão da Mercearia do Bairro continua estaladiço.",
+            "A simpatia da Cátia salva qualquer fim de mês em Lisboa."
         ]
     },
     {
@@ -2591,7 +2675,7 @@ function renderBoardBackgroundLiving(ctx, animTimer) {
         const istFrame = (Math.floor(animTimer * 0.5) % 5 === 3) ? 1 : 0;
         ctx.drawImage(npcsLucasImg, istFrame * 48, 0, 48, 48, 66, 152, 48, 48);
 
-        // D. Cliente do Pingo Doce (Row 3: sy=144, sw=48, sh=48 — soleira de entrada, desimpedido das caixas de fruta)
+        // D. Cliente da Mercearia do Bairro (Row 3: sy=144, sw=48, sh=48 — soleira de entrada, desimpedido das caixas de fruta)
         const pingoFrame = (Math.floor(animTimer * 0.6) % 4 === 2) ? 1 : 0;
         ctx.drawImage(npcsLucasImg, pingoFrame * 48, 144, 48, 48, 452, 148, 48, 48);
     }
@@ -2891,7 +2975,8 @@ function renderBoardLivingCharacters(ctx, animTimer) {
 }
 
 let speechBubbles = [];
-const MAX_SPEECH_BUBBLES = 2;
+// Estritamente 1 balão simultâneo para não poluir nem tapar o cenário (LucasArts SCUMM standard)
+const MAX_SPEECH_BUBBLES = 1;
 
 function updateSpeechBubbles(dt) {
     for (let i = speechBubbles.length - 1; i >= 0; i--) {
@@ -2902,22 +2987,32 @@ function updateSpeechBubbles(dt) {
 }
 
 function spawnSpeechBubble(x, y, text, speaker) {
-    // Limite rígido anti-bloqueio: remove balões antigos para nunca ter mais de MAX_SPEECH_BUBBLES
-    while (speechBubbles.length >= MAX_SPEECH_BUBBLES) {
-        speechBubbles.shift();
+    // Não poluir quando estamos em diálogos interativos, cutscenes ou modais
+    if (state !== 'BOARD' || activeEncounter || (typeof activeDialogueTree !== 'undefined' && activeDialogueTree) || (typeof modalBuilding !== 'undefined' && modalBuilding)) {
+        return;
     }
-    speechBubbles = speechBubbles.filter(b => Math.hypot(b.x - x, b.y - y) > 25);
+    // Anti-crowding: Se o cursor do rato estiver sobre um edifício nesta zona, não fazer spawn para não colidir com o nome/hover do edifício
+    if (typeof hoveredBuilding !== 'undefined' && hoveredBuilding && (x >= hoveredBuilding.x - 35 && x <= hoveredBuilding.x + hoveredBuilding.w + 35)) {
+        return;
+    }
+    // Remove qualquer balão anterior imediatamente (garante estritamente 1 de cada vez)
+    speechBubbles = [];
     speechBubbles.push({
         x: Math.max(90, Math.min(canvas.width - 90, x)),
         y: Math.max(35, y),
         text,
         speaker,
-        timer: 3.0
+        timer: 2.6
     });
 }
 
 function renderSpeechBubbles() {
+    if (state !== 'BOARD' || activeEncounter || (typeof activeDialogueTree !== 'undefined' && activeDialogueTree) || modalBuilding) return;
     speechBubbles.forEach(b => {
+        // Se um edifício estiver com hover do rato, suprimir balão que se sobreponha para manter a fachada 100% legível
+        if (typeof hoveredBuilding !== 'undefined' && hoveredBuilding && (b.x >= hoveredBuilding.x - 30 && b.x <= hoveredBuilding.x + hoveredBuilding.w + 30)) {
+            return;
+        }
         // 1. Medir título do orador na fonte correta (Fira Code é limpa, legível e proporcional)
         const speakerFont = 'bold 8.5px "Fira Code"';
         ctx.font = speakerFont;
@@ -3023,9 +3118,13 @@ function renderSpeechBubbles() {
 // ============================================================================
 // 3. ESTADO GLOBAL DO JOGO
 // ============================================================================
-let state = 'TITLE'; // TITLE, NEWS, BOARD, MODAL, GAMEOVER, VICTORY
+let state = 'TITLE'; // TITLE, NEWS, BOARD, MODAL, CUTSCENE, GAMEOVER, VICTORY
 let modalBuilding = null;
+let hoveredBuilding = null;
 let morningNews = "";
+let activeDialogueTree = null;
+let activeCutscene = null;
+let previousGameState = 'BOARD';
 
 let player = {
     x: 335,
@@ -3118,7 +3217,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '6.7';
+const ASSET_VER = '6.8';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3149,7 +3248,7 @@ iefpBgImg.src = `assets/portrait_iefp_bg.png?v=${ASSET_VER}`;
 const iefpBustImg = new Image();
 iefpBustImg.src = `assets/portrait_iefp_bust.png?v=${ASSET_VER}`;
 
-// Retrato Exclusivo em Camadas da Cátia (Pingo Doce / 28 anos, Curvilínea, Decote Perfeito)
+// Retrato Exclusivo em Camadas da Cátia (Mercearia do Bairro / 28 anos, Curvilínea, Decote Perfeito)
 const catiaBgImg = new Image();
 catiaBgImg.src = `assets/portrait_catia_bg.png?v=${ASSET_VER}`;
 const catiaBustImg = new Image();
@@ -3688,7 +3787,7 @@ function updateStreetWalkers(dt) {
                 w.vx = 0;
                 w.timer -= dt;
                 w.shoutTimer -= dt;
-                if (w.shoutTimer <= 0 && state === 'BOARD') {
+                if (w.shoutTimer <= 0 && state === 'BOARD' && speechBubbles.length === 0 && !hoveredBuilding && !activeEncounter && !activeDialogueTree) {
                     w.shoutTimer = 18 + Math.random() * 10;
                     const pregoes = [
                         "Quentes e boas! Quem quer castanhas assadas na brasa?",
@@ -3760,7 +3859,7 @@ function updateStreetWalkers(dt) {
 
             // Fala pontual ao cruzar o centro do tabuleiro (uma vez por travessia)
             w.shoutTimer -= dt;
-            if (w.shoutTimer <= 0 && w.x > 180 && w.x < 460 && state === 'BOARD') {
+            if (w.shoutTimer <= 0 && w.x > 180 && w.x < 460 && state === 'BOARD' && speechBubbles.length === 0 && !hoveredBuilding && !activeEncounter && !activeDialogueTree) {
                 w.shoutTimer = 999;
                 if (w.quotes && w.quotes.length > 0) {
                     const q = w.quotes[Math.floor(Math.random() * w.quotes.length)];
@@ -4581,6 +4680,884 @@ function handleStreetWalkerClick(cx, cy) {
 }
 
 // ============================================================================
+// 4.2.2 SISTEMA SCUMM DE ÁRVORES DE DIÁLOGO (LUCASARTS BRANCHING DIALOGUE)
+// ============================================================================
+const DIALOGUE_TREES = {
+    catia: {
+        id: 'catia',
+        name: 'Cátia (Mercearia do Bairro)',
+        role: 'Encarregada da Mercearia',
+        portraitId: 'supermercado',
+        color: '#86efac',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«Olá Zé! Bem-vindo à Mercearia do Bairro. O que te traz por cá hoje? Temos pão quentinho e as melhores conservas de Lisboa!»",
+                choices: [
+                    { text: "«Como vão as coisas aqui pela mercearia do bairro?»", nextNode: 'mercearia_negocio' },
+                    { text: "«A mercearia tem sempre outro brilho quando estás ao balcão...»", nextNode: 'flirt_catia' },
+                    { text: "«Queria pedir-te conselhos sobre carreiras no comércio de retalho.»", nextNode: 'dicas_retalho' },
+                    { text: "«Vim só dar um salto rápido. Até já, Cátia!»", nextNode: 'exit' }
+                ]
+            },
+            mercearia_negocio: {
+                text: "«Entre a subida dos fornecedores e as faturas, não é fácil. Mas os vizinhos continuam fiéis! O segredo é ter sempre fruta fresca e simpatia genuína.»",
+                choices: [
+                    { text: "«Se precisares de ajuda para descarregar fardos ou organizar a despensa, conta comigo!»", nextNode: 'ajuda_mercearia' },
+                    { text: "«O comércio tradicional é a alma que ainda segura Lisboa viva.»", nextNode: 'elogio_tradicao' },
+                    { text: "«Faz todo o sentido, Cátia. Mudando de assunto...»", nextNode: 'start' }
+                ]
+            },
+            ajuda_mercearia: {
+                text: "«Que querido, Zé! Agradeço imenso a disponibilidade. Toma lá uma maçã fresca da horta para te dar energia para o dia!»",
+                action: (p) => {
+                    p.hunger = Math.min(100, p.hunger + 15);
+                    p.sanity = Math.min(100, p.sanity + 10);
+                    const rel = getRomanceStage('catia');
+                    rel.points = Math.min(100, (rel.points || 0) + 8);
+                    p.romanceAffinity = p.romanceAffinity || {};
+                    p.romanceAffinity.catia = rel.points;
+                    spawnParticle("🍏 +15 Comida", "#86efac");
+                },
+                choices: [
+                    { text: "«Sabe pela vida! Muito obrigado, Cátia.»", nextNode: 'start' },
+                    { text: "«Até logo, Cátia! Bom trabalho.»", nextNode: 'exit' }
+                ]
+            },
+            elogio_tradicao: {
+                text: "«Nem mais! Sem mercearias nem tascas de bairro, a cidade virava um parque temático sem alma. É bom ver rapazes novos que ainda dão valor a isto.»",
+                action: (p) => {
+                    p.sanity = Math.min(100, p.sanity + 12);
+                    const rel = getRomanceStage('catia');
+                    rel.points = Math.min(100, (rel.points || 0) + 6);
+                    p.romanceAffinity = p.romanceAffinity || {};
+                    p.romanceAffinity.catia = rel.points;
+                },
+                choices: [
+                    { text: "«Lisboa corre-me nas veias, Cátia!»", nextNode: 'start' },
+                    { text: "«Tenho de ir andando. Até já!»", nextNode: 'exit' }
+                ]
+            },
+            flirt_catia: {
+                dynamicText: (p) => {
+                    const rel = getRomanceStage('catia');
+                    const pts = rel.points || 0;
+                    if (pts < 30) {
+                        return "«Ahahah! Olha o atrevido! Já com cantadas logo pela manhã? Calma Zé, a gente ainda mal se conhece! Namorar em Lisboa exige tempo e respeito... Mas agradeço a simpatia!»";
+                    } else if (pts < 70) {
+                        return "«Olha que começo a habituar-me a esses teus galanteios... Sabes bem como pôr uma mulher a sorrir no meio do inventário de conservas!»";
+                    } else if (pts < 95) {
+                        return "«A verdade, Zé... é que já fico a olhar para a porta à espera que entres. Sinto uma química enorme entre nós... O que sentes por mim?»";
+                    } else {
+                        return "«Zé... tu transformaste a minha rotina neste bairro. Já não consigo imaginar os meus dias sem ti. Acho que estamos prontos para assumir isto a sério!»";
+                    }
+                },
+                dynamicChoices: (p) => {
+                    const rel = getRomanceStage('catia');
+                    const pts = rel.points || 0;
+                    if (pts < 30) {
+                        return [
+                            { text: "«Tens toda a razão. Vamos com calma e amizade!»", nextNode: 'start', gainAffection: 10, partnerKey: 'catia' },
+                            { text: "«Com licença, Cátia. Até breve!»", nextNode: 'exit' }
+                        ];
+                    } else if (pts < 70) {
+                        return [
+                            { text: "«É genuíno, Cátia. Gosto mesmo de conversar contigo.»", nextNode: 'start', gainAffection: 15, partnerKey: 'catia' },
+                            { text: "«Logo à tarde venho buscar mais mantimentos!»", nextNode: 'exit' }
+                        ];
+                    } else if (pts < 95) {
+                        return [
+                            { text: "«Sinto o mesmo por ti, Cátia. És muito especial para mim.»", nextNode: 'start', gainAffection: 20, partnerKey: 'catia' },
+                            { text: "«Guardo as tuas palavras no coração. Até já!»", nextNode: 'exit' }
+                        ];
+                    } else {
+                        return [
+                            { text: "«Cátia, queres namorar comigo oficialmente e partilhar a vida em Lisboa?»", nextNode: 'proposta_aceite', triggerRomance: 'catia' },
+                            { text: "«É mútuo, Cátia. Falamos mais logo!»", nextNode: 'exit' }
+                        ];
+                    }
+                }
+            },
+            proposta_aceite: {
+                text: "«SIM, Zé! Mil vezes sim! Lisboa é dura, mas quando dividimos o amor, o pão e as contas, temos a certeza de vencer juntos!»",
+                action: (p) => {
+                    p.partner = 'catia';
+                    unlockAchievement('amor_lisboeta');
+                    playCutscene('romance_catia');
+                },
+                choices: [
+                    { text: "«O meu coração é teu, Cátia! Viva o nosso amor!»", nextNode: 'exit' }
+                ]
+            },
+            dicas_retalho: {
+                text: "«Para começar, não exijo curso nem fato formal para o turno de reposição. Mas se quiseres subir a Encarregado ou Gerente, investe nas cadeiras de Gestão no IST e compra um polo limpo nas Modas Chiado!»",
+                action: (p) => {
+                    p.knowledge = Math.min(100, (p.knowledge || 0) + 5);
+                },
+                choices: [
+                    { text: "«Conselho de ouro! Muito obrigado, Cátia.»", nextNode: 'start' },
+                    { text: "«Vou já tratar disso. Até já!»", nextNode: 'exit' }
+                ]
+            }
+        }
+    },
+
+    senhorio: {
+        id: 'senhorio',
+        name: 'Sr. Jerónimo',
+        role: 'Senhorio & Proprietário',
+        portraitId: 'senhorio',
+        color: '#ef4444',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«Que queres, Zé? Tempo é dinheiro e as minhas rendas não se cobram sozinhas. Fala depressa!»",
+                choices: [
+                    { text: "«Como está a situação da minha renda semanal?»", nextNode: 'renda_info' },
+                    { text: "«A janela do quarto deixa entrar uma ventania terrível... Não manda arranjar?»", nextNode: 'reclamacao_janela' },
+                    { text: "«Tem algum biscate de pintura ou canalização onde eu possa ganhar uns trocos?»", nextNode: 'biscates_senhorio' },
+                    { text: "«Sr. Jerónimo, como era arrendar casa em Lisboa no seu tempo?»", nextNode: 'historias_antigas' },
+                    { text: "«Não lhe tomo mais tempo. Com licença!»", nextNode: 'exit' }
+                ]
+            },
+            renda_info: {
+                dynamicText: (p) => {
+                    if (p.houseIndex === 0) {
+                        return "«Qual renda, rapaz?! Estás a dormir ao relento no banco do Rossio! Se juntares euros suficientes, tenho um quarto modesto para te alugar!»";
+                    }
+                    if (p.daysUntilRent > 3) {
+                        return `«A tua renda está em dia. Faltam ${p.daysUntilRent} dias. Vê lá se poupas e não gastas os cobres todos em cervejas na Tasca!»`;
+                    } else if (p.daysUntilRent > 1) {
+                        return `«Atenção Zé! Faltam apenas ${p.daysUntilRent} dias para a renda! Em Lisboa não há tolerância para quem dorme na forma!»`;
+                    } else {
+                        return "«O teu prazo acaba AMANHÃ! Ou o dinheiro cai na minha carteira, ou ponho as tuas coisas direitinhas no lancil da calçada!»";
+                    }
+                },
+                choices: [
+                    { text: "«Entendido, Sr. Jerónimo. Vou tratar disso.»", nextNode: 'start' },
+                    { text: "«Até logo.»", nextNode: 'exit' }
+                ]
+            },
+            reclamacao_janela: {
+                text: "«Ventania?! Isso é ar puro marítimo com iodo do Tejo que te limpa os pulmões de borla, rapaz! No meu tempo nem vidros tínhamos! Mas pronto... se comprares massa de vidraceiro e tapares a frincha, abato-te 5€ na renda.»",
+                action: (p) => {
+                    p.sanity = Math.min(100, p.sanity + 6);
+                },
+                choices: [
+                    { text: "«Bem visto. Arrumo o assunto com as minhas próprias mãos.»", nextNode: 'start' },
+                    { text: "«Com licença, Sr. Jerónimo.»", nextNode: 'exit' }
+                ]
+            },
+            biscates_senhorio: {
+                text: "«Tenho sempre paredes para capear e torneiras a pingar em prédios da Graça. Se quiseres sujar as mãos, pago-te na hora e a dinheiro vivo!»",
+                choices: [
+                    { text: "«Excelente saber! Vou ver as opções no seu gabinete.»", nextNode: 'start' },
+                    { text: "«Até já, Sr. Jerónimo.»", nextNode: 'exit' }
+                ]
+            },
+            historias_antigas: {
+                text: "«Isto em 1974 era outra cidade... As rendas pagavam-se a tostões, os vizinhos emprestavam azeite de porta em porta e respeitava-se o inquilino. Hoje em dia é tudo fundos de investimento que nem a língua portuguesa sabem falar... O progresso trouxe luz, mas levou a alma.»",
+                action: (p) => {
+                    p.sanity = Math.min(100, p.sanity + 12);
+                },
+                choices: [
+                    { text: "«Uma verdadeira lição de história lisboeta, Sr. Jerónimo.»", nextNode: 'start' },
+                    { text: "«Obrigado pela conversa. Até breve!»", nextNode: 'exit' }
+                ]
+            }
+        }
+    },
+
+    tasca: {
+        id: 'tasca',
+        name: 'Ti Zé',
+        role: 'Taberneiro de Alfama',
+        portraitId: 'tasca',
+        color: '#f59e0b',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«Entra Zé, que a casa é tua! A cerveja está a sair com colarinho fino e os bitoques estão no ponto! Do que precisas?»",
+                choices: [
+                    { text: "«Ti Zé, o que é que se diz de novo aqui pelo balcão hoje?»", nextNode: 'fofocas_balcao' },
+                    { text: "«Qual é o segredo do molho lendário do seu bitoque?»", nextNode: 'segredo_bitoque' },
+                    { text: "«Quem é que ganha o derby este fim de semana?»", nextNode: 'futebol_tasca' },
+                    { text: "«Até já Ti Zé, vou à minha vida!»", nextNode: 'exit' }
+                ]
+            },
+            segredo_bitoque: {
+                text: "«Ah garoto, isso não se ensina em faculdades! Banha de porco da boa, muito alho esmagado c/ casca, folha de louro e um golpe de vinho branco de pacote a estalar no ferro fundido! E o ovo tem de ser estrelado na hora c/ a gema a chorar na batata!»",
+                action: (p) => {
+                    p.hunger = Math.min(100, p.hunger + 12);
+                    p.sanity = Math.min(100, p.sanity + 15);
+                    spawnParticle("🍲 Segredo Ti Zé!", "#f59e0b");
+                },
+                choices: [
+                    { text: "«Só de ouvir já fiquei com água na boca!»", nextNode: 'start' },
+                    { text: "«Vou almoçar. Até logo Ti Zé!»", nextNode: 'exit' }
+                ]
+            },
+            fofocas_balcao: {
+                text: "«Diz-se que a EMEL andou a caçar trotinetes na Baixa e que o Jerónimo comprou mais um sótão devoluto. Mas enquanto houver tremoços e bica curta, Lisboa não cai!»",
+                action: (p) => {
+                    p.sanity = Math.min(100, p.sanity + 10);
+                },
+                choices: [
+                    { text: "«A tasca é o verdadeiro jornal do povo!»", nextNode: 'start' },
+                    { text: "«Até logo, Ti Zé!»", nextNode: 'exit' }
+                ]
+            },
+            futebol_tasca: {
+                text: "«Ganha o que jogar com mais garra e menos fita! Desde que a serpentina continue a deitar espuma fresca, para mim são todos campeões!»",
+                action: (p) => {
+                    p.sanity = Math.min(100, p.sanity + 8);
+                },
+                choices: [
+                    { text: "«Palavras sábias de taberneiro!»", nextNode: 'start' },
+                    { text: "«Até já, Ti Zé.»", nextNode: 'exit' }
+                ]
+            }
+        }
+    },
+
+    acampada: {
+        id: 'acampada',
+        name: 'Inês (Acampada da Habitação)',
+        role: 'Ativista & Companheira de Luta',
+        portraitId: 'acampada',
+        color: '#f87171',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«Olá Zé! A vigília junto ao Tejo continua firme. A casa é um direito sagrado de todos e ninguém nos verga! Em que posso ajudar?»",
+                choices: [
+                    { text: "«Como corre a vigília e a resistência na acampada?»", nextNode: 'vigilia_info' },
+                    { text: "«O que te levou a abraçar esta luta tão intensamente?»", nextNode: 'historia_ines' },
+                    { text: "«Trouxe mantimentos e apoio para a cantina solidária.»", nextNode: 'apoio_cantina' },
+                    { text: "«Força nessa luta, Inês! Até já.»", nextNode: 'exit' }
+                ]
+            },
+            historia_ines: {
+                text: "«Fui despejada de um T0 na Madragoa quando o prédio foi vendido para turismo de luxo. Vi amigos de infância terem de abandonar Lisboa. Decidi que o silêncio era cumplicidade. A cidade pertence a quem nela vive e trabalha!»",
+                action: (p) => {
+                    p.sanity = Math.min(100, p.sanity + 16);
+                },
+                choices: [
+                    { text: "«Tens uma coragem e generosidade admiráveis, Inês.»", nextNode: 'start' },
+                    { text: "«Estamos juntos nesta luta. Até logo!»", nextNode: 'exit' }
+                ]
+            },
+            vigilia_info: {
+                text: "«As noites aqui na calçada marginal são frias, mas o calor humano da assembleia popular aquece a alma. Partilhamos sopa, tendas Quechua e esperança.»",
+                action: (p) => {
+                    p.sanity = Math.min(100, p.sanity + 12);
+                },
+                choices: [
+                    { text: "«A solidariedade é a nossa maior arma.»", nextNode: 'start' },
+                    { text: "«Até já, Inês.»", nextNode: 'exit' }
+                ]
+            },
+            apoio_cantina: {
+                text: "«Bem hajas, Zé! O teu apoio faz toda a diferença para quem não tem onde cair morto. Toma um prato de sopa quente comunitária!»",
+                action: (p) => {
+                    p.hunger = Math.min(100, p.hunger + 25);
+                    p.sanity = Math.min(100, p.sanity + 15);
+                    spawnParticle("🍲 Sopa Solidária", "#f87171");
+                },
+                choices: [
+                    { text: "«Soube mesmo pela vida! Obrigado, Inês.»", nextNode: 'start' },
+                    { text: "«Até logo!»", nextNode: 'exit' }
+                ]
+            }
+        }
+    },
+
+    iefp: {
+        id: 'iefp',
+        name: 'D. Mariana (IEFP)',
+        role: 'Técnica Sénior de Emprego',
+        portraitId: 'startup',
+        color: '#10b981',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«Bom dia, Zé! No IEFP acompanhamos o teu percurso profissional. O mercado lisboeta é exigente mas há sempre oportunidades. Do que precisas?»",
+                choices: [
+                    { text: "«Quais são os setores mais acessíveis para começar a trabalhar?»", nextNode: 'dicas_mercado' },
+                    { text: "«Como posso valorizar o meu Currículo Vitae?»", nextNode: 'dicas_cv' },
+                    { text: "«Obrigado pelo apoio, D. Mariana!»", nextNode: 'exit' }
+                ]
+            },
+            dicas_mercado: {
+                text: "«Para liquidez imediata sem exigência de fato ou canudo, a Mercearia do Bairro e a Tasca Ti Zé contratam sempre para reposição e copa. Para carreiras de gestão ou banca, o polo formal e os ECTS no IST são indispensáveis!»",
+                action: (p) => {
+                    p.knowledge = Math.min(100, (p.knowledge || 0) + 6);
+                },
+                choices: [
+                    { text: "«Foco nos estudos e na apresentação pessoal, percebido!»", nextNode: 'start' },
+                    { text: "«Com licença, vou já candidatar-me.»", nextNode: 'exit' }
+                ]
+            },
+            dicas_cv: {
+                text: "«Cada turno que cumpres é averbado no teu dossier curricular oficial! Quanto mais turnos e cadeiras concluíres, mais fácil será a aprovação para cargos de gerência.»",
+                action: (p) => {
+                    p.knowledge = Math.min(100, (p.knowledge || 0) + 6);
+                },
+                choices: [
+                    { text: "«Vou consultar o meu CV na pasta do IEFP.»", nextNode: 'start' },
+                    { text: "«Até breve, D. Mariana!»", nextNode: 'exit' }
+                ]
+            }
+        }
+    },
+
+    faculdade: {
+        id: 'faculdade',
+        name: 'Prof. Marcelo Leitão',
+        role: 'Catedrático do IST',
+        portraitId: 'faculdade',
+        color: '#38bdf8',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«Estimado aluno! Os corredores do Técnico exigem rigor científico e perseverança estoica. O que te traz ao meu gabinete pedagógico?»",
+                choices: [
+                    { text: "«Qual é o método ideal para concluir as cadeiras sequenciais?»", nextNode: 'dicas_estudo' },
+                    { text: "«O mercado lisboeta valoriza verdadeiramente o canudo do IST?»", nextNode: 'valor_canudo' },
+                    { text: "«Vou regressar à biblioteca. Com licença, professor!»", nextNode: 'exit' }
+                ]
+            },
+            dicas_estudo: {
+                text: "«Mantenha a sua nutrição e descanso sob controlo! Estudar Análise ou Algoritmos com a fome no limite resulta em desmaio certo. Alimente-se na Mercearia ou Tasca antes das sessões de estudo!»",
+                action: (p) => {
+                    p.knowledge = Math.min(100, (p.knowledge || 0) + 8);
+                },
+                choices: [
+                    { text: "«Mens sana in corpore sano! Entendido, professor.»", nextNode: 'start' },
+                    { text: "«Até breve, professor.»", nextNode: 'exit' }
+                ]
+            },
+            valor_canudo: {
+                text: "«O canudo do IST é a chave de ouro que abre as portas das administrações e empresas mais seletivas da capital. Quem vence o Técnico não teme nenhum desafio no mercado!»",
+                action: (p) => {
+                    p.sanity = Math.min(100, p.sanity + 10);
+                },
+                choices: [
+                    { text: "«Aumentou a minha motivação para os exames!»", nextNode: 'start' },
+                    { text: "«Vou já estudar. Com licença!»", nextNode: 'exit' }
+                ]
+            }
+        }
+    }
+};
+
+function openDialogueTree(treeId, initialNode = 'start') {
+    const tree = DIALOGUE_TREES[treeId];
+    if (!tree) return;
+    speechBubbles = [];
+    activeDialogueTree = {
+        treeId,
+        config: tree,
+        currentNodeId: initialNode,
+        typewriterIdx: 0,
+        typewriterTimer: 0
+    };
+    sfxAction();
+}
+
+function renderDialogueTree(ctx, animTimer) {
+    if (!activeDialogueTree) return;
+    const tree = activeDialogueTree.config;
+    const node = tree.nodes[activeDialogueTree.currentNodeId];
+    if (!node) {
+        activeDialogueTree = null;
+        return;
+    }
+
+    const dx = 35;
+    const dy = 160;
+    const dw = 570;
+    const dh = 125;
+
+    // Fundo SCUMM translúcido refinado
+    ctx.fillStyle = 'rgba(10, 15, 26, 0.96)';
+    ctx.fillRect(dx, dy, dw, dh);
+
+    // Borda retro dupla
+    ctx.strokeStyle = tree.color || '#38bdf8';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(dx, dy, dw, dh);
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(dx + 2, dy + 2, dw - 4, dh - 4);
+
+    // Cantos decorativos
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(dx - 1, dy - 1, 3, 3);
+    ctx.fillRect(dx + dw - 2, dy - 1, 3, 3);
+    ctx.fillRect(dx - 1, dy + dh - 2, 3, 3);
+    ctx.fillRect(dx + dw - 2, dy + dh - 2, 3, 3);
+
+    // Retrato do Interlocutor à esquerda
+    const pSize = 68;
+    const px = dx + 10;
+    const py = dy + 32;
+    drawNpcPortrait(tree.portraitId, px, py, pSize);
+
+    // Cabeçalho: Nome e Papel
+    ctx.fillStyle = '#facc15';
+    ctx.font = 'bold 9px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText(tree.name.toUpperCase(), dx + 88, dy + 18);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '8px "Fira Code"';
+    ctx.fillText(`— ${tree.role}`, dx + 88 + ctx.measureText(tree.name.toUpperCase()).width + 8, dy + 18);
+
+    // Botão Fechar ✕
+    const isHoverClose = (mouse.x >= dx + dw - 24 && mouse.x <= dx + dw - 6 && mouse.y >= dy + 4 && mouse.y <= dy + 22);
+    ctx.fillStyle = isHoverClose ? '#fca5a5' : '#ef4444';
+    ctx.font = 'bold 12px "Fira Code"';
+    ctx.textAlign = 'center';
+    ctx.fillText("✕", dx + dw - 15, dy + 18);
+
+    // Texto de Diálogo do NPC
+    let spokenText = node.dynamicText ? node.dynamicText(player) : node.text;
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 9.5px "Fira Code"';
+    ctx.textAlign = 'left';
+
+    // Quebra de linha suave para o texto do NPC
+    const textMaxWidth = dw - 100;
+    const words = spokenText.split(' ');
+    let lines = [];
+    let curLine = '';
+    words.forEach(w => {
+        const test = curLine + w + ' ';
+        if (ctx.measureText(test).width > textMaxWidth && curLine) {
+            lines.push(curLine.trim());
+            curLine = w + ' ';
+        } else {
+            curLine = test;
+        }
+    });
+    if (curLine) lines.push(curLine.trim());
+
+    lines.slice(0, 2).forEach((l, idx) => {
+        ctx.fillText(l, dx + 88, dy + 34 + idx * 13, textMaxWidth);
+    });
+
+    // Separador
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+    ctx.beginPath();
+    ctx.moveTo(dx + 88, dy + 62);
+    ctx.lineTo(dx + dw - 12, dy + 62);
+    ctx.stroke();
+
+    // Escolhas do Jogador (Player Dialogue Choices)
+    const choices = node.dynamicChoices ? node.dynamicChoices(player) : (node.choices || []);
+    activeDialogueTree.currentChoices = choices;
+    activeDialogueTree.choiceBoxes = [];
+
+    const startChoiceY = dy + 70;
+    const choiceH = 17;
+    const choiceGap = 2;
+
+    choices.forEach((c, idx) => {
+        const cy = startChoiceY + idx * (choiceH + choiceGap);
+        const isHover = (mouse.x >= dx + 88 && mouse.x <= dx + dw - 12 && mouse.y >= cy && mouse.y <= cy + choiceH);
+
+        activeDialogueTree.choiceBoxes.push({
+            x: dx + 88,
+            y: cy,
+            w: dw - 100,
+            h: choiceH,
+            choice: c
+        });
+
+        if (isHover) {
+            ctx.fillStyle = 'rgba(3, 105, 161, 0.45)';
+            ctx.fillRect(dx + 88, cy, dw - 100, choiceH);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(dx + 88, cy, dw - 100, choiceH);
+        }
+
+        ctx.fillStyle = isHover ? '#facc15' : (c.nextNode === 'exit' ? '#94a3b8' : '#86efac');
+        ctx.font = isHover ? 'bold 9px "Fira Code"' : '8.5px "Fira Code"';
+        ctx.textAlign = 'left';
+        const prefix = isHover ? '▶ ' : '  ';
+        ctx.fillText(`${prefix}${c.text}`, dx + 92, cy + 12, dw - 108);
+    });
+}
+
+function handleDialogueTreeClick(cx, cy) {
+    if (!activeDialogueTree) return false;
+    const dx = 35, dy = 160, dw = 570, dh = 125;
+
+    // Fechar no botão ✕
+    if (cx >= dx + dw - 24 && cx <= dx + dw - 6 && cy >= dy + 4 && cy <= dy + 22) {
+        activeDialogueTree = null;
+        sfxAction();
+        return true;
+    }
+
+    // Clique numa escolha
+    if (activeDialogueTree.choiceBoxes) {
+        for (let i = 0; i < activeDialogueTree.choiceBoxes.length; i++) {
+            const box = activeDialogueTree.choiceBoxes[i];
+            if (cx >= box.x && cx <= box.x + box.w && cy >= box.y && cy <= box.y + box.h) {
+                const c = box.choice;
+                executeDialogueChoice(c);
+                return true;
+            }
+        }
+    }
+
+    // Clique dentro da janela bloqueia propagação
+    if (cx >= dx && cx <= dx + dw && cy >= dy && cy <= dy + dh) {
+        return true;
+    }
+
+    return false;
+}
+
+function handleDialogueChoiceIndex(idx) {
+    if (!activeDialogueTree || !activeDialogueTree.currentChoices) return;
+    if (idx >= 0 && idx < activeDialogueTree.currentChoices.length) {
+        executeDialogueChoice(activeDialogueTree.currentChoices[idx]);
+    }
+}
+
+function executeDialogueChoice(c) {
+    if (!c) return;
+    triggerHaptic([20]);
+
+    if (c.action) {
+        c.action(player);
+    }
+    if (c.gainAffection && c.partnerKey) {
+        const rel = getRomanceStage(c.partnerKey);
+        rel.points = Math.min(100, (rel.points || 0) + c.gainAffection);
+        player.romanceAffinity = player.romanceAffinity || {};
+        player.romanceAffinity[c.partnerKey] = rel.points;
+        spawnParticle(`❤️ ${ROMANCE_PARTNERS[c.partnerKey].name} (${rel.points}%)`, '#ec4899');
+    }
+    if (c.triggerRomance) {
+        player.partner = c.triggerRomance;
+        unlockAchievement('amor_lisboeta');
+    }
+
+    if (c.nextNode === 'exit') {
+        activeDialogueTree = null;
+        sfxAction();
+    } else {
+        activeDialogueTree.currentNodeId = c.nextNode;
+        sfxAction();
+    }
+}
+
+// ============================================================================
+// 4.2.3 SISTEMA 16-BIT DE VINHETAS CINEMATOGRÁFICAS (LETTERBOX CUTSCENES)
+// ============================================================================
+const CUTSCENES = {
+    eviction_threat: {
+        id: 'eviction_threat',
+        title: 'AVISO DE DESPEJO',
+        subTitle: 'O ULTIMATO DO SENHOR JERÓNIMO',
+        sfxCue: 'eviction',
+        bgTint: 'rgba(185, 28, 28, 0.40)',
+        slides: [
+            {
+                speaker: "Sr. Jerónimo",
+                portraitId: 'senhorio',
+                text: "«Ó Zé! Acabou-se a tolerância e os paninhos quentes! O prazo da tua renda semanal está a esgotar-se!»"
+            },
+            {
+                speaker: "Sr. Jerónimo",
+                portraitId: 'senhorio',
+                text: "«Em Lisboa não há caridade para quem se atrasa! Ou me pões as notas vivas na mão, ou as tuas trouxas vão direitinhas para a calçada!»"
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "A sombra do despejo paira sobre o teu teto. Precisas de arranjar euros urgentemente antes que o camião das mudanças chegue à porta..."
+            }
+        ]
+    },
+
+    evicted: {
+        id: 'evicted',
+        title: 'DESPEJO EXECUTADO',
+        subTitle: 'O REGRESSO À DUREZA DA CALÇADA',
+        sfxCue: 'eviction',
+        bgTint: 'rgba(220, 38, 38, 0.50)',
+        slides: [
+            {
+                speaker: "Sr. Jerónimo",
+                portraitId: 'senhorio',
+                text: "«Mudei o canhão da fechadura por dentro! Quem não tem euros para a renda vai dormir para o relento do Rossio!»"
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "A porta bateu com estrondo. Perdeste o teu quarto e voltas a ter o céu estrelado e os bancos de pedra de Lisboa como único teto..."
+            }
+        ]
+    },
+
+    graduation: {
+        id: 'graduation',
+        title: 'BÊNÇÃO DAS FITAS',
+        subTitle: 'GRADUAÇÃO OFICIAL NO INSTITUTO SUPERIOR TÉCNICO',
+        sfxCue: 'graduation',
+        bgTint: 'rgba(14, 116, 144, 0.40)',
+        slides: [
+            {
+                speaker: "Prof. Marcelo Leitão",
+                portraitId: 'faculdade',
+                text: "«Caríssimo aluno! Contra todas as noites de estudo em claro, o frio das salas e os exames impiedosos... Superaste todas as provas!»"
+            },
+            {
+                speaker: "Prof. Marcelo Leitão",
+                portraitId: 'faculdade',
+                text: "«Em nome do Instituto Superior Técnico, outorgo-te o canudo com distinção! Honra esta instituição e a cidade de Lisboa!»"
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "Os sinos do Técnico dobram em festa sobre a colina! O canudo dourado é teu e todas as portas da capital abrem-se ao teu engenho!"
+            }
+        ]
+    },
+
+    romance_catia: {
+        id: 'romance_catia',
+        title: 'AMOR NO ALTO DO TEJO',
+        subTitle: 'O COMPROMISSO DE UMA VIDA A DOIS EM LISBOA',
+        sfxCue: 'romance',
+        bgTint: 'rgba(219, 39, 119, 0.35)',
+        slides: [
+            {
+                speaker: "Cátia",
+                portraitId: 'supermercado',
+                text: "«Zé... nunca imaginei que entre fardos de arroz, latas de atum e a rotina do bairro, pudesse encontrar alguém que me olhasse com tanta ternura.»"
+            },
+            {
+                speaker: "Cátia",
+                portraitId: 'supermercado',
+                text: "«Aceito namorar contigo! A vida em Lisboa é exigente, mas quando dividimos o amor, o pão e as contas, temos a certeza de vencer juntos!»"
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "Sob a luz alaranjada do Tejo e a cumplicidade do bairro, deixas de lutar a solo. Ganhaste uma companheira e um desconto de 35% na renda!"
+            }
+        ]
+    },
+
+    new_home: {
+        id: 'new_home',
+        title: 'NOVA MORADA',
+        subTitle: 'A CONQUISTA DE UM TETO PRÓPRIO DIGNO',
+        sfxCue: 'new_home',
+        bgTint: 'rgba(16, 185, 129, 0.30)',
+        slides: [
+            {
+                speaker: "Sr. Jerónimo",
+                portraitId: 'senhorio',
+                text: "«Aqui tens a chave nova, rapaz. Trata bem do soalho pombalino. Ter um teto digno em Lisboa é uma vitória de poucos.»"
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "O tilintar das chaves no bolso ecoa como uma vitória triunfal. Cada metro quadrado conquistado na capital é um marco na tua emancipação!"
+            }
+        ]
+    }
+};
+
+function playCutscene(id, options = {}) {
+    const cs = CUTSCENES[id];
+    if (!cs) return;
+
+    previousGameState = (state === 'CUTSCENE') ? previousGameState : state;
+    state = 'CUTSCENE';
+    activeDialogueTree = null;
+    activeEncounter = null;
+    speechBubbles = [];
+
+    activeCutscene = {
+        id,
+        config: cs,
+        currentSlide: 0,
+        charIndex: 0,
+        charTimer: 0,
+        blipCooldown: 0,
+        options,
+        onComplete: options.onComplete || null
+    };
+
+    if (cs.sfxCue) {
+        sfxCutsceneCue(cs.sfxCue);
+    }
+}
+
+function updateCutscene(dt) {
+    if (!activeCutscene) return;
+    const cs = activeCutscene.config;
+    const slide = cs.slides[activeCutscene.currentSlide];
+    if (!slide) return;
+
+    if (activeCutscene.charIndex < slide.text.length) {
+        activeCutscene.charTimer += dt * 42; // ~42 letras/segundo (leitura 16-bit fluida)
+        const targetChars = Math.floor(activeCutscene.charTimer);
+        if (targetChars > activeCutscene.charIndex) {
+            activeCutscene.charIndex = Math.min(slide.text.length, targetChars);
+            activeCutscene.blipCooldown -= dt;
+            if (activeCutscene.blipCooldown <= 0) {
+                sfxTypewriterBlip();
+                activeCutscene.blipCooldown = 0.08;
+            }
+        }
+    }
+}
+
+function renderCutscene() {
+    if (!activeCutscene) return;
+    const cs = activeCutscene.config;
+    const slide = cs.slides[activeCutscene.currentSlide];
+    if (!slide) return;
+
+    // Cenário de fundo atenuado
+    if (previousGameState === 'MODAL' && modalBuilding) {
+        renderInteriorScene(ctx, modalBuilding.id, animTimer, player, HOUSES, WORKPLACES, getPlayerJob);
+    } else {
+        renderBoard();
+        renderPigeons();
+        renderPlayer();
+    }
+
+    // Tint atmosférico dramático
+    ctx.fillStyle = cs.bgTint || 'rgba(15, 23, 42, 0.85)';
+    ctx.fillRect(0, 42, canvas.width, 276);
+
+    // BARRAS NEGRAS CINEMATOGRÁFICAS (LETTERBOX 16-BIT)
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, canvas.width, 42); // Barra superior
+    ctx.fillRect(0, 318, canvas.width, 42); // Barra inferior
+
+    // Cabeçalho da Barra Superior
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = 'bold 11px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText(cs.title, 320, 22);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 8.5px "Fira Code"';
+    ctx.fillText(cs.subTitle, 320, 35);
+
+    // Barra Inferior com Indicador Pulsante
+    const pulseAlpha = 0.65 + Math.sin(animTimer * 5.0) * 0.35;
+    ctx.fillStyle = `rgba(254, 240, 138, ${pulseAlpha})`;
+    ctx.font = 'bold 9px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("[ ESPAÇO ou CLIQUE para Avançar ▶ ]", 320, 342);
+
+    // ÁREA CENTRAL DE DIÁLOGO CINEMATOGRÁFICO
+    const hasPortrait = !!slide.portraitId;
+    const pSize = 88;
+    const pX = 40;
+    const pY = 85;
+
+    if (hasPortrait) {
+        // Moldura clássica do retrato
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(pX - 4, pY - 4, pSize + 8, pSize + 8);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(pX - 4, pY - 4, pSize + 8, pSize + 8);
+
+        drawNpcPortrait(slide.portraitId, pX, pY, pSize);
+
+        // Nome do Orador por baixo do retrato
+        ctx.fillStyle = '#facc15';
+        ctx.font = 'bold 9px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(slide.speaker, pX + pSize / 2, pY + pSize + 18);
+    }
+
+    // Caixa de Subtítulo / Diálogo Typewriter
+    const boxX = hasPortrait ? 152 : 60;
+    const boxY = 85;
+    const boxW = hasPortrait ? 448 : 520;
+    const boxH = 140;
+
+    ctx.fillStyle = 'rgba(10, 15, 26, 0.96)';
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+    // Título do Narrador / Personagem na caixa
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 9px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText(hasPortrait ? `« ${slide.speaker.toUpperCase()} »` : "📜 LISBOA, HISTÓRIA VIVA", boxX + 16, boxY + 22);
+
+    // Texto datilografado (Typewriter)
+    const currentText = slide.text.slice(0, activeCutscene.charIndex);
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 11px "Fira Code"';
+    ctx.textAlign = 'left';
+
+    wrapTextCanvas(
+        ctx,
+        currentText,
+        boxX + 16,
+        boxY + 44,
+        boxW - 32,
+        20,
+        'bold 11px "Fira Code"',
+        '#fef08a',
+        'left'
+    );
+}
+
+function advanceCutscene(forceSkip = false) {
+    if (!activeCutscene) return;
+    const cs = activeCutscene.config;
+    const slide = cs.slides[activeCutscene.currentSlide];
+
+    if (!forceSkip && activeCutscene.charIndex < slide.text.length) {
+        // Se ainda está a datilografar, completa instantaneamente o slide atual
+        activeCutscene.charIndex = slide.text.length;
+        activeCutscene.charTimer = slide.text.length;
+        sfxAction();
+        return;
+    }
+
+    // Avança para o próximo slide
+    activeCutscene.currentSlide++;
+    activeCutscene.charIndex = 0;
+    activeCutscene.charTimer = 0;
+    sfxAction();
+
+    // Se concluiu todos os slides, encerra a cutscene
+    if (activeCutscene.currentSlide >= cs.slides.length) {
+        const onComplete = activeCutscene.onComplete;
+        activeCutscene = null;
+        state = previousGameState || 'BOARD';
+        if (onComplete) onComplete();
+    }
+}
+
+function handleCutsceneClick(cx, cy) {
+    advanceCutscene();
+    return true;
+}
+
+// ============================================================================
 // 4.3 LIVRO DE CONQUISTAS DA ODISSEIA ALFACINHA (Sistema 5)
 // ============================================================================
 const ACHIEVEMENTS = [
@@ -4839,6 +5816,10 @@ function updatePurgatorioStreetEvents(dt) {
 }
 
 function update(dt) {
+    if (state === 'CUTSCENE') {
+        updateCutscene(dt);
+        return;
+    }
     // 0. Sistemas Dinâmicos de Lisboa
     updateWeather(dt);
     updateStreetWalkers(dt);
@@ -4998,6 +5979,7 @@ function endDay(motivo) {
                 player.daysUntilRent = 0;
                 player.sanity = Math.max(0, player.sanity - 40);
                 motivo = "DESPEJADO! Não conseguiste pagar a renda de " + currentRent + "€!";
+                playCutscene('evicted');
             }
         }
     }
@@ -5096,6 +6078,8 @@ function render() {
         renderTitleScreen();
     } else if (state === 'NEWS') {
         renderNewsScreen();
+    } else if (state === 'CUTSCENE') {
+        renderCutscene();
     } else if (state === 'BOARD' || state === 'MODAL') {
         if (state === 'MODAL' && modalBuilding) {
             // Sais da rua, do tabuleiro principal e ficas dentro da loja!
@@ -5103,6 +6087,9 @@ function render() {
             renderLisbonLight();
             renderHUD();
             renderBuildingModal();
+            if (activeDialogueTree) {
+                renderDialogueTree(ctx, animTimer);
+            }
         } else {
             renderBoard();
             renderPigeons();
@@ -5111,7 +6098,9 @@ function render() {
             renderParticles();
             renderLisbonLight();
             renderHUD();
-            if (activeEncounter) {
+            if (activeDialogueTree) {
+                renderDialogueTree(ctx, animTimer);
+            } else if (activeEncounter) {
                 renderStreetEncounter(ctx, animTimer);
             }
         }
@@ -5604,7 +6593,7 @@ function renderBoard() {
 
 // Efeitos Interativos dos Edifícios no Tabuleiro (As fachadas e letreiros existem fisicamente na arte!)
 function renderBuildingOverlays() {
-    let hoveredBuilding = null;
+    hoveredBuilding = null;
 
     BUILDINGS.forEach(b => {
         const isHovered = (mouse.x >= b.x && mouse.x <= b.x + b.w && mouse.y >= b.y && mouse.y <= b.y + b.h);
@@ -6089,7 +7078,7 @@ function drawBuilding(b) {
     }
 
     // ------------------------------------------------------------------------
-    // [05] PINGO DOCE: Mercearia Moderna com Caixas de Fruta
+    // [05] MERCEARIA DO BAIRRO: Mercearia Tradicional com Caixas de Fruta
     // ------------------------------------------------------------------------
     if (b.id === 'supermercado') {
         // Fachada Verde e Laranja Oficial
@@ -6123,7 +7112,7 @@ function drawBuilding(b) {
         ctx.fillStyle = '#38bdf8';
         ctx.fillRect(b.x + b.w - 26, b.y + b.h - 22, 18, 22);
 
-        drawStoreSign(b, isHovered, '#86efac', 'PINGO DOCE');
+        drawStoreSign(b, isHovered, '#86efac', 'MERCEARIA DO BAIRRO');
         return;
     }
 
@@ -6783,8 +7772,8 @@ const NPC_INFO = {
         color: "#9a3412"
     },
     supermercado: {
-        name: "Cátia (Pingo Doce)",
-        role: "Encarregada do Supermercado",
+        name: "Cátia (Mercearia do Bairro)",
+        role: "Encarregada da Mercearia",
         quote: () => {
             if (!player.clothing || player.clothing.id === 'nude' || player.clothing.durability <= 0) {
                 return "Ai filho, assim tão despido ao pé das arcas frigoríficas apanhas uma constipação! Passa pelas Modas Chiado antes que a fiscalização te veja!";
@@ -6796,7 +7785,7 @@ const NPC_INFO = {
             if (player.currentWorkplace === 'pingo_doce') {
                 return `Olá colega! Como ${job.title}, os teus corredores estão um brinco. Orgulho nesta equipa!`;
             }
-            return "Sabe bem pagar tão pouco, e ainda melhor com boa companhia! Precisas de mantimentos ou queres meter conversa no balcão?";
+            return "Frescos do dia e conservas de primeira! Precisas de mantimentos para a despensa ou queres meter conversa no balcão da mercearia?";
         },
         color: "#15803d"
     },
@@ -7199,13 +8188,13 @@ function renderInteriorLojaRoupa(ctx, animTimer) {
     ctx.strokeRect(510, 45, 80, 145);
 }
 
-// 1. SUPERMERCADO PINGO DOCE
+// 1. MERCEARIA DO BAIRRO (INTERIOR RETRO)
 function renderInteriorPingoDoce(ctx, animTimer) {
     // Teto & Luzes fluorescentes
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(0, 0, 640, 295);
 
-    // Parede de Fundo: Faixa Verde Pingo Doce
+    // Parede de Fundo: Faixa Verde da Mercearia
     ctx.fillStyle = '#15803d';
     ctx.fillRect(0, 0, 640, 75);
     ctx.fillStyle = '#166534';
@@ -7223,15 +8212,15 @@ function renderInteriorPingoDoce(ctx, animTimer) {
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(640, y); ctx.stroke();
     }
 
-    // Letreiros de Secção Pingo Doce
+    // Letreiros de Secção da Mercearia
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 11px "Press Start 2P"';
     ctx.textAlign = 'center';
-    ctx.fillText("🛒 PINGO DOCE · FRESCOS & MERCEARIA", 320, 36);
+    ctx.fillText("🛒 MERCEARIA DO BAIRRO · FRESCOS & TRADIÇÃO", 320, 36);
 
     ctx.fillStyle = '#86efac';
     ctx.font = 'bold 9px "Fira Code"';
-    ctx.fillText("SABE BEM PAGAR TÃO POUCO · DESCONTOS COM CARTÃO POUPA MAIS", 320, 58);
+    ctx.fillText("PRODUTOS FRESCOS DO DIA · CONSERVAS TRADICIONAIS & PÃO QUENTE", 320, 58);
 
     // Chão Quadriculado de Supermercado em Perspetiva
     for (let y = 150; y < 295; y += 18) {
@@ -7294,7 +8283,7 @@ function renderInteriorPingoDoce(ctx, animTimer) {
     ctx.fillStyle = '#ef4444';
     ctx.fillRect(48, 226, 4, 6);
 
-    // Cesto de compras verde Pingo Doce
+    // Cesto de compras da Mercearia
     ctx.fillStyle = '#15803d';
     ctx.fillRect(125, 230, 30, 20);
     ctx.strokeStyle = '#86efac';
@@ -8008,6 +8997,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             }
 
             // Trabalho para o Senhorio: Biscate de Manutenção e Pintura
+            actions.unshift({ label: "💬 Diálogo c/ Sr. Jerónimo", openDialogueTree: 'senhorio', desc: "Negociar prazos de renda, pedir obras e ouvir histórias antigas de Lisboa." });
             actions.push({
                 label: "Biscate: Manutenção & Obras em Prédios (4h)",
                 workLandlordJob: true,
@@ -8177,8 +9167,9 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         }
     } else if (id === 'supermercado') {
         // ====================================================================
-        // PINGO DOCE: MERCEARIAS, CARREIRAS DE RETALHO & TÊXTIL BÁSICO
+        // MERCEARIA DO BAIRRO: MERCEARIAS, CARREIRAS DE RETALHO & TÊXTIL BÁSICO
         // ====================================================================
+        actions.unshift({ label: "💬 Diálogo c/ Cátia (Árvore SCUMM)", openDialogueTree: 'catia', desc: "Diálogo interativo em árvore: vida no bairro, mercearia e cortejo amoroso." });
         actions.push({ label: "Saco de Mercearia (2 Ref.)", cost: 8, timeH: 0, timeM: 30, groceries: 2, desc: "2 refeições nutritivas para a despensa." });
         actions.push({ label: "Cabaz Económico (5 Ref.)", cost: 18, timeH: 0, timeM: 45, groceries: 5, desc: "5 refeições baratas para abastecer a casa." });
 
@@ -8247,6 +9238,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         // ====================================================================
         // TASCA TI ZÉ: COMIDA, BALCÃO & CARREIRA NA RESTAURAÇÃO
         // ====================================================================
+        actions.unshift({ label: "💬 Diálogo c/ Ti Zé (Árvore SCUMM)", openDialogueTree: 'tasca', desc: "Conversa de balcão: futebol, fofocas do bairro e o segredo do bitoque." });
         actions.push({ label: "🍺 Imperial Fresca de Pressão (1.50€)", orderBeer: true, cost: 1.5, timeH: 0, timeM: 15, hunger: 10, sanity: 20, desc: "Caneca gelada com colarinho perfeito tirada pelo Ti Zé. +20 Sanidade e +10 Nutrição." });
         actions.push({ label: "Bica ao Balcão", cost: 1, timeH: 0, timeM: 15, hunger: 5, sanity: 15, desc: "+15 Sanidade em 15 minutos." });
         actions.push({ label: "Bitoque c/ Ovo a Cavalo", cost: 9, timeH: 1, timeM: 0, hunger: 85, sanity: 25, desc: "+85 Nutrição e +25 Sanidade." });
@@ -8494,15 +9486,27 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         }
     }
 
-    // Desenhar Ações na Coluna Direita (ax: mx + 138, aw: mw - 152)
+    // Desenhar Ações Paginadas na Coluna Direita (ax: mx + 138, aw: mw - 152)
+    // Anti-overflow: estritamente 4 opções por página com navegação clássica [◀] [▶]
     const ax = mx + 138;
     const aw = mw - 152;
-    const maxAvailH = mh - 50;
-    const cardGap = actions.length > 4 ? 3 : 5;
-    const cardH = actions.length > 4 ? Math.floor((maxAvailH - (actions.length - 1) * cardGap) / actions.length) : 48;
+    const ACTIONS_PER_PAGE = 4;
+    const totalPages = Math.max(1, Math.ceil(actions.length / ACTIONS_PER_PAGE));
+    if (typeof modalBuilding.actionPage !== 'number' || modalBuilding.actionPage < 0) {
+        modalBuilding.actionPage = 0;
+    }
+    if (modalBuilding.actionPage >= totalPages) {
+        modalBuilding.actionPage = totalPages - 1;
+    }
+    const curPage = modalBuilding.actionPage;
+    const pagedActions = actions.slice(curPage * ACTIONS_PER_PAGE, (curPage + 1) * ACTIONS_PER_PAGE);
 
-    actions.forEach((act, idx) => {
-        const ay = my + 44 + idx * (cardH + cardGap);
+    const cardH = 46;
+    const cardGap = 6;
+    const startY = my + 42;
+
+    pagedActions.forEach((act, idx) => {
+        const ay = startY + idx * (cardH + cardGap);
         const isHover = (mouse.x >= ax && mouse.x <= ax + aw && mouse.y >= ay && mouse.y <= ay + cardH);
 
         // Fundo do cartão de ação
@@ -8518,30 +9522,28 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         }
 
         const btnW = 96;
-        const btnH = cardH < 44 ? 22 : 26;
+        const btnH = 24;
         const btnX = ax + aw - btnW - 8;
         const btnY = ay + (cardH - btnH) / 2;
 
-        const maxDescW = btnX - ax - 22;
+        const maxDescW = btnX - ax - 20;
 
         ctx.fillStyle = isHover ? '#ffffff' : '#e2e8f0';
-        ctx.font = 'bold 10px "Fira Code"';
+        ctx.font = 'bold 9.5px "Fira Code"';
         ctx.textAlign = 'left';
-        const titleY = cardH < 44 ? ay + 14 : ay + 18;
-        ctx.fillText(act.label, ax + 14, titleY, maxDescW);
+        ctx.fillText(act.label, ax + 12, ay + 16, maxDescW);
 
-        ctx.font = cardH < 44 ? '8px "Fira Code"' : '8.5px "Fira Code"';
+        ctx.font = '8px "Fira Code"';
         ctx.fillStyle = '#94a3b8';
 
-        let descText = act.desc;
+        let descText = act.desc || '';
         if (ctx.measureText(descText).width > maxDescW) {
             while (ctx.measureText(descText + '...').width > maxDescW && descText.length > 1) {
                 descText = descText.slice(0, -1);
             }
             descText += '...';
         }
-        const descY = cardH < 44 ? ay + 27 : ay + 36;
-        ctx.fillText(descText, ax + 14, descY, maxDescW);
+        ctx.fillText(descText, ax + 12, ay + 33, maxDescW);
 
         let btnText = "";
         let btnColor = "#10b981";
@@ -8637,10 +9639,57 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         ctx.fillStyle = isAffordable ? '#0b0e14' : '#64748b';
         ctx.font = 'bold 9px "Fira Code"';
         ctx.textAlign = 'center';
-        ctx.fillText(btnText, btnX + btnW / 2, btnY + 17);
+        ctx.fillText(btnText, btnX + btnW / 2, btnY + 16);
     });
 
+    // Barra de Navegação de Páginas (apenas quando houver mais de 4 opções)
+    let paginationInfo = { totalPages, curPage, prevBtn: null, nextBtn: null };
+    if (totalPages > 1) {
+        const py = startY + ACTIONS_PER_PAGE * (cardH + cardGap) + 2;
+        const btnW = 82;
+        const btnH = 20;
+
+        // Botão Anterior
+        const prevX = ax + 4;
+        const canPrev = curPage > 0;
+        const isHoverPrev = canPrev && (mouse.x >= prevX && mouse.x <= prevX + btnW && mouse.y >= py && mouse.y <= py + btnH);
+        ctx.fillStyle = canPrev ? (isHoverPrev ? '#0284c7' : '#0f172a') : 'rgba(15, 23, 42, 0.5)';
+        ctx.fillRect(prevX, py, btnW, btnH);
+        ctx.strokeStyle = canPrev ? (isHoverPrev ? '#38bdf8' : '#334155') : '#1e293b';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(prevX, py, btnW, btnH);
+        ctx.fillStyle = canPrev ? (isHoverPrev ? '#ffffff' : '#38bdf8') : '#475569';
+        ctx.font = 'bold 8.5px "Fira Code"';
+        ctx.textAlign = 'center';
+        ctx.fillText("◀ Anterior", prevX + btnW / 2, py + 14);
+
+        // Contador de Página
+        ctx.fillStyle = '#facc15';
+        ctx.font = 'bold 8.5px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${curPage + 1} / ${totalPages}`, ax + aw / 2, py + 14);
+
+        // Botão Próximo
+        const nextX = ax + aw - btnW - 4;
+        const canNext = curPage < totalPages - 1;
+        const isHoverNext = canNext && (mouse.x >= nextX && mouse.x <= nextX + btnW && mouse.y >= py && mouse.y <= py + btnH);
+        ctx.fillStyle = canNext ? (isHoverNext ? '#0284c7' : '#0f172a') : 'rgba(15, 23, 42, 0.5)';
+        ctx.fillRect(nextX, py, btnW, btnH);
+        ctx.strokeStyle = canNext ? (isHoverNext ? '#38bdf8' : '#334155') : '#1e293b';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(nextX, py, btnW, btnH);
+        ctx.fillStyle = canNext ? (isHoverNext ? '#ffffff' : '#38bdf8') : '#475569';
+        ctx.font = 'bold 8.5px "Fira Code"';
+        ctx.textAlign = 'center';
+        ctx.fillText("Próximo ▶", nextX + btnW / 2, py + 14);
+
+        paginationInfo.prevBtn = { x: prevX, y: py, w: btnW, h: btnH, enabled: canPrev };
+        paginationInfo.nextBtn = { x: nextX, y: py, w: btnW, h: btnH, enabled: canNext };
+    }
+
     modalBuilding.currentActions = actions;
+    modalBuilding.currentPagedActions = pagedActions;
+    modalBuilding.pagination = paginationInfo;
 }
 
 // ============================================================================
@@ -8812,6 +9861,24 @@ canvas.addEventListener('click', (e) => {
 });
 
 window.addEventListener('keydown', (e) => {
+    if (state === 'CUTSCENE') {
+        if (e.key === ' ' || e.key === 'Enter') {
+            advanceCutscene();
+        } else if (e.key === 'Escape') {
+            advanceCutscene(true);
+        }
+        return;
+    }
+    if (activeDialogueTree) {
+        if (e.key === 'Escape') {
+            activeDialogueTree = null;
+            return;
+        }
+        if (['1', '2', '3', '4'].includes(e.key)) {
+            handleDialogueChoiceIndex(parseInt(e.key, 10) - 1);
+            return;
+        }
+    }
     if (e.key === 'Escape') {
         speechBubbles = [];
         closeCurriculumModal();
@@ -8836,6 +9903,13 @@ window.addEventListener('keydown', (e) => {
 });
 
 function handleCanvasClick(cx, cy) {
+    if (state === 'CUTSCENE') {
+        handleCutsceneClick(cx, cy);
+        return;
+    }
+    if (activeDialogueTree) {
+        if (handleDialogueTreeClick(cx, cy)) return;
+    }
     if (activeEncounter) {
         if (handleStreetEncounterClick(cx, cy)) return;
     }
@@ -8908,16 +9982,32 @@ function handleCanvasClick(cx, cy) {
             return;
         }
 
-        // Clicar numa Ação da Loja na Coluna Direita (ax: mx + 138, aw: mw - 152)
-        if (modalBuilding && modalBuilding.currentActions) {
+        // Clicar nas Ações Paginadas da Loja (Coluna Direita)
+        if (modalBuilding && modalBuilding.currentPagedActions) {
+            // 1. Verificar cliques nos botões de paginação
+            if (modalBuilding.pagination && modalBuilding.pagination.totalPages > 1) {
+                const p = modalBuilding.pagination;
+                if (p.prevBtn && p.prevBtn.enabled && cx >= p.prevBtn.x && cx <= p.prevBtn.x + p.prevBtn.w && cy >= p.prevBtn.y && cy <= p.prevBtn.y + p.prevBtn.h) {
+                    modalBuilding.actionPage--;
+                    sfxAction();
+                    return;
+                }
+                if (p.nextBtn && p.nextBtn.enabled && cx >= p.nextBtn.x && cx <= p.nextBtn.x + p.nextBtn.w && cy >= p.nextBtn.y && cy <= p.nextBtn.y + p.nextBtn.h) {
+                    modalBuilding.actionPage++;
+                    sfxAction();
+                    return;
+                }
+            }
+
+            // 2. Verificar cliques nas ações da página atual
             const ax = mx + 138;
             const aw = mw - 152;
-            const maxAvailH = mh - 50;
-            const cardGap = modalBuilding.currentActions.length > 4 ? 3 : 5;
-            const cardH = modalBuilding.currentActions.length > 4 ? Math.floor((maxAvailH - (modalBuilding.currentActions.length - 1) * cardGap) / modalBuilding.currentActions.length) : 48;
+            const cardH = 46;
+            const cardGap = 6;
+            const startY = my + 42;
 
-            modalBuilding.currentActions.forEach((act, idx) => {
-                const ay = my + 44 + idx * (cardH + cardGap);
+            modalBuilding.currentPagedActions.forEach((act, idx) => {
+                const ay = startY + idx * (cardH + cardGap);
                 if (cx >= ax && cx <= ax + aw && cy >= ay && cy <= ay + cardH) {
                     executeAction(act);
                 }
@@ -9051,6 +10141,12 @@ function closeModal() {
 }
 
 function executeAction(act) {
+    if (act.openDialogueTree) {
+        const treeId = act.openDialogueTree;
+        closeModal();
+        openDialogueTree(treeId);
+        return;
+    }
 
     if (act.orderBeer) {
         unlockAchievement('primeira_imperial');
@@ -9150,6 +10246,7 @@ function executeAction(act) {
             spawnParticle("🎓 CANUDO OBTIDO!", '#fde047');
             showToast(`🎓 PARABÉNS! Concluíste com distinção o curso de ${COURSES[courseId].name}! O Canudo do IST é teu!`);
             unlockAchievement('canudo_ist');
+            playCutscene('graduation');
         } else {
             sfxCoin();
             spawnParticle(`✓ ${name.split('(')[0].trim()}`, '#38bdf8');
@@ -9338,6 +10435,7 @@ function executeAction(act) {
         showToast(`💍 Começaste oficialmente a namorar com ${pObj.name}! «Dividimos as despesas e a vida em Lisboa!» (35% desconto de casal na renda!)`);
         spawnParticle(`💍 ${pObj.name}!`, '#ec4899');
         unlockAchievement('amor_lisboeta');
+        playCutscene('romance_catia');
         return;
     }
 
@@ -9514,7 +10612,7 @@ function executeAction(act) {
             spawnParticle("🍲 +45 Comida", '#10b981');
         } else {
             sfxAlert();
-            showToast("A despensa está vazia! Compra mercearias no Pingo Doce.");
+            showToast("A despensa está vazia! Compra mercearias na Mercearia do Bairro.");
             return;
         }
     }
@@ -10008,7 +11106,7 @@ function openCurriculumModal() {
     let shiftsHtml = `
         <div class="cv-grid">
             <div class="cv-chip">
-                <div class="cv-chip-label">Pingo Doce</div>
+                <div class="cv-chip-label">Mercearia</div>
                 <div class="cv-chip-val">${(player.careerShifts && player.careerShifts.pingo_doce) || 0} turnos (${WORKPLACES.pingo_doce.careers[(player.careerRanks && player.careerRanks.pingo_doce) || 0].title})</div>
             </div>
             <div class="cv-chip">
