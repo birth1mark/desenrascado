@@ -781,6 +781,401 @@
             border: 1px solid #10b981;
         }
 
+
+        /* Modal do Códex: Quem é Quem em Lisboa & Álbum de Instantâneos */
+        .btn-codex {
+            background: linear-gradient(180deg, #d97706, #b45309);
+            border-color: #f59e0b;
+            color: #fff;
+        }
+        .btn-codex:hover {
+            background: linear-gradient(180deg, #f59e0b, #d97706);
+            border-color: #fbbf24;
+            color: #fff;
+        }
+        .codex-box {
+            max-width: 630px;
+            width: 96%;
+            max-height: 88vh;
+            background: #090d16;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 0 40px rgba(245, 158, 11, 0.4), 0 25px 60px rgba(0, 0, 0, 0.96);
+            display: flex;
+            flex-direction: column;
+        }
+        .codex-tagline {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.44rem;
+            color: #fde68a;
+            padding: 6px 14px;
+            background: rgba(245, 158, 11, 0.12);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .codex-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+            max-height: 64vh;
+        }
+        .codex-sidebar {
+            width: 205px;
+            flex-shrink: 0;
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 1px solid rgba(245, 158, 11, 0.25);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 8px 6px;
+        }
+        .codex-char-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            padding: 6px 8px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .codex-char-card:hover {
+            background: rgba(51, 65, 85, 0.85);
+            border-color: rgba(245, 158, 11, 0.4);
+            transform: translateX(2px);
+        }
+        .codex-char-card.selected {
+            background: rgba(245, 158, 11, 0.18);
+            border: 1.5px solid #f59e0b;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+        }
+        .codex-char-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+        .codex-char-name {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.44rem;
+            color: #f8fafc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .codex-char-card.selected .codex-char-name {
+            color: #fbbf24;
+        }
+        .codex-char-role {
+            font-size: 0.62rem;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .codex-char-bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 2px;
+        }
+        .codex-char-bar-track {
+            flex: 1;
+            height: 5px;
+            background: #0f172a;
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .codex-char-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ec4899, #f59e0b);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        .codex-char-aff-text {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.38rem;
+            color: #f472b6;
+            min-width: 26px;
+            text-align: right;
+        }
+        .codex-char-photo-badge {
+            font-size: 0.55rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .codex-main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #090d16;
+        }
+        .codex-header-card {
+            display: flex;
+            gap: 12px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 6px;
+            padding: 10px 12px;
+            align-items: center;
+        }
+        .codex-portrait-box {
+            width: 72px;
+            height: 72px;
+            border: 2px solid #f59e0b;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #000;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .codex-header-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+            min-width: 0;
+        }
+        .codex-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+        .codex-hero-name {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.60rem;
+            color: #facc15;
+        }
+        .codex-epithet {
+            font-size: 0.68rem;
+            color: #e2e8f0;
+            font-style: italic;
+        }
+        .codex-meta-row {
+            font-size: 0.64rem;
+            color: #94a3b8;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .codex-affinity-panel {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 4px;
+            padding: 6px 10px;
+            margin-top: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .codex-affinity-status-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.65rem;
+        }
+        .codex-tier-advice {
+            font-size: 0.60rem;
+            color: #cbd5e1;
+            line-height: 1.25;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 6px;
+            border-radius: 3px;
+            border-left: 2px solid #38bdf8;
+        }
+        .codex-section {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .codex-section-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.50rem;
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+            padding-bottom: 4px;
+        }
+        .codex-bio-paragraph {
+            font-size: 0.70rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 4px;
+            padding: 8px 10px;
+            border-left: 3px solid #f59e0b;
+        }
+        .codex-tier-card {
+            border-radius: 4px;
+            padding: 8px 10px;
+            font-size: 0.68rem;
+            line-height: 1.35;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+        .codex-tier-card.unlocked {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-left: 3px solid #38bdf8;
+            color: #e2e8f0;
+        }
+        .codex-tier-card.locked {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px dashed #334155;
+            border-left: 3px solid #64748b;
+            color: #64748b;
+        }
+        .codex-tier-badge {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.40rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+            align-self: flex-start;
+        }
+        .codex-tier-badge.unlocked {
+            background: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+        }
+        .codex-tier-badge.locked {
+            background: rgba(100, 116, 139, 0.2);
+            color: #94a3b8;
+            border: 1px solid #475569;
+        }
+
+        /* Galeria de Polaroids 16-Bit */
+        .polaroid-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 6px;
+        }
+        .polaroid-card {
+            background: #fdfbf7;
+            color: #1e293b;
+            border-radius: 3px;
+            padding: 6px 6px 10px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), 0 1px 3px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transform: rotate(-1deg);
+            transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+            position: relative;
+        }
+        .polaroid-card:nth-child(2n) {
+            transform: rotate(1.2deg);
+        }
+        .polaroid-card:nth-child(3n) {
+            transform: rotate(-0.8deg);
+        }
+        .polaroid-card:hover {
+            transform: scale(1.04) rotate(0deg);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.35), 0 4px 10px rgba(0, 0, 0, 0.8);
+            z-index: 10;
+        }
+        .polaroid-card.locked {
+            background: #1e293b;
+            color: #64748b;
+            border: 1px dashed #475569;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            transform: none;
+        }
+        .polaroid-photo-frame {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #090d16;
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+        .polaroid-photo-canvas {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            display: block;
+        }
+        .polaroid-lock-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 15, 26, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: #94a3b8;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.38rem;
+            text-align: center;
+            padding: 6px;
+        }
+        .polaroid-caption {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 0 2px;
+        }
+        .polaroid-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.40rem;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .polaroid-card.locked .polaroid-title {
+            color: #94a3b8;
+        }
+        .polaroid-desc {
+            font-size: 0.58rem;
+            color: #475569;
+            line-height: 1.2;
+            min-height: 24px;
+        }
+        .polaroid-card.locked .polaroid-desc {
+            color: #64748b;
+        }
+        .polaroid-date {
+            font-size: 0.50rem;
+            color: #991b1b;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 2px;
+        }
+        @media (max-width: 640px) {
+            .codex-layout { flex-direction: column; }
+            .codex-sidebar { width: 100%; max-height: 115px; flex-direction: row; overflow-x: auto; overflow-y: hidden; }
+            .codex-char-card { min-width: 140px; }
+        }
+
         /* SEO & Screen Reader Accessible Content */
         .sr-only {
             position: absolute;
@@ -814,6 +1209,7 @@
             <a href="https://pormenores.net/" target="_blank" class="arcade-link">← pormenores.net</a>
             <div class="arcade-actions">
                 <button class="arcade-btn btn-curriculum" onclick="openCurriculumModal()" id="btn-curriculum">📜 Currículo</button>
+                <button class="arcade-btn btn-codex" onclick="openCodexModal()" id="btn-codex">👥 Quem é Quem</button>
                 <button class="arcade-btn btn-achievements" onclick="openAchievementsModal()" id="btn-achievements">🎖️ Conquistas</button>
                 <button class="arcade-btn btn-leaderboard" onclick="openLeaderboard()" id="btn-leaderboard">🏆 Top 10</button>
                 <div class="toolbar-divider"></div>
@@ -840,6 +1236,28 @@
                     </div>
                     <div class="overlay-actions">
                         <button class="retro-btn" onclick="closeCurriculumModal()">FECHAR DOSSIER [ESC]</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Modal: Códex "Quem é Quem em Lisboa" & Álbum de Instantâneos -->
+            <div id="codex-modal" class="game-overlay" style="display: none;">
+                <div class="overlay-box codex-box">
+                    <div class="overlay-header">
+                        <span class="overlay-title">👥 QUEM É QUEM EM LISBOA · DOSSIER & ÁLBUM</span>
+                        <button class="overlay-close" onclick="closeCodexModal()">✕</button>
+                    </div>
+                    <div class="codex-tagline">
+                        <span id="codex-summary">0 / 48 FOTOGRAFIAS NO ÁLBUM</span>
+                        <span style="color:#fbbf24;">📸 ÁLBUM DE INSTANTÂNEOS DINÂMICOS</span>
+                    </div>
+                    <div class="codex-layout">
+                        <div class="codex-sidebar" id="codex-list"></div>
+                        <div class="codex-main" id="codex-detail"></div>
+                    </div>
+                    <div class="overlay-actions">
+                        <button class="retro-btn" onclick="closeCodexModal()">VOLTAR AO JOGO [ESC]</button>
                     </div>
                 </div>
             </div>
@@ -3196,6 +3614,20 @@ let player = {
     hungerDays: 0,
     sleptAcampada: false,
     partner: null, // 'catia' | 'marta' | 'rui' | 'goncalo' | null
+    affinity: {
+        senhorio: 30,
+        tasca: 35,
+        supermercado: 30,
+        loja_roupa: 20,
+        acampada: 45,
+        faculdade: 15,
+        banco: 10,
+        startup: 25,
+        miradouro: 35,
+        marta: 20,
+        rui: 25,
+        goncalo: 25
+    },
     avatarName: "Zé Desenrasca",
     deathTitle: "",
     deathCause: ""
@@ -3217,7 +3649,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '7.0';
+const ASSET_VER = '7.1';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -5236,12 +5668,30 @@ function executeDialogueChoice(c) {
     if (c.action) {
         c.action(player);
     }
+    if (activeDialogueTree && activeDialogueTree.treeId) {
+        const treeToNpc = {
+            catia: 'supermercado',
+            senhorio: 'senhorio',
+            tasca: 'tasca',
+            acampada: 'acampada',
+            iefp: 'startup',
+            faculdade: 'faculdade'
+        };
+        const targetNpc = treeToNpc[activeDialogueTree.treeId] || activeDialogueTree.treeId;
+        if (typeof changeNpcAffinity === 'function') {
+            changeNpcAffinity(targetNpc, 3, 'Conversa no diálogo');
+        }
+    }
     if (c.gainAffection && c.partnerKey) {
         const rel = getRomanceStage(c.partnerKey);
         rel.points = Math.min(100, (rel.points || 0) + c.gainAffection);
         player.romanceAffinity = player.romanceAffinity || {};
         player.romanceAffinity[c.partnerKey] = rel.points;
-        spawnParticle(`❤️ ${ROMANCE_PARTNERS[c.partnerKey].name} (${rel.points}%)`, '#ec4899');
+        if (typeof changeNpcAffinity === 'function') {
+            changeNpcAffinity(c.partnerKey, c.gainAffection, 'Avanço amoroso');
+        } else {
+            spawnParticle(`❤️ ${ROMANCE_PARTNERS[c.partnerKey].name} (${rel.points}%)`, '#ec4899');
+        }
     }
     if (c.triggerRomance) {
         player.partner = c.triggerRomance;
@@ -5965,6 +6415,7 @@ function endDay(motivo) {
                 spawnParticle(`- ${currentRent}€ RENDA`, '#ef4444');
                 showToast(`Renda semanal regularizada automaticamente da carteira${partnerNote}.`);
                 unlockAchievement('senhorio_em_dia');
+                if (typeof changeNpcAffinity === 'function') changeNpcAffinity('senhorio', 10, 'Renda em dia');
             } else if ((player.wallet + player.bank) >= currentRent) {
                 const rem = currentRent - player.wallet;
                 player.wallet = 0;
@@ -5979,6 +6430,7 @@ function endDay(motivo) {
                 player.daysUntilRent = 0;
                 player.sanity = Math.max(0, player.sanity - 40);
                 motivo = "DESPEJADO! Não conseguiste pagar a renda de " + currentRent + "€!";
+                if (typeof changeNpcAffinity === 'function') changeNpcAffinity('senhorio', -25, 'Despejo executado');
                 playCutscene('evicted');
             }
         }
@@ -7850,12 +8302,13 @@ const NPC_INFO = {
 };
 
 // Renderizador de Retratos em Pixel Art 16-Bit em Camadas (Fundo Estático + Busto Transparente)
-function drawNpcPortrait(id, x, y, size) {
+function drawNpcPortrait(id, x, y, size, targetCtx = null) {
+    const renderCtx = targetCtx || ctx;
     const npc = NPC_INFO[id] || NPC_INFO.senhorio;
 
     // 1. Fundo de segurança escuro dentro da moldura
-    ctx.fillStyle = '#090d16';
-    ctx.fillRect(x, y, size, size);
+    renderCtx.fillStyle = '#090d16';
+    renderCtx.fillRect(x, y, size, size);
 
     const npcCoords = {
         senhorio: { col: 0, row: 0 },
@@ -7867,7 +8320,10 @@ function drawNpcPortrait(id, x, y, size) {
         miradouro: { col: 2, row: 1 },
         casa: { col: 3, row: 1 },
         acampada: { col: 2, row: 0 },
-        loja_roupa: { col: 3, row: 0 }
+        loja_roupa: { col: 3, row: 0 },
+        marta: { col: 1, row: 1 },
+        rui: { col: 3, row: 1 },
+        goncalo: { col: 2, row: 1 }
     };
     const coord = npcCoords[id] || npcCoords.senhorio;
 
@@ -7913,20 +8369,20 @@ function drawNpcPortrait(id, x, y, size) {
     }
 
     if (bgImg) {
-        ctx.save();
-        ctx.imageSmoothingEnabled = false;
+        renderCtx.save();
+        renderCtx.imageSmoothingEnabled = false;
 
         // Clip exato ao interior da moldura (x, y, size, size)
-        ctx.beginPath();
-        ctx.rect(x, y, size, size);
-        ctx.clip();
+        renderCtx.beginPath();
+        renderCtx.rect(x, y, size, size);
+        renderCtx.clip();
 
         // CAMADA 1: FUNDO 100% ESTÁTICO (Fundo e personagem 100% imóveis, preenchendo a moldura sem tremores)
-        ctx.drawImage(bgImg, bgSx, bgSy, 128, 128, x, y, size, size);
+        renderCtx.drawImage(bgImg, bgSx, bgSy, 128, 128, x, y, size, size);
 
         // CAMADA 2: BUSTO COM TRANSPARÊNCIA ESTÁTICO (Sobreposição estática e perfeita sem tremores)
         if (bustImg) {
-            ctx.drawImage(bustImg, bustSx, bustSy, 128, 128, x, y, size, size);
+            renderCtx.drawImage(bustImg, bustSx, bustSy, 128, 128, x, y, size, size);
         }
 
         const scale = size / 128;
@@ -7948,9 +8404,9 @@ function drawNpcPortrait(id, x, y, size) {
                 loja_roupa:   { lx: 54, rx: 72, y: 44, w: 5, h: 2, c: '#271710' }
             };
             const ec = eyeCoords[id] || eyeCoords.senhorio;
-            ctx.fillStyle = ec.c;
-            ctx.fillRect(Math.round(x + ec.lx * scale), Math.round(y + ec.y * scale), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
-            ctx.fillRect(Math.round(x + ec.rx * scale), Math.round(y + ec.y * scale), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
+            renderCtx.fillStyle = ec.c;
+            renderCtx.fillRect(Math.round(x + ec.lx * scale), Math.round(y + ec.y * scale), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
+            renderCtx.fillRect(Math.round(x + ec.rx * scale), Math.round(y + ec.y * scale), Math.max(2, Math.round(ec.w * scale)), Math.max(1, Math.round(ec.h * scale)));
         }
 
         // Acessórios e Efeitos Ambientais Elegantes nos Cantos (sem tapar o rosto):
@@ -7958,17 +8414,17 @@ function drawNpcPortrait(id, x, y, size) {
             const glintCycle = (animTimer % 3.5) / 3.5;
             if (glintCycle < 0.25) {
                 const alpha = Math.sin((glintCycle / 0.25) * Math.PI);
-                ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.9})`;
+                renderCtx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.9})`;
                 const gx = x + size - 14, gy = y + 12;
-                ctx.fillRect(gx - 4, gy, 9, 2);
-                ctx.fillRect(gx, gy - 4, 2, 9);
+                renderCtx.fillRect(gx - 4, gy, 9, 2);
+                renderCtx.fillRect(gx, gy - 4, 2, 9);
             }
         } else if (id === 'startup') {
             const pulse = (Math.sin(animTimer * 4.0) + 1) / 2;
-            ctx.fillStyle = `rgba(56, 189, 248, ${0.4 + pulse * 0.55})`;
-            ctx.beginPath();
-            ctx.arc(x + 10, y + 10, 3, 0, Math.PI * 2);
-            ctx.fill();
+            renderCtx.fillStyle = `rgba(56, 189, 248, ${0.4 + pulse * 0.55})`;
+            renderCtx.beginPath();
+            renderCtx.arc(x + 10, y + 10, 3, 0, Math.PI * 2);
+            renderCtx.fill();
         } else if (id === 'miradouro') {
             const t1 = (animTimer * 0.4) % 1.0;
             const t2 = ((animTimer * 0.4) + 0.5) % 1.0;
@@ -7976,65 +8432,65 @@ function drawNpcPortrait(id, x, y, size) {
             const ny2 = y + size - 10 - (t2 * 50);
             const a1 = Math.sin(t1 * Math.PI);
             const a2 = Math.sin(t2 * Math.PI);
-            ctx.font = 'bold 10px "Press Start 2P"';
-            ctx.fillStyle = `rgba(56, 189, 248, ${a1 * 0.9})`;
-            ctx.fillText("♪", x + size - 16, ny1);
-            ctx.fillStyle = `rgba(250, 204, 21, ${a2 * 0.9})`;
-            ctx.fillText("♫", x + size - 24, ny2);
+            renderCtx.font = 'bold 10px "Press Start 2P"';
+            renderCtx.fillStyle = `rgba(56, 189, 248, ${a1 * 0.9})`;
+            renderCtx.fillText("♪", x + size - 16, ny1);
+            renderCtx.fillStyle = `rgba(250, 204, 21, ${a2 * 0.9})`;
+            renderCtx.fillText("♫", x + size - 24, ny2);
         } else if (id === 'tasca') {
-            ctx.fillStyle = 'rgba(217, 119, 6, 0.35)';
-            ctx.fillRect(x + size - 18, y + size - 18, 14, 14);
-            ctx.fillStyle = '#f59e0b';
-            ctx.fillRect(x + size - 16, y + size - 14, 8, 8);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(x + size - 17, y + size - 16, 10, 3);
+            renderCtx.fillStyle = 'rgba(217, 119, 6, 0.35)';
+            renderCtx.fillRect(x + size - 18, y + size - 18, 14, 14);
+            renderCtx.fillStyle = '#f59e0b';
+            renderCtx.fillRect(x + size - 16, y + size - 14, 8, 8);
+            renderCtx.fillStyle = '#ffffff';
+            renderCtx.fillRect(x + size - 17, y + size - 16, 10, 3);
         } else if (id === 'supermercado') {
-            ctx.fillStyle = 'rgba(21, 128, 61, 0.4)';
-            ctx.fillRect(x + size - 20, y + size - 16, 16, 12);
-            ctx.fillStyle = '#86efac';
-            ctx.font = 'bold 7px "Fira Code"';
-            ctx.fillText("PD", x + size - 18, y + size - 7);
+            renderCtx.fillStyle = 'rgba(21, 128, 61, 0.4)';
+            renderCtx.fillRect(x + size - 20, y + size - 16, 16, 12);
+            renderCtx.fillStyle = '#86efac';
+            renderCtx.font = 'bold 7px "Fira Code"';
+            renderCtx.fillText("PD", x + size - 18, y + size - 7);
         } else if (id === 'loja_roupa') {
-            ctx.fillStyle = 'rgba(219, 39, 119, 0.4)';
-            ctx.fillRect(x + size - 26, y + size - 16, 22, 12);
-            ctx.fillStyle = '#f472b6';
-            ctx.font = 'bold 7px "Fira Code"';
-            ctx.fillText("MODAS", x + size - 25, y + size - 7);
+            renderCtx.fillStyle = 'rgba(219, 39, 119, 0.4)';
+            renderCtx.fillRect(x + size - 26, y + size - 16, 22, 12);
+            renderCtx.fillStyle = '#f472b6';
+            renderCtx.font = 'bold 7px "Fira Code"';
+            renderCtx.fillText("MODAS", x + size - 25, y + size - 7);
         } else if (id === 'acampada') {
-            ctx.fillStyle = 'rgba(220, 38, 38, 0.4)';
-            ctx.fillRect(x + size - 22, y + size - 16, 18, 12);
-            ctx.fillStyle = '#f87171';
-            ctx.font = 'bold 7px "Fira Code"';
-            ctx.fillText("TETO", x + size - 21, y + size - 7);
+            renderCtx.fillStyle = 'rgba(220, 38, 38, 0.4)';
+            renderCtx.fillRect(x + size - 22, y + size - 16, 18, 12);
+            renderCtx.fillStyle = '#f87171';
+            renderCtx.font = 'bold 7px "Fira Code"';
+            renderCtx.fillText("TETO", x + size - 21, y + size - 7);
         } else if (id === 'senhorio') {
-            ctx.fillStyle = 'rgba(185, 28, 28, 0.4)';
-            ctx.fillRect(x + size - 18, y + size - 18, 14, 14);
-            ctx.strokeStyle = '#ef4444';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(x + size - 18, y + size - 18, 14, 14);
-            ctx.fillStyle = '#fca5a5';
-            ctx.fillRect(x + size - 14, y + size - 14, 6, 6);
+            renderCtx.fillStyle = 'rgba(185, 28, 28, 0.4)';
+            renderCtx.fillRect(x + size - 18, y + size - 18, 14, 14);
+            renderCtx.strokeStyle = '#ef4444';
+            renderCtx.lineWidth = 1;
+            renderCtx.strokeRect(x + size - 18, y + size - 18, 14, 14);
+            renderCtx.fillStyle = '#fca5a5';
+            renderCtx.fillRect(x + size - 14, y + size - 14, 6, 6);
         }
 
-        ctx.restore();
+        renderCtx.restore();
     } else {
         // Fallback procedural clássico enquanto as imagens carregam
-        ctx.fillStyle = npc.color + '44';
-        ctx.fillRect(x, y, size, size);
+        renderCtx.fillStyle = npc.color + '44';
+        renderCtx.fillRect(x, y, size, size);
     }
 
     // Moldura exterior retro SCUMM com cantos dourados
     // A moldura encaixa milimetricamente no contorno do retrato sem criar margens pretas
-    ctx.strokeStyle = npc.color;
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(x, y, size, size);
+    renderCtx.strokeStyle = npc.color;
+    renderCtx.lineWidth = 1.5;
+    renderCtx.strokeRect(x, y, size, size);
 
     // Cantos decorativos de estilo retro RPG
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillRect(x - 1, y - 1, 3, 3);
-    ctx.fillRect(x + size - 2, y - 1, 3, 3);
-    ctx.fillRect(x - 1, y + size - 2, 3, 3);
-    ctx.fillRect(x + size - 2, y + size - 2, 3, 3);
+    renderCtx.fillStyle = '#f59e0b';
+    renderCtx.fillRect(x - 1, y - 1, 3, 3);
+    renderCtx.fillRect(x + size - 2, y - 1, 3, 3);
+    renderCtx.fillRect(x - 1, y + size - 2, 3, 3);
+    renderCtx.fillRect(x + size - 2, y + size - 2, 3, 3);
 }
 
 function renderInteriorScene(ctx, id, animTimer, player, HOUSES, WORKPLACES, getPlayerJob) {
@@ -9908,11 +10364,21 @@ window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         speechBubbles = [];
         closeCurriculumModal();
+        closeCodexModal();
         closeLeaderboard();
         closeSubmitModal();
         closeAchievementsModal();
         if (state === 'MODAL') closeModal();
         if (activeEncounter) activeEncounter = null;
+    }
+    if (e.key === 'q' || e.key === 'Q') {
+        const codexModal = document.getElementById('codex-modal');
+        if (codexModal && codexModal.style.display === 'flex') {
+            closeCodexModal();
+        } else {
+            openCodexModal();
+        }
+        return;
     }
     if (e.key === ' ' || e.key === 'Enter') {
         if (speechBubbles.length > 0) speechBubbles = [];
@@ -10322,6 +10788,10 @@ function executeAction(act) {
         wearClothing(act.wear || (wpKey === 'tasca' || wpKey === 'pingo_doce' ? 8 : 5));
         player.careerShifts[wpKey] = (player.careerShifts[wpKey] || 0) + 1;
         player.totalShiftsWorked = (player.totalShiftsWorked || 0) + 1;
+        if (typeof changeNpcAffinity === 'function') {
+            const wpMap = { tasca: 'tasca', pingo_doce: 'supermercado', banco: 'banco', loja_roupa: 'loja_roupa', startup: 'startup', faculdade: 'faculdade' };
+            if (wpMap[wpKey]) changeNpcAffinity(wpMap[wpKey], 4, `Turno cumprido no ${WORKPLACES[wpKey].name}`);
+        }
 
         if (act.mealHunger) {
             player.hunger = Math.min(100, player.hunger + act.mealHunger);
@@ -11216,6 +11686,737 @@ function closeCurriculumModal() {
 }
 
 // ============================================================================
+// 8.2 CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE INSTANTÂNEOS DINÂMICOS
+// ============================================================================
+
+const LISBON_CHARACTERS = {
+    senhorio: {
+        id: 'senhorio',
+        name: 'Sr. Jerónimo',
+        fullName: 'Sr. Jerónimo da Conceição',
+        epithet: 'O Chaveiro Implacável de Alfama',
+        role: 'Senhorio & Administrador de Prédios',
+        location: 'Escritório das Águas-Furtadas / Portaria',
+        color: '#ef4444',
+        portraitId: 'senhorio',
+        interiorKey: 'senhorio',
+        baseAffinity: 30,
+        howToIncrease: 'Paga a renda semanal a tempo e horas (+10%), conversa sobre 1974 (+8%) e faz biscates de canalização.',
+        howToDecrease: 'Atrasos no pagamento da renda (-15%), ameaça de despejo (-5%) e ordem de despejo executada (-25%).',
+        bioPublic: 'Nasceu na Graça nos anos 50, filho de carpinteiro da ribeira. Comprou a sua primeira fracção devoluta em 1972 com as poupanças de uma oficina de candeeiros. Hoje administra meia dúzia de prédios pombalinos e sótãos em Lisboa. A sua figura de sobretudo escuro e molho gigante de chaves é temida por todos os arrendatários da capital.',
+        bioNeighbour: 'Antes do 25 de Abril de 1974, alugava quartos a estudantes da Faculdade de Direito por trinta escudos. Confessa com nostalgia que a Lisboa de antigamente tinha alma: «As portas não tinham trancas eletrónicas, os vizinhos emprestavam azeite e ninguém precisava de advogados para consertar uma telha partida.»',
+        bioConfidential: 'Por detrás da couraça implacável de cobrador, vive sob chantagem diária de fundos imobiliários internacionais sediados no Luxemburgo que querem comprar os seus prédios em bloco para hotéis de charme. A sua intransigência com o Zé é puro instinto de sobrevivência: tem pavor de ser passado para trás.',
+        bioSecretPact: 'Para o inquilino que nunca lhe falha, o Sr. Jerónimo abre a gaveta de mogno e partilha o seu diário manuscrito de Lisboa antiga. Trata o Zé como um afilhado de armas e garante-lhe direito de preferência vitalício sobre os melhores apartamentos do Chiado.',
+        photos: [
+            { id: 1, title: 'Registo Predial (1988)', caption: 'Sr. Jerónimo de fato castanho a assinar a primeira escritura na Graça.', date: '14 MAI 1988', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'O Mestre das Chaves', caption: 'A fiscalizar as escadarias antigas com o seu lendário molho de 40 chaves de latão.', date: 'ALFAMA 2026', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Memória da Revolução', caption: 'Instantâneo sépia no Rossio com cravo vermelho na lapela em abril de 1974.', date: '25 ABR 1974', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'Brinde nas Águas-Furtadas', caption: 'Sr. Jerónimo e Zé a brindar com licor de poejo: «Ao único inquilino de palavra!»', date: 'MOMENTO RARO', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    tasca: {
+        id: 'tasca',
+        name: 'Ti Zé',
+        fullName: 'Ti Zé das Iscas',
+        epithet: 'O Imperador do Balcão de Zinco',
+        role: 'Mestre Taberneiro de Alfama',
+        location: 'Tasca Ti Zé (Ruelas de Alfama)',
+        color: '#f59e0b',
+        portraitId: 'tasca',
+        interiorKey: 'tasca',
+        baseAffinity: 35,
+        howToIncrease: 'Cumpre turnos na copa e balcão (+4%), pede almoço e imperial (+4%) e pergunta pelo segredo do bitoque (+8%).',
+        howToDecrease: 'Desprezar a comida tradicional, armar confusão no balcão ou abandonar turnos de trabalho a meio (-10%).',
+        bioPublic: 'Veio de Trás-os-Montes com uma saca de castanhas e 14 anos nos anos 60. Começou a lavar tachos de ferro na Ribeira das Naus antes de abrir a sua tasca em Alfama. Homem de bigode imponente, avental de linho e coração gigante, faz da serpentina de cerveja e do fogão a gás o verdadeiro parlamento do povo.',
+        bioNeighbour: 'Não precisa de jornais nem internet para saber os segredos de Lisboa. Pelo seu balcão de zinco já passaram ministros à socapa, contrabandistas do Tejo, fadistas boémios e polícias de folga. Garante que uma imperial bem tirada com dois dedos de espuma branca cura qualquer desilusão amorosa.',
+        bioConfidential: 'Já recusou propostas milionárias de investidores nómadas para transformar a tasca num "avocado toast bar". No entanto, confessa em surdina que teme o dia em que as pernas lhe falhem, pois o sobrinho emigrou para a Suíça e não quer herdar o cheiro a alho e fritura.',
+        bioSecretPact: 'Quando a confiança com o Zé atinge o topo, o Ti Zé entrega-lhe o seu avental suplente bordado à mão e revela o ingrediente secreto do molho do bitoque: um golpe de vinho abafado e banha de porco alentejano curada em pote de barro.',
+        photos: [
+            { id: 1, title: 'Retrato do Balcão', caption: 'Ti Zé de avental imaculado junto à serpentina cromada da imperial.', date: 'ALFAMA 2026', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'Fogo no Ferro Fundido', caption: 'A frigideira a chiar com bifes, louro fresco e dentes de alho esmagados.', date: 'HORA DE PONTA', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Fado Vadio à Porta Fechada', caption: 'Ti Zé a cantarolar uma trova antiga com uma tigela de barro de tinto.', date: 'OUTUBRO 1995', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'A Irmandade dos Dois Zés', caption: 'Ti Zé e Zé Desenrasca abraçados a comer moelas: «A tasca é a tua casa, garoto!»', date: 'NOITE DE OURO', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    supermercado: {
+        id: 'supermercado',
+        name: 'Cátia',
+        fullName: 'Cátia Vanessa dos Santos',
+        epithet: 'A Doçura e Alma do Bairro',
+        role: 'Encarregada da Mercearia Tradicional',
+        location: 'Mercearia da Cátia (desde 1928)',
+        color: '#15803d',
+        portraitId: 'supermercado',
+        interiorKey: 'supermercado',
+        baseAffinity: 30,
+        howToIncrease: 'Cumpre turnos de reposição (+4%), compra bens essenciais (+4%), elogia os frescos e avança no romance (+15%).',
+        howToDecrease: 'Aparecer desmaiado ou nu à beira das arcas congeladoras (-8%) ou quebrar o coração no romance (-30%).',
+        bioPublic: 'Nascida em Marvila e criada no coração da Madragoa. Assumiu o balcão da mercearia após o avô falecer, jurando preservar o toldo listrado de verde e marfim e a venda a granel. Curvilínea, sexy, de sorriso franco e olho clínico, sabe de cor a lista de compras de cada freguês da rua.',
+        bioNeighbour: 'Trabalha do nascer ao pôr-do-sol entre caixas de laranjas de Setúbal, queijos curados e pão quente. Percebe à distância quando o Zé chega com fome e "esquece-se" com frequência de registar a fruta ou os iogurtes na caixa registadora.',
+        bioConfidential: 'Por detrás da boa disposição inabalável, confessa que a gestão da mercearia a isola. Os rapazes da capital assustam-se com mulheres trabalhadoras e autónomas. O seu grande receio é ver a Baixa descaracterizada e transformada num dormitório sem mercearias humanas.',
+        bioSecretPact: 'Com cumplicidade máxima, Cátia partilha o cabaz da mercearia e o coração com o Zé. Promete que aconteça o que acontecer na selva das rendas, haverá sempre pão fresco, azeite virgem e carinho à espera na sua mesa.',
+        photos: [
+            { id: 1, title: 'Encarregada da Mercearia', caption: 'Cátia de bata verde clássica e sorriso acolhedor no balcão de pesagem.', date: 'DESDE 1928', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'Frescos da Horta do Oeste', caption: 'A ajeitar melancias sumarentas e couves frescas no expositor da calçada.', date: 'MANHÃ CEDO', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Fim de Tarde sob o Toldo', caption: 'Pausa merecida sentada no banco exterior a beber uma groselha bem fresca.', date: 'VERÃO 2021', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'O Cabaz do Amor', caption: 'Cátia e Zé com um cesto de piquenique no Tejo: «O melhor cliente do meu coração!»', date: 'AMOR ALFACINHA', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    loja_roupa: {
+        id: 'loja_roupa',
+        name: 'D. Zulmira',
+        fullName: 'D. Zulmira de Bragança e Mello',
+        epithet: 'A Fita Métrica de Ouro do Chiado',
+        role: 'Alta Alfaiate & Costureira de Mestria',
+        location: 'Modas Chiado (Largo do Chiado)',
+        color: '#db2777',
+        portraitId: 'loja_roupa',
+        interiorKey: 'loja_roupa',
+        baseAffinity: 20,
+        howToIncrease: 'Compra vestuário elegante (+8%), veste o Fato Pombalino (+15%), trabalha na loja (+5%) e mantém compostura.',
+        howToDecrease: 'Entrar na loja de roupa interior ou fato rasgado (-20%) ou desrespeitar os tecidos finos (-10%).',
+        bioPublic: 'Herdeira de costureiras de alta roda que vestiam as senhoras da aristocracia e os cavalheiros do Grémio Literário. Tem 60 anos impecavelmente preservados, porte distinto, fita métrica dourada ao pescoço e uma aversão visceral a calções de praia no Chiado.',
+        bioNeighbour: 'Sustenta que «o homem define-se pela dobra das calças e pelo caimento dos ombros». Não tolera sapatilhas de plástico nem fatos sintéticos. Já vestiu desde ministros de Estado a embaixadores, sabendo de cor quem tem postura e quem não passa de um impostor engravatado.',
+        bioConfidential: 'Viveu uma paixão arrebatadora na mocidade com um fidalgo toureiro que partiu cedo. Desde então dedicou a alma à geometria dos tecidos nobres. Sob a fita métrica rigorosa, guarda uma atração secreta por homens audazes que sabem usar um bom corte à antiga.',
+        bioSecretPact: 'Zulmira faz ao Zé um Fato Pombalino sob medida com forro de seda pura bordado à mão e confidência total. Considera-o o rapaz mais bem aprumado de Lisboa e o seu cavalheiro de eleição nas noites de gala do Teatro São Carlos.',
+        photos: [
+            { id: 1, title: 'Ateliê do Chiado', caption: 'D. Zulmira com fita métrica ao pescoço e olhar clínico sobre as sedas nobres.', date: 'CHIADO 2026', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'O Ponto Perfeito', caption: 'A afinar a lapela de um casaco de casimira inglesa no manequim de madeira.', date: 'OFÍCIO NOBRE', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Gala do São Carlos (1985)', caption: 'Instantâneo deslumbrante de Zulmira num vestido de veludo bordeaux.', date: 'OUTUBRO 1985', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'A Medida do Coração', caption: 'Zulmira a medir os ombros do Zé com um sorriso cúmplice: «Um porte à minha altura!»', date: 'SEGREDO CHIADO', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    acampada: {
+        id: 'acampada',
+        name: 'Inês',
+        fullName: 'Inês Madureira',
+        epithet: 'A Voz Imparável dos Sem-Teto',
+        role: 'Porta-Voz da Plataforma Casa Para Viver',
+        location: 'Promenade Marginal (Tendas do Tejo)',
+        color: '#dc2626',
+        portraitId: 'acampada',
+        interiorKey: 'acampada',
+        baseAffinity: 45,
+        howToIncrease: 'Doa mantimentos à cantina comunitária (+12%), pergunta pela vigília (+6%) e junta-te às assembleias populares.',
+        howToDecrease: 'Ostentar luxo desmedido sem ajudar os desalojados ou ignorar o sofrimento de quem dorme na rua (-10%).',
+        bioPublic: 'Socióloga formada pela NOVA, dedicou a juventude ao apoio social nos bairros históricos. Quando o seu prédio na Madragoa foi vendido para alojamento turístico, viu amigos de infância serem expulsos da cidade. Recusou o silêncio e montou a vigília permanente de tendas junto ao Tejo.',
+        bioNeighbour: 'Lidera assembleias ao ar livre, enfrenta notificações judiciais e organiza a distribuição de sopa quente aos desalojados. Garante que a solidariedade da calçada é a única força capaz de travar a voracidade dos fundos imobiliários.',
+        bioConfidential: 'Confessa que o peso emocional da luta é esmagador. Ver famílias com crianças em tendas Quechua sob noites de tempestade tira-lhe o sono. Por vezes refugia-se junto ao farol do cais nas madrugadas apenas para chorar em silêncio antes de empunhar de novo o megafone.',
+        bioSecretPact: 'Reconhece no Zé um verdadeiro companheiro de trincheira. Entrega-lhe a braçadeira histórica do movimento e sela uma lealdade inquebrável: «Podes perder tudo em Lisboa, Zé, mas na nossa tenda nunca te faltará pão, fogo e respeito!»',
+        photos: [
+            { id: 1, title: 'Grito de Resistência', caption: 'Inês com o megafone vermelho e crachá da Plataforma Casa Para Viver.', date: 'TEJO 2026', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'A Vigília das Tendas', caption: 'Assembleia popular ao crepúsculo na margem de pedra do Tejo.', date: 'RESISTÊNCIA', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Caldo Solidário', caption: 'A servir tigelas de sopa quente fumegante na panela comunitária da acampada.', date: 'NOITE FRIA', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'Vitória Popular', caption: 'Inês e Zé de punho erguido na promenade: «Nenhum despejo sem resposta!»', date: 'UNIDOS VENCEMOS', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    faculdade: {
+        id: 'faculdade',
+        name: 'Prof. Leitão',
+        fullName: 'Prof. Dr. Marcelo Leitão',
+        epithet: 'O Terror Estoico da Análise Matemática',
+        role: 'Catedrático Emérito do IST',
+        location: 'Gabinete Pedagógico (Pavilhão Central IST)',
+        color: '#1e3a8a',
+        portraitId: 'faculdade',
+        interiorKey: 'faculdade',
+        baseAffinity: 15,
+        howToIncrease: 'Passa cadeiras curriculares (+8%), pede conselhos de estudo (+8%) e conclui canudos de engenharia.',
+        howToDecrease: 'Faltar a exames, chegar em burnout sem dormir (-8%) ou desrespeitar o rigor científico do Técnico.',
+        bioPublic: 'Formado no IST em 1978 e doutorado no MIT. Leciona há mais de quatro décadas nos anfiteatros monumentais do Técnico. Responsável pelo chumbo lendário de gerações inteiras de caloiros, considera a matemática pura a mais alta manifestação do espírito humano.',
+        bioNeighbour: 'Não tolera calculadoras nem formulas decoradas: «A Ponte 25 de Abril não se aguenta sobre palpites, aguenta-se sobre cálculo tensorial rigoroso!» Lembra os alunos que a fome e as noitadas sem sono são os maiores inimigos da lucidez analítica.',
+        bioConfidential: 'Por detrás da casca severa de giz e bata cinzenta, sofre amargamente ao ver os alunos mais brilhantes do país serem forçados a emigrar para Munique ou Londres por falta de salários decentes em Portugal. Vê o ensino como o seu último dever cívico.',
+        bioSecretPact: 'Ao ver o Zé conquistar os ECTS sem desistir perante a miséria, o Prof. Leitão assina a carta de recomendação académica mais elogiosa da sua carreira e oferece-lhe a sua régua de cálculo de marfim vintage de 1975.',
+        photos: [
+            { id: 1, title: 'Cátedra do IST', caption: 'Prof. Leitão de óculos finos e bata cinzenta no púlpito do Anfiteatro Central.', date: 'IST 2026', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'O Teorema Infinito', caption: 'A preencher um quadro negro de seis metros com integrais triplos e equações.', date: 'AULA TEÓRICA', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Caloiro de 1976', caption: 'Fotografia em preto e branco no relvado do campus com dossier de física.', date: 'OUTUBRO 1976', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'A Bênção do Canudo', caption: 'Leitão a colocar a fita de finalista ao Zé na escadaria: «Honraste a engenharia!»', date: 'GRADUAÇÃO', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    banco: {
+        id: 'banco',
+        name: 'Dr. Alcoviteiro',
+        fullName: 'Dr. Horácio Alcoviteiro',
+        epithet: 'O Guardião do Cofre e do Risco',
+        role: 'Gestor Sénior de Crédito da Caixa',
+        location: 'Agência Baixa-Chiado da Caixa',
+        color: '#854d0e',
+        portraitId: 'banco',
+        interiorKey: 'banco',
+        baseAffinity: 10,
+        howToIncrease: 'Veste Fato Pombalino (+10%), trabalha turnos na Caixa (+5%), mantém saldo positivo e paga empréstimos.',
+        howToDecrease: 'Incumprimento bancário (-15%), entrar de calções ou boxers (-15%) e contas no vermelho com juros.',
+        bioPublic: 'Começou como paquete na tesouraria da Caixa aos 18 anos. Subiu cada degrau da carreira bancária através de pontualidade germânica, rigor estrito e fidelidade cega às diretivas do Banco Central. Fato escuro, cabelo engomado e caneta de ouro são a sua armadura.',
+        bioNeighbour: 'Defende que «o dinheiro tem ouvidos e não suporta desleixo». Recusa liminarmente atender quem não vista o Fato Pombalino das Modas Chiado e exige pelo menos 20 ECTS no IST para validar estágios de tesouraria.',
+        bioConfidential: 'Em segredo, confessa a aflição das metas de crédito impostas pelos conselhos de administração. É forçado a negar empréstimos a pequenas mercearias de bairro enquanto vê fundos insolventes receberem milhões de recapitalização. Toma calmantes antes das reuniões de risco.',
+        bioSecretPact: 'Para com o Zé, que honrou cada cêntimo e construiu património limpo sem trapaças, o Dr. Alcoviteiro quebra a rigidez burocrática: concede-lhe acesso às linhas de investimento mais exclusivas e trata-o com respeito entre pares.',
+        photos: [
+            { id: 1, title: 'Balcão da Caixa', caption: 'Dr. Alcoviteiro de fato escuro e caneta de ouro diante do mármore da agência.', date: 'BAIXA 2026', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'Auditoria de Risco', caption: 'A analisar dossiers de contabilidade com carimbo vermelho sob o candeeiro verde.', date: 'FECHO DE CONTAS', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Primeira Caderneta (1982)', caption: 'Fotografia jovem na tesouraria da Caixa com rolos de máquina de somar.', date: 'JUNHO 1982', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'Aperto de Mão Pombalino', caption: 'Alcoviteiro a entregar a chave do cofre particular ao Zé: «O melhor cliente do banco!»', date: 'CRÉDITO LIMPO', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    startup: {
+        id: 'startup',
+        name: 'D. Mariana',
+        fullName: 'D. Mariana Castelo-Branco',
+        epithet: 'A Conselheira do Futuro Alfacinha',
+        role: 'Técnica Sénior de Emprego do IEFP',
+        location: 'Balcão de Atendimento do IEFP',
+        color: '#065f46',
+        portraitId: 'startup',
+        interiorKey: 'startup',
+        baseAffinity: 25,
+        howToIncrease: 'Consulta vagas e orientações de carreira (+6%), aprimora o CV (+6%) e conclui cursos de qualificação.',
+        howToDecrease: 'Desistir de estágios, mentir nas habilitações ou desrespeitar os funcionários públicos (-10%).',
+        bioPublic: '45 anos, mãe de dois rapazes já na faculdade, há mais de duas décadas no atendimento do IEFP. Já sobreviveu a dezenas de remodelações de governo e planos europeus de qualificação. É a cara serena que recebe quem perdeu o chão no mercado de trabalho.',
+        bioNeighbour: 'Conhece de cor o choque de quem chega pela primeira vez ao centro de emprego. Guarda na gaveta uma caixa de bolachas e pacotes de leite para quem chega em jejum. Sabe exatamente que portas bater na Baixa para arranjar trabalho imediato de reposição ou copa.',
+        bioConfidential: 'Lamenta que muitos programas formativos sirvam apenas para embelezar estatísticas em Bruxelas. O seu verdadeiro triunfo pessoal é quando vê um candidato sem rumo conseguir um contrato estável que lhe permite alugar um quarto e reconstruir a dignidade.',
+        bioSecretPact: 'D. Mariana considera o percurso de sobrevivência e emancipação do Zé o maior caso de sucesso que já passou pelo seu balcão. Guarda o CV dele na pasta de honra do instituto como modelo inspirador de resiliência lisboeta.',
+        photos: [
+            { id: 1, title: 'Balcão de Orientação', caption: 'D. Mariana de óculos de armação fina e blazer verde com dossier de estágios.', date: 'IEFP 2026', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'Sessão de Qualificação', caption: 'A orientar candidatos no auditório com fichas curriculares e mapa de empregos.', date: 'FORMAÇÃO ATIVA', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Marmita no Jardim (2004)', caption: 'Fotografia nostálgica a almoçar com colegas de centro de emprego na relva.', date: 'MAIO 2004', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'Contrato a Efetivo', caption: 'Mariana a carimbar a aprovação final com um sorriso maternal: «Orgulho no teu rumo, Zé!»', date: 'TRIUNFO IEFP', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    miradouro: {
+        id: 'miradouro',
+        name: 'Zé Fadista',
+        fullName: 'Zé do Carmo (O Boémio de Alfama)',
+        epithet: 'O Trovador das Doze Cordas',
+        role: 'Músico de Rua & Mestre de Guitarra',
+        location: 'Miradouro de Santa Luzia / Alfama',
+        color: '#0369a1',
+        portraitId: 'miradouro',
+        interiorKey: 'miradouro',
+        baseAffinity: 35,
+        howToIncrease: 'Pratica guitarra portuguesa no miradouro (+6%), desfruta da vista sobre o Tejo e recupera sanidade mental.',
+        howToDecrease: 'Tratar a música com desdém ou preferir o ruído das buzinas ao silêncio do entardecer (-8%).',
+        bioPublic: 'Nascido nas escadinhas do Beco dos Ramos ao som do xaile da avó e do tinir das cordas. Nunca teve relógio, patrão nem gravata; vive dos aplausos dos transeuntes e do diálogo diário entre a sua guitarra de Lisboa e a brisa que sobe do Tejo.',
+        bioNeighbour: 'Ensina que a capital não se entende com a cabeça, entende-se com o peito. Conhece cada gato que dorme nos telhados de Alfama e prevê a neblina matinal pelo cheiro da maresia na foz do rio.',
+        bioConfidential: 'O seu fado mais comovente foi composto para uma fadista que partiu para o estrangeiro e nunca mais regressou. Toca todos os dias ao pôr-do-sol para que as notas viajem pelas águas do Tejo até onde quer que ela esteja.',
+        bioSecretPact: 'Ao ver a dedicação do Zé às cordas da guitarra portuguesa, entrega-lhe a sua palheta de chifre autêntica e ensina-lhe as variações secretas do Fado Corrido que só os velhos mestres de Alfama sabem dedilhar.',
+        photos: [
+            { id: 1, title: 'Retrato das Cordas', caption: 'Zé Fadista encostado ao murete de azulejos azuis com a guitarra nos braços.', date: 'ALFAMA 2026', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'Dedilhar ao Pôr-do-Sol', caption: 'Grande plano das mãos calejadas a traçar um arpejo sobre as cordas de aço.', date: 'CREPÚSCULO', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Noite de Bairro Alto (1998)', caption: 'À porta de uma casa de fados com xaile nos ombros e copo de tinto na mão.', date: 'NOVEMBRO 1998', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'Dueto sobre o Tejo', caption: 'Zé Fadista e Zé Desenrasca a tocar juntos ao luar: «Quem tem fado nunca anda só!»', date: 'HARMONIA PURA', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    marta: {
+        id: 'marta',
+        name: 'Marta',
+        fullName: 'Marta Esteves (IST)',
+        epithet: 'O Prodígio do Terminal e dos Algoritmos',
+        role: 'Estudante de Engenharia Informática no IST',
+        location: 'Biblioteca & Laboratórios de Redes (IST)',
+        color: '#38bdf8',
+        portraitId: 'faculdade',
+        interiorKey: 'faculdade',
+        baseAffinity: 20,
+        howToIncrease: 'Estuda na faculdade (+5%), avança nas cadeiras do curso (+8%) e partilha noitadas de código e romance (+15%).',
+        howToDecrease: 'Desistir dos estudos, chumbar por falta de empenho ou negligenciar a parceria (-12%).',
+        bioPublic: 'Natural de Leiria, entrou no IST com média de 19,4 valores. Sobrevive a doses maciças de café expresso, auscultadores gigantes e maratonas de programação até às 5 da manhã na biblioteca do campus.',
+        bioNeighbour: 'Perdeu a conta aos hackathons que venceu, mas divide um quarto modesto em Arroios e conta os euros para comprar torradas. Adora discutir arquitetura de sistemas e sonha fundar uma cooperativa tecnológica que ajude Lisboa.',
+        bioConfidential: 'Por detrás do humor nerd e das piadas sobre ponteiros de C, sente uma ansiedade tremenda de falhar e desiludir os pais na aldeia. Procura alguém que a compreenda para além das notas do pautim.',
+        bioSecretPact: 'Aceita construir uma vida a dois com o Zé: dividem o código-fonte dos seus projetos, o ecrã do terminal e a certeza de que nenhuma crise de habitação é mais complexa do que um algoritmo bem desenhado.',
+        photos: [
+            { id: 1, title: 'Crachá Universitário', caption: 'Marta de óculos redondos e camisola desportiva no átrio central do Técnico.', date: 'IST 2026', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'Noitada de Código', caption: 'Rodeada de latas de café e código verde a compilar no terminal às 4 da manhã.', date: 'HACKATHON', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Pausa no Arco do Cego', caption: 'A rir com um galão na esplanada enquanto folheia apontamentos de sistemas.', date: 'PRIMAVERA 2024', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'Compilado com Sucesso', caption: 'Marta e Zé a festejar a entrega do projeto final: «Juntos compilamos qualquer sonho!»', date: 'PARCERIA TECH', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    rui: {
+        id: 'rui',
+        name: 'Rui',
+        fullName: 'Rui Peixoto (Estafeta Ciclista)',
+        epithet: 'O Relâmpago das Sete Colinas',
+        role: 'Estafeta Ciclista da Baixa & Marginal',
+        location: 'Ciclovias do Tejo & Baixa Pombalina',
+        color: '#22c55e',
+        portraitId: 'miradouro',
+        interiorKey: 'supermercado',
+        baseAffinity: 25,
+        howToIncrease: 'Encontra-o na marginal, compra abastecimentos rápidos e avança na afinidade amorosa (+15%).',
+        howToDecrease: 'Preferir transportes poluentes, desprezar o esforço físico ou faltar aos encontros combinados (-12%).',
+        bioPublic: 'Cresceu em Almada a saltar passeios de bicicleta. Começou a fazer entregas rápidas na Baixa para pagar as propinas de Educação Física e nunca mais largou a bicicleta de pinhão fixo.',
+        bioNeighbour: 'Conhece cada calçada escorregadia, cada atalho entre ruelas medievais e o segredo de subir a Calçada de Santana sem pôr o pé no chão. É o homem que sabe onde se comem as bifanas mais saborosas e baratas da cidade.',
+        bioConfidential: 'Já foi abalroado duas vezes por trotinetes de turistas e carros na rotunda do Marquês. Trabalha sob a tirania dos algoritmos de entrega, mas recusa perder o sorriso: para ele, o vento no rosto junto ao rio é a verdadeira liberdade.',
+        bioSecretPact: 'Oferece ao Zé uma parceria incondicional: ensina-lhe todos os atalhos secretos de Lisboa e jura que quando as pernas falharem, há sempre lugar no seu quadro de bicicleta para pedalarem juntos.',
+        photos: [
+            { id: 1, title: 'Capacete e Pedal', caption: 'Rui bem-disposto com mochila térmica às costas junto à sua bicicleta verde.', date: 'BAIXA 2026', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'Curva no Rossio', caption: 'A serpentear com agilidade entre carros e elétricos na azáfama do centro.', date: 'ENTREGA EXPRESS', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Pausa no Cais das Colunas', caption: 'Sentado no guiador a comer uma maçã enquanto olha os cacilheiros no Tejo.', date: 'SETEMBRO 2023', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'Sprint a Dois', caption: 'Rui e Zé a celebrar no alto do Parque Eduardo VII: «Quem pedala junto nunca fica para trás!»', date: 'VITÓRIA ALFACINHA', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    goncalo: {
+        id: 'goncalo',
+        name: 'Gonçalo',
+        fullName: 'Gonçalo de Vasconcelos',
+        epithet: 'O Trovador das Noites Brancas',
+        role: 'Boémio da Tuna Académica & Solista',
+        location: 'Largo do Carmo & Ruelas de Alfama',
+        color: '#c084fc',
+        portraitId: 'miradouro',
+        interiorKey: 'miradouro',
+        baseAffinity: 25,
+        howToIncrease: 'Aprecia serenatas noturnas, apoia as tradições académicas e avança no romance boémio (+15%).',
+        howToDecrease: 'Troçar do traje académico, quebrar promessas de companheirismo ou desvalorizar a poesia (-12%).',
+        bioPublic: 'Eterno estudante de Direito e solista apaixonado da Tuna Académica. A sua capa negra traz mais de vinte rasgões, cada um com a história de uma serenata debaixo de uma varanda alfacinha ou de uma noitada boémia.',
+        bioNeighbour: 'Capaz de rimar sonetos camonianos com a crise das rendas de Lisboa. Onde chega com o seu bandolim e a sua voz de veludo, a melancolia transforma-se em cantoria e os copos de barro enchem-se de vinho novo.',
+        bioConfidential: 'Confessa que quando as luzes da festa se apagam e a rua fica deserta, teme o dia em que terá de arquivar a capa de estudante para vestir um fato cinzento de tribunal. Procura um amor genuíno que compreenda a sua alma trovadora.',
+        bioSecretPact: 'Declara o Zé o seu maior confidente e muso de Lisboa: compõe uma trova exclusiva em sua honra e jura que nas noites mais escuras da capital nunca faltará uma serenata para iluminar o seu caminho.',
+        photos: [
+            { id: 1, title: 'Capa e Batina', caption: 'Gonçalo com o traje negro tradicional de estudante e o bandolim afinado ao peito.', date: 'LISBOA 2026', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'Serenata no Carmo', caption: 'A cantar versos apaixonados sob os arcos góticos do convento iluminados pela lua.', date: 'NOITE DE FADO', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Festa da Tuna (2018)', caption: 'Fotografia nostálgica a brindar com púcaros de barro entre colegas de capa negra.', date: 'MAIO 2018', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'Brinde ao Luar', caption: 'Gonçalo e Zé abraçados junto ao Tejo prateado: «Aos que cantam para não chorar: viva a vida!»', date: 'TROVA ETERNA', minAffinity: 85, type: 'intimate' }
+        ]
+    }
+};
+
+// Funções de Gestão de Afinidade / Proximidade Dinâmica
+function getNpcAffinity(charId) {
+    if (!player.affinity) {
+        player.affinity = {};
+        Object.keys(LISBON_CHARACTERS).forEach(k => {
+            player.affinity[k] = LISBON_CHARACTERS[k].baseAffinity;
+        });
+    }
+    if (player.affinity[charId] === undefined) {
+        const base = (LISBON_CHARACTERS[charId] && LISBON_CHARACTERS[charId].baseAffinity) || 20;
+        player.affinity[charId] = base;
+    }
+    // Sincronizar com afinidade amorosa se existir
+    if (player.romanceAffinity && player.romanceAffinity[charId] !== undefined) {
+        if (player.romanceAffinity[charId] > player.affinity[charId]) {
+            player.affinity[charId] = player.romanceAffinity[charId];
+        }
+    }
+    return Math.max(0, Math.min(100, Math.round(player.affinity[charId])));
+}
+
+function changeNpcAffinity(charId, delta, reason = "") {
+    if (!charId || delta === 0) return;
+    const oldVal = getNpcAffinity(charId);
+    const newVal = Math.max(0, Math.min(100, Math.round(oldVal + delta)));
+    player.affinity[charId] = newVal;
+
+    if (player.romanceAffinity && player.romanceAffinity[charId] !== undefined) {
+        player.romanceAffinity[charId] = newVal;
+    }
+    if (player.relationships && player.relationships[charId]) {
+        player.relationships[charId].points = newVal;
+    }
+
+    const char = LISBON_CHARACTERS[charId] || { name: charId };
+
+    // Verificar se cruzou limiares de fotos (35%, 65%, 85%)
+    const thresholds = [35, 65, 85];
+    thresholds.forEach(th => {
+        if (oldVal < th && newVal >= th) {
+            showToast(`📸 Nova fotografia de ${char.name} desbloqueada no Álbum! (${th}%)`);
+            if (typeof spawnParticle === 'function') spawnParticle(`📸 Foto Desbloqueada (${char.name})!`, '#38bdf8');
+            if (typeof sfxSuccess === 'function') sfxSuccess();
+        } else if (oldVal >= th && newVal < th) {
+            showToast(`⚠️ Proximidade c/ ${char.name} caiu (${newVal}%)! Fotografia arquivada.`);
+            if (typeof spawnParticle === 'function') spawnParticle(`💔 Foto Arquivada (${char.name})`, '#ef4444');
+        }
+    });
+
+    if (typeof spawnParticle === 'function') {
+        if (delta > 0) {
+            spawnParticle(`❤️ ${char.name} +${delta}%`, '#ec4899');
+        } else {
+            spawnParticle(`💔 ${char.name} ${delta}%`, '#ef4444');
+        }
+    }
+
+    // Se o modal do códex estiver aberto, atualizar a vista dinamicamente
+    const modal = document.getElementById('codex-modal');
+    if (modal && modal.style.display === 'flex') {
+        renderCodexModal();
+    }
+}
+
+let selectedCodexChar = 'senhorio';
+
+function openCodexModal(charId = null) {
+    if (charId && LISBON_CHARACTERS[charId]) {
+        selectedCodexChar = charId;
+    }
+    speechBubbles = [];
+    if (typeof initAudio === 'function') initAudio();
+    if (typeof sfxAction === 'function') sfxAction();
+    const modal = document.getElementById('codex-modal');
+    if (!modal) return;
+    renderCodexModal();
+    modal.style.display = 'flex';
+}
+
+function closeCodexModal() {
+    if (typeof sfxAction === 'function') sfxAction();
+    const modal = document.getElementById('codex-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function selectCodexChar(charId) {
+    if (!LISBON_CHARACTERS[charId]) return;
+    selectedCodexChar = charId;
+    if (typeof sfxSelect === 'function') sfxSelect();
+    renderCodexModal();
+}
+
+function getCodexHearts(points) {
+    if (points >= 85) return '❤️❤️❤️❤️';
+    if (points >= 65) return '❤️❤️❤️🤍';
+    if (points >= 35) return '❤️❤️🤍🤍';
+    if (points >= 15) return '❤️🤍🤍🤍';
+    return '🤍🤍🤍🤍';
+}
+
+function getCodexStatusTitle(points) {
+    if (points >= 85) return 'Confidente / Alma Gémea';
+    if (points >= 65) return 'Amigo Bairrista Íntimo';
+    if (points >= 35) return 'Conhecido & Freguês Habitual';
+    if (points >= 15) return 'Tratamento Formal / Cautela';
+    return 'Distante / Desconfiado';
+}
+
+function renderCodexModal() {
+    const listEl = document.getElementById('codex-list');
+    const detailEl = document.getElementById('codex-detail');
+    const summaryEl = document.getElementById('codex-summary');
+    if (!listEl || !detailEl) return;
+
+    const charKeys = Object.keys(LISBON_CHARACTERS);
+    let totalPhotosUnlocked = 0;
+    const totalPhotosPossible = charKeys.length * 4;
+
+    charKeys.forEach(k => {
+        const c = LISBON_CHARACTERS[k];
+        const aff = getNpcAffinity(k);
+        const unl = c.photos.filter(p => aff >= p.minAffinity).length;
+        totalPhotosUnlocked += unl;
+    });
+
+    if (summaryEl) {
+        summaryEl.textContent = `${totalPhotosUnlocked} / ${totalPhotosPossible} FOTOGRAFIAS NO ÁLBUM`;
+    }
+
+    // 1. Barra Lateral com as 12 Personagens
+    listEl.innerHTML = charKeys.map(k => {
+        const c = LISBON_CHARACTERS[k];
+        const aff = getNpcAffinity(k);
+        const unl = c.photos.filter(p => aff >= p.minAffinity).length;
+        const isSel = k === selectedCodexChar;
+        const hearts = getCodexHearts(aff);
+
+        return `
+            <div class="codex-char-card ${isSel ? 'selected' : ''}" onclick="selectCodexChar('${k}')">
+                <div class="codex-char-top">
+                    <span class="codex-char-name">${c.name}</span>
+                    <span class="codex-char-photo-badge">📸 ${unl}/4</span>
+                </div>
+                <div class="codex-char-role">${c.role}</div>
+                <div class="codex-char-bar-wrap">
+                    <div class="codex-char-bar-track">
+                        <div class="codex-char-bar-fill" style="width: ${aff}%;"></div>
+                    </div>
+                    <span class="codex-char-aff-text">${aff}%</span>
+                </div>
+                <div style="font-size:0.50rem; margin-top:1px;">${hearts}</div>
+            </div>
+        `;
+    }).join('');
+
+    // 2. Painel Principal da Personagem Selecionada
+    const cur = LISBON_CHARACTERS[selectedCodexChar] || LISBON_CHARACTERS.senhorio;
+    const curAff = getNpcAffinity(cur.id);
+    const hearts = getCodexHearts(curAff);
+    const statusText = getCodexStatusTitle(curAff);
+
+    const isT2Unlocked = curAff >= 35;
+    const isT3Unlocked = curAff >= 65;
+    const isT4Unlocked = curAff >= 85;
+
+    detailEl.innerHTML = `
+        <!-- Cabeçalho de Perfil -->
+        <div class="codex-header-card">
+            <div class="codex-portrait-box">
+                <canvas id="codex-portrait-canvas" width="72" height="72"></canvas>
+            </div>
+            <div class="codex-header-info">
+                <div class="codex-title-row">
+                    <span class="codex-hero-name">${cur.fullName.toUpperCase()}</span>
+                    <span style="font-size:0.65rem;">${hearts}</span>
+                </div>
+                <div class="codex-epithet">« ${cur.epithet} »</div>
+                <div class="codex-meta-row">
+                    <span>📍 ${cur.location}</span>
+                    <span>💼 ${cur.role}</span>
+                </div>
+                <div class="codex-affinity-panel">
+                    <div class="codex-affinity-status-line">
+                        <span style="color:#fde047; font-weight:bold;">VÍNCULO: ${statusText}</span>
+                        <span style="font-family:'Press Start 2P'; font-size:0.42rem; color:#ec4899;">${curAff}% PROXIMIDADE</span>
+                    </div>
+                    <div class="codex-char-bar-track" style="height:6px;">
+                        <div class="codex-char-bar-fill" style="width: ${curAff}%;"></div>
+                    </div>
+                    <div class="codex-tier-advice">
+                        💡 <b>Como aproximar:</b> ${cur.howToIncrease}<br>
+                        ⚠️ <b>Atenção:</b> ${cur.howToDecrease}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biografia Ampliada & Segredos por Patamar de Proximidade -->
+        <div class="codex-section">
+            <div class="codex-section-title">📖 BIOGRAFIA EXPANDIDA & MEMÓRIAS DE LISBOA</div>
+            
+            <div class="codex-bio-paragraph">
+                <span style="color:#facc15; font-weight:bold;">📜 REGISTO PÚBLICO & HISTÓRIA DE VIDA:</span><br>
+                ${cur.bioPublic}
+            </div>
+
+            <!-- Tier 2 (35%+) -->
+            <div class="codex-tier-card ${isT2Unlocked ? 'unlocked' : 'locked'}">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:bold; color:${isT2Unlocked ? '#38bdf8' : '#94a3b8'};">
+                        ${isT2Unlocked ? '✓' : '🔒'} MEMÓRIAS DO BAIRRO (Requer 35% Proximidade)
+                    </span>
+                    <span class="codex-tier-badge ${isT2Unlocked ? 'unlocked' : 'locked'}">${isT2Unlocked ? 'DESBLOQUEADO' : 'BLOQUEADO'}</span>
+                </div>
+                <div>${isT2Unlocked ? cur.bioNeighbour : '« Esta personagem ainda mantém reserva formal. Passa mais tempo com ela e ganha a sua confiança para ouvir estas histórias. »'}</div>
+            </div>
+
+            <!-- Tier 3 (65%+) -->
+            <div class="codex-tier-card ${isT3Unlocked ? 'unlocked' : 'locked'}">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:bold; color:${isT3Unlocked ? '#38bdf8' : '#94a3b8'};">
+                        ${isT3Unlocked ? '✓' : '🔒'} CONFIDÊNCIAS ÍNTIMAS & VULNERABILIDADES (Requer 65% Proximidade)
+                    </span>
+                    <span class="codex-tier-badge ${isT3Unlocked ? 'unlocked' : 'locked'}">${isT3Unlocked ? 'DESBLOQUEADO' : 'BLOQUEADO'}</span>
+                </div>
+                <div>${isT3Unlocked ? cur.bioConfidential : '« Segredos guardados a sete chaves sobre pressões, desgostos e as verdades que Lisboa não conta em público. »'}</div>
+            </div>
+
+            <!-- Tier 4 (85%+) -->
+            <div class="codex-tier-card ${isT4Unlocked ? 'unlocked' : 'locked'}">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:bold; color:${isT4Unlocked ? '#facc15' : '#94a3b8'};">
+                        ${isT4Unlocked ? '★' : '🔒'} PACTO DE SANGUE ALFACINHA & LEALDADE COM O ZÉ (Requer 85% Proximidade)
+                    </span>
+                    <span class="codex-tier-badge ${isT4Unlocked ? 'unlocked' : 'locked'}">${isT4Unlocked ? 'CONQUISTADO' : 'BLOQUEADO'}</span>
+                </div>
+                <div>${isT4Unlocked ? cur.bioSecretPact : '« Apenas quem alcança cumplicidade absoluta e nunca falha à palavra tem acesso a esta aliança perpétua. »'}</div>
+            </div>
+        </div>
+
+        <!-- Álbum de Instantâneos (Polaroids Dinâmicas) -->
+        <div class="codex-section">
+            <div class="codex-section-title">
+                <span>📸 ÁLBUM DE INSTANTÂNEOS DE ${cur.name.toUpperCase()}</span>
+                <span style="font-size:0.44rem; color:#94a3b8;">(${cur.photos.filter(p => curAff >= p.minAffinity).length}/4 FOTOS ATIVAS)</span>
+            </div>
+            
+            <div class="polaroid-grid">
+                ${cur.photos.map((p, pIdx) => {
+                    const isUnlocked = curAff >= p.minAffinity;
+                    return `
+                        <div class="polaroid-card ${isUnlocked ? 'unlocked' : 'locked'}">
+                            <div class="polaroid-photo-frame">
+                                <canvas class="polaroid-photo-canvas" id="polaroid-canvas-${cur.id}-${pIdx}" width="160" height="120"></canvas>
+                                ${!isUnlocked ? `
+                                    <div class="polaroid-lock-overlay">
+                                        <span style="font-size:1rem;">🔒</span>
+                                        <span>REQUER ${p.minAffinity}%</span>
+                                        <small style="color:#64748b;">(Atual: ${curAff}%)</small>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="polaroid-caption">
+                                <div class="polaroid-title">${isUnlocked ? p.title : 'Momento Oculto'}</div>
+                                <div class="polaroid-desc">${isUnlocked ? p.caption : `Aumenta a proximidade para ${p.minAffinity}% para revelar esta recordação.`}</div>
+                                ${isUnlocked && p.date ? `<div class="polaroid-date">★ ${p.date} ★</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+
+    // Desenhar o retrato principal no cabeçalho
+    const pCanvas = document.getElementById('codex-portrait-canvas');
+    if (pCanvas) {
+        const pCtx = pCanvas.getContext('2d');
+        if (pCtx && typeof drawNpcPortrait === 'function') {
+            drawNpcPortrait(cur.portraitId, 0, 0, 72, pCtx);
+        }
+    }
+
+    // Desenhar as 4 polaroids nos respetivos canvases
+    cur.photos.forEach((p, pIdx) => {
+        const cElem = document.getElementById(`polaroid-canvas-${cur.id}-${pIdx}`);
+        if (cElem) {
+            const isUnlocked = curAff >= p.minAffinity;
+            drawPolaroidSnapshot(cElem, cur.id, pIdx, curAff, isUnlocked);
+        }
+    });
+}
+
+function drawPolaroidSnapshot(c, charId, pIdx, aff, isUnlocked) {
+    if (!c) return;
+    const pctx = c.getContext('2d');
+    if (!pctx) return;
+    const w = c.width;
+    const h = c.height;
+
+    pctx.clearRect(0, 0, w, h);
+
+    const char = LISBON_CHARACTERS[charId];
+    if (!char) return;
+    const photo = char.photos[pIdx];
+
+    if (!isUnlocked) {
+        // Fundo escuro com grelha e cadeado
+        pctx.fillStyle = '#090d16';
+        pctx.fillRect(0, 0, w, h);
+
+        pctx.strokeStyle = 'rgba(51, 65, 85, 0.4)';
+        pctx.lineWidth = 1;
+        for (let y = 0; y < h; y += 8) {
+            pctx.beginPath();
+            pctx.moveTo(0, y);
+            pctx.lineTo(w, y);
+            pctx.stroke();
+        }
+
+        // Silhueta ténue do busto
+        pctx.save();
+        pctx.globalAlpha = 0.12;
+        if (typeof drawNpcPortrait === 'function') {
+            drawNpcPortrait(char.portraitId, (w - 64) / 2, (h - 64) / 2, 64, pctx);
+        }
+        pctx.restore();
+        return;
+    }
+
+    // Modo Desbloqueado: Composição 16-Bit Temática
+    pctx.save();
+    pctx.imageSmoothingEnabled = false;
+
+    if (photo.type === 'portrait') {
+        // Foto 1: Retrato Oficial Nítido
+        const grad = pctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, '#1e293b');
+        grad.addColorStop(1, '#090d16');
+        pctx.fillStyle = grad;
+        pctx.fillRect(0, 0, w, h);
+
+        pctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+        pctx.lineWidth = 2;
+        pctx.strokeRect(2, 2, w - 4, h - 4);
+
+        if (typeof drawNpcPortrait === 'function') {
+            drawNpcPortrait(char.portraitId, (w - 74) / 2, (h - 74) / 2, 74, pctx);
+        }
+
+    } else if (photo.type === 'work') {
+        // Foto 2: No seu Posto / Interior de Lisboa
+        const intImg = (typeof interiorImgs !== 'undefined' && interiorImgs[char.interiorKey]) || (typeof boardImg !== 'undefined' ? boardImg : null);
+        if (intImg && intImg.complete && intImg.naturalWidth > 0) {
+            pctx.drawImage(intImg, 40, 20, 560, 260, 0, 0, w, h);
+        } else {
+            pctx.fillStyle = '#1e3a8a';
+            pctx.fillRect(0, 0, w, h);
+        }
+        pctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+        pctx.fillRect(0, 0, w, h);
+
+        // Moldura do busto no canto
+        pctx.save();
+        pctx.strokeStyle = '#facc15';
+        pctx.lineWidth = 2;
+        pctx.strokeRect(w - 56, h - 56, 52, 52);
+        if (typeof drawNpcPortrait === 'function') {
+            drawNpcPortrait(char.portraitId, w - 54, h - 54, 48, pctx);
+        }
+        pctx.restore();
+
+    } else if (photo.type === 'vintage') {
+        // Foto 3: Recordação Vintage Sépia
+        const grad = pctx.createLinearGradient(0, 0, w, h);
+        grad.addColorStop(0, '#78350f');
+        grad.addColorStop(1, '#451a03');
+        pctx.fillStyle = grad;
+        pctx.fillRect(0, 0, w, h);
+
+        if (typeof drawNpcPortrait === 'function') {
+            drawNpcPortrait(char.portraitId, (w - 70) / 2, (h - 70) / 2, 70, pctx);
+        }
+
+        pctx.fillStyle = 'rgba(217, 119, 6, 0.30)';
+        pctx.fillRect(0, 0, w, h);
+
+        pctx.fillStyle = '#fbbf24';
+        pctx.font = 'bold 7px monospace';
+        pctx.textAlign = 'right';
+        pctx.fillText('★ RETRO 16-BIT ★', w - 6, h - 8);
+
+    } else if (photo.type === 'intimate') {
+        // Foto 4: Polaroid Dourada Especial c/ Zé
+        const grad = pctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, '#831843');
+        grad.addColorStop(1, '#1e1b4b');
+        pctx.fillStyle = grad;
+        pctx.fillRect(0, 0, w, h);
+
+        pctx.strokeStyle = '#f59e0b';
+        pctx.lineWidth = 3;
+        pctx.strokeRect(2, 2, w - 4, h - 4);
+
+        // Retrato do NPC à esquerda
+        if (typeof drawNpcPortrait === 'function') {
+            drawNpcPortrait(char.portraitId, 8, (h - 60) / 2, 60, pctx);
+        }
+
+        // Sprite do Zé à direita
+        if (typeof zeSheetImg !== 'undefined' && zeSheetImg && zeSheetImg.complete && zeSheetImg.naturalWidth > 0) {
+            pctx.drawImage(zeSheetImg, 0, 0, 32, 48, w - 54, (h - 64) / 2, 44, 66);
+        }
+
+        pctx.fillStyle = '#ec4899';
+        pctx.font = '12px monospace';
+        pctx.textAlign = 'center';
+        pctx.fillText('❤️', w / 2, 22);
+        pctx.fillText('✨', w / 2, h - 12);
+    }
+
+    pctx.restore();
+}
+
+
+// ============================================================================
 // 9. LEADERBOARD (HALL OF FAME) & API
 // ============================================================================
 let isScoreSubmitted = false;
@@ -11364,9 +12565,14 @@ function escapeHtml(str) {
 
 function showToast(msg) {
     const t = document.getElementById('toast');
+    if (!t) return;
     t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3500);
+    if (t.classList && t.classList.add) {
+        t.classList.add('show');
+        setTimeout(() => {
+            if (t.classList && t.classList.remove) t.classList.remove('show');
+        }, 3500);
+    }
 }
 
 loadAchievements();

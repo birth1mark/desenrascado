@@ -93,6 +93,7 @@ const sandbox = {
     performance: { now: () => Date.now() },
     requestAnimationFrame: (fn) => setTimeout(fn, 16),
     console: console,
+    assert: assert,
     Math: Math,
     setTimeout: (fn) => setTimeout(fn, 1),
     setInterval: () => 1,
@@ -244,10 +245,67 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.0', "ASSET_VER incrementado para 6.8");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.0' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.1', "ASSET_VER incrementado para 7.1");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.1' confirmado!");
+
+// -----------------------------------------------------------------------------
+// TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
+// -----------------------------------------------------------------------------
+const LISBON_CHARACTERS = vm.runInContext("LISBON_CHARACTERS", sandbox);
+assert(LISBON_CHARACTERS, "Catálogo LISBON_CHARACTERS existe");
+
+const expectedChars = [
+    'senhorio', 'tasca', 'supermercado', 'loja_roupa', 'acampada',
+    'faculdade', 'banco', 'startup', 'miradouro', 'marta', 'rui', 'goncalo'
+];
+
+assert.strictEqual(Object.keys(LISBON_CHARACTERS).length, 12, "Existem exatamente 12 personagens em LISBON_CHARACTERS");
+expectedChars.forEach(key => {
+    const c = LISBON_CHARACTERS[key];
+    assert(c, `Personagem '${key}' existe no códex`);
+    assert(c.fullName && c.role && c.location, `'${key}' tem atributos biográficos completos`);
+    assert(c.bioPublic && c.bioNeighbour && c.bioConfidential && c.bioSecretPact, `'${key}' tem os 4 patamares de biografia expandida`);
+    assert.strictEqual(c.photos.length, 4, `'${key}' tem exatamente 4 fotografias polaroid`);
+    assert.strictEqual(c.photos[0].minAffinity, 0, `'${key}' foto 1 tem minAffinity = 0%`);
+    assert.strictEqual(c.photos[1].minAffinity, 35, `'${key}' foto 2 tem minAffinity = 35%`);
+    assert.strictEqual(c.photos[2].minAffinity, 65, `'${key}' foto 3 tem minAffinity = 65%`);
+    assert.strictEqual(c.photos[3].minAffinity, 85, `'${key}' foto 4 tem minAffinity = 85%`);
+});
+
+// Teste de Afinidade / Proximidade Dinâmica
+vm.runInContext(`
+    player.affinity = null;
+    const initialAff = getNpcAffinity('senhorio');
+    assert.strictEqual(initialAff, 30, "Afinidade base do senhorio é 30%");
+
+    // Aumentar proximidade
+    changeNpcAffinity('senhorio', 10, 'Teste Pagamento');
+    assert.strictEqual(getNpcAffinity('senhorio'), 40, "Afinidade subiu para 40%");
+
+    // Foto 2 (limiar 35%) deve agora estar desbloqueada
+    const charSenhorio = LISBON_CHARACTERS.senhorio;
+    const unlPhotos1 = charSenhorio.photos.filter(p => getNpcAffinity('senhorio') >= p.minAffinity);
+    assert.strictEqual(unlPhotos1.length, 2, "Com 40% proximidade, 2 fotos desbloqueadas");
+
+    // Diminuir proximidade (relock / arquivar)
+    changeNpcAffinity('senhorio', -15, 'Atraso na renda');
+    assert.strictEqual(getNpcAffinity('senhorio'), 25, "Afinidade desceu para 25%");
+
+    // Foto 2 foi arquivada (proximidade caiu abaixo de 35%)
+    const unlPhotos2 = charSenhorio.photos.filter(p => getNpcAffinity('senhorio') >= p.minAffinity);
+    assert.strictEqual(unlPhotos2.length, 1, "Com 25% proximidade, foto 2 voltou a ficar bloqueada (arquivada)");
+
+    // Teste de Modal do Códex
+    openCodexModal('tasca');
+    assert.strictEqual(selectedCodexChar, 'tasca', "openCodexModal selecionou 'tasca'");
+    selectCodexChar('loja_roupa');
+    assert.strictEqual(selectedCodexChar, 'loja_roupa', "selectCodexChar selecionou 'loja_roupa'");
+    closeCodexModal();
+`, sandbox);
+
+console.log("✓ 8. Códex 'Quem é Quem' & Fotografias Dinâmicas: 12 biografias ampliadas, desbloqueio e relock de fotos validados!");
 
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 7 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 8 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");
