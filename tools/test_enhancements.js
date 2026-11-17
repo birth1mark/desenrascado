@@ -57,12 +57,13 @@ const sandbox = {
                 getContext() {
                     return {
                         measureText(text) { return { width: (text || '').length * 6 }; },
-                        fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}
+                        fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}, rect() {}, clip() {}
                     };
                 },
                 addEventListener() {},
                 getBoundingClientRect() { return { left: 0, top: 0, width: 640, height: 360 }; },
                 style: {},
+                classList: { add() {}, remove() {}, contains() { return false; } },
                 width: 640,
                 height: 360
             };
@@ -73,7 +74,7 @@ const sandbox = {
                 getContext() {
                     return {
                         measureText(text) { return { width: (text || '').length * 6 }; },
-                        fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}
+                        fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}, rect() {}, clip() {}
                     };
                 },
                 style: {},
@@ -245,8 +246,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.1', "ASSET_VER incrementado para 7.1");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.1' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.2', "ASSET_VER incrementado para 7.2");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.2' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -305,7 +306,91 @@ vm.runInContext(`
 
 console.log("✓ 8. Códex 'Quem é Quem' & Fotografias Dinâmicas: 12 biografias ampliadas, desbloqueio e relock de fotos validados!");
 
+// -----------------------------------------------------------------------------
+// TESTE 9: AUDITORIA EXAUSTIVA DE TODOS OS MENUS E OPÇÕES (ZERO OVERFLOW)
+// -----------------------------------------------------------------------------
+const allTrees = vm.runInContext("DIALOGUE_TREES", sandbox);
+const dialogueBottom = 135 + 152; // dy + dh = 287 (abaixo de 295)
+let dialogueOverflows = [];
+let totalChoicesChecked = 0;
+
+for (const [tId, t] of Object.entries(allTrees)) {
+    for (const [nId, n] of Object.entries(t.nodes)) {
+        vm.runInContext(`
+            activeDialogueTree = { treeId: '${tId}', config: DIALOGUE_TREES['${tId}'], currentNodeId: '${nId}', choiceBoxes: [] };
+            renderDialogueTree(ctx, 0);
+        `, sandbox);
+
+        const choiceBoxes = vm.runInContext("activeDialogueTree.choiceBoxes", sandbox) || [];
+        choiceBoxes.forEach((b, idx) => {
+            totalChoicesChecked++;
+            const bottom = b.y + b.h;
+            if (bottom > dialogueBottom) {
+                dialogueOverflows.push({ tree: tId, node: nId, choiceIdx: idx, bottom, max: dialogueBottom });
+            }
+        });
+    }
+}
+assert.strictEqual(dialogueOverflows.length, 0, "Nenhuma escolha de diálogo transborda da moldura!");
+
+const allBuildings = vm.runInContext("BUILDINGS", sandbox);
+const bMx = 40, bMy = 10, bMw = 560, bMh = 275;
+const modalBottom = bMy + bMh; // 285 (abaixo de 295)
+
+const scenarios = [
+    { name: "Sem-Abrigo, Desempregado", setup: (p) => { p.houseIndex = 0; p.currentWorkplace = null; p.partner = null; } },
+    { name: "Arroios, Mercearia Cátia", setup: (p) => { p.houseIndex = 2; p.currentWorkplace = 'pingo_doce'; p.partner = 'catia'; p.careerRanks.pingo_doce = 1; } },
+    { name: "Chiado T1, Caixa Geral", setup: (p) => { p.houseIndex = 4; p.currentWorkplace = 'banco'; p.partner = 'marta'; p.careerRanks.banco = 2; } }
+];
+
+let totalActionCardsChecked = 0;
+let totalPaginationBarsChecked = 0;
+let buildingOverflows = [];
+
+scenarios.forEach(sc => {
+    allBuildings.forEach(b => {
+        vm.runInContext(`
+            (${sc.setup.toString()})(player);
+            modalBuilding = BUILDINGS.find(x => x.id === '${b.id}');
+            modalBuilding.actionPage = 0;
+            renderBuildingActions('${b.id}', ${bMx}, ${bMy}, ${bMw}, ${bMh});
+        `, sandbox);
+
+        const pagination = vm.runInContext("modalBuilding.pagination", sandbox);
+        const totalPages = pagination ? pagination.totalPages : 1;
+
+        for (let page = 0; page < totalPages; page++) {
+            vm.runInContext(`
+                modalBuilding.actionPage = ${page};
+                renderBuildingActions('${b.id}', ${bMx}, ${bMy}, ${bMw}, ${bMh});
+            `, sandbox);
+
+            const boxes = vm.runInContext("modalBuilding.actionBoxes", sandbox) || [];
+            boxes.forEach((box, idx) => {
+                totalActionCardsChecked++;
+                const bottom = box.y + box.h;
+                if (bottom > modalBottom) {
+                    buildingOverflows.push({ building: b.id, scenario: sc.name, page, item: `Card ${idx} [${box.action.label}]`, bottom, max: modalBottom });
+                }
+            });
+
+            if (totalPages > 1) {
+                totalPaginationBarsChecked++;
+                const pInfo = vm.runInContext("modalBuilding.pagination", sandbox);
+                const prevBottom = pInfo.prevBtn.y + pInfo.prevBtn.h;
+                const nextBottom = pInfo.nextBtn.y + pInfo.nextBtn.h;
+                if (prevBottom > modalBottom || nextBottom > modalBottom) {
+                    buildingOverflows.push({ building: b.id, scenario: sc.name, page, item: "Pagination Bar", bottom: Math.max(prevBottom, nextBottom), max: modalBottom });
+                }
+            }
+        }
+    });
+});
+
+assert.strictEqual(buildingOverflows.length, 0, "Nenhum cartão ou barra de paginação transborda do modal!");
+console.log(`✓ 9. Auditoria Exaustiva de Menus: ${totalChoicesChecked} opções de diálogo e ${totalActionCardsChecked} ações testadas com ZERO OVERFLOW!`);
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 8 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 9 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");

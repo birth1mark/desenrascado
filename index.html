@@ -3649,7 +3649,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '7.1';
+const ASSET_VER = '7.2';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -4986,9 +4986,9 @@ function renderStreetEncounter(ctx, animTimer) {
     if (!activeEncounter) return;
 
     const ex = 40;
-    const ey = 190;
+    const ey = 180;
     const ew = 560;
-    const eh = 100;
+    const eh = 102;
 
     // Fundo SCUMM Translúcido Elegante
     ctx.fillStyle = 'rgba(9, 13, 22, 0.95)';
@@ -5058,9 +5058,9 @@ function handleStreetEncounterClick(cx, cy) {
     if (!activeEncounter) return false;
 
     const ex = 40;
-    const ey = 190;
+    const ey = 180;
     const ew = 560;
-    const eh = 100;
+    const eh = 102;
 
     // Botão Fechar ✕
     if (cx >= ex + ew - 26 && cx <= ex + ew - 6 && cy >= ey + 2 && cy <= ey + 20) {
@@ -5507,9 +5507,9 @@ function renderDialogueTree(ctx, animTimer) {
     }
 
     const dx = 35;
-    const dy = 160;
+    const dy = 135;
     const dw = 570;
-    const dh = 125;
+    const dh = 152;
 
     // Fundo SCUMM translúcido refinado
     ctx.fillStyle = 'rgba(10, 15, 26, 0.96)';
@@ -5531,27 +5531,27 @@ function renderDialogueTree(ctx, animTimer) {
     ctx.fillRect(dx + dw - 2, dy + dh - 2, 3, 3);
 
     // Retrato do Interlocutor à esquerda
-    const pSize = 68;
+    const pSize = 64;
     const px = dx + 10;
-    const py = dy + 32;
+    const py = dy + 28;
     drawNpcPortrait(tree.portraitId, px, py, pSize);
 
     // Cabeçalho: Nome e Papel
     ctx.fillStyle = '#facc15';
     ctx.font = 'bold 9px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(tree.name.toUpperCase(), dx + 88, dy + 18);
+    ctx.fillText(tree.name.toUpperCase(), dx + 84, dy + 16);
 
     ctx.fillStyle = '#94a3b8';
     ctx.font = '8px "Fira Code"';
-    ctx.fillText(`— ${tree.role}`, dx + 88 + ctx.measureText(tree.name.toUpperCase()).width + 8, dy + 18);
+    ctx.fillText(`— ${tree.role}`, dx + 84 + ctx.measureText(tree.name.toUpperCase()).width + 8, dy + 16);
 
     // Botão Fechar ✕
     const isHoverClose = (mouse.x >= dx + dw - 24 && mouse.x <= dx + dw - 6 && mouse.y >= dy + 4 && mouse.y <= dy + 22);
     ctx.fillStyle = isHoverClose ? '#fca5a5' : '#ef4444';
     ctx.font = 'bold 12px "Fira Code"';
     ctx.textAlign = 'center';
-    ctx.fillText("✕", dx + dw - 15, dy + 18);
+    ctx.fillText("✕", dx + dw - 15, dy + 17);
 
     // Texto de Diálogo do NPC
     let spokenText = node.dynamicText ? node.dynamicText(player) : node.text;
@@ -5560,7 +5560,7 @@ function renderDialogueTree(ctx, animTimer) {
     ctx.textAlign = 'left';
 
     // Quebra de linha suave para o texto do NPC
-    const textMaxWidth = dw - 100;
+    const textMaxWidth = dw - 96;
     const words = spokenText.split(' ');
     let lines = [];
     let curLine = '';
@@ -5576,14 +5576,14 @@ function renderDialogueTree(ctx, animTimer) {
     if (curLine) lines.push(curLine.trim());
 
     lines.slice(0, 2).forEach((l, idx) => {
-        ctx.fillText(l, dx + 88, dy + 34 + idx * 13, textMaxWidth);
+        ctx.fillText(l, dx + 84, dy + 29 + idx * 12, textMaxWidth);
     });
 
     // Separador
     ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
     ctx.beginPath();
-    ctx.moveTo(dx + 88, dy + 62);
-    ctx.lineTo(dx + dw - 12, dy + 62);
+    ctx.moveTo(dx + 84, dy + 49);
+    ctx.lineTo(dx + dw - 12, dy + 49);
     ctx.stroke();
 
     // Escolhas do Jogador (Player Dialogue Choices)
@@ -5591,41 +5591,41 @@ function renderDialogueTree(ctx, animTimer) {
     activeDialogueTree.currentChoices = choices;
     activeDialogueTree.choiceBoxes = [];
 
-    const startChoiceY = dy + 70;
-    const choiceH = 17;
+    const startChoiceY = dy + 53;
+    const choiceH = choices.length > 4 ? 15 : 16.5;
     const choiceGap = 2;
 
     choices.forEach((c, idx) => {
         const cy = startChoiceY + idx * (choiceH + choiceGap);
-        const isHover = (mouse.x >= dx + 88 && mouse.x <= dx + dw - 12 && mouse.y >= cy && mouse.y <= cy + choiceH);
+        const isHover = (mouse.x >= dx + 84 && mouse.x <= dx + dw - 12 && mouse.y >= cy && mouse.y <= cy + choiceH);
 
         activeDialogueTree.choiceBoxes.push({
-            x: dx + 88,
+            x: dx + 84,
             y: cy,
-            w: dw - 100,
+            w: dw - 96,
             h: choiceH,
             choice: c
         });
 
         if (isHover) {
             ctx.fillStyle = 'rgba(3, 105, 161, 0.45)';
-            ctx.fillRect(dx + 88, cy, dw - 100, choiceH);
+            ctx.fillRect(dx + 84, cy, dw - 96, choiceH);
             ctx.strokeStyle = '#38bdf8';
             ctx.lineWidth = 1;
-            ctx.strokeRect(dx + 88, cy, dw - 100, choiceH);
+            ctx.strokeRect(dx + 84, cy, dw - 96, choiceH);
         }
 
         ctx.fillStyle = isHover ? '#facc15' : (c.nextNode === 'exit' ? '#94a3b8' : '#86efac');
         ctx.font = isHover ? 'bold 9px "Fira Code"' : '8.5px "Fira Code"';
         ctx.textAlign = 'left';
         const prefix = isHover ? '▶ ' : '  ';
-        ctx.fillText(`${prefix}${c.text}`, dx + 92, cy + 12, dw - 108);
+        ctx.fillText(`${prefix}${c.text}`, dx + 88, cy + (choiceH - 4), dw - 104);
     });
 }
 
 function handleDialogueTreeClick(cx, cy) {
     if (!activeDialogueTree) return false;
-    const dx = 35, dy = 160, dw = 570, dh = 125;
+    const dx = 35, dy = 135, dw = 570, dh = 152;
 
     // Fechar no botão ✕
     if (cx >= dx + dw - 24 && cx <= dx + dw - 6 && cy >= dy + 4 && cy <= dy + 22) {
@@ -9339,9 +9339,9 @@ function renderBuildingModal() {
     ctx.fillRect(0, 0, canvas.width, 295);
 
     const mx = 40;
-    const my = 14;
+    const my = 10;
     const mw = 560;
-    const mh = 267;
+    const mh = 275;
 
     // Caixa Principal em vidro fosco elegante (translucent glass)
     ctx.fillStyle = 'rgba(11, 15, 25, 0.88)';
@@ -9352,24 +9352,24 @@ function renderBuildingModal() {
 
     // Cabeçalho da Loja
     ctx.fillStyle = modalBuilding.color;
-    ctx.fillRect(mx, my, mw, 34);
+    ctx.fillRect(mx, my, mw, 32);
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '9px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(`${modalBuilding.icon} ${modalBuilding.name.toUpperCase()} — ${modalBuilding.tag}`, mx + 14, my + 22);
+    ctx.fillText(`${modalBuilding.icon} ${modalBuilding.name.toUpperCase()} — ${modalBuilding.tag}`, mx + 14, my + 21);
 
     // Botão Fechar X
-    const isHoverX = (mouse.x >= mx + mw - 32 && mouse.x <= mx + mw - 6 && mouse.y >= my + 4 && mouse.y <= my + 30);
+    const isHoverX = (mouse.x >= mx + mw - 32 && mouse.x <= mx + mw - 6 && mouse.y >= my + 4 && mouse.y <= my + 28);
     ctx.fillStyle = isHoverX ? '#fca5a5' : '#ef4444';
     ctx.font = 'bold 16px "Fira Code"';
     ctx.textAlign = 'center';
-    ctx.fillText("✕", mx + mw - 18, my + 23);
+    ctx.fillText("✕", mx + mw - 18, my + 22);
 
     // 1. COLUNA ESQUERDA: RETRATO PIXEL ART & DIÁLOGO SATÍRICO
     const px = mx + 14;
-    const py = my + 44;
-    const pSize = 104;
+    const py = my + 38;
+    const pSize = 100;
 
     drawNpcPortrait(modalBuilding.id, px, py, pSize);
 
@@ -9386,9 +9386,9 @@ function renderBuildingModal() {
     ctx.fillText(npc.role, px + pSize / 2, py + pSize + 25, maxNpcW);
 
     // Balão de Diálogo Satírico com limite rígido (nunca transborda a caixa)
-    const quoteY = py + pSize + 32;
+    const quoteY = py + pSize + 31;
     const quoteW = pSize + 16;
-    const quoteH = 76;
+    const quoteH = 74;
 
     ctx.fillStyle = '#090d16';
     ctx.fillRect(px - 4, quoteY, quoteW, quoteH);
@@ -9969,7 +9969,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
     }
 
     // Desenhar Ações Paginadas na Coluna Direita (ax: mx + 138, aw: mw - 152)
-    // Anti-overflow: estritamente 4 opções por página com navegação clássica [◀] [▶]
+    // Anti-overflow garantido: 4 opções por página com navegação clássica [◀] [▶]
     const ax = mx + 138;
     const aw = mw - 152;
     const ACTIONS_PER_PAGE = 4;
@@ -9983,13 +9983,23 @@ function renderBuildingActions(id, mx, my, mw, mh) {
     const curPage = modalBuilding.actionPage;
     const pagedActions = actions.slice(curPage * ACTIONS_PER_PAGE, (curPage + 1) * ACTIONS_PER_PAGE);
 
-    const cardH = 46;
-    const cardGap = 6;
-    const startY = my + 42;
+    const cardH = 41;
+    const cardGap = 5;
+    const startY = my + 38;
+
+    modalBuilding.actionBoxes = [];
 
     pagedActions.forEach((act, idx) => {
         const ay = startY + idx * (cardH + cardGap);
         const isHover = (mouse.x >= ax && mouse.x <= ax + aw && mouse.y >= ay && mouse.y <= ay + cardH);
+
+        modalBuilding.actionBoxes.push({
+            x: ax,
+            y: ay,
+            w: aw,
+            h: cardH,
+            action: act
+        });
 
         // Fundo do cartão de ação
         ctx.fillStyle = isHover ? '#1e293b' : '#0f172a';
@@ -10006,14 +10016,14 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         const btnW = 96;
         const btnH = 24;
         const btnX = ax + aw - btnW - 8;
-        const btnY = ay + (cardH - btnH) / 2;
+        const btnY = ay + Math.round((cardH - btnH) / 2);
 
         const maxDescW = btnX - ax - 20;
 
         ctx.fillStyle = isHover ? '#ffffff' : '#e2e8f0';
-        ctx.font = 'bold 9.5px "Fira Code"';
+        ctx.font = 'bold 9px "Fira Code"';
         ctx.textAlign = 'left';
-        ctx.fillText(act.label, ax + 12, ay + 16, maxDescW);
+        ctx.fillText(act.label, ax + 12, ay + 15, maxDescW);
 
         ctx.font = '8px "Fira Code"';
         ctx.fillStyle = '#94a3b8';
@@ -10025,7 +10035,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             }
             descText += '...';
         }
-        ctx.fillText(descText, ax + 12, ay + 33, maxDescW);
+        ctx.fillText(descText, ax + 12, ay + 29, maxDescW);
 
         let btnText = "";
         let btnColor = "#10b981";
@@ -10127,9 +10137,9 @@ function renderBuildingActions(id, mx, my, mw, mh) {
     // Barra de Navegação de Páginas (apenas quando houver mais de 4 opções)
     let paginationInfo = { totalPages, curPage, prevBtn: null, nextBtn: null };
     if (totalPages > 1) {
-        const py = startY + ACTIONS_PER_PAGE * (cardH + cardGap) + 2;
-        const btnW = 82;
-        const btnH = 20;
+        const py = startY + ACTIONS_PER_PAGE * (cardH + cardGap) + 4;
+        const btnW = 84;
+        const btnH = 22;
 
         // Botão Anterior
         const prevX = ax + 4;
@@ -10143,13 +10153,13 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         ctx.fillStyle = canPrev ? (isHoverPrev ? '#ffffff' : '#38bdf8') : '#475569';
         ctx.font = 'bold 8.5px "Fira Code"';
         ctx.textAlign = 'center';
-        ctx.fillText("◀ Anterior", prevX + btnW / 2, py + 14);
+        ctx.fillText("◀ Anterior", prevX + btnW / 2, py + 15);
 
         // Contador de Página
         ctx.fillStyle = '#facc15';
         ctx.font = 'bold 8.5px "Press Start 2P"';
         ctx.textAlign = 'center';
-        ctx.fillText(`${curPage + 1} / ${totalPages}`, ax + aw / 2, py + 14);
+        ctx.fillText(`${curPage + 1} / ${totalPages}`, ax + aw / 2, py + 15);
 
         // Botão Próximo
         const nextX = ax + aw - btnW - 4;
@@ -10163,7 +10173,7 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         ctx.fillStyle = canNext ? (isHoverNext ? '#ffffff' : '#38bdf8') : '#475569';
         ctx.font = 'bold 8.5px "Fira Code"';
         ctx.textAlign = 'center';
-        ctx.fillText("Próximo ▶", nextX + btnW / 2, py + 14);
+        ctx.fillText("Próximo ▶", nextX + btnW / 2, py + 15);
 
         paginationInfo.prevBtn = { x: prevX, y: py, w: btnW, h: btnH, enabled: canPrev };
         paginationInfo.nextBtn = { x: nextX, y: py, w: btnW, h: btnH, enabled: canNext };
@@ -10356,7 +10366,7 @@ window.addEventListener('keydown', (e) => {
             activeDialogueTree = null;
             return;
         }
-        if (['1', '2', '3', '4'].includes(e.key)) {
+        if (['1', '2', '3', '4', '5'].includes(e.key)) {
             handleDialogueChoiceIndex(parseInt(e.key, 10) - 1);
             return;
         }
@@ -10475,7 +10485,7 @@ function handleCanvasClick(cx, cy) {
         }
 
         // Clicar nas Ações Paginadas da Loja (Coluna Direita)
-        if (modalBuilding && modalBuilding.currentPagedActions) {
+        if (modalBuilding) {
             // 1. Verificar cliques nos botões de paginação
             if (modalBuilding.pagination && modalBuilding.pagination.totalPages > 1) {
                 const p = modalBuilding.pagination;
@@ -10491,19 +10501,16 @@ function handleCanvasClick(cx, cy) {
                 }
             }
 
-            // 2. Verificar cliques nas ações da página atual
-            const ax = mx + 138;
-            const aw = mw - 152;
-            const cardH = 46;
-            const cardGap = 6;
-            const startY = my + 42;
-
-            modalBuilding.currentPagedActions.forEach((act, idx) => {
-                const ay = startY + idx * (cardH + cardGap);
-                if (cx >= ax && cx <= ax + aw && cy >= ay && cy <= ay + cardH) {
-                    executeAction(act);
+            // 2. Verificar cliques nas ações da página atual (via actionBoxes sincronizadas)
+            if (modalBuilding.actionBoxes) {
+                for (let idx = 0; idx < modalBuilding.actionBoxes.length; idx++) {
+                    const box = modalBuilding.actionBoxes[idx];
+                    if (cx >= box.x && cx <= box.x + box.w && cy >= box.y && cy <= box.y + box.h) {
+                        executeAction(box.action);
+                        return;
+                    }
                 }
-            });
+            }
         }
         return;
     }
