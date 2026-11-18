@@ -3,7 +3,7 @@ const assert = require('assert');
 const vm = require('vm');
 
 console.log("=================================================================");
-console.log("SUITE DE TESTES AUTOMATIZADOS: DESENRASCADO v7.0");
+console.log("SUITE DE TESTES AUTOMATIZADOS: DESENRASCADO v7.5");
 console.log("=================================================================\n");
 
 const html = fs.readFileSync('/home/pedro/Projects/desenrascado/index.html', 'utf8');
@@ -61,7 +61,7 @@ const sandbox = {
                         getContext() {
                             return {
                                 measureText(text) { return { width: (text || '').length * 6 }; },
-                                fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}, rect() {}, clip() {}
+                                fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, ellipse() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}, rect() {}, clip() {}, scale() {}, translate() {}, rotate() {}
                             };
                         },
                         addEventListener() {},
@@ -80,7 +80,7 @@ const sandbox = {
                     getContext() {
                         return {
                             measureText(text) { return { width: (text || '').length * 6 }; },
-                            fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}, rect() {}, clip() {}
+                            fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, ellipse() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}, rect() {}, clip() {}, scale() {}, translate() {}, rotate() {}
                         };
                     },
                     style: {},
@@ -253,8 +253,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.4', "ASSET_VER incrementado para 7.4");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.4' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.5', "ASSET_VER incrementado para 7.5");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.5' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -478,7 +478,51 @@ assert.strictEqual(activeTree.config.portraitId, 'marta', "activeDialogueTree us
 
 console.log("✓ 11. Marta vs Professor: Retrato 16-bit próprio, diálogo SCUMM e Códex validados com distinção total do catedrático!");
 
+// -----------------------------------------------------------------------------
+// TESTE 12: OBITUÁRIO IN-GAME & CERTIDÃO OFICIAL DE ÓBITO / DESPEJO (9:16)
+// -----------------------------------------------------------------------------
+// 1. Verificar ficheiro do retrato do Zé em disco
+assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/portrait_ze.png'), "assets/portrait_ze.png existe em disco");
+
+// 2. Verificar elementos do ecrã de derrota (renderGameOverScreen)
+assert(html.includes("CEMITÉRIO DOS PRAZERES · SECÇÃO DE ÓBITOS E DESPEJOS"), "Cabeçalho do Cemitério dos Prazeres presente");
+assert(html.includes("CERTIDÃO OFICIAL DE ÓBITO E DESPEJO"), "Título oficial de Certidão de Óbito e Despejo presente");
+assert(html.includes("O FINADO"), "Coluna do Finado presente");
+assert(html.includes("« O Mártir da Calçada »"), "Epíteto do Mártir da Calçada presente");
+assert(html.includes("AUTO FORENSE · CAUSA DO FALECIMENTO / DESPEJO"), "Caixa de Auto Forense presente");
+assert(html.includes("REGISTO NOTARIAL DE BENS E PENÚRIA"), "Caixa de Registo Notarial presente");
+assert(html.includes("ESCALÃO DE PRECARIEDADE"), "Banner de Escalão de Precariedade presente");
+assert(html.includes("NOVO JOGO [R]") && html.includes("RECORDES [H]") && html.includes("COPIAR [C]") && html.includes("STORY 9:16 [S]"), "4 Botões de ação com atalhos de teclado no obituário");
+
+// 3. Executar renderGameOverScreen() no sandbox e verificar ausência de erros
+vm.runInContext("player.deathTitle = 'DESPEJO SUMÁRIO';", sandbox);
+vm.runInContext("player.deathCause = 'Não pagou a renda do quarto após 14 dias de labuta';", sandbox);
+vm.runInContext("stats.daysSurvived = 14;", sandbox);
+vm.runInContext("renderGameOverScreen();", sandbox);
+console.log("✓ 12.1 Ecrã de Obituário in-game: Layout 2 colunas, retrato do Zé, velas, auto forense e botões validados sem erros!");
+
+// 4. Verificar elementos da Certidão Oficial 9:16 (generateStoryCanvas)
+assert(html.includes("CONSERVATÓRIA DO REGISTO CIVIL DE LISBOA"), "Conservatória do Registo Civil de Lisboa na certidão 9:16");
+assert(html.includes("IMPOSTO DO SELO") && html.includes("50$00"), "Estâmpilha Fiscal de 50$00 presente na certidão 9:16");
+assert(html.includes("DR. JERÓNIMO DA SILVA") && html.includes("PROF. DR. MARCELO LEITÃO"), "Assinaturas notariais do Senhorio e do Perito Médico-Legal presentes");
+assert(html.includes("desenrascado.pormenores.net"), "CTA viral para desenrascado.pormenores.net presente na certidão");
+
+// 5. Executar generateStoryCanvas() no sandbox para GAMEOVER e VICTORY
+vm.runInContext("state = 'GAMEOVER';", sandbox);
+const storyCanvasDeath = vm.runInContext("generateStoryCanvas();", sandbox);
+assert(storyCanvasDeath, "generateStoryCanvas() retorna canvas de óbito");
+assert.strictEqual(storyCanvasDeath.width, 1080, "Largura do canvas é 1080");
+assert.strictEqual(storyCanvasDeath.height, 1920, "Altura do canvas é 1920 (proporção 9:16)");
+
+vm.runInContext("state = 'VICTORY';", sandbox);
+const storyCanvasVictory = vm.runInContext("generateStoryCanvas();", sandbox);
+assert(storyCanvasVictory, "generateStoryCanvas() retorna canvas de vitória");
+assert.strictEqual(storyCanvasVictory.width, 1080, "Largura do canvas de vitória é 1080");
+assert.strictEqual(storyCanvasVictory.height, 1920, "Altura do canvas de vitória é 1920");
+
+console.log("✓ 12.2 Certidão Oficial 9:16: Estética notarial arquivística, selo fiscal de 50$00, foto, grelha forense, assinaturas e CTA gerados com sucesso!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 11 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 12 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");

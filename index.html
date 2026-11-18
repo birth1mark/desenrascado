@@ -3723,7 +3723,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '7.4';
+const ASSET_VER = '7.5';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3781,6 +3781,10 @@ acampadaPortraitImg.src = `assets/portrait_acampada.png?v=${ASSET_VER}`;
 // Retrato Exclusivo da Marta (Estudante de Informática do IST / Óculos redondos, auscultadores e hoodie tech)
 const martaPortraitImg = new Image();
 martaPortraitImg.src = `assets/portrait_marta.png?v=${ASSET_VER}`;
+
+// Retrato Exclusivo do Zé Desenrasca (Protagonista / O Mártir das Sete Colinas)
+const zePortraitImg = new Image();
+zePortraitImg.src = `assets/portrait_ze.png?v=${ASSET_VER}`;
 
 // Splash Screen Bitmapped 16-Bit Deslumbrante de Lisboa
 const splashImg = new Image();
@@ -8518,6 +8522,11 @@ function drawNpcPortrait(id, x, y, size, targetCtx = null) {
         bustImg = null;
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
+    } else if ((id === 'ze' || id === 'player') && zePortraitImg.complete && zePortraitImg.naturalWidth > 0) {
+        bgImg = zePortraitImg;
+        bustImg = null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
     } else if (portraitsBgSheetImg.complete && portraitsBgSheetImg.naturalWidth > 0) {
         bgImg = portraitsBgSheetImg;
         bustImg = (portraitsBustSheetImg.complete && portraitsBustSheetImg.naturalWidth > 0) ? portraitsBustSheetImg : null;
@@ -10349,116 +10358,331 @@ function renderBuildingActions(id, mx, my, mw, mh) {
 }
 
 // ============================================================================
-// ECRÃ DE DERROTA (Sem Textos a Sair dos Limites)
+// ECRÃ DE DERROTA (Redesenhado: Estética Notarial Fúnebre e 16-Bit)
 // ============================================================================
 function renderGameOverScreen() {
-    ctx.fillStyle = 'rgba(11, 14, 20, 0.96)';
+    // 1. Fundo com vinheta e moldura de chumbo/ouro envelhecido
+    ctx.fillStyle = '#0b0f19';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = '#ef4444';
-    ctx.font = '14px "Press Start 2P"';
+    const rad = ctx.createRadialGradient(320, 180, 50, 320, 180, 320);
+    rad.addColorStop(0, 'rgba(239, 68, 68, 0.08)');
+    rad.addColorStop(0.6, 'rgba(11, 15, 25, 0.6)');
+    rad.addColorStop(1, 'rgba(3, 7, 18, 0.95)');
+    ctx.fillStyle = rad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Moldura exterior ornamental dupla
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(10, 10, 620, 340);
+
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(13, 13, 614, 334);
+
+    // Cantos decorativos dourados
+    const corners = [[10, 10], [622, 10], [10, 342], [622, 342]];
+    ctx.fillStyle = '#f59e0b';
+    corners.forEach(([cx, cy]) => {
+        ctx.fillRect(cx, cy, 8, 8);
+    });
+
+    // 2. Cabeçalho Oficial
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = '7px "Press Start 2P"';
     ctx.textAlign = 'center';
-    ctx.fillText("⚰️ JAZ AQUI NO PURGATÓRIO", 320, 50);
+    ctx.fillText("🏛️ CEMITÉRIO DOS PRAZERES · SECÇÃO DE ÓBITOS E DESPEJOS", 320, 26);
+
+    ctx.fillStyle = '#ef4444';
+    ctx.font = '12px "Press Start 2P"';
+    ctx.fillText("⚰️ CERTIDÃO OFICIAL DE ÓBITO E DESPEJO ⚰️", 320, 44);
+
+    // Linha divisória com diamante central
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(50, 52);
+    ctx.lineTo(590, 52);
+    ctx.stroke();
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = '8px "Fira Code"';
+    ctx.fillText("◆", 320, 55);
+
+    // 3. Coluna Esquerda: Retrato Fúnebre do Zé (x: 20, y: 58, w: 160, h: 242)
+    ctx.fillStyle = '#111827';
+    ctx.fillRect(20, 58, 160, 242);
+    ctx.strokeStyle = '#374151';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(20, 58, 160, 242);
+
+    // Título da coluna
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(20, 58, 160, 20);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '7px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("O FINADO", 100, 71);
+
+    // Caixa da Foto (130x130 centralizada em x: 35, y: 84)
+    ctx.fillStyle = '#030712';
+    ctx.fillRect(35, 84, 130, 130);
+
+    if (zePortraitImg && zePortraitImg.complete && zePortraitImg.naturalWidth > 0) {
+        ctx.drawImage(zePortraitImg, 36, 85, 128, 128);
+    } else {
+        drawNpcPortrait('ze', 35, 84, 130);
+    }
+
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(35, 84, 130, 130);
+
+    // Fita de Luto Oficial (Canto Superior Esquerdo da Foto)
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(35, 84);
+    ctx.lineTo(80, 84);
+    ctx.lineTo(35, 129);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.92)';
+    ctx.fill();
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(35, 129);
+    ctx.lineTo(80, 84);
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 8px "Fira Code"';
+    ctx.textAlign = 'left';
+    ctx.fillText("LUTO", 41, 101);
+    ctx.restore();
+
+    // Carimbo vermelho oblíquo de DESPEJADO
+    ctx.save();
+    ctx.translate(100, 178);
+    ctx.rotate(-12 * Math.PI / 180);
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.88)';
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-50, -12, 100, 24);
+    ctx.font = 'bold 9px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText("DESPEJADO", 0, 5);
+    ctx.restore();
+
+    // Velas fúnebres animadas
+    const candleTime = Date.now() / 150;
+    const flameH1 = 4 + Math.sin(candleTime) * 1.5;
+    const flameH2 = 4 + Math.cos(candleTime * 1.2) * 1.5;
+    [ [46, 218, flameH1], [154, 218, flameH2] ].forEach(([cx, cy, fh]) => {
+        ctx.fillStyle = '#fef3c7';
+        ctx.fillRect(cx - 3, cy, 6, 12);
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(cx - 0.5, cy - 3, 1, 3);
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy - 3 - fh / 2, 2.5, fh / 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy - 3 - fh / 3, 1.2, fh / 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // Identificação do Finado
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 10px "Fira Code"';
+    ctx.textAlign = 'center';
+    ctx.fillText("JOSÉ DESENRASCA", 100, 250);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'italic 9px "Fira Code"';
+    ctx.fillText("« O Mártir da Calçada »", 100, 266);
+
+    ctx.fillStyle = '#ef4444';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText(`† DIA ${stats.daysSurvived}`, 100, 285);
+
+    // 4. Coluna Direita: Auto Forense & Registo Notarial (x: 188, y: 58, w: 432, h: 242)
+    // 4.1 Caixa Superior: Causa Mortis (x: 188, y: 58, w: 432, h: 84)
+    ctx.fillStyle = '#161e2e';
+    ctx.fillRect(188, 58, 432, 84);
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(188, 58, 432, 84);
+
+    ctx.fillStyle = '#261b23';
+    ctx.fillRect(188, 58, 432, 20);
+    ctx.fillStyle = '#f87171';
+    ctx.font = '7.5px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText("📋 AUTO FORENSE · CAUSA DO FALECIMENTO / DESPEJO", 198, 72);
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText(player.deathTitle, 320, 78);
+    ctx.font = '9.5px "Press Start 2P"';
+    ctx.fillText(player.deathTitle || "DESPEJO SUMÁRIO", 198, 96);
 
-    // Causa da Morte com quebra de linha segura
     wrapTextCanvas(
         ctx,
         player.deathCause,
-        320,
-        106,
-        480,
-        18,
-        '12px "Fira Code"',
-        '#94a3b8',
-        'center'
+        198,
+        112,
+        410,
+        14,
+        '10.5px "Fira Code"',
+        '#cbd5e1',
+        'left',
+        138
     );
 
-    // Cartão de Estatísticas em Grelha
-    const gx = 100, gy = 145, gw = 440, gh = 115;
-    ctx.fillStyle = '#182234';
-    ctx.strokeStyle = '#233148';
+    // 4.2 Caixa Inferior: Registo Notarial (x: 188, y: 148, w: 432, h: 152)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(188, 148, 432, 152);
+    ctx.strokeStyle = '#334155';
     ctx.lineWidth = 1;
-    ctx.fillRect(gx, gy, gw, gh);
-    ctx.strokeRect(gx, gy, gw, gh);
+    ctx.strokeRect(188, 148, 432, 152);
 
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(188, 148, 432, 20);
     ctx.fillStyle = '#f59e0b';
-    ctx.font = '9px "Press Start 2P"';
-    ctx.fillText(`📅 SOBREVIVESTE: ${stats.daysSurvived} DIAS`, 320, gy + 28);
-
-    ctx.fillStyle = '#e2e8f0';
-    ctx.font = '12px "Fira Code"';
+    ctx.font = '7.5px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(`🏠 Teto: ${HOUSES[player.houseIndex].name}`, gx + 25, gy + 60);
+    ctx.fillText("🏛️ REGISTO NOTARIAL DE BENS E PENÚRIA", 198, 162);
+
     const curEndJob = getPlayerJob();
     const curEndWp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
-    ctx.fillText(`💼 Trabalho: ${curEndJob.title} (${curEndWp.shortName})`, gx + 25, gy + 82);
-    ctx.fillText(`🎓 ECTS: ${player.ects}/180`, gx + 250, gy + 60);
-    ctx.fillText(`💸 Rendas: ${stats.totalRentPaid}€`, gx + 250, gy + 82);
+    const partnerDisplay = player.partner ? (ROMANCE_PARTNERS[player.partner] ? ROMANCE_PARTNERS[player.partner].name : player.partner) : "Solteiro";
+    const jobDisplay = curEndJob.title.length > 20 ? curEndJob.title.slice(0, 18) + '...' : curEndJob.title;
 
-    // 4 Botões de Ação com Leaderboard
-    drawActionButton(45, 278, 125, 36, "NOVO JOGO", '#f59e0b', () => resetGame());
-    drawActionButton(180, 278, 145, 36, isScoreSubmitted ? "🏆 VER RANKING" : "🏆 GRAVAR RECORDE", '#10b981', () => isScoreSubmitted ? openLeaderboard() : openSubmitModal());
-    drawActionButton(335, 278, 130, 36, "COPIAR TEXTO", '#06b6d4', () => shareScorecard());
-    drawActionButton(475, 278, 120, 36, "📸 STORY 9:16", '#ec4899', () => shareImageCard());
+    // Coluna 1 (x: 198..395)
+    ctx.font = '10px "Fira Code"';
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText("📅 Sobrevivência:", 198, 184);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`${stats.daysSurvived} dias`, 295, 184);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText("🏠 Último Teto:", 198, 202);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(HOUSES[player.houseIndex].name, 295, 202);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText("💼 Ocupação:", 198, 220);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(jobDisplay, 295, 220);
+
+    // Coluna 2 (x: 412..610)
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText("🎓 Habilitações:", 412, 184);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`${player.ects}/180 ECTS`, 515, 184);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText("💸 Rendas Pagas:", 412, 202);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`${stats.totalRentPaid} €`, 515, 202);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText("❤️ Cara-Metade:", 412, 220);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(partnerDisplay, 515, 220);
+
+    // Banner de Escalão de Precariedade
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
+    ctx.fillRect(198, 238, 412, 52);
+    ctx.strokeStyle = '#059669';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(198, 238, 412, 52);
+
+    ctx.fillStyle = '#10b981';
+    ctx.font = '7.5px "Press Start 2P"';
+    ctx.fillText("🏆 ESCALÃO DE PRECARIEDADE:", 208, 255);
+
+    ctx.fillStyle = '#facc15';
+    ctx.font = 'bold 10px "Fira Code"';
+    ctx.fillText(getPrecarityRank(stats.daysSurvived), 208, 275);
+
+    // 5. Quatro Botões de Ação Perfeitamente Alinhados e Proporcionados (y: 308, h: 38)
+    drawActionButton(20, 308, 140, 38, "NOVO JOGO [R]", '#f59e0b', () => resetGame());
+    drawActionButton(172, 308, 146, 38, isScoreSubmitted ? "RECORDES [H]" : "GRAVAR [H]", '#10b981', () => isScoreSubmitted ? openLeaderboard() : openSubmitModal());
+    drawActionButton(330, 308, 138, 38, "COPIAR [C]", '#06b6d4', () => shareScorecard());
+    drawActionButton(480, 308, 140, 38, "STORY 9:16 [S]", '#ec4899', () => shareImageCard());
 }
 
-// Ecrã de Vitória
+// Ecrã de Vitória (Consistente com a barra de botões a y: 308)
 function renderVictoryScreen() {
     ctx.fillStyle = 'rgba(11, 14, 20, 0.96)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    const rad = ctx.createRadialGradient(320, 180, 50, 320, 180, 320);
+    rad.addColorStop(0, 'rgba(16, 185, 129, 0.15)');
+    rad.addColorStop(0.6, 'rgba(11, 25, 18, 0.6)');
+    rad.addColorStop(1, 'rgba(3, 18, 10, 0.95)');
+    ctx.fillStyle = rad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(10, 10, 620, 340);
+
+    ctx.strokeStyle = '#059669';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(13, 13, 614, 334);
+
     ctx.fillStyle = '#10b981';
-    ctx.font = '14px "Press Start 2P"';
+    ctx.font = '13px "Press Start 2P"';
     ctx.textAlign = 'center';
-    ctx.fillText("🏆 VENCESTE O PURGATÓRIO!", 320, 48);
+    ctx.fillText("🏆 VENCESTE O PURGATÓRIO!", 320, 42);
 
     ctx.fillStyle = '#f59e0b';
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText("D. SEBASTIÃO DO CHIADO · VITÓRIA HISTÓRICA", 320, 72);
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText("D. SEBASTIÃO DO CHIADO · VITÓRIA HISTÓRICA", 320, 64);
 
     const curVicJob = getPlayerJob();
     const curVicWp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
     ctx.fillStyle = '#e2e8f0';
     ctx.font = '11px "Fira Code"';
-    ctx.fillText("Sobreviveste a 30 dias de precariedade, conquistaste um T1 no Chiado,", 320, 96);
+    ctx.fillText("Sobreviveste a 30 dias de precariedade, conquistaste um T1 no Chiado,", 320, 88);
     if (player.partner && ROMANCE_PARTNERS[player.partner]) {
-        ctx.fillText(`e celebras este triunfo radiante ao lado de ${ROMANCE_PARTNERS[player.partner].name}!`, 320, 114);
+        ctx.fillText(`e celebras este triunfo radiante ao lado de ${ROMANCE_PARTNERS[player.partner].name}!`, 320, 106);
     } else {
-        ctx.fillText(`e alcançaste o topo como ${curVicJob.title} no ${curVicWp.name}!`, 320, 114);
+        ctx.fillText(`e alcançaste o topo como ${curVicJob.title} no ${curVicWp.name}!`, 320, 106);
     }
 
     // Cartão de Estatísticas Triunfais em Grelha
-    const gx = 100, gy = 135, gw = 440, gh = 125;
+    const gx = 70, gy = 125, gw = 500, gh = 165;
     ctx.fillStyle = '#0f291e';
     ctx.strokeStyle = '#10b981';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.5;
     ctx.fillRect(gx, gy, gw, gh);
     ctx.strokeRect(gx, gy, gw, gh);
 
     ctx.fillStyle = '#34d399';
-    ctx.font = '9px "Press Start 2P"';
+    ctx.font = '8px "Press Start 2P"';
     ctx.fillText(`👑 CONQUISTA: ${stats.daysSurvived} DIAS · CAPITALISTA TRIUNFANTE`, 320, gy + 26);
 
     ctx.fillStyle = '#e2e8f0';
-    ctx.font = '12px "Fira Code"';
+    ctx.font = '11px "Fira Code"';
     ctx.textAlign = 'left';
     ctx.fillText(`🏠 Teto: ${HOUSES[player.houseIndex].name}`, gx + 25, gy + 56);
-    ctx.fillText(`💼 Trabalho: ${curVicJob.title} (${curVicWp.shortName})`, gx + 25, gy + 78);
-    ctx.fillText(`💰 Saldo Total: ${player.wallet + player.bank}€`, gx + 25, gy + 100);
+    ctx.fillText(`💼 Trabalho: ${curVicJob.title} (${curVicWp.shortName})`, gx + 25, gy + 82);
+    ctx.fillText(`💰 Saldo Total: ${player.wallet + player.bank} €`, gx + 25, gy + 108);
+    ctx.fillText(`🎸 Fado: ${player.musicSkill.toFixed(1)}%`, gx + 25, gy + 134);
 
-    ctx.fillText(`🎓 Grau: ${player.ects} ECTS (${getCurriculumDegree()})`, gx + 245, gy + 56);
-    ctx.fillText(`🎸 Fado: ${player.musicSkill.toFixed(1)}%`, gx + 245, gy + 78);
-    ctx.fillText(`💸 Rendas Pagas: ${stats.totalRentPaid}€`, gx + 245, gy + 100);
+    ctx.fillText(`🎓 Grau: ${player.ects} ECTS (${getCurriculumDegree()})`, gx + 265, gy + 56);
+    ctx.fillText(`💸 Rendas Pagas: ${stats.totalRentPaid} €`, gx + 265, gy + 82);
+    const vicPartner = player.partner && ROMANCE_PARTNERS[player.partner] ? ROMANCE_PARTNERS[player.partner].name : "Solteiro Convicto";
+    ctx.fillText(`❤️ Cara-Metade: ${vicPartner}`, gx + 265, gy + 108);
+    ctx.fillText(`🏆 Estatuto: Venceu o Mercado`, gx + 265, gy + 134);
 
-    // 4 Botões de Ação com NOVO JOGO!
-    drawActionButton(45, 278, 125, 36, "NOVO JOGO", '#f59e0b', () => resetGame());
-    drawActionButton(180, 278, 145, 36, isScoreSubmitted ? "🏆 VER RANKING" : "🏆 GRAVAR RECORDE", '#10b981', () => isScoreSubmitted ? openLeaderboard() : openSubmitModal());
-    drawActionButton(335, 278, 130, 36, "COPIAR TEXTO", '#06b6d4', () => shareScorecard());
-    drawActionButton(475, 278, 120, 36, "📸 STORY 9:16", '#ec4899', () => shareImageCard());
+    // 4 Botões de Ação com NOVO JOGO a y: 308
+    drawActionButton(20, 308, 140, 38, "NOVO JOGO [R]", '#f59e0b', () => resetGame());
+    drawActionButton(172, 308, 146, 38, isScoreSubmitted ? "RECORDES [H]" : "GRAVAR [H]", '#10b981', () => isScoreSubmitted ? openLeaderboard() : openSubmitModal());
+    drawActionButton(330, 308, 138, 38, "COPIAR [C]", '#06b6d4', () => shareScorecard());
+    drawActionButton(480, 308, 140, 38, "STORY 9:16 [S]", '#ec4899', () => shareImageCard());
 }
 
 function drawActionButton(x, y, w, h, label, color, onClick) {
@@ -10557,6 +10781,25 @@ window.addEventListener('keydown', (e) => {
     if (e.key === ' ' || e.key === 'Enter') {
         if (speechBubbles.length > 0) speechBubbles = [];
     }
+    if (state === 'GAMEOVER' || state === 'VICTORY') {
+        if (e.key === 'r' || e.key === 'R') {
+            resetGame();
+            return;
+        }
+        if (e.key === 'h' || e.key === 'H') {
+            if (isScoreSubmitted) openLeaderboard();
+            else openSubmitModal();
+            return;
+        }
+        if (e.key === 'c' || e.key === 'C') {
+            shareScorecard();
+            return;
+        }
+        if (e.key === 's' || e.key === 'S') {
+            shareImageCard();
+            return;
+        }
+    }
     if (activeEncounter) {
         if (e.key === '1') {
             if (activeEncounter.opt1Action) activeEncounter.opt1Action();
@@ -10611,29 +10854,15 @@ function handleCanvasClick(cx, cy) {
         return;
     }
 
-    if (state === 'GAMEOVER') {
-        if (cx >= 45 && cx <= 170 && cy >= 278 && cy <= 314) {
+    if (state === 'GAMEOVER' || state === 'VICTORY') {
+        if (cx >= 20 && cx <= 160 && cy >= 308 && cy <= 346) {
             resetGame();
-        } else if (cx >= 180 && cx <= 325 && cy >= 278 && cy <= 314) {
+        } else if (cx >= 172 && cx <= 318 && cy >= 308 && cy <= 346) {
             if (isScoreSubmitted) openLeaderboard();
             else openSubmitModal();
-        } else if (cx >= 335 && cx <= 465 && cy >= 278 && cy <= 314) {
+        } else if (cx >= 330 && cx <= 468 && cy >= 308 && cy <= 346) {
             shareScorecard();
-        } else if (cx >= 475 && cx <= 595 && cy >= 278 && cy <= 314) {
-            shareImageCard();
-        }
-        return;
-    }
-
-    if (state === 'VICTORY') {
-        if (cx >= 45 && cx <= 170 && cy >= 278 && cy <= 314) {
-            resetGame();
-        } else if (cx >= 180 && cx <= 325 && cy >= 278 && cy <= 314) {
-            if (isScoreSubmitted) openLeaderboard();
-            else openSubmitModal();
-        } else if (cx >= 335 && cx <= 465 && cy >= 278 && cy <= 314) {
-            shareScorecard();
-        } else if (cx >= 475 && cx <= 595 && cy >= 278 && cy <= 314) {
+        } else if (cx >= 480 && cx <= 620 && cy >= 308 && cy <= 346) {
             shareImageCard();
         }
         return;
@@ -11502,173 +11731,489 @@ function generateStoryCanvas() {
     const sctx = sc.getContext('2d');
     sctx.imageSmoothingEnabled = false;
 
-    // Fundo Obsidian
-    sctx.fillStyle = '#0b0e14';
-    sctx.fillRect(0, 0, sc.width, sc.height);
-
-    // Grelha de calçada
-    sctx.fillStyle = '#172033';
-    for (let py = 0; py < sc.height; py += 32) {
-        for (let px = 0; px < sc.width; px += 32) {
-            if ((Math.floor(px / 32) + Math.floor(py / 32)) % 3 === 0) {
-                sctx.fillRect(px, py, 10, 10);
-            }
-        }
-    }
-
-    const rad = sctx.createRadialGradient(sc.width / 2, 700, 200, sc.width / 2, 700, 950);
-    rad.addColorStop(0, isVic ? 'rgba(16, 185, 129, 0.25)' : 'rgba(239, 68, 68, 0.22)');
-    rad.addColorStop(0.6, 'rgba(11, 14, 20, 0.7)');
-    rad.addColorStop(1, '#05070a');
+    // 1. Fundo de Pergaminho Arquivístico Envelhecido
+    const rad = sctx.createRadialGradient(sc.width / 2, sc.height / 2, 200, sc.width / 2, sc.height / 2, 1050);
+    rad.addColorStop(0, '#fdfbf6');
+    rad.addColorStop(0.7, '#f4ecd8');
+    rad.addColorStop(1, '#e8dcbf');
     sctx.fillStyle = rad;
     sctx.fillRect(0, 0, sc.width, sc.height);
 
-    // Fitas de Perigo / Vitória
-    drawHazardTape(sctx, 0, 60, sc.width, 42, isVic ? "👑 REPÚBLICA DOS SOBREVIVENTES DE LISBOA 👑" : "⚠️ REPÚBLICA PRECÁRIA DE LISBOA ⚠️");
-    drawHazardTape(sctx, 0, sc.height - 102, sc.width, 42, isVic ? "👑 VENCESTE O PURGATÓRIO · D. SEBASTIÃO 👑" : "⚠️ DESENRASCADO · O PURGATÓRIO ⚠️");
+    // Textura subtil de pergaminho / fibras de papel
+    sctx.fillStyle = 'rgba(120, 95, 60, 0.03)';
+    for (let py = 0; py < sc.height; py += 16) {
+        if (py % 32 === 0) {
+            sctx.fillRect(0, py, sc.width, 1);
+        }
+    }
 
-    // Moldura Âmbar / Esmeralda
-    sctx.strokeStyle = isVic ? '#10b981' : '#f59e0b';
-    sctx.lineWidth = 6;
-    sctx.strokeRect(60, 130, sc.width - 120, sc.height - 260);
-
-    sctx.strokeStyle = '#233148';
-    sctx.lineWidth = 2;
-    sctx.strokeRect(74, 144, sc.width - 148, sc.height - 288);
-
-    // Cabeçalho Oficial
-    sctx.fillStyle = isVic ? '#10b981' : '#ef4444';
-    sctx.font = 'bold 44px "Fira Code", monospace';
-    sctx.textAlign = 'center';
-    sctx.fillText(isVic ? "CERTIDÃO DE VITÓRIA & MÉRITO" : "CERTIDÃO DE ÓBITO / DESPEJO", sc.width / 2, 225);
-
-    sctx.fillStyle = isVic ? '#f59e0b' : '#38bdf8';
-    sctx.font = 'bold 20px "Fira Code", monospace';
-    sctx.fillText(isVic ? "CHANCELARIA DE LISBOA · DIPLOMA DE SUPERVIVÊNCIA URBANA" : "DIRECÇÃO-GERAL DA PRECARIEDADE & HABITAÇÃO IMPOSSÍVEL", sc.width / 2, 270);
-
-    // Carimbo Oficial em Ângulo Rotativo
+    // Marca de Água Central: Nau de Lisboa com mastros (Faint)
     sctx.save();
-    sctx.translate(sc.width - 240, 310);
-    sctx.rotate(-15 * Math.PI / 180);
-    const stampCol = isVic ? '#10b981' : '#ef4444';
-    sctx.strokeStyle = stampCol;
+    sctx.translate(sc.width / 2, sc.height / 2 - 80);
+    sctx.fillStyle = 'rgba(100, 80, 50, 0.05)';
+    sctx.strokeStyle = 'rgba(100, 80, 50, 0.06)';
+    sctx.beginPath();
+    sctx.moveTo(-160, 40);
+    sctx.quadraticCurveTo(0, 110, 160, 40);
+    sctx.lineTo(-160, 40);
+    sctx.fill();
     sctx.lineWidth = 6;
-    sctx.strokeRect(-160, -40, 320, 80);
-    sctx.fillStyle = isVic ? 'rgba(16, 185, 129, 0.92)' : 'rgba(239, 68, 68, 0.88)';
-    sctx.font = '900 28px "Fira Code", monospace';
-    sctx.textAlign = 'center';
-    sctx.fillText(isVic ? "VENCEDOR" : "DESPEJADO", 0, -5);
-    sctx.font = '16px "Fira Code", monospace';
-    sctx.fillText(isVic ? "HOMOLOGADO: VENCEU O MERCADO" : "HOMOLOGADO PELO SENHORIO", 0, 22);
+    sctx.beginPath();
+    sctx.moveTo(0, 40); sctx.lineTo(0, -130);
+    sctx.moveTo(-75, 40); sctx.lineTo(-75, -90);
+    sctx.moveTo(75, 40); sctx.lineTo(75, -90);
+    sctx.stroke();
     sctx.restore();
 
-    // Foto Pixel Art (10x Zoom)
-    const photoX = 110;
-    const photoY = 320;
-    const photoW = 280;
-    const photoH = 340;
+    // 2. Moldura Gravada Dupla e Guilloché
+    sctx.strokeStyle = '#231c12';
+    sctx.lineWidth = 5;
+    sctx.strokeRect(36, 36, sc.width - 72, sc.height - 72);
 
-    sctx.fillStyle = '#1e293b';
-    sctx.fillRect(photoX, photoY, photoW, photoH);
-    sctx.strokeStyle = isVic ? '#10b981' : '#ef4444';
-    sctx.lineWidth = 4;
-    sctx.strokeRect(photoX, photoY, photoW, photoH);
+    sctx.strokeStyle = isVic ? '#047857' : '#78350f';
+    sctx.lineWidth = 2;
+    sctx.strokeRect(48, 48, sc.width - 96, sc.height - 96);
 
-    drawStoryPixelAvatar(sctx, photoX + photoW / 2, photoY + photoH / 2 - 20, 10);
+    // Rosetas decorativas nos 4 cantos
+    const rosettes = [
+        [48, 48],
+        [sc.width - 48, 48],
+        [48, sc.height - 48],
+        [sc.width - 48, sc.height - 48]
+    ];
+    sctx.strokeStyle = isVic ? '#047857' : '#78350f';
+    sctx.lineWidth = 1.5;
+    rosettes.forEach(([rx, ry]) => {
+        sctx.beginPath();
+        sctx.arc(rx, ry, 14, 0, Math.PI * 2);
+        sctx.stroke();
+    });
 
-    sctx.fillStyle = isVic ? '#10b981' : '#f59e0b';
-    sctx.font = 'bold 18px "Fira Code", monospace';
+    // Fita superior oficial
+    sctx.fillStyle = '#451a03';
+    sctx.font = 'bold 17px Georgia, serif';
     sctx.textAlign = 'center';
-    sctx.fillText(isVic ? "CIDADÃO TRIUNFANTE" : "CIDADÃO PRECÁRIO", photoX + photoW / 2, photoY + photoH - 24);
+    sctx.fillText(
+        isVic
+            ? "REPÚBLICA PORTUGUESA · CHANCELARIA DE MÉRITO & TRIUNFO DE LISBOA"
+            : "REPÚBLICA PORTUGUESA · GOVERNO CIVIL & CONSERVATÓRIA DE LISBOA",
+        sc.width / 2,
+        82
+    );
 
-    // Dados Forenses do Cidadão
-    const infoX = 430;
-    const infoY = 325;
+    // 3. Estâmpilha Fiscal de 50$00 no Canto Superior Direito (x: 830, y: 95, w: 170, h: 220)
+    const stX = 830, stY = 95, stW = 170, stH = 220;
+    sctx.fillStyle = isVic ? '#ecfdf5' : '#eef4f8';
+    sctx.fillRect(stX, stY, stW, stH);
 
+    // Picotado dentado à volta do selo fiscal
+    sctx.fillStyle = '#f4ecd8';
+    const rHole = 3.5;
+    for (let px = stX + 8; px < stX + stW - 4; px += 12) {
+        sctx.beginPath(); sctx.arc(px, stY, rHole, 0, Math.PI * 2); sctx.fill();
+        sctx.beginPath(); sctx.arc(px, stY + stH, rHole, 0, Math.PI * 2); sctx.fill();
+    }
+    for (let py = stY + 8; py < stY + stH - 4; py += 12) {
+        sctx.beginPath(); sctx.arc(stX, py, rHole, 0, Math.PI * 2); sctx.fill();
+        sctx.beginPath(); sctx.arc(stX + stW, py, rHole, 0, Math.PI * 2); sctx.fill();
+    }
+
+    // Moldura interna do selo fiscal
+    sctx.strokeStyle = isVic ? '#047857' : '#1e3a5f';
+    sctx.lineWidth = 2;
+    sctx.strokeRect(stX + 8, stY + 8, stW - 16, stH - 16);
+    sctx.strokeRect(stX + 12, stY + 12, stW - 24, stH - 24);
+
+    sctx.fillStyle = isVic ? '#047857' : '#1e3a5f';
+    sctx.font = 'bold 11px Georgia, serif';
+    sctx.textAlign = 'center';
+    sctx.fillText("REPÚBLICA", stX + stW / 2, stY + 30);
+    sctx.fillText("PORTUGUESA", stX + stW / 2, stY + 44);
+
+    sctx.beginPath();
+    sctx.arc(stX + stW / 2, stY + 105, 26, 0, Math.PI * 2);
+    sctx.stroke();
+    sctx.beginPath();
+    sctx.arc(stX + stW / 2, stY + 105, 20, 0, Math.PI * 2);
+    sctx.stroke();
+
+    sctx.font = 'bold 24px "Fira Code", monospace';
+    sctx.fillText("50$00", stX + stW / 2, stY + 172);
+
+    sctx.font = 'bold 9.5px Georgia, serif';
+    sctx.fillText("IMPOSTO DO SELO", stX + stW / 2, stY + 195);
+
+    // Carimbo de anulação em tinta violeta
+    sctx.save();
+    sctx.translate(stX + stW / 2, stY + stH / 2);
+    sctx.rotate(-25 * Math.PI / 180);
+    sctx.strokeStyle = 'rgba(107, 33, 168, 0.75)';
+    sctx.lineWidth = 2.5;
+    sctx.beginPath();
+    sctx.arc(0, 0, 46, 0, Math.PI * 2);
+    sctx.stroke();
+    sctx.lineWidth = 1.2;
+    sctx.beginPath();
+    sctx.arc(0, 0, 40, 0, Math.PI * 2);
+    sctx.stroke();
+    sctx.fillStyle = 'rgba(107, 33, 168, 0.85)';
+    sctx.font = 'bold 9.5px "Fira Code", monospace';
+    sctx.textAlign = 'center';
+    sctx.fillText("NOTARIADO", 0, -5);
+    sctx.fillText("ANULADO", 0, 11);
+    sctx.restore();
+
+    // 4. Cabeçalho Principal (À esquerda do selo)
     sctx.textAlign = 'left';
+    sctx.fillStyle = '#1c1917';
+    sctx.font = 'bold 25px Georgia, serif';
+    sctx.fillText("CONSERVATÓRIA DO REGISTO CIVIL DE LISBOA", 85, 140);
+
+    sctx.fillStyle = '#4b5563';
+    sctx.font = 'bold 17px Georgia, serif';
+    sctx.fillText(
+        isVic
+            ? "CHANCELARIA DE LOUVOR & MÉRITO CITADINO · COMARCA DO CHIADO"
+            : "SECÇÃO CENTRAL DE ÓBITOS & AÇÕES DE DESPEJO SUMÁRIO",
+        85,
+        175
+    );
+
+    // Título Central da Certidão
+    sctx.fillStyle = isVic ? '#065f46' : '#991b1b';
+    sctx.font = 'bold 31px Georgia, serif';
+    sctx.fillText(
+        isVic
+            ? "CERTIDÃO DE TRIUNFO & DIPLOMA DE SUPERVIVÊNCIA"
+            : "ASSENTO DE ÓBITO E DECLARAÇÃO DE DESPEJO",
+        85,
+        235
+    );
+
+    sctx.fillStyle = '#4b5563';
+    sctx.font = '15px "Fira Code", monospace';
+    sctx.fillText(
+        `Livro B-34 de Insolventes · Folha 88 · Assento Nº ${Date.now().toString().slice(-5)} · Ano de 2026`,
+        85,
+        275
+    );
+
+    // Fio divisor gravado
+    sctx.strokeStyle = '#a89f8d';
+    sctx.lineWidth = 1.5;
+    sctx.beginPath();
+    sctx.moveTo(85, 305);
+    sctx.lineTo(800, 305);
+    sctx.stroke();
+
+    // 5. Foto do Cidadão / Finado (x: 85, y: 340, w: 270, h: 330)
+    const phX = 85, phY = 340, phW = 270, phH = 330;
+    sctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+    sctx.fillRect(phX + 4, phY + 4, phW, phH);
+
+    sctx.fillStyle = '#fafaf9';
+    sctx.fillRect(phX, phY, phW, phH);
+    sctx.strokeStyle = '#78716c';
+    sctx.lineWidth = 2;
+    sctx.strokeRect(phX, phY, phW, phH);
+
+    // Retrato do Zé
+    if (zePortraitImg && zePortraitImg.complete && zePortraitImg.naturalWidth > 0) {
+        sctx.drawImage(zePortraitImg, phX + 15, phY + 15, 240, 240);
+    } else {
+        drawStoryPixelAvatar(sctx, phX + phW / 2, phY + 130, 8);
+    }
+
+    // Agrafos Metálicos de Zinco no Topo
+    [ phX + 35, phX + phW - 55 ].forEach((sx) => {
+        sctx.fillStyle = '#475569';
+        sctx.fillRect(sx, phY + 4, 20, 5);
+        sctx.fillStyle = '#94a3b8';
+        sctx.fillRect(sx + 2, phY + 5, 16, 2);
+    });
+
+    if (!isVic) {
+        // Fita de Luto Oficial no canto superior esquerdo da foto
+        sctx.save();
+        sctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+        sctx.beginPath();
+        sctx.moveTo(phX + 15, phY + 15);
+        sctx.lineTo(phX + 85, phY + 15);
+        sctx.lineTo(phX + 15, phY + 85);
+        sctx.closePath();
+        sctx.fill();
+        sctx.fillStyle = '#ffffff';
+        sctx.font = 'bold 10px "Fira Code", monospace';
+        sctx.fillText("LUTO", phX + 22, phY + 44);
+        sctx.restore();
+    }
+
+    // Carimbo Oficial Oblíquo sobre a foto e papel (x: 335, y: 650)
+    sctx.save();
+    sctx.translate(phX + phW - 15, phY + phH - 20);
+    sctx.rotate(-15 * Math.PI / 180);
+    sctx.strokeStyle = isVic ? 'rgba(5, 150, 105, 0.85)' : 'rgba(185, 28, 28, 0.85)';
+    sctx.lineWidth = 3;
+    sctx.beginPath();
+    sctx.arc(0, 0, 62, 0, Math.PI * 2);
+    sctx.stroke();
+    sctx.lineWidth = 1.5;
+    sctx.beginPath();
+    sctx.arc(0, 0, 55, 0, Math.PI * 2);
+    sctx.stroke();
+
+    sctx.fillStyle = isVic ? 'rgba(5, 150, 105, 0.92)' : 'rgba(185, 28, 28, 0.92)';
+    sctx.font = 'bold 9.5px "Fira Code", monospace';
+    sctx.textAlign = 'center';
+    sctx.fillText(isVic ? "HOMOLOGADO" : "HOMOLOGADO", 0, -10);
+    sctx.font = 'bold 8px "Fira Code", monospace';
+    sctx.fillText(isVic ? "VENCEU O MERCADO" : "PELO SENHORIO", 0, 6);
+    sctx.fillText("LISBOA · 2026", 0, 20);
+    sctx.restore();
+
+    // Legenda abaixo da foto
+    sctx.textAlign = 'center';
+    sctx.fillStyle = '#1c1917';
+    sctx.font = 'bold 13px Georgia, serif';
+    sctx.fillText("JOSÉ \"ZÉ\" DESENRASCA", phX + phW / 2, phY + phH - 35);
+    sctx.fillStyle = '#57534e';
+    sctx.font = 'italic 12px Georgia, serif';
+    sctx.fillText(isVic ? "« O Triunfador do Chiado »" : "« O Mártir da Calçada »", phX + phW / 2, phY + phH - 16);
+
+    // 6. Grelha Datilografada de Identificação Civil (x: 385, y: 345, w: 605, h: 320)
     const curStoryJob = getPlayerJob();
     const curStoryWp = WORKPLACES[player.currentWorkplace] || WORKPLACES.pingo_doce;
     const partnerDisplay = player.partner ? (ROMANCE_PARTNERS[player.partner] ? ROMANCE_PARTNERS[player.partner].fullName : player.partner) : "Solteiro Convicto";
-    const infoRows = [
-        ["TEMPO SOBREVIVIDO:", `${stats.daysSurvived} DIAS`],
-        [isVic ? "IMÓVEL CONQUISTADO:" : "ÚLTIMO ABRIGO:", HOUSES[player.houseIndex].name],
-        ["CARA-METADE:", partnerDisplay],
-        ["OCUPAÇÃO:", `${curStoryJob.title} (${curStoryWp.shortName})`],
-        ["ECTS ACUMULADOS:", `${player.ects} / 180 (${getCurriculumDegree()})`],
-        ["RENDA TOTAL PAGA:", `${stats.totalRentPaid} €`],
-        ["PATRIMÓNIO LÍQUIDO:", `${player.wallet + player.bank} €`],
-        ["DIETA BASE:", isVic ? "Bitoques na Tasca · Vinho do Porto" : "88% Atum · 12% Bica"]
+
+    const civilRows = [
+        ["NOME COMPLETO ..........", "JOSÉ DESENRASCA"],
+        ["NATURALIDADE ...........", "Freguesia de Santa Maria Maior, Lisboa"],
+        ["ESTADO CIVIL ...........", partnerDisplay],
+        ["TEMPO RESISTIDO ........", `${stats.daysSurvived} DIAS CONSECUTIVOS`],
+        [isVic ? "IMÓVEL CONQUISTADO ....." : "ÚLTIMO DOMICÍLIO .......", HOUSES[player.houseIndex].name],
+        ["OCUPAÇÃO PROFISSIONAL ..", `${curStoryJob.title} (${curStoryWp.shortName})`],
+        ["HABILITAÇÕES LITERÁRIAS .", `${player.ects}/180 ECTS (${getCurriculumDegree()})`],
+        ["TRIBUTO AO SENHORIO ....", `${stats.totalRentPaid}.00 € EM RENDAS`],
+        ["PATRIMÓNIO RESIDUAL ....", `${player.wallet + player.bank}.00 € (Balanço Final)`],
+        ["DIETA DE SUBSISTÊNCIA ..", isVic ? "Bitoques na Tasca · Vinho do Porto" : "88% Atum em Lata · 12% Bica Curta"]
     ];
 
-    infoRows.forEach(([lbl, val], idx) => {
-        const ry = infoY + idx * 42;
-        sctx.fillStyle = '#94a3b8';
-        sctx.font = 'bold 17px "Fira Code", monospace';
-        sctx.fillText(lbl, infoX, ry);
+    civilRows.forEach(([lbl, val], idx) => {
+        const ry = 350 + idx * 32;
+        sctx.textAlign = 'left';
+        sctx.fillStyle = '#57534e';
+        sctx.font = '14px "Fira Code", monospace';
+        sctx.fillText(lbl + " : ", 385, ry);
 
-        sctx.fillStyle = '#ffffff';
-        sctx.font = '20px "Fira Code", monospace';
-        sctx.fillText(val, infoX + 260, ry);
+        sctx.fillStyle = '#0f172a';
+        sctx.font = 'bold 15px "Fira Code", monospace';
+        sctx.fillText(val, 620, ry);
     });
 
-    // Caixa de Diagnóstico / Louvor
-    const roastBoxY = 700;
-    sctx.fillStyle = '#131b2e';
-    sctx.strokeStyle = '#38bdf8';
-    sctx.lineWidth = 3;
-    sctx.fillRect(110, roastBoxY, sc.width - 220, 310);
-    sctx.strokeRect(110, roastBoxY, sc.width - 220, 310);
-
-    sctx.fillStyle = '#38bdf8';
-    sctx.font = 'bold 24px "Fira Code", monospace';
-    sctx.textAlign = 'left';
-    sctx.fillText(isVic ? "📋 AUTO DE LOUVOR & MÉRITO CITADINO:" : "📋 RELATÓRIO FORENSE / AUTO DA MORTE:", 140, roastBoxY + 50);
-
-    const roastText = getMordantRoast();
-    wrapTextCanvas(sctx, roastText, 140, roastBoxY + 105, sc.width - 280, 38, '24px "Fira Code", monospace', '#f8fafc');
-
-    // Nível de Precariedade
-    const rankY = 1060;
-    sctx.fillStyle = '#182234';
-    sctx.strokeStyle = '#f59e0b';
-    sctx.lineWidth = 3;
-    sctx.fillRect(110, rankY, sc.width - 220, 160);
-    sctx.strokeRect(110, rankY, sc.width - 220, 160);
-
-    sctx.fillStyle = '#f59e0b';
-    sctx.font = 'bold 20px "Fira Code", monospace';
-    sctx.fillText(isVic ? "🏆 ESTATUTO SUPREMO ALCANÇADO:" : "🏆 ESCALÃO OFICIAL DE PRECARIEDADE:", 140, rankY + 45);
-
-    const rankText = getPrecarityRank(stats.daysSurvived);
-    sctx.fillStyle = '#10b981';
-    sctx.font = 'bold 26px "Fira Code", monospace';
-    sctx.fillText(rankText, 140, rankY + 95);
-
-    // Call to Action Inferior
-    const ctaY = 1290;
-    sctx.fillStyle = isVic ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)';
-    sctx.strokeStyle = isVic ? '#10b981' : '#ef4444';
+    // 7. Caixa de Auto Forense / Relatório de Óbito Social (x: 85, y: 705, w: 915, h: 345)
+    const cardY = 705;
+    sctx.fillStyle = '#f6f3eb';
+    sctx.fillRect(85, cardY, 915, 345);
+    sctx.strokeStyle = isVic ? '#059669' : '#dc2626';
     sctx.lineWidth = 2;
-    sctx.fillRect(110, ctaY, sc.width - 220, 180);
-    sctx.strokeRect(110, ctaY, sc.width - 220, 180);
+    sctx.strokeRect(85, cardY, 915, 345);
+
+    sctx.fillStyle = isVic ? '#047857' : '#b91c1c';
+    sctx.font = 'bold 17px "Fira Code", monospace';
+    sctx.textAlign = 'left';
+    sctx.fillText(
+        isVic ? "§ AUTO DE LOUVOR & MÉRITO CITADINO:" : "§ AUTO FORENSE & CAUSA DA MORTE / INSOLVÊNCIA SOCIAL:",
+        110,
+        cardY + 40
+    );
+
+    sctx.fillStyle = '#0f172a';
+    sctx.font = 'bold 23px Georgia, serif';
+    sctx.fillText(isVic ? "TRIUNFO HISTÓRICO: SOBREVIVEU AO CHIADO" : (player.deathTitle || "DESPEJO SUMÁRIO"), 110, cardY + 85);
+
+    wrapTextCanvas(
+        sctx,
+        isVic ? "Conquistou a independência habitacional com dignidade e astúcia contra todas as probabilidades." : player.deathCause,
+        110,
+        cardY + 125,
+        865,
+        28,
+        '18px Georgia, serif',
+        '#334155',
+        'left',
+        cardY + 175
+    );
+
+    // Caixa de Citação Mordaz (getMordantRoast)
+    sctx.fillStyle = '#ede5d4';
+    sctx.fillRect(110, cardY + 185, 865, 130);
+    sctx.strokeStyle = '#c5ba9d';
+    sctx.lineWidth = 1;
+    sctx.strokeRect(110, cardY + 185, 865, 130);
+
+    const roastText = `« ${getMordantRoast()} »`;
+    wrapTextCanvas(
+        sctx,
+        roastText,
+        130,
+        cardY + 225,
+        825,
+        28,
+        'italic 18px Georgia, serif',
+        '#1c1917',
+        'left',
+        cardY + 305
+    );
+
+    // 8. Placa do Escalão Oficial de Precariedade (x: 85, y: 1080, w: 915, h: 175)
+    const rankY = 1080;
+    sctx.fillStyle = isVic ? '#f0fdf4' : '#f4f8f4';
+    sctx.fillRect(85, rankY, 915, 175);
+    sctx.strokeStyle = isVic ? '#059669' : '#059669';
+    sctx.lineWidth = 2.5;
+    sctx.strokeRect(85, rankY, 915, 175);
+
+    sctx.fillStyle = '#047857';
+    sctx.font = 'bold 16px "Fira Code", monospace';
+    sctx.textAlign = 'left';
+    sctx.fillText(
+        isVic ? "🏆 ESTATUTO SUPREMO HOMOLOGADO:" : "🏆 ESCALÃO OFICIAL HOMOLOGADO PELO MERCADO DE LISBOA:",
+        115,
+        rankY + 40
+    );
+
+    sctx.fillStyle = '#064e3b';
+    sctx.font = 'bold 27px Georgia, serif';
+    sctx.fillText(getPrecarityRank(stats.daysSurvived), 115, rankY + 92);
+
+    sctx.fillStyle = '#475569';
+    sctx.font = 'italic 15px Georgia, serif';
+    sctx.fillText(
+        "Homologado para efeitos de requisição de senhas de cantina e imperial com tremoços.",
+        115,
+        rankY + 138
+    );
+
+    // 9. Assinaturas Notariais & Carimbos (x: 85, y: 1290, w: 915, h: 210)
+    const sigY = 1290;
+
+    // Signatário Esquerdo (Senhorio)
+    sctx.fillStyle = '#1c1917';
+    sctx.font = 'bold 15px Georgia, serif';
+    sctx.textAlign = 'left';
+    sctx.fillText(isVic ? "O SENHORIO DERROTADO:" : "O SENHORIO NOTIFICADOR:", 115, sigY + 25);
+
+    // Rubrica manuscrita fluida (tinta azul de aparo)
+    sctx.save();
+    sctx.strokeStyle = 'rgba(26, 46, 114, 0.85)';
+    sctx.lineWidth = 2.2;
+    sctx.beginPath();
+    sctx.moveTo(115, sigY + 75);
+    sctx.bezierCurveTo(145, sigY + 40, 185, sigY + 95, 215, sigY + 50);
+    sctx.bezierCurveTo(245, sigY + 85, 275, sigY + 40, 325, sigY + 68);
+    sctx.stroke();
+    sctx.restore();
+
+    sctx.fillStyle = '#64748b';
+    sctx.fillText("_____________________________________", 115, sigY + 105);
+    sctx.fillStyle = '#0f172a';
+    sctx.font = 'bold 16px Georgia, serif';
+    sctx.fillText("DR. JERÓNIMO DA SILVA", 115, sigY + 130);
+    sctx.fillStyle = '#57534e';
+    sctx.font = '13px Georgia, serif';
+    sctx.fillText(isVic ? "Senhorio-Geral (Reconhece a Vitória)" : "Senhorio-Geral & Notário Notificador", 115, sigY + 150);
+
+    // Selo Notarial Central em Tinta Vermelha
+    const sealCx = sc.width / 2, sealCy = sigY + 85;
+    sctx.save();
+    sctx.strokeStyle = isVic ? 'rgba(5, 150, 105, 0.75)' : 'rgba(185, 28, 28, 0.75)';
+    sctx.lineWidth = 3;
+    sctx.beginPath();
+    sctx.arc(sealCx, sealCy, 58, 0, Math.PI * 2);
+    sctx.stroke();
+    sctx.lineWidth = 1.5;
+    sctx.beginPath();
+    sctx.arc(sealCx, sealCy, 50, 0, Math.PI * 2);
+    sctx.stroke();
+    for (let i = 0; i < 24; i++) {
+        const ang = i * (Math.PI * 2 / 24);
+        sctx.beginPath();
+        sctx.moveTo(sealCx + Math.cos(ang) * 50, sealCy + Math.sin(ang) * 50);
+        sctx.lineTo(sealCx + Math.cos(ang) * 58, sealCy + Math.sin(ang) * 58);
+        sctx.stroke();
+    }
+    sctx.fillStyle = isVic ? 'rgba(5, 150, 105, 0.85)' : 'rgba(185, 28, 28, 0.85)';
+    sctx.font = 'bold 8.5px "Fira Code", monospace';
+    sctx.textAlign = 'center';
+    sctx.fillText("REPÚBLICA", sealCx, sealCy - 12);
+    sctx.fillText("PORTUGUESA", sealCx, sealCy + 3);
+    sctx.fillText("COMARCA", sealCx, sealCy + 18);
+    sctx.restore();
+
+    // Signatário Direito (Prof. Leitão)
+    sctx.fillStyle = '#1c1917';
+    sctx.font = 'bold 15px Georgia, serif';
+    sctx.textAlign = 'left';
+    sctx.fillText(isVic ? "O PRESIDENTE DO JÚRI:" : "O PERITO MÉDICO-LEGAL:", 670, sigY + 25);
+
+    // Rubrica médica académica
+    sctx.save();
+    sctx.strokeStyle = 'rgba(26, 46, 114, 0.85)';
+    sctx.lineWidth = 2.2;
+    sctx.beginPath();
+    sctx.moveTo(670, sigY + 70);
+    sctx.bezierCurveTo(700, sigY + 35, 740, sigY + 95, 770, sigY + 50);
+    sctx.bezierCurveTo(800, sigY + 80, 830, sigY + 45, 875, sigY + 68);
+    sctx.stroke();
+    sctx.restore();
+
+    sctx.fillStyle = '#64748b';
+    sctx.fillText("_____________________________________", 670, sigY + 105);
+    sctx.fillStyle = '#0f172a';
+    sctx.font = 'bold 16px Georgia, serif';
+    sctx.fillText("PROF. DR. MARCELO LEITÃO", 670, sigY + 130);
+    sctx.fillStyle = '#57534e';
+    sctx.font = '13px Georgia, serif';
+    sctx.fillText(isVic ? "Catedrático IST & Presidente do Conselho" : "Catedrático IST & Perito Clínico", 670, sigY + 150);
+
+    // 10. Caixa de CTA Viral & Rodapé (x: 85, y: 1530, w: 915, h: 230)
+    const ctaY = 1530;
+    sctx.fillStyle = '#18130d';
+    sctx.fillRect(85, ctaY, 915, 230);
+    sctx.strokeStyle = isVic ? '#10b981' : '#d97706';
+    sctx.lineWidth = 3;
+    sctx.strokeRect(85, ctaY, 915, 230);
 
     sctx.fillStyle = '#ffffff';
-    sctx.font = 'bold 28px "Fira Code", monospace';
+    sctx.font = 'bold 24px "Fira Code", monospace';
     sctx.textAlign = 'center';
-    sctx.fillText(isVic ? "CONSEGUIRÁS REPETIR A FAÇANHA EM LISBOA?" : "ACHAS QUE AGUENTAS MAIS TEMPO EM LISBOA?", sc.width / 2, ctaY + 55);
+    sctx.fillText(
+        isVic ? "CONSEGUIRÁS REPETIR A FAÇANHA EM LISBOA?" : "ACHAS QUE AGUENTAS MAIS TEMPO EM LISBOA?",
+        sc.width / 2,
+        ctaY + 52
+    );
 
     sctx.fillStyle = '#f59e0b';
-    sctx.font = 'bold 36px "Fira Code", monospace';
-    sctx.fillText("desenrascado.pormenores.net", sc.width / 2, ctaY + 110);
+    sctx.font = 'bold 38px "Fira Code", monospace';
+    sctx.fillText("desenrascado.pormenores.net", sc.width / 2, ctaY + 115);
+
+    sctx.fillStyle = '#cbd5e1';
+    sctx.font = '18px "Fira Code", monospace';
+    sctx.fillText("Joga grátis no browser · Sem instalações nem tretas", sc.width / 2, ctaY + 160);
 
     sctx.fillStyle = '#94a3b8';
-    sctx.font = '20px "Fira Code", monospace';
-    sctx.fillText("Joga grátis no browser · Sem instalações nem tretas", sc.width / 2, ctaY + 148);
+    sctx.font = '14px "Fira Code", monospace';
+    sctx.fillText("#Desenrascado #SobrevivenciaUrbana #Lisboa16bit #IST #Chiado", sc.width / 2, ctaY + 195);
 
-    // Assinatura Final no Rodapé
-    sctx.fillStyle = '#64748b';
-    sctx.font = '20px "Fira Code", monospace';
-    sctx.fillText("pormenores.net", sc.width / 2, sc.height - 135);
+    // Rodapé de Validade Legal
+    sctx.fillStyle = '#57534e';
+    sctx.font = 'italic 14px Georgia, serif';
+    sctx.textAlign = 'center';
+    sctx.fillText(
+        "Documento oficial emitido ao abrigo do Decreto-Lei da Calçada nº 1993/2026. Conservatória do Registo Notarial de Lisboa.",
+        sc.width / 2,
+        sc.height - 68
+    );
 
     return sc;
 }
