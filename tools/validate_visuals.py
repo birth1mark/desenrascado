@@ -168,6 +168,13 @@ def validate_all():
             assert im_int.size == (640, 295), f"Tamanho interior incorreto {interior_path}: {im_int.size}"
             print(f"✓ Interior [{loc_id:12}]: 640x295 OK")
 
+    # Validar Bênção das Fitas (Cerimónia Solene no IST)
+    bencao_path = os.path.join(ASSETS_DIR, "bencao_fitas.png")
+    assert os.path.exists(bencao_path), "assets/bencao_fitas.png em falta!"
+    im_bencao = Image.open(bencao_path)
+    assert im_bencao.size == (640, 295), f"Tamanho incorreto de bencao_fitas.png: {im_bencao.size}"
+    print(f"✓ Bênção das Fitas [bencao_fitas]: 640x295 OK (Cerimónia Monumental do IST)")
+
     # 5. Gerar Painel Visual de Prova (Audit Contact Sheet)
     print("\n--- 4. GERAÇÃO DO PAINEL VISUAL DE PROVA ---")
     sheet_w = 7 * 136 + 16
@@ -177,7 +184,7 @@ def validate_all():
     
     # Cabeçalho
     draw.rectangle([(0, 0), (sheet_w, 40)], fill=(15, 18, 25))
-    draw.text((16, 12), "DESENRASCADO - AUDITORIA VISUAL COMPLETA (v7.6)", fill=(245, 158, 11))
+    draw.text((16, 12), "DESENRASCADO - AUDITORIA VISUAL COMPLETA (v7.7)", fill=(245, 158, 11))
     
     # Desenhar os retratos com moldura e etiquetas
     for i, (loc_id, cfg) in enumerate(NPC_CONFIG.items()):

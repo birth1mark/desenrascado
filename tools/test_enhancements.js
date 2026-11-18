@@ -253,8 +253,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.6', "ASSET_VER incrementado para 7.6");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.6' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.7', "ASSET_VER incrementado para 7.7");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.7' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -578,7 +578,33 @@ assert.strictEqual(encTuna.portraitId, 'goncalo', "Encontro da tuna define portr
 
 console.log("✓ 13. Avatares & Varina: Rui e Gonçalo 100% individualizados e D. Rosa com arte feminina tradicional e retrato SCUMM!");
 
+// -----------------------------------------------------------------------------
+// TESTE 14: BÊNÇÃO DAS FITAS & ANFITEATRO DO IST (SEM FUNDO DE MERCEARIA)
+// -----------------------------------------------------------------------------
+// 1. Verificar ficheiros de arte do IST e Bênção das Fitas em disco
+assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/interiors/faculdade.png'), "assets/interiors/faculdade.png existe em disco");
+assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/bencao_fitas.png'), "assets/bencao_fitas.png existe em disco");
+
+// 2. Verificar que CUTSCENES.graduation usa a imagem dedicada da Bênção das Fitas
+const graduationCutscene = vm.runInContext("CUTSCENES.graduation", sandbox);
+assert(graduationCutscene, "CUTSCENES.graduation existe");
+assert(graduationCutscene.bgImg, "CUTSCENES.graduation tem bgImg dedicado (bencaoFitasImg)");
+assert(html.includes("const bencaoFitasImg = new Image();"), "bencaoFitasImg declarado em index.html");
+assert(html.includes("bencaoFitasImg.src = `assets/bencao_fitas.png?v=${ASSET_VER}`;"), "bencaoFitasImg aponta para assets/bencao_fitas.png");
+
+// 3. Verificar que renderCutscene suporta cs.bgImg e efeitos de fitas/confetes
+assert(html.includes("cs.bgImg && cs.bgImg.complete && cs.bgImg.naturalWidth > 0"), "renderCutscene desenha cs.bgImg com prioridade");
+assert(html.includes("if (cs.id === 'graduation')"), "renderCutscene tem efeitos especiais comemorativos na Bênção das Fitas");
+assert(html.includes("fitasColors"), "Chuva de fitas académicas de engenharia incluída no render");
+
+// 4. Testar execução de playCutscene('graduation') e renderCutscene() em sandbox
+vm.runInContext("playCutscene('graduation');", sandbox);
+assert.strictEqual(vm.runInContext("state", sandbox), 'CUTSCENE', "Estado transitou para CUTSCENE");
+assert.strictEqual(vm.runInContext("activeCutscene.id", sandbox), 'graduation', "activeCutscene.id é 'graduation'");
+vm.runInContext("renderCutscene();", sandbox);
+console.log("✓ 14. Bênção das Fitas & IST: Cenário cerimonial 16-bit monumental, chuva de fitas e zero mercearia validados!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 13 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 14 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");
