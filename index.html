@@ -1279,7 +1279,7 @@
             <a href="https://pormenores.net/" target="_blank" class="arcade-link">← pormenores.net</a>
             <div class="arcade-actions">
                 <button class="arcade-btn btn-curriculum" onclick="openCurriculumModal()" id="btn-curriculum">📜 Currículo</button>
-                <button class="arcade-btn btn-codex" onclick="openCodexModal()" id="btn-codex">👥 Quem é Quem</button>
+                <button class="arcade-btn btn-codex" onclick="openCodexModal()" id="btn-codex" style="display: none;">👥 Quem é Quem</button>
                 <button class="arcade-btn btn-achievements" onclick="openAchievementsModal()" id="btn-achievements">🎖️ Conquistas</button>
                 <button class="arcade-btn btn-leaderboard" onclick="openLeaderboard()" id="btn-leaderboard">🏆 Top 10</button>
                 <div class="toolbar-divider"></div>
@@ -2300,6 +2300,55 @@ const ROMANCE_PARTNERS = {
     }
 };
 
+// Requisitos de Elite para Desbloquear Namoro com D. Zulmira (Alta Sociedade do Chiado)
+function canDateZulmira(p = player) {
+    if (!p) return { ok: false, missing: [] };
+    const missing = [];
+
+    // 1. Andares de fato formal
+    const hasSuit = p.clothing && (p.clothing.id === 'suit' || (p.clothing.formality && p.clothing.formality >= 3));
+    if (!hasSuit) missing.push("Fato Executivo de Alfaiate");
+
+    // 2. Teres a melhor casa de Lisboa (Tier 4: T1 Pombalino no Chiado)
+    const hasBestHouse = p.houseIndex === 4;
+    if (!hasBestHouse) missing.push("T1 Pombalino no Chiado (Melhor casa)");
+
+    // 3. Teres pelo menos um curso universitário concluído no IST (com tese defendida)
+    const hasDegree = (p.completedCourses && p.completedCourses.length > 0) || (p.ects >= 90 && p.completedSubjects && Object.keys(p.completedSubjects).some(k => k.includes('tese')));
+    if (!hasDegree) missing.push("Pelo menos um Curso concluído no IST");
+
+    // 4. Muito dinheiro no banco (mínimo de 1.500€ em conta poupança)
+    const hasBankFunds = (p.bank || 0) >= 1500;
+    if (!hasBankFunds) missing.push("Mínimo de 1.500€ no Banco");
+
+    return {
+        ok: missing.length === 0,
+        missing
+    };
+}
+
+// Sistema de Cooldown de Silêncio Pós-Término (1 semana / 7 dias sem poder falar)
+function isExPartnerBlocked(partnerKey) {
+    if (!player || !player.exPartners || !player.exPartners[partnerKey]) return null;
+    const info = player.exPartners[partnerKey];
+    if (player.day < info.blockedUntilDay) {
+        const daysLeft = info.blockedUntilDay - player.day;
+        const pName = (ROMANCE_PARTNERS[partnerKey] && ROMANCE_PARTNERS[partnerKey].name) || partnerKey;
+        return { blocked: true, daysLeft, pName };
+    }
+    return null;
+}
+
+// Presença Doméstica do Companheiro(a) em Casa
+function isPartnerAtHome(p = player) {
+    if (!p || !p.partner) return false;
+    const hr = (p.timeHour !== undefined) ? p.timeHour : 12;
+    const isNightOrEvening = (hr >= 18 || hr <= 8);
+    // De noite/entardecer está em casa ~85% das vezes; durante o dia ~40% das vezes
+    const pseudoRand = ((p.day * 17 + hr * 7) % 100);
+    return isNightOrEvening ? (pseudoRand < 85) : (pseudoRand < 40);
+}
+
 function getRomanceStage(partnerId) {
     if (!player.relationships) player.relationships = {};
     if (!player.romanceAffinity) player.romanceAffinity = {};
@@ -2323,6 +2372,20 @@ function getRomanceHearts(points) {
 
 function getRomanceAction(partnerId) {
     if (player.partner) return null; // Já tem compromisso amoroso
+
+    // Bloqueio de 1 semana se for um(a) ex recente
+    const exCheck = isExPartnerBlocked(partnerId);
+    if (exCheck && exCheck.blocked) {
+        return {
+            label: `💔 ${exCheck.pName} (Silêncio Pós-Término)`,
+            cost: 0,
+            isBlockedEx: true,
+            daysLeft: exCheck.daysLeft,
+            pName: exCheck.pName,
+            desc: `O término ainda é recente. ${exCheck.pName} recusa-se a falar contigo por 7 dias (faltam ${exCheck.daysLeft} dias).`
+        };
+    }
+
     const rel = getRomanceStage(partnerId);
     const p = ROMANCE_PARTNERS[partnerId];
     if (!p) return null;
@@ -2362,6 +2425,20 @@ function getRomanceAction(partnerId) {
         };
     } else {
         // Stage 3: Pedido Oficial de Namoro!
+        // D. Zulmira exige padrões rigorosos de alta sociedade
+        if (partnerId === 'zulmira') {
+            const req = canDateZulmira(player);
+            if (!req.ok) {
+                return {
+                    label: `💍 Pedir D. Zulmira em Namoro (Bloqueado)`,
+                    cost: 0,
+                    blockedZulmira: true,
+                    missingReqs: req.missing,
+                    desc: `Padrões de Alta Sociedade: Fato Pombalino, T1 no Chiado, Curso concluído e 1.500€ no Banco! Faltam: ${req.missing.join(', ')}`
+                };
+            }
+        }
+
         return {
             label: `💍 Pedir ${p.name} em Namoro! (2h, 20€)`,
             cost: 20,
@@ -3001,7 +3078,7 @@ const BUILDINGS = [
     { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, desc: 'Inês — Vigília popular, a tua tenda Quechua, cantina solidária e luta pelo direito à habitação.' },
     { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco, depósitos e carreiras financeiras.' },
     { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira — Mestre alfaiate voluptuosa, elegante, sexy e atrevida. Top de renda, blazer chique e ateliê pombalino.' },
-    { id: 'supermercado', name: 'Mercearia da Cátia', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'MERCEARIA TRADICIONAL', icon: '🛒', doorX: 478, doorY: 195, desc: 'Cátia — Encarregada da mercearia. Mantimentos frescos, conservas e bens essenciais.' },
+    { id: 'supermercado', name: 'Mercearia da Cátia', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'MERCEARIA TRADICIONAL', icon: '🛒', doorX: 470, doorY: 195, desc: 'Cátia — Encarregada da mercearia. Mantimentos frescos, conservas e bens essenciais.' },
     { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 70, w: 110, h: 125, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
     { id: 'casa', name: 'O Teu Teto', x: 340, y: 15, w: 120, h: 65, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 376, doorY: 195, desc: 'Dorme para recuperar sanidade, fome e energia.' },
     { id: 'senhorio', name: 'Senhorio', x: 530, y: 15, w: 110, h: 65, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 585, doorY: 195, desc: 'Sr. Jerónimo — Rendas, contratos de habitação e biscates de manutenção.' }
@@ -3734,7 +3811,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '7.9';
+const ASSET_VER = '8.0';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3808,6 +3885,18 @@ goncaloPortraitImg.src = `assets/portrait_goncalo.png?v=${ASSET_VER}`;
 // Retrato Exclusivo da D. Rosa (A Varina de Lisboa / Peixeira Tradicional)
 const varinaPortraitImg = new Image();
 varinaPortraitImg.src = `assets/portrait_varina.png?v=${ASSET_VER}`;
+
+// Retratos Exclusivos dos Companheiros(as) no Aconchego de Casa (Roupa Descontraída & Sensual)
+const catiaHomePortraitImg = new Image();
+catiaHomePortraitImg.src = `assets/portrait_catia_home.png?v=${ASSET_VER}`;
+const martaHomePortraitImg = new Image();
+martaHomePortraitImg.src = `assets/portrait_marta_home.png?v=${ASSET_VER}`;
+const zulmiraHomePortraitImg = new Image();
+zulmiraHomePortraitImg.src = `assets/portrait_zulmira_home.png?v=${ASSET_VER}`;
+const ruiHomePortraitImg = new Image();
+ruiHomePortraitImg.src = `assets/portrait_rui_home.png?v=${ASSET_VER}`;
+const goncaloHomePortraitImg = new Image();
+goncaloHomePortraitImg.src = `assets/portrait_goncalo_home.png?v=${ASSET_VER}`;
 
 // Splash Screen Bitmapped 16-Bit Deslumbrante de Lisboa
 const splashImg = new Image();
@@ -4259,11 +4348,11 @@ const STREET_WALKER_CATALOG = [
 let streetWalkers = STREET_WALKER_CATALOG.map((tmpl, idx) => ({
     ...tmpl,
     x: tmpl.id === 'castanheiro' ? 280 : -50,
-    y: 206,
+    y: 212, // Calçada desimpedida (evita caixotes de fruta e esplanada)
     vx: tmpl.id === 'castanheiro' ? 16 : 0,
     facing: 'right',
     state: tmpl.id === 'castanheiro' ? 'WALKING' : 'IDLE',
-    targetX: tmpl.id === 'castanheiro' ? 430 : 680,
+    targetX: tmpl.id === 'castanheiro' ? 420 : 680,
     timer: 0,
     walkDist: 0,
     shoutTimer: 8 + idx * 3,
@@ -4287,7 +4376,7 @@ function updateStreetWalkers(dt) {
             nextWalker.active = true;
             nextWalker.facing = fromLeft ? 'right' : 'left';
             nextWalker.x = fromLeft ? -35 : 675;
-            nextWalker.y = fromLeft ? 206 : 212; // Se entra da direita, usa a faixa desimpedida em frente à esplanada
+            nextWalker.y = 212; // Faixa de calçada desimpedida, sem pisar caixotes de fruta
             nextWalker.vx = fromLeft ? nextWalker.speed : -nextWalker.speed;
             nextWalker.targetX = fromLeft ? 675 : -35;
             nextWalker.walkDist = 0;
@@ -4385,17 +4474,12 @@ function updateStreetWalkers(dt) {
             w.x += w.vx * dt;
             w.walkDist += Math.abs(w.vx) * dt;
 
-            // Desvio suave da esplanada da Tasca (x >= 490):
-            // Quem vai para a direita desvia ligeiramente para y=212 para desimpedir a esplanada
-            if (w.facing === 'right') {
-                if (w.x >= 490) {
-                    w.y += (212 - w.y) * Math.min(1, dt * 2.5);
-                }
+            // Desvio suave da zona dos caixotes de fruta da Mercearia (x: 465..535) e esplanada da Tasca (x >= 535)
+            // Garante que nenhum peão caminha por cima dos caixotes de fruta (mantém y=212)
+            if (w.x >= 465) {
+                w.y += (212 - w.y) * Math.min(1, dt * 3.5);
             } else {
-                // Quem vem da direita volta suavemente para y=206 ao passar a Tasca
-                if (w.x <= 490) {
-                    w.y += (206 - w.y) * Math.min(1, dt * 2.5);
-                }
+                w.y += (208 - w.y) * Math.min(1, dt * 2.0);
             }
 
             // Fala pontual ao cruzar o centro do tabuleiro (uma vez por travessia)
@@ -5869,6 +5953,7 @@ const DIALOGUE_TREES = {
                     const aff = (typeof getNpcAffinity === 'function') ? getNpcAffinity('loja_roupa') : ((p.affinity && p.affinity.loja_roupa) || 20);
                     const rel = getRomanceStage('zulmira');
                     const pts = Math.max(aff, rel.points || 0);
+                    const req = canDateZulmira(p);
                     if (pts < 25) {
                         return "«Ai Zé, que atrevido! Já tenho idade para ter juízo e tu vens para aqui com galanteios... Mas confesso que tens graça, rapaz!»";
                     } else if (pts < 50) {
@@ -5876,7 +5961,10 @@ const DIALOGUE_TREES = {
                     } else if (pts < 75) {
                         return "«Tenho andado a pensar em ti, Zé... Fazes-me sentir jovem, desejada e com o coração aos saltos como há muitos anos não sentia.»";
                     } else {
-                        return "«Zé, meu querido... Já não consigo disfarçar. O Chiado é lindo, mas a minha alfaiataria só brilha quando entras por aquela porta. Quero-te na minha vida!»";
+                        if (!req.ok) {
+                            return `«Ai Zé, meu querido... Adoro o teu carinho, mas uma senhora de alta costura do Chiado não se entrega a qualquer rapaz! Para seres o meu cavalheiro oficial, exijo aprumo à altura: fato formal impecável, a melhor morada no Chiado (T1), um curso concluído com o canudo na mão e pelo menos 1.500€ de segurança no banco! Falta-te: ${req.missing.join(', ')}.»`;
+                        }
+                        return "«Zé, meu querido... Olha bem para ti: que porte nobre e distinto! De fato impecável, a viver no Chiado, canudo no bolso e vida desafogada no banco... És o homem dos meus sonhos! O Chiado rende-se a nós!»";
                     }
                 },
                 action: (p) => {
@@ -5886,6 +5974,7 @@ const DIALOGUE_TREES = {
                     const aff = (p && p.affinity && (p.affinity.zulmira !== undefined || p.affinity.loja_roupa !== undefined)) ? (p.affinity.zulmira !== undefined ? p.affinity.zulmira : p.affinity.loja_roupa) : ((typeof getNpcAffinity === 'function') ? getNpcAffinity('loja_roupa') : 20);
                     const rel = (typeof getRomanceStage === 'function') ? getRomanceStage('zulmira') : { points: 0 };
                     const pts = Math.max(aff, (rel && rel.points) || 0);
+                    const req = canDateZulmira(p);
                     if (pts < 40) {
                         return [
                             { text: "«O encanto de uma mulher madura e distinta não passa despercebido, D. Zulmira.»", nextNode: 'start', gainAffection: 10, partnerKey: 'zulmira' },
@@ -5896,14 +5985,14 @@ const DIALOGUE_TREES = {
                             { text: "«Aceito com muito gosto esse café. A sua companhia faz-me muito bem.»", nextNode: 'start', gainAffection: 15, partnerKey: 'zulmira' },
                             { text: "«Logo passo por cá para esse café!»", nextNode: 'exit' }
                         ];
-                    } else if (pts < 85) {
+                    } else if (pts < 85 || !req.ok) {
                         return [
-                            { text: "«Também penso em si constantemente, Zulmira. Tem um lugar especial em mim.»", nextNode: 'start', gainAffection: 20, partnerKey: 'zulmira' },
-                            { text: "«Guardo esse sorriso comigo o dia todo. Até já!»", nextNode: 'exit' }
+                            { text: req.ok ? "«Também penso em si constantemente, Zulmira. Tem um lugar especial em mim.»" : "«Compreendo as suas exigências de alta costura, D. Zulmira. Vou trabalhar para estar à sua altura!»", nextNode: 'start', gainAffection: req.ok ? 20 : 5, partnerKey: 'zulmira' },
+                            { text: "«Vou regressar quando preencher todos os seus padrões. Até já!»", nextNode: 'exit' }
                         ];
                     } else {
                         return [
-                            { text: "«D. Zulmira, quer namorar comigo oficialmente e partilhar a vida em Lisboa?»", nextNode: 'proposta_zulmira_aceite', triggerRomance: 'zulmira' },
+                            { text: "«D. Zulmira, com todo o aprumo e distinção pombalina: quer namorar comigo oficialmente?»", nextNode: 'proposta_zulmira_aceite', triggerRomance: 'zulmira' },
                             { text: "«É um sentimento mútuo, D. Zulmira. Até logo!»", nextNode: 'exit' }
                         ];
                     }
@@ -5926,10 +6015,402 @@ const DIALOGUE_TREES = {
                 ]
             }
         }
+    },
+
+    // ========================================================================
+    // DIÁLOGOS DOMÉSTICOS PROFUNDOS NO LAR (FRUSTRAÇÃO, AFETO & ROMPIMENTO)
+    // ========================================================================
+    romance_home_catia: {
+        id: 'romance_home_catia',
+        name: 'Cátia',
+        role: 'Em Casa · Camisola de Alças Confortável',
+        portraitId: 'catia_home',
+        color: '#ec4899',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«Olá meu bem... Sabe tão bem chegar a casa, descalçar as sapatilhas e vestir esta camisola leve de alças. Como correu o teu dia lá fora na correria de Lisboa?»",
+                choices: [
+                    { text: "«Complicado, mas ver-te aqui no sofá faz tudo valer a pena. Como estás tu?»", nextNode: 'carinho' },
+                    { text: "«Estou exausto... A cidade está cara e sinto que não saímos do mesmo sítio.»", nextNode: 'conversa_vida' },
+                    { text: "«Tive um dia horrível. Preciso de silêncio, não me faças perguntas agora.»", nextNode: 'frieza', causeFrustration: 10 },
+                    { text: "«Até já, amor. Vou só descansar um bocadinho.»", nextNode: 'exit' }
+                ]
+            },
+            carinho: {
+                text: "«Vem cá para o meu aconchego... Encosta a cabeça. Preparei um chá e comprei aquele pão de Mafra que tu adoras. Em Lisboa há marés de turistas e pressa, mas aqui entre estas quatro paredes o mundo é só nosso.»",
+                choices: [
+                    { text: "«Obrigado por seres o meu porto seguro, Cátia. (Abraçar com ternura)»", nextNode: 'intimidade', gainSanity: 25 },
+                    { text: "«És maravilhosa. Falando noutra coisa, estive a pensar nos nossos planos...»", nextNode: 'conversa_vida' },
+                    { text: "«Até já, minha linda.»", nextNode: 'exit' }
+                ]
+            },
+            intimidade: {
+                text: "«*sorri com ternura e passa a mão no teu cabelo* Quero que saibas que acredito em ti, Zé. Mesmo quando a renda aperta e a vida parece um sufoco. Estamos nisto juntos, ouviste?»",
+                choices: [
+                    {
+                        text: "«Juntos contra tudo e contra todos! (Beijo carinhoso)»",
+                        nextNode: 'exit',
+                        action: (p) => {
+                            p.sanity = Math.min(100, p.sanity + 20);
+                            spawnParticle("❤️ Cumplicidade (+20 Sanidade)", "#ec4899");
+                        }
+                    }
+                ]
+            },
+            conversa_vida: {
+                text: "«Eu também sinto essa angústia às vezes... A mercearia fatura mas os impostos e as rendas engolem tudo. Às vezes penso se o nosso futuro é mesmo aqui ou se devíamos arriscar algo diferente. O que achas tu?»",
+                choices: [
+                    { text: "«Lisboa tem alma e nós temos garra. Vamos poupar e encontrar o nosso caminho juntos.»", nextNode: 'esperanca', gainSanity: 15 },
+                    { text: "«Para ser sincero, às vezes acho que devia largar tudo e ir para fora sozinho.»", nextNode: 'duvida_futuro', causeFrustration: 15 },
+                    { text: "«Não sei nem quero pensar nisso hoje. Deixa-me em paz.»", nextNode: 'frieza', causeFrustration: 12 }
+                ]
+            },
+            esperanca: {
+                text: "«Gosto dessa tua determinação, Zé. Faz-me lembrar o porquê de me ter apaixonado por ti. Vou aquecer o jantar para comermos juntos!»",
+                choices: [
+                    {
+                        text: "«Vou ajudar-te na cozinha!»",
+                        nextNode: 'exit',
+                        action: (p) => {
+                            p.hunger = Math.min(100, p.hunger + 20);
+                            p.sanity = Math.min(100, p.sanity + 15);
+                            spawnParticle("🍲 Jantar a Dois (+20 Nutrição)", "#facc15");
+                        }
+                    }
+                ]
+            },
+            frieza: {
+                text: "«*fica magoada, cruzando os braços* Eu passo o dia inteiro a pensar em receber-te com um sorriso e tu respondes-me com essa rispidez? Eu não sou o teu saco de pancada do stress da rua, Zé!»",
+                choices: [
+                    { text: "«Tens razão, Cátia... Desculpa. O cansaço subiu-me à cabeça, perdoa-me.»", nextNode: 'desculpa' },
+                    { text: "«Se não aguentas a pressão, o problema é teu! Não me chateies!»", nextNode: 'discussao_pesada', causeFrustration: 20 }
+                ]
+            },
+            desculpa: {
+                text: "«*suspira, desanuviando a tensão* Eu compreendo a pressão de Lisboa... Mas temos de nos tratar com carinho, senão a cidade come-nos vivos. Vem cá... respira fundo.»",
+                choices: [
+                    { text: "«Obrigado pela paciência, amor.»", nextNode: 'exit', gainSanity: 10 }
+                ]
+            },
+            discussao_pesada: {
+                text: "«Não aguento a pressão?! Eu desdobro-me a trabalhar na mercearia, ajudo nas contas e ainda tenho de levar com o teu desprezo?! Se é para estares assim comigo, mais vale cada um seguir a sua vida!»",
+                choices: [
+                    { text: "«Calma, Cátia! Fui longe demais, não quero acabar nada!»", nextNode: 'reconciliacao_tensa' },
+                    { text: "«Sabes que mais? Tens toda a razão. Acabou tudo entre nós. Sai da minha casa!»", nextNode: 'rompimento_catia', triggerBreakup: true },
+                    { text: "«Estou farto de cobranças. Se queres ir embora, a porta está aberta!»", nextNode: 'rompimento_catia', triggerBreakup: true }
+                ]
+            },
+            reconciliacao_tensa: {
+                text: "«Estou magoada, Zé. Muito magoada. Vou para o quarto e quero ficar em silêncio. Pensa bem em como me tratas se queres que continuemos juntos.»",
+                choices: [
+                    { text: "«... Vou pensar. Boa noite, Cátia.»", nextNode: 'exit', causeFrustration: 15 }
+                ]
+            },
+            duvida_futuro: {
+                text: "«... Ir para fora *sozinho*? É isso que eu sou para ti, um empecilho passageiro? Achei que estávamos a construir uma vida a dois... Isto dói mais do que imaginas.»",
+                choices: [
+                    { text: "«Foi da boca para fora, amor! Não imagino a minha vida sem ti.»", nextNode: 'desculpa' },
+                    { text: "«Acho que os nossos caminhos já não são os mesmos, Cátia. Mais vale terminarmos.»", nextNode: 'rompimento_catia', triggerBreakup: true }
+                ]
+            },
+            rompimento_catia: {
+                text: "«Pois com certeza! Pensas que me humilhas assim?! Fica lá sozinho com a tua amargura! Não me procures mais na mercearia nem me dirijas a palavra tão cedo!»",
+                triggerBreakup: true,
+                choices: [
+                    { text: "«Adeus, Cátia. Segue o teu caminho.»", nextNode: 'exit' }
+                ]
+            }
+        }
+    },
+
+    romance_home_marta: {
+        id: 'romance_home_marta',
+        name: 'Marta',
+        role: 'Em Casa · Camisola Larga & Óculos',
+        portraitId: 'marta_home',
+        color: '#38bdf8',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«Olá lindo... Desculpa a bagunça no sofá, estou aqui com o portátil e pilhas de folhas de Sistemas Operativos. Fiz uma caneca de chá e pus esta camisola larga... Como correu o teu dia?»",
+                choices: [
+                    { text: "«Estava ansioso por chegar e dar-te um beijo. Fazes uma pausa de 10 minutos para nós?»", nextNode: 'pausa_estudo', gainSanity: 20 },
+                    { text: "«Ainda estás agarrada a esse ecrã? Nunca tens tempo para falar como deve ser.»", nextNode: 'reclamacao_computador', causeFrustration: 15 },
+                    { text: "«Como vão esses algoritmos e deadlines no Técnico?»", nextNode: 'conversa_tecnico' },
+                    { text: "«Concentra-te no estudo, Marta. Eu vou descansar um pouco.»", nextNode: 'exit' }
+                ]
+            },
+            pausa_estudo: {
+                text: "«*fecha o portátil e encosta-se a ti com um suspiro aliviado* Nem imaginas o bem que me sabe pousar o teclado. A minha cabeça já fumava com ponteiros de memória... Abraça-me com força.»",
+                choices: [
+                    { text: "«(Abraçar com carinho e fazer festas no cabelo) Deixa o código lá fora.»", nextNode: 'intimidade_marta', gainSanity: 25 },
+                    { text: "«Tens de ter cuidado para não teres um burnout com esse curso, Marta.»", nextNode: 'conversa_tecnico' }
+                ]
+            },
+            intimidade_marta: {
+                text: "«*sorri, tirando os óculos e olhando para ti com carinho* Sabes... o IST ensina-me muita lógica, mas tu ensinas-me a viver Lisboa com o coração. Ter-te em casa é a melhor parte do meu dia.»",
+                choices: [
+                    {
+                        text: "«O amor não precisa de ser compilado, é perfeito assim. (Beijo doce)»",
+                        nextNode: 'exit',
+                        action: (p) => {
+                            p.sanity = Math.min(100, p.sanity + 25);
+                            spawnParticle("❤️ Cumplicidade (+25 Sanidade)", "#38bdf8");
+                        }
+                    }
+                ]
+            },
+            conversa_tecnico: {
+                text: "«A pressão no IST é brutal... Tenho de entregar o projeto até domingo e o professor Leitão não perdoa. Às vezes questiono se aguento o ritmo ou se devia procurar emprego já para ajudar nas nossas despesas.»",
+                choices: [
+                    { text: "«Não desistas agora! Tens uma inteligência brilhante, o canudo vai abrir todas as portas.»", nextNode: 'incentivo_marta', gainSanity: 15 },
+                    { text: "«Se calhar devias mesmo começar a trabalhar. O dinheiro faz muita falta aqui em casa.»", nextNode: 'pressao_financeira', causeFrustration: 15 }
+                ]
+            },
+            incentivo_marta: {
+                text: "«Ouvir-te dizer isso dá-me uma força incrível, Zé. Prometo que me esforço para termos um futuro desafogado!»",
+                choices: [
+                    { text: "«Acredito em ti a 100%, Marta!»", nextNode: 'exit', gainSanity: 15 }
+                ]
+            },
+            reclamacao_computador: {
+                text: "«Nunca tenho tempo?! Eu estou há 12 horas seguidas a programar para garantir um futuro digno para nós os dois e tu vens com cobranças infantis?! O que achas que estou a fazer, a jogar paciência?!»",
+                choices: [
+                    { text: "«Desculpa, Marta... Foi ciúme parvo do teu tempo. Sei o quanto te esforças.»", nextNode: 'desculpa_marta' },
+                    { text: "«Tu vives num mundo virtual e esqueces-te de quem está ao teu lado! Fartei-me!»", nextNode: 'discussao_marta', causeFrustration: 20 }
+                ]
+            },
+            desculpa_marta: {
+                text: "«*respira fundo, ajeitando os óculos* Eu sei que a minha rotina do IST é pesada... Mas preciso que estejas do meu lado e não contra mim. Dá cá a mão... está tudo bem.»",
+                choices: [
+                    { text: "«Prometo ser mais compreensivo, meu amor.»", nextNode: 'exit', gainSanity: 10 }
+                ]
+            },
+            pressao_financeira: {
+                text: "«Desistir da tese agora a meio?! Para ir para um trabalho qualquer sem futuro?! Pensei que me apoiavas na minha ambição académica... Parece que só queres alguém para dividir despesas!»",
+                choices: [
+                    { text: "«Falei sem pensar, perdoa-me. Quero ver-te formada com distinção!»", nextNode: 'desculpa_marta' },
+                    { text: "«A realidade das contas não espera pelo teu canudo. Se não queres ver isso, acabou!»", nextNode: 'rompimento_marta', triggerBreakup: true }
+                ]
+            },
+            discussao_marta: {
+                text: "«Eu vivo num mundo virtual?! Eu dou o litro para sermos alguém e tu desdenhas de mim com essa mediocridade?! Se não sabes respeitar uma mulher inteligente e dedicada, a nossa relação não tem futuro nenhum!»",
+                choices: [
+                    { text: "«Calma, Marta! Exagerei, por favor não batas a porta!»", nextNode: 'reconciliacao_marta' },
+                    { text: "«Sabes que mais? Guarda os teus cabos e o teu portátil e sai da minha vida!»", nextNode: 'rompimento_marta', triggerBreakup: true }
+                ]
+            },
+            reconciliacao_marta: {
+                text: "«Estou desiludida, Zé. Vou estudar para a biblioteca da Alameda esta noite. Não me ligues.»",
+                choices: [
+                    { text: "«... Até amanhã, Marta.»", nextNode: 'exit', causeFrustration: 15 }
+                ]
+            },
+            rompimento_marta: {
+                text: "«Com muito gosto! Não perco mais um segundo com alguém tão inseguro e tóxico! Mete uma coisa na cabeça: a Marta Esteves não é capacho de ninguém! Adeus!»",
+                triggerBreakup: true,
+                choices: [
+                    { text: "«Adeus, Marta. Boa sorte com o código.»", nextNode: 'exit' }
+                ]
+            }
+        }
+    },
+
+    romance_home_zulmira: {
+        id: 'romance_home_zulmira',
+        name: 'D. Zulmira',
+        role: 'Em Casa · Robe de Seda & Renda',
+        portraitId: 'zulmira_home',
+        color: '#be123c',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«Meu querido Zé... Entrei mais cedo do ateliê do Chiado, vesti este robe de seda bordô e servi-me de um cálice de vinho do Porto. Estava a contar os minutos para ver o meu cavalheiro... Como estás?»",
+                choices: [
+                    { text: "«Fascinado com a sua beleza, Zulmira. O Chiado não tem joia mais preciosa. (Beijar-lhe a mão)»", nextNode: 'galanteio_nobre', gainSanity: 25 },
+                    { text: "«Estou cansado e farto de andar a contar os tostões pela Baixa.»", nextNode: 'desabafo_zulmira' },
+                    { text: "«Você vive num luxo absurdo enquanto lá fora o povo sofre. Não tem vergonha?»", nextNode: 'ofensa_classe', causeFrustration: 20 },
+                    { text: "«Com licença, Zulmira. Vou só refrescar-me.»", nextNode: 'exit' }
+                ]
+            },
+            galanteio_nobre: {
+                text: "«*sorri com elegância refinada, acariciando o teu rosto* Sabes bem como desarmar uma mulher de alta sociedade. O requinte não se compra nas montras, Zé; vem da nobreza do olhar. Senta-te aqui comigo... divide este Porto comigo.»",
+                choices: [
+                    { text: "«Um brinde a nós dois, ao Chiado e ao nosso amor! (Brindar com paixão)»", nextNode: 'intimidade_zulmira', gainSanity: 30 },
+                    { text: "«Conte-me mais sobre o seu passado e os seus sonhos em Lisboa.»", nextNode: 'desabafo_zulmira' }
+                ]
+            },
+            intimidade_zulmira: {
+                text: "«*sussurra ao teu ouvido, com o perfume das essências francesas* Já vi passar muitos fidalgos vazios por esta vida, Zé. Mas em ti encontrei um verdadeiro homem: forte, carinhoso e com aprumo de rei. O meu teto e o meu coração são o teu reino.»",
+                choices: [
+                    {
+                        text: "«Cuidarei sempre de si com toda a devoção, minha senhora. (Abraço apaixonado)»",
+                        nextNode: 'exit',
+                        action: (p) => {
+                            p.sanity = Math.min(100, p.sanity + 30);
+                            spawnParticle("👑 Amor Nobre (+30 Sanidade)", "#be123c");
+                        }
+                    }
+                ]
+            },
+            desabafo_zulmira: {
+                text: "«A vida em Lisboa é exigente, compreendo bem... Por isso é que te exigi padrões de homem distinto. Quando um casal tem aprumo e determinação, nenhuma crise nos deita abaixo. Precisas de algo para o teu bem-estar?»",
+                choices: [
+                    { text: "«Apenas do seu carinho e conselhos experientes, Zulmira.»", nextNode: 'galanteio_nobre', gainSanity: 15 },
+                    { text: "«Precisava que me desse dinheiro em vez de conselhos bonitos.»", nextNode: 'ofensa_interesse', causeFrustration: 18 }
+                ]
+            },
+            ofensa_classe: {
+                text: "«Como te atreves a entrar debaixo deste teto e falar-me como se eu fosse uma usurpadora?! Tudo o que tenho foi conquistado com décadas de trabalho de alfaiataria fina, de agulha na mão e noites sem dormir! Se pensas que me insultas na minha própria casa, desengana-te!»",
+                choices: [
+                    { text: "«Fui grosseiro, D. Zulmira... Peço as minhas mais sinceras desculpas pela falta de modos.»", nextNode: 'desculpa_zulmira' },
+                    { text: "«Você é uma burguesa snob e egoísta! Não a suporto nem mais um segundo!»", nextNode: 'rompimento_zulmira', triggerBreakup: true }
+                ]
+            },
+            ofensa_interesse: {
+                text: "«*olha para ti com frieza aristocrática* Estás a insinuar que a nossa relação é uma transação financeira?! Pensava que eras um cavalheiro apaixonado, não um oportunista interesseiro à espera de mesada!»",
+                choices: [
+                    { text: "«Não, de todo! Expressei-me pessimamente por causa do cansaço, perdoe-me Zulmira.»", nextNode: 'desculpa_zulmira' },
+                    { text: "«Se não me quer apoiar na carteira, não preciso dos seus carinhos para nada!»", nextNode: 'rompimento_zulmira', triggerBreakup: true }
+                ]
+            },
+            desculpa_zulmira: {
+                text: "«*suspira majestosamente, bebendo um golo de vinho* A cólera não fica bem a um cavalheiro. Perdoo a tua indiscreção desta vez, Zé... Mas lembra-te que no Chiado a honra e o respeito são sagrados. Vem descansar.»",
+                choices: [
+                    { text: "«Obrigado pela sua nobreza e generosidade, Zulmira.»", nextNode: 'exit', gainSanity: 15 }
+                ]
+            },
+            rompimento_zulmira: {
+                text: "«Que desilusão atroz! Pensei que sob essa capa popular havia um diamante em bruto, mas afinal és apenas cascalho ordinário! Não consinto mais a tua presença vil! Sai imediatamente da minha vista e não ouses pronunciar o meu nome em Lisboa!»",
+                triggerBreakup: true,
+                choices: [
+                    { text: "«Adeus, D. Zulmira. O Chiado é grande demais para a sua vaidade.»", nextNode: 'exit' }
+                ]
+            }
+        }
+    },
+
+    romance_home_rui: {
+        id: 'romance_home_rui',
+        name: 'Rui',
+        role: 'Em Casa · Regata Desportiva',
+        portraitId: 'rui_home',
+        color: '#22c55e',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«E aí Zé! Que alívio tirar as sapatilhas e a mochila térmica das entregas! Pedalei 80 km nas sete colinas hoje... Vesti esta regata fresca. Como foi o teu dia?»",
+                choices: [
+                    { text: "«Grande atleta! Vem descansar as pernas aqui no sofá. (Abraço fraterno e carinhoso)»", nextNode: 'carinho_rui', gainSanity: 20 },
+                    { text: "«Mais um dia a lutar contra o custo de vida nesta cidade louca.»", nextNode: 'desabafo_rui' },
+                    { text: "«Chegas sempre a cheirar a suor e a queixar-te das pernas. Que chato!»", nextNode: 'ofensa_rui', causeFrustration: 15 },
+                    { text: "«Descansa aí, Rui. Vou tratar de umas coisas.»", nextNode: 'exit' }
+                ]
+            },
+            carinho_rui: {
+                text: "«*sorri com aquele ar descontraído e senta-se junto a ti* Sabes o que me dá ânimo nas subidas da Graça? Saber que no fim da rota tenho alguém como tu à minha espera. Vamos comer uma pizza e relaxar?»",
+                choices: [
+                    {
+                        text: "«Com muito gosto! Uma imperial e pizza para nós os dois!»",
+                        nextNode: 'exit',
+                        action: (p) => {
+                            p.hunger = Math.min(100, p.hunger + 25);
+                            p.sanity = Math.min(100, p.sanity + 20);
+                            spawnParticle("🍕 Jantar Relaxado (+20 Sanidade)", "#22c55e");
+                        }
+                    }
+                ]
+            },
+            desabafo_rui: {
+                text: "«Pois é meu irmão... Ser estafeta não é brincadeira, mas estou a juntar dinheiro para abrir uma cooperativa de bicicletas ecológicas. Acreditas nesse sonho?»",
+                choices: [
+                    { text: "«Acredito totalmente! Lisboa precisa de projetos limpos e justos.»", nextNode: 'carinho_rui', gainSanity: 15 },
+                    { text: "«Isso é uma utopia que nunca vai dar dinheiro. Põe os pés na terra.»", nextNode: 'ofensa_rui', causeFrustration: 15 }
+                ]
+            },
+            ofensa_rui: {
+                text: "«Olha lá Zé, eu ando a queimar as pernas para ajudar a pagar a renda e tu vens com desdém e falta de respeito?! Se tens vergonha de quem trabalha no duro, a porta da rua está aberta!»",
+                choices: [
+                    { text: "«Foi parvoíce minha, Rui. Admiro a tua garra e a tua generosidade.»", nextNode: 'carinho_rui' },
+                    { text: "«Pois então pega na tua bicicleta e vai pedalar para longe de mim!»", nextNode: 'rompimento_rui', triggerBreakup: true }
+                ]
+            },
+            rompimento_rui: {
+                text: "«Olha que bem! Não preciso que ninguém me humilhe! Vou já fazer o meu saco e desocupar o espaço. Não me procures mais na Baixa!»",
+                triggerBreakup: true,
+                choices: [
+                    { text: "«Adeus, Rui. Boas pedaladas.»", nextNode: 'exit' }
+                ]
+            }
+        }
+    },
+
+    romance_home_goncalo: {
+        id: 'romance_home_goncalo',
+        name: 'Gonçalo',
+        role: 'Em Casa · Camisa de Linho Desabotoada',
+        portraitId: 'goncalo_home',
+        color: '#f59e0b',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«Boa noite, meu bem... Despi a capa negra da Tuna, abri a camisa e estive a afinar o violão ao luar. É tão bom ter-te em casa... Como foi o teu dia?»",
+                choices: [
+                    { text: "«Ouvir a tua voz e ver-te assim descontraído faz esquecer o mundo lá fora.»", nextNode: 'serenata_goncalo', gainSanity: 25 },
+                    { text: "«Ainda com a cabeça nas guitarradas? Precisamos de falar de coisas sérias de dinheiro.»", nextNode: 'discussao_boemia', causeFrustration: 15 },
+                    { text: "«Boa noite, Gonçalo. Vou dormir.»", nextNode: 'exit' }
+                ]
+            },
+            serenata_goncalo: {
+                text: "«*dedilha um acorde suave de fado menor e sorri com ternura* Compus esta trova a pensar nos teus olhos quando passeamos em Alfama... Lisboa é bonita, mas contigo é eterna. Vem para os meus braços...»",
+                choices: [
+                    {
+                        text: "«(Abraçar e beijar ao som do fado suave)»",
+                        nextNode: 'exit',
+                        action: (p) => {
+                            p.sanity = Math.min(100, p.sanity + 25);
+                            spawnParticle("🎶 Serenata no Lar (+25 Sanidade)", "#f59e0b");
+                        }
+                    }
+                ]
+            },
+            discussao_boemia: {
+                text: "«Dinheiro, faturas, cobranças... Eu compreendo a realidade, Zé, mas se matarmos a poesia e a música, Lisboa torna-se numa prisão fria. Por que tens tanta amargura no peito?»",
+                choices: [
+                    { text: "«Tens razão, Gonçalo... Deixa-me abraçar-te e esquecer os números por hoje.»", nextNode: 'serenata_goncalo', gainSanity: 15 },
+                    { text: "«Porque a poesia não paga a renda ao senhorio! Não aguento mais esta irresponsabilidade!»", nextNode: 'rompimento_goncalo', triggerBreakup: true }
+                ]
+            },
+            rompimento_goncalo: {
+                text: "«Pois se a minha alma te incomoda tanto, calo a minha guitarra e levo o meu fado para onde seja acolhido com amor. Adeus, Zé... Que a tua vida encontre paz.»",
+                triggerBreakup: true,
+                choices: [
+                    { text: "«Adeus, Gonçalo. Segue o teu fado.»", nextNode: 'exit' }
+                ]
+            }
+        }
     }
 };
 
 function openDialogueTree(treeId, initialNode = 'start') {
+    // 1. Verificação de Cooldown Pós-Término (1 semana de silêncio obrigatório)
+    const partnerMap = {
+        catia: 'catia', marta: 'marta', zulmira: 'zulmira', rui: 'rui', goncalo: 'goncalo',
+        romance_home_catia: 'catia', romance_home_marta: 'marta', romance_home_zulmira: 'zulmira',
+        romance_home_rui: 'rui', romance_home_goncalo: 'goncalo'
+    };
+    const pKey = partnerMap[treeId];
+    if (pKey) {
+        const exCheck = isExPartnerBlocked(pKey);
+        if (exCheck && exCheck.blocked) {
+            sfxAlert();
+            showToast(`💔 ${exCheck.pName} virou-te a cara: «Não me dirijas a palavra! A ferida do término ainda não sarou.» (Faltam ${exCheck.daysLeft} dias)`);
+            spawnParticle(`💔 ${exCheck.pName} (${exCheck.daysLeft}d)`, '#ef4444');
+            return;
+        }
+    }
+
     const tree = DIALOGUE_TREES[treeId];
     if (!tree) return;
     speechBubbles = [];
@@ -5982,15 +6463,16 @@ function renderDialogueTree(ctx, animTimer) {
     const py = dy + 28;
     drawNpcPortrait(tree.portraitId, px, py, pSize);
 
-    // Cabeçalho: Nome e Papel
-    ctx.fillStyle = '#facc15';
+    // Cabeçalho: Nome e Papel (medição matemática exata da largura na fonte Press Start 2P)
     ctx.font = 'bold 9px "Press Start 2P"';
+    const nameWidth = ctx.measureText(tree.name.toUpperCase()).width;
+    ctx.fillStyle = '#facc15';
     ctx.textAlign = 'left';
     ctx.fillText(tree.name.toUpperCase(), dx + 84, dy + 16);
 
     ctx.fillStyle = '#94a3b8';
-    ctx.font = '8px "Fira Code"';
-    ctx.fillText(`— ${tree.role}`, dx + 84 + ctx.measureText(tree.name.toUpperCase()).width + 8, dy + 16);
+    ctx.font = 'bold 8.5px "Fira Code"';
+    ctx.fillText(`— ${tree.role}`, dx + 84 + nameWidth + 12, dy + 16);
 
     // Botão Fechar ✕
     const isHoverClose = (mouse.x >= dx + dw - 24 && mouse.x <= dx + dw - 6 && mouse.y >= dy + 4 && mouse.y <= dy + 22);
@@ -6142,8 +6624,53 @@ function executeDialogueChoice(c) {
         }
     }
     if (c.triggerRomance) {
-        player.partner = c.triggerRomance;
+        const target = c.triggerRomance;
+        if (player.partner && player.partner !== target) {
+            const oldP = player.partner;
+            player.exPartners = player.exPartners || {};
+            player.exPartners[oldP] = {
+                breakupDay: player.day,
+                blockedUntilDay: player.day + 7
+            };
+        }
+        player.partner = target;
         unlockAchievement('amor_lisboeta');
+    }
+
+    if (c.gainSanity) {
+        player.sanity = Math.min(100, player.sanity + c.gainSanity);
+        spawnParticle(`✨ Cumplicidade (+${c.gainSanity} Sanidade)`, '#38bdf8');
+    }
+
+    if (c.causeFrustration) {
+        player.sanity = Math.max(5, player.sanity - (c.causeFrustration || 15));
+        spawnParticle(`💢 Frustração (-${c.causeFrustration || 15} Sanidade)`, '#f87171');
+        sfxAlert();
+    }
+
+    const nextNodeObj = activeDialogueTree && activeDialogueTree.config && activeDialogueTree.config.nodes && activeDialogueTree.config.nodes[c.nextNode];
+
+    if (c.triggerBreakup || (nextNodeObj && nextNodeObj.triggerBreakup)) {
+        const brokenP = player.partner;
+        if (brokenP) {
+            player.partner = null;
+            player.exPartners = player.exPartners || {};
+            player.exPartners[brokenP] = {
+                breakupDay: player.day,
+                blockedUntilDay: player.day + 7
+            };
+            if (player.relationships && player.relationships[brokenP]) {
+                player.relationships[brokenP].points = 25;
+            }
+            if (player.romanceAffinity && player.romanceAffinity[brokenP]) {
+                player.romanceAffinity[brokenP] = 25;
+            }
+            player.sanity = Math.max(5, player.sanity - 25);
+            const pName = (ROMANCE_PARTNERS[brokenP] && ROMANCE_PARTNERS[brokenP].name) || brokenP;
+            sfxAlert();
+            showToast(`💔 Rompimento dramático com ${pName}! Ficam 7 dias sem falar.`);
+            spawnParticle("💔 Fim de Namoro (-25 Sanidade)", '#ef4444');
+        }
     }
 
     if (c.nextNode === 'exit') {
@@ -6152,7 +6679,6 @@ function executeDialogueChoice(c) {
     } else {
         activeDialogueTree.currentNodeId = c.nextNode;
         sfxAction();
-        const nextNodeObj = activeDialogueTree.config.nodes && activeDialogueTree.config.nodes[c.nextNode];
         if (nextNodeObj && typeof nextNodeObj.action === 'function') {
             nextNodeObj.action(player);
         }
@@ -6900,13 +7426,20 @@ function update(dt) {
             if (dist < player.speed) {
                 player.x = player.targetX;
                 player.y = player.targetY;
-                player.walking = false;
-                player.frame = 0;
-                player.walkAnimTimer = 0;
-                
-                if (player.destinationBuilding) {
-                    openBuilding(player.destinationBuilding);
-                    player.destinationBuilding = null;
+
+                if (player.waypoints && player.waypoints.length > 0) {
+                    const nextWp = player.waypoints.shift();
+                    player.targetX = nextWp.x;
+                    player.targetY = nextWp.y;
+                } else {
+                    player.walking = false;
+                    player.frame = 0;
+                    player.walkAnimTimer = 0;
+                    
+                    if (player.destinationBuilding) {
+                        openBuilding(player.destinationBuilding);
+                        player.destinationBuilding = null;
+                    }
                 }
             } else {
                 player.x += (dx / dist) * player.speed;
@@ -9002,6 +9535,31 @@ function drawNpcPortrait(id, x, y, size, targetCtx = null) {
         bustImg = null;
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
+    } else if (id === 'catia_home' && catiaHomePortraitImg.complete && catiaHomePortraitImg.naturalWidth > 0) {
+        bgImg = catiaHomePortraitImg;
+        bustImg = null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
+    } else if (id === 'marta_home' && martaHomePortraitImg.complete && martaHomePortraitImg.naturalWidth > 0) {
+        bgImg = martaHomePortraitImg;
+        bustImg = null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
+    } else if (id === 'zulmira_home' && zulmiraHomePortraitImg.complete && zulmiraHomePortraitImg.naturalWidth > 0) {
+        bgImg = zulmiraHomePortraitImg;
+        bustImg = null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
+    } else if (id === 'rui_home' && ruiHomePortraitImg.complete && ruiHomePortraitImg.naturalWidth > 0) {
+        bgImg = ruiHomePortraitImg;
+        bustImg = null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
+    } else if (id === 'goncalo_home' && goncaloHomePortraitImg.complete && goncaloHomePortraitImg.naturalWidth > 0) {
+        bgImg = goncaloHomePortraitImg;
+        bustImg = null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
     } else if ((id === 'ze' || id === 'player' || id === 'casa') && zePortraitImg.complete && zePortraitImg.naturalWidth > 0) {
         bgImg = zePortraitImg;
         bustImg = null;
@@ -10298,6 +10856,13 @@ function renderInteriorCasa(ctx, animTimer, player, HOUSES) {
     }
 
     // ========================================================================
+    // PRESENÇA DO COMPANHEIRO(A) NO ACONCHEGO DO LAR (Roupa Descontraída & Sensual)
+    // ========================================================================
+    if (player && player.partner && isPartnerAtHome(player)) {
+        drawHomePartnerInHouse(ctx, player.partner, animTimer, idx);
+    }
+
+    // ========================================================================
     // MOLDURA SUPERIOR COM INFORMAÇÃO DA HABITAÇÃO (Estilo LucasArts SCUMM)
     // ========================================================================
     const tagText = `${hInfo.name.toUpperCase()} · ${hInfo.qual.toUpperCase()} (${hInfo.rent}€/MÊS)`;
@@ -10313,6 +10878,160 @@ function renderInteriorCasa(ctx, animTimer, player, HOUSES) {
     ctx.fillStyle = '#fef08a';
     ctx.textAlign = 'center';
     ctx.fillText(tagText, 320, 22);
+}
+
+function drawHomePartnerInHouse(ctx, partnerKey, animTimer, houseIdx) {
+    let px = 105, py = 202;
+    if (houseIdx === 0) { px = 335; py = 196; }
+    else if (houseIdx === 1) { px = 105; py = 202; }
+    else if (houseIdx === 2) { px = 110; py = 198; }
+    else if (houseIdx === 3) { px = 125; py = 202; }
+    else if (houseIdx === 4) { px = 100; py = 205; }
+
+    const bob = Math.sin(animTimer * 2.5) * 0.8;
+    ctx.save();
+
+    // Sombra suave sob a personagem sentada
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(px, py + 1, 12, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pernas sentadas e vestuário informal
+    if (partnerKey === 'catia') {
+        // Calções de algodão cinzentos confortáveis
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(px - 7, py - 12 + bob, 14, 8);
+        ctx.fillStyle = '#f9b984';
+        ctx.fillRect(px - 6, py - 4 + bob, 5, 6);
+        ctx.fillRect(px + 1, py - 4 + bob, 5, 6);
+        ctx.fillStyle = '#f472b6'; // pantufas
+        ctx.fillRect(px - 7, py + 2 + bob, 6, 3);
+        ctx.fillRect(px + 1, py + 2 + bob, 6, 3);
+
+        // Top / camisola de alças cor-de-rosa/lilás
+        ctx.fillStyle = '#db7093';
+        ctx.fillRect(px - 7, py - 24 + bob, 14, 13);
+        ctx.fillStyle = '#f9b984';
+        ctx.fillRect(px - 5, py - 27 + bob, 10, 4);
+        ctx.fillRect(px - 8, py - 24 + bob, 3, 10);
+        ctx.fillRect(px + 5, py - 24 + bob, 3, 10);
+        ctx.fillStyle = '#f472b6';
+        ctx.fillRect(px - 4, py - 27 + bob, 1, 4);
+        ctx.fillRect(px + 3, py - 27 + bob, 1, 4);
+
+        // Cabeça e cabelo ondulado moreno solto
+        ctx.fillStyle = '#261510';
+        ctx.fillRect(px - 7, py - 38 + bob, 14, 13);
+        ctx.fillRect(px - 9, py - 34 + bob, 3, 10);
+        ctx.fillRect(px + 6, py - 34 + bob, 3, 10);
+        ctx.fillStyle = '#f9b984';
+        ctx.fillRect(px - 5, py - 36 + bob, 10, 9);
+        ctx.fillStyle = '#1c1917';
+        ctx.fillRect(px - 3, py - 33 + bob, 2, 2);
+        ctx.fillRect(px + 1, py - 33 + bob, 2, 2);
+        ctx.fillStyle = '#e11d48';
+        ctx.fillRect(px - 1, py - 29 + bob, 3, 1);
+
+    } else if (partnerKey === 'marta') {
+        // Calças de fato de treino escuras
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(px - 7, py - 12 + bob, 14, 14);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(px - 7, py + 2 + bob, 6, 3);
+        ctx.fillRect(px + 1, py + 2 + bob, 6, 3);
+
+        // Camisola larga de malha verde-mar / teal (#0e7490)
+        ctx.fillStyle = '#0e7490';
+        ctx.fillRect(px - 8, py - 25 + bob, 16, 14);
+        ctx.fillStyle = '#b66c3e';
+        ctx.fillRect(px + 3, py - 27 + bob, 4, 3);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(px + 4, py - 27 + bob, 1, 3);
+
+        // Rosto e óculos
+        ctx.fillStyle = '#b66c3e';
+        ctx.fillRect(px - 5, py - 36 + bob, 10, 9);
+        ctx.fillStyle = '#291810';
+        ctx.fillRect(px - 7, py - 39 + bob, 14, 6);
+        ctx.fillRect(px - 2, py - 43 + bob, 5, 5); // totó descontraído
+        ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 1;
+        ctx.strokeRect(px - 4.5, py - 34.5 + bob, 3.5, 3);
+        ctx.strokeRect(px + 1, py - 34.5 + bob, 3.5, 3);
+
+        // Portátil aberto no colo
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(px - 5, py - 15 + bob, 10, 6);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(px - 4, py - 14 + bob, 8, 4);
+
+    } else if (partnerKey === 'zulmira') {
+        // Robe de seda bordô / burgundy com laço dourado
+        ctx.fillStyle = '#881337';
+        ctx.fillRect(px - 8, py - 25 + bob, 16, 26);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(px - 7, py - 12 + bob, 14, 3);
+        ctx.fillStyle = '#f5b98e';
+        ctx.fillRect(px - 3, py - 24 + bob, 6, 8);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(px - 4, py - 22 + bob, 1, 6);
+        ctx.fillRect(px + 3, py - 22 + bob, 1, 6);
+
+        // Cabelo grisalho distinto e sensual
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(px - 8, py - 38 + bob, 16, 12);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(px - 6, py - 37 + bob, 4, 3);
+        ctx.fillRect(px + 2, py - 37 + bob, 4, 3);
+        ctx.fillStyle = '#f5b98e';
+        ctx.fillRect(px - 5, py - 35 + bob, 10, 9);
+        ctx.fillStyle = '#1c1917';
+        ctx.fillRect(px - 3, py - 32 + bob, 2, 2);
+        ctx.fillRect(px + 1, py - 32 + bob, 2, 2);
+        ctx.fillStyle = '#9f1239';
+        ctx.fillRect(px - 1, py - 28 + bob, 3, 1);
+
+    } else if (partnerKey === 'rui') {
+        // Calções desportivos e regata cinzenta
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(px - 7, py - 12 + bob, 14, 12);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(px - 6, py - 25 + bob, 12, 14);
+        ctx.fillStyle = '#f4a870';
+        ctx.fillRect(px - 9, py - 25 + bob, 3, 12);
+        ctx.fillRect(px + 6, py - 25 + bob, 3, 12);
+        ctx.fillStyle = '#261510';
+        ctx.fillRect(px - 6, py - 37 + bob, 12, 6);
+        ctx.fillStyle = '#f4a870';
+        ctx.fillRect(px - 5, py - 35 + bob, 10, 9);
+        ctx.fillStyle = '#1c1917';
+        ctx.fillRect(px - 3, py - 32 + bob, 2, 2);
+        ctx.fillRect(px + 1, py - 32 + bob, 2, 2);
+
+    } else if (partnerKey === 'goncalo') {
+        // Calças escuras e camisa de linho marfim aberta
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(px - 7, py - 12 + bob, 14, 14);
+        ctx.fillStyle = '#f5eee0';
+        ctx.fillRect(px - 7, py - 25 + bob, 14, 14);
+        ctx.fillStyle = '#d7825f';
+        ctx.fillRect(px - 2, py - 24 + bob, 4, 7);
+        ctx.fillStyle = '#1c1917';
+        ctx.fillRect(px - 7, py - 38 + bob, 14, 8);
+        ctx.fillStyle = '#d7825f';
+        ctx.fillRect(px - 5, py - 35 + bob, 10, 9);
+        ctx.fillStyle = '#1c1917';
+        ctx.fillRect(px - 3, py - 32 + bob, 2, 2);
+        ctx.fillRect(px + 1, py - 32 + bob, 2, 2);
+    }
+
+    // Ícone flutuante de afeto
+    const bobHeart = Math.sin(animTimer * 3.5) * 2;
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText("❤️", px, py - 44 + bobHeart);
+
+    ctx.restore();
 }
 
 // 8. MIRADOURO DE SANTA LUZIA
@@ -10414,19 +11133,42 @@ function renderBuildingModal() {
     const py = my + 38;
     const pSize = 100;
 
-    drawNpcPortrait(modalBuilding.id, px, py, pSize);
+    const isCasa = modalBuilding.id === 'casa';
+    const partnerAtHome = isCasa && player.partner && isPartnerAtHome(player);
+    const portraitId = partnerAtHome ? (player.partner + '_home') : modalBuilding.id;
+
+    drawNpcPortrait(portraitId, px, py, pSize);
 
     // Nome & Papel do NPC abaixo do retrato
-    const npc = NPC_INFO[modalBuilding.id] || NPC_INFO.senhorio;
+    let npcName, npcRole, quoteText;
+    if (partnerAtHome) {
+        const pObj = ROMANCE_PARTNERS[player.partner] || { name: 'Companheiro(a)', role: 'A tua cara-metade' };
+        npcName = pObj.name;
+        npcRole = "No Aconchego do Lar · Roupa Informal";
+        const homeQuotes = {
+            catia: "«Ainda bem que vieste, amor! Pus uma camisola de alças quentinha e fiz chá. Vem cá para o meu aconchego...»",
+            marta: "«Olá lindo! Tirei a gabardine do Técnico e pus a camisola larga. Estas calças são vida... Fazes-me companhia?»",
+            zulmira: "«Meu amor... Pedi um vinho do Porto, vesti este robe de seda e estava a contar os minutos para chegares...»",
+            rui: "«Uff, que dia na bike! Que alívio tirar o colete e ficar só de regata no sofá contigo. Senta-te aqui!»",
+            goncalo: "«Nada como despir a capa académica, abrir a camisa e ter o meu porto de abrigo em Lisboa. Dá cá um abraço...»"
+        };
+        quoteText = homeQuotes[player.partner] || "«É tão bom estarmos juntos no aconchego de casa...»";
+    } else {
+        const npc = NPC_INFO[modalBuilding.id] || NPC_INFO.senhorio;
+        npcName = npc.name;
+        npcRole = npc.role;
+        quoteText = (typeof npc.quote === 'function') ? npc.quote() : (npc.getQuote ? npc.getQuote() : npc.quote);
+    }
+
     const maxNpcW = pSize + 12;
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 9.5px "Fira Code"';
     ctx.textAlign = 'center';
-    ctx.fillText(npc.name, px + pSize / 2, py + pSize + 13, maxNpcW);
+    ctx.fillText(npcName, px + pSize / 2, py + pSize + 13, maxNpcW);
 
     ctx.fillStyle = '#94a3b8';
     ctx.font = '8px "Fira Code"';
-    ctx.fillText(npc.role, px + pSize / 2, py + pSize + 25, maxNpcW);
+    ctx.fillText(npcRole, px + pSize / 2, py + pSize + 25, maxNpcW);
 
     // Balão de Diálogo Satírico com limite rígido (nunca transborda a caixa)
     const quoteY = py + pSize + 31;
@@ -10445,7 +11187,6 @@ function renderBuildingModal() {
     ctx.textAlign = 'left';
     ctx.fillText("“", px, quoteY + 12);
 
-    const quoteText = (typeof npc.quote === 'function') ? npc.quote() : (npc.getQuote ? npc.getQuote() : npc.quote);
     wrapTextCanvas(ctx, quoteText, px + 8, quoteY + 13, quoteW - 16, 11, 'italic 7.5px "Fira Code"', '#cbd5e1', 'left', quoteY + quoteH - 6);
 
     // 2. COLUNA DIREITA: CARTÕES DE AÇÃO INTERATIVOS
@@ -10480,6 +11221,30 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                 timeM: 15,
                 endRomance: true,
                 desc: "Conversa séria e amigável para seguir a solo em Lisboa. Voltar a solteiro(a)."
+            });
+        }
+
+        // Dossiê Quem é Quem guardado exclusivamente em Casa
+        actions.push({
+            label: "📖 Dossiê: Quem é Quem em Lisboa",
+            cost: 0,
+            timeH: 0,
+            timeM: 5,
+            openCodex: true,
+            desc: "Consulta na tua secretária as fichas das personagens de Lisboa, níveis de afinidade e fotografias desbloqueadas."
+        });
+
+        // Conversa profunda com a namorada/namorado no aconchego do lar
+        if (player.partner && isPartnerAtHome(player)) {
+            const pObj = ROMANCE_PARTNERS[player.partner];
+            const pName = pObj ? pObj.name : 'a tua cara-metade';
+            actions.unshift({
+                label: `💬 Conversar c/ ${pName} em Casa`,
+                cost: 0,
+                timeH: 0,
+                timeM: 20,
+                openDialogueTree: `romance_home_${player.partner}`,
+                desc: `${pName} está em casa em roupa descontraída. Conversa sobre o futuro, o cansaço e a vida a dois.`
             });
         }
     } else if (id === 'senhorio') {
@@ -11907,10 +12672,36 @@ function handleCanvasClick(cx, cy) {
 function walkToBuilding(b) {
     if (player.walking) return;
     sfxStep();
-    player.targetX = b.doorX || (b.x + b.w / 2);
+    const finalX = b.doorX || (b.x + b.w / 2);
     // Portas na calçada/rua: y=195 (ou doorY especificado no edifício)
     // Miradouro e cais ribeirinho: y=245..248 (sempre com pés assentes no chão!)
-    player.targetY = b.doorY || (b.y >= 210 ? 245 : 195);
+    const finalY = b.doorY || (b.y >= 210 ? 245 : 195);
+
+    player.waypoints = [];
+    const curX = player.x;
+    const curY = player.y;
+
+    // Roteamento inteligente: contornar por baixo (calçada desimpedida y=212) os caixotes de fruta (x: 475..535, y < 210)
+    const isCrossingCrates = (curX < 475 && finalX > 475) || (curX > 535 && finalX < 535);
+    const startsNearCrates = (curX >= 475 && curX <= 535);
+
+    if (isCrossingCrates) {
+        if (curX < finalX) {
+            player.waypoints.push({ x: 470, y: 212 });
+            player.waypoints.push({ x: 538, y: 212 });
+        } else {
+            player.waypoints.push({ x: 538, y: 212 });
+            player.waypoints.push({ x: 470, y: 212 });
+        }
+    } else if (startsNearCrates && curY < 210) {
+        player.waypoints.push({ x: curX, y: 212 });
+    }
+
+    player.waypoints.push({ x: finalX, y: finalY });
+    const firstWp = player.waypoints.shift();
+    player.targetX = firstWp.x;
+    player.targetY = firstWp.y;
+
     player.walking = true;
     player.destinationBuilding = b;
     consumeTime(0, 15);
@@ -11921,12 +12712,20 @@ function openBuilding(b) {
     sfxAction();
     modalBuilding = b;
     state = 'MODAL';
+    const btnCodex = document.getElementById('btn-codex');
+    if (btnCodex) {
+        btnCodex.style.display = (b.id === 'casa') ? 'inline-block' : 'none';
+    }
 }
 
 function closeModal() {
     speechBubbles = [];
     modalBuilding = null;
     state = 'BOARD';
+    const btnCodex = document.getElementById('btn-codex');
+    if (btnCodex) {
+        btnCodex.style.display = 'none';
+    }
 }
 
 function executeAction(act) {
@@ -11934,6 +12733,23 @@ function executeAction(act) {
         const treeId = act.openDialogueTree;
         closeModal();
         openDialogueTree(treeId);
+        return;
+    }
+
+    if (act.blockedZulmira) {
+        sfxAlert();
+        showToast(`D. Zulmira exige padrões da alta sociedade: ${act.missingReqs.join(', ')}`);
+        return;
+    }
+
+    if (act.isBlockedEx) {
+        sfxAlert();
+        showToast(`💔 ${act.pName} virou-te a cara: «Não me dirijas a palavra! Dá-me espaço!» (Faltam ${act.daysLeft} dias)`);
+        return;
+    }
+
+    if (act.openCodex) {
+        openCodexModal();
         return;
     }
 
@@ -12222,12 +13038,33 @@ function executeAction(act) {
 
     if (act.startRomance) {
         const target = act.startRomance;
+        if (target === 'zulmira') {
+            const req = canDateZulmira(player);
+            if (!req.ok) {
+                sfxAlert();
+                showToast(`D. Zulmira exige padrões da alta sociedade: ${req.missing.join(', ')}`);
+                return;
+            }
+        }
         const rel = getRomanceStage(target);
         if (rel.points < 100) {
             sfxAlert();
             showToast("Ninguém namora à primeira cantada! Precisas de construir cumplicidade até aos 100%.");
             return;
         }
+
+        // Se já tiver parceiro anterior, ativar cooldown de silêncio de 1 semana
+        if (player.partner && player.partner !== target) {
+            const oldP = player.partner;
+            player.exPartners = player.exPartners || {};
+            player.exPartners[oldP] = {
+                breakupDay: player.day,
+                blockedUntilDay: player.day + 7
+            };
+            const oldName = (ROMANCE_PARTNERS[oldP] && ROMANCE_PARTNERS[oldP].name) || oldP;
+            showToast(`💔 Rompeste com ${oldName} para namorar com ${ROMANCE_PARTNERS[target].name}. (7 dias de silêncio c/ ${oldName})`);
+        }
+
         player.partner = target;
         const pObj = ROMANCE_PARTNERS[target] || { name: 'tua cara-metade' };
         sfxWin();
@@ -12254,13 +13091,19 @@ function executeAction(act) {
         if (player.partner) {
             const oldP = player.partner;
             player.partner = null;
+            player.exPartners = player.exPartners || {};
+            player.exPartners[oldP] = {
+                breakupDay: player.day,
+                blockedUntilDay: player.day + 7
+            };
             if (player.relationships && player.relationships[oldP]) {
-                player.relationships[oldP].points = 50; // voltam a amigos de café
+                player.relationships[oldP].points = 35;
             }
+            const oldName = (ROMANCE_PARTNERS[oldP] && ROMANCE_PARTNERS[oldP].name) || oldP;
+            sfxAction();
+            showToast(`Terminaste o namoro com ${oldName}. Ficam 7 dias sem se falar.`);
+            spawnParticle("💔 Solteiro/a", '#94a3b8');
         }
-        sfxAction();
-        showToast("Terminaste o namoro amigavelmente. Segues a tua vida a solo em Lisboa.");
-        spawnParticle("💔 Solteiro/a", '#94a3b8');
     }
 
     // Tocar Guitarra no Miradouro (Aptidão Musical Progressiva & Fado de Lisboa)
@@ -13712,6 +14555,11 @@ function changeNpcAffinity(charId, delta, reason = "") {
 let selectedCodexChar = 'senhorio';
 
 function openCodexModal(charId = null) {
+    if (state !== 'MODAL' || !modalBuilding || modalBuilding.id !== 'casa') {
+        if (typeof sfxAlert === 'function') sfxAlert();
+        showToast("📖 O dossiê «Quem é Quem» está guardado na tua secretária em casa!");
+        return;
+    }
     const modal = document.getElementById('codex-modal');
     if (!modal) return;
     if (modal.style.display === 'flex' && (!charId || charId === selectedCodexChar)) {

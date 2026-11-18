@@ -254,8 +254,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.9', "ASSET_VER incrementado para 7.9");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.9' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '8.0', "ASSET_VER incrementado para 8.0");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '8.0' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -304,12 +304,16 @@ vm.runInContext(`
     const unlPhotos2 = charSenhorio.photos.filter(p => getNpcAffinity('senhorio') >= p.minAffinity);
     assert.strictEqual(unlPhotos2.length, 1, "Com 25% proximidade, foto 2 voltou a ficar bloqueada (arquivada)");
 
-    // Teste de Modal do Códex
+    // Teste de Modal do Códex (em Casa)
+    state = 'MODAL';
+    modalBuilding = BUILDINGS.find(b => b.id === 'casa');
     openCodexModal('tasca');
     assert.strictEqual(selectedCodexChar, 'tasca', "openCodexModal selecionou 'tasca'");
     selectCodexChar('loja_roupa');
     assert.strictEqual(selectedCodexChar, 'loja_roupa', "selectCodexChar selecionou 'loja_roupa'");
     closeCodexModal();
+    state = 'BOARD';
+    modalBuilding = null;
 `, sandbox);
 
 console.log("✓ 8. Códex 'Quem é Quem' & Fotografias Dinâmicas: 12 biografias ampliadas, desbloqueio e relock de fotos validados!");
@@ -418,9 +422,11 @@ assert(!html.includes('max-height: 64vh;'), "codex-layout não usa mais 64vh");
 assert(html.includes('.codex-box {') && html.includes('height: calc(100% - 16px);'), "codex-box contido na moldura com height: calc(100% - 16px)");
 assert(html.includes('.overlay-actions {') && html.includes('flex-shrink: 0;'), "overlay-actions tem flex-shrink: 0 prevenindo ocultação");
 
-// 4. Testar lógica de toggle funcional em sandbox
+// 4. Testar lógica de toggle funcional em sandbox (dentro de Casa)
 const codexEl = sandbox.document.getElementById('codex-modal');
 assert(codexEl, "Elemento codex-modal mockado no sandbox");
+
+vm.runInContext("state = 'MODAL'; modalBuilding = BUILDINGS.find(b => b.id === 'casa');", sandbox);
 
 // Abrir códex
 vm.runInContext("openCodexModal();", sandbox);
@@ -435,6 +441,7 @@ vm.runInContext("openCodexModal('catia');", sandbox);
 assert.strictEqual(codexEl.style.display, 'flex', "Códex abre para personagem específico");
 vm.runInContext("closeCodexModal();", sandbox);
 assert.strictEqual(codexEl.style.display, 'none', "Códex fecha com closeCodexModal()");
+vm.runInContext("state = 'BOARD'; modalBuilding = null;", sandbox);
 
 // Testar toggle de Conquistas
 const achEl = sandbox.document.getElementById('achievements-modal');
@@ -659,7 +666,13 @@ const martaProposal = martaFlirtChoicesHigh.find(c => c.nextNode === 'proposta_m
 assert(martaProposal, "Opção de pedir Marta em namoro disponível com alta afinidade");
 assert.strictEqual(martaProposal.triggerRomance, 'marta', "triggerRomance é 'marta'");
 
-const zulmiraFlirtChoicesHigh = allDialogueTrees.zulmira.nodes.flirt_zulmira.dynamicChoices({ affinity: { loja_roupa: 95 } });
+const zulmiraFlirtChoicesHigh = allDialogueTrees.zulmira.nodes.flirt_zulmira.dynamicChoices({
+    affinity: { loja_roupa: 95 },
+    clothing: { id: 'suit', formality: 4 },
+    houseIndex: 4,
+    completedCourses: ['matematica'],
+    bank: 1600
+});
 const zulmiraProposal = zulmiraFlirtChoicesHigh.find(c => c.nextNode === 'proposta_zulmira_aceite');
 assert(zulmiraProposal, "Opção de pedir Zulmira em namoro disponível com alta afinidade");
 assert.strictEqual(zulmiraProposal.triggerRomance, 'zulmira', "triggerRomance é 'zulmira'");
@@ -675,6 +688,10 @@ assert(html.includes("getRomanceAction('zulmira')"), "getRomanceAction('zulmira'
 // 6. Testar que startRomance aciona a cutscene correspondente a cada parceiro
 ['marta', 'zulmira', 'rui', 'goncalo', 'catia'].forEach(pKey => {
     vm.runInContext(`
+        player.clothing = { id: 'suit', formality: 4 };
+        player.houseIndex = 4;
+        player.completedCourses = ['matematica'];
+        player.bank = 1600;
         player.partner = null;
         player.relationships = { ${pKey}: { points: 100 } };
         player.romanceAffinity = { ${pKey}: 100 };
@@ -741,7 +758,115 @@ assert.strictEqual(vm.runInContext("activeCutscene.config.slides[0].portraitId",
 
 console.log("✓ 16. Cenários 16-Bit Banco & Modas Chiado, Casa Dinâmica por Escalão e Avatar da Marta validados!");
 
+// ============================================================================
+// TESTE 17: SISTEMA V8.0 — ALTA SOCIEDADE ZULMIRA, SILÊNCIO EX-PARCEIROS, DESVIO DE CAIXOTES, CÓDEX CASEIRO & COMPANHEIROS EM CASA
+// ============================================================================
+// 1. Requisitos de Elite para D. Zulmira
+vm.runInContext(`
+    player.clothing = { id: 'casual', formality: 1 };
+    player.houseIndex = 1;
+    player.completedCourses = [];
+    player.bank = 200;
+`, sandbox);
+let reqZulmira = vm.runInContext("canDateZulmira(player)", sandbox);
+assert.strictEqual(reqZulmira.ok, false, "canDateZulmira deve falhar sem requisitos de elite");
+assert.strictEqual(reqZulmira.missing.length, 4, "Devem faltar 4 requisitos a um jogador casual");
+
+vm.runInContext(`
+    player.clothing = { id: 'suit', formality: 4 };
+    player.houseIndex = 4;
+    player.completedCourses = ['matematica'];
+    player.bank = 1600;
+`, sandbox);
+reqZulmira = vm.runInContext("canDateZulmira(player)", sandbox);
+assert.strictEqual(reqZulmira.ok, true, "canDateZulmira deve passar com fato, T1 Chiado, curso e 1600€ no banco");
+
+// 2. Cooldown de 1 Semana / 7 Dias pós-término de namoro
+vm.runInContext(`
+    player.day = 10;
+    player.partner = 'catia';
+    executeAction({ endRomance: true });
+`, sandbox);
+assert.strictEqual(vm.runInContext("player.partner", sandbox), null, "Namoro com Cátia terminou");
+assert(vm.runInContext("player.exPartners && player.exPartners.catia", sandbox), "Registo de ex-parceira Cátia criado");
+assert.strictEqual(vm.runInContext("player.exPartners.catia.blockedUntilDay", sandbox), 17, "Bloqueada por 7 dias (até dia 17)");
+
+let exCheck = vm.runInContext("isExPartnerBlocked('catia')", sandbox);
+assert(exCheck && exCheck.blocked && exCheck.daysLeft === 7, "Cátia bloqueada por 7 dias");
+
+// Ao avançar o tempo para além de 7 dias, desbloqueia
+vm.runInContext("player.day = 18;", sandbox);
+exCheck = vm.runInContext("isExPartnerBlocked('catia')", sandbox);
+assert.strictEqual(exCheck, null, "Cátia desbloqueada após 7 dias");
+
+// 3. Desvio de Caixotes da Mercearia (x: 485..530)
+const mercBuildingV8 = vm.runInContext("BUILDINGS.find(b => b.id === 'supermercado')", sandbox);
+assert.strictEqual(mercBuildingV8.doorX, 470, "Porta da mercearia em x=470 (desimpedida dos caixotes)");
+
+vm.runInContext(`
+    player.x = 350; player.y = 195;
+    const tascaBuilding = BUILDINGS.find(b => b.id === 'tasca');
+    walkToBuilding(tascaBuilding);
+`, sandbox);
+const waypoints = vm.runInContext("player.waypoints", sandbox);
+assert(waypoints && waypoints.length > 0, "Waypoints gerados para cruzar a zona dos caixotes");
+assert(waypoints.some(wp => wp.y >= 212), "Pelo menos um waypoint na calçada livre (y=212)");
+
+// 4. Códex restrito ao domicílio (apenas acessível em Casa)
+vm.runInContext(`
+    state = 'BOARD';
+    modalBuilding = null;
+    openCodexModal();
+`, sandbox);
+assert.strictEqual(vm.runInContext("document.getElementById('codex-modal').style.display", sandbox), 'none', "Códex recusa abrir fora de casa");
+
+vm.runInContext(`
+    const casaB = BUILDINGS.find(b => b.id === 'casa');
+    openBuilding(casaB);
+    openCodexModal();
+`, sandbox);
+assert.strictEqual(vm.runInContext("document.getElementById('codex-modal').style.display", sandbox), 'flex', "Códex abre com sucesso dentro de Casa");
+vm.runInContext("closeCodexModal();", sandbox);
+
+// 5. Presença do Companheiro em Casa & Retratos de Loungewear
+['catia', 'marta', 'zulmira', 'rui', 'goncalo'].forEach(pId => {
+    const fPath = path.join(__dirname, `../assets/portrait_${pId}_home.png`);
+    assert(fs.existsSync(fPath), `Ficheiro portrait_${pId}_home.png existe no disco`);
+    const fBuf = fs.readFileSync(fPath);
+    assert(fBuf.length > 5000, `portrait_${pId}_home.png tem dados válidos`);
+});
+
+// 6. Árvores de Diálogo Doméstico com Risco de Rompimento
+['romance_home_catia', 'romance_home_marta', 'romance_home_zulmira', 'romance_home_rui', 'romance_home_goncalo'].forEach(treeKey => {
+    const tree = vm.runInContext(`DIALOGUE_TREES['${treeKey}']`, sandbox);
+    assert(tree, `Árvore ${treeKey} existe em DIALOGUE_TREES`);
+    assert(tree.nodes.start, `${treeKey} possui nó start`);
+    assert(tree.nodes.start.choices.length >= 3, `${treeKey} possui escolhas ricas`);
+    // Deve possuir um nó com triggerBreakup
+    const hasBreakup = Object.values(tree.nodes).some(n => n.triggerBreakup || (n.choices && n.choices.some(c => c.triggerBreakup)));
+    assert(hasBreakup, `${treeKey} possui ramo de rompimento/breakup`);
+});
+
+// Testar execução de rompimento doméstico
+vm.runInContext(`
+    player.partner = 'marta';
+    player.sanity = 80;
+    player.day = 5;
+    activeDialogueTree = {
+        treeId: 'romance_home_marta',
+        config: DIALOGUE_TREES.romance_home_marta,
+        currentNodeId: 'discussao_marta',
+        currentChoices: []
+    };
+    executeDialogueChoice({ text: "Terminar tudo", nextNode: 'rompimento_marta', triggerBreakup: true });
+`, sandbox);
+assert.strictEqual(vm.runInContext("player.partner", sandbox), null, "Namoro rompido através de diálogo doméstico");
+assert.strictEqual(vm.runInContext("player.exPartners.marta.blockedUntilDay", sandbox), 12, "Marta bloqueada por 7 dias pós-rompimento doméstico");
+assert(vm.runInContext("player.sanity", sandbox) < 80, "Sanidade penalizada por discussão/rompimento");
+
+console.log("✓ 17. Alta Sociedade D. Zulmira, Cooldown 7 Dias Ex-Parceiros, Desvio Caixotes, Códex Caseiro & Diálogos Domésticos validados!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 16 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 17 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");
