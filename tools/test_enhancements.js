@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const assert = require('assert');
 const vm = require('vm');
 
@@ -253,8 +254,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.8', "ASSET_VER incrementado para 7.8");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.8' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.9', "ASSET_VER incrementado para 7.9");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.9' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -690,7 +691,57 @@ assert(html.includes("(id === 'ze' || id === 'player' || id === 'casa') && zePor
 
 console.log("✓ 15. Romance D. Zulmira & Cutscenes Dedicadas: D. Zulmira 100% cortejável, cutscenes temáticas personalizadas e avatar de casa limpo validados!");
 
+// ============================================================================
+// TESTE 16: CENÁRIOS INTERIORES 16-BIT (BANCO, MODAS CHIADO & CASA DINÂMICA) E AVATAR DA MARTA
+// ============================================================================
+// 1. Verificar dimensões e ficheiros de banco.png e loja_roupa.png
+const bancoBuf = fs.readFileSync(path.join(__dirname, '../assets/interiors/banco.png'));
+const lojaBuf = fs.readFileSync(path.join(__dirname, '../assets/interiors/loja_roupa.png'));
+assert(bancoBuf.length > 20000, "banco.png existe e tem conteúdo válido");
+assert(lojaBuf.length > 20000, "loja_roupa.png existe e tem conteúdo válido");
+
+// 2. Verificar que renderInteriorScene chama renderInteriorCasa para id === 'casa'
+assert(html.includes("if (id === 'casa')"), "renderInteriorScene possui guarda para id === 'casa'");
+assert(html.includes("renderInteriorCasa(ctx, animTimer, player, HOUSES)"), "renderInteriorScene invoca renderInteriorCasa");
+
+// 3. Verificar que renderInteriorCasa lida com todos os 5 escalões (0..4)
+[0, 1, 2, 3, 4].forEach(idx => {
+    vm.runInContext(`
+        player.houseIndex = ${idx};
+        renderInteriorCasa(ctx, 1.0, player, HOUSES);
+    `, sandbox);
+});
+assert(html.includes("TIER 0: BANCO DE JARDIM"), "renderInteriorCasa suporta Tier 0");
+assert(html.includes("TIER 1: BELICHE ROTATIVO"), "renderInteriorCasa suporta Tier 1");
+assert(html.includes("TIER 2: QUARTO NOS ANJOS"), "renderInteriorCasa suporta Tier 2");
+assert(html.includes("TIER 3: CAVE HÚMIDA"), "renderInteriorCasa suporta Tier 3");
+assert(html.includes("TIER 4: T1 POMBALINO"), "renderInteriorCasa suporta Tier 4");
+
+// 4. Testar que aceitar namoro com Marta na árvore de diálogo despoleta romance_marta com avatar marta
+vm.runInContext(`
+    activeDialogueTree = {
+        treeId: 'marta',
+        config: DIALOGUE_TREES.marta,
+        currentNodeId: 'cafe_flirt',
+        currentChoices: []
+    };
+    executeDialogueChoice({ text: "Compilar a vida a dois", nextNode: 'proposta_marta_aceite', triggerRomance: 'marta' });
+`, sandbox);
+assert.strictEqual(vm.runInContext("player.partner", sandbox), 'marta', "player.partner definido como 'marta'");
+assert.strictEqual(vm.runInContext("activeDialogueTree.currentNodeId", sandbox), 'proposta_marta_aceite', "Nó ativo é proposta_marta_aceite");
+
+const nodeMartaAceite = vm.runInContext("DIALOGUE_TREES.marta.nodes.proposta_marta_aceite", sandbox);
+assert(nodeMartaAceite.choices[0].action, "Escolha de encerramento tem action");
+vm.runInContext(`
+    executeDialogueChoice(DIALOGUE_TREES.marta.nodes.proposta_marta_aceite.choices[0]);
+`, sandbox);
+assert.strictEqual(vm.runInContext("state", sandbox), 'CUTSCENE', "Transição para CUTSCENE");
+assert.strictEqual(vm.runInContext("activeCutscene.id", sandbox), 'romance_marta', "Cutscene id é 'romance_marta'");
+assert.strictEqual(vm.runInContext("activeCutscene.config.slides[0].portraitId", sandbox), 'marta', "Avatar da Marta é 'marta' (não Cátia!)");
+
+console.log("✓ 16. Cenários 16-Bit Banco & Modas Chiado, Casa Dinâmica por Escalão e Avatar da Marta validados!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 15 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 16 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");

@@ -3734,7 +3734,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '7.8';
+const ASSET_VER = '7.9';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -5452,10 +5452,15 @@ const DIALOGUE_TREES = {
                 action: (p) => {
                     p.partner = 'catia';
                     unlockAchievement('amor_lisboeta');
-                    playCutscene('romance_catia');
                 },
                 choices: [
-                    { text: "«O meu coração é teu, Cátia! Viva o nosso amor!»", nextNode: 'exit' }
+                    {
+                        text: "«O meu coração é teu, Cátia! Viva o nosso amor!»",
+                        nextNode: 'exit',
+                        action: (p) => {
+                            playCutscene('romance_catia');
+                        }
+                    }
                 ]
             },
             dicas_retalho: {
@@ -5806,10 +5811,15 @@ const DIALOGUE_TREES = {
                 action: (p) => {
                     p.partner = 'marta';
                     unlockAchievement('amor_lisboeta');
-                    playCutscene('romance_marta');
                 },
                 choices: [
-                    { text: "«O meu coração compilou contigo, Marta! Viva o nosso amor!»", nextNode: 'exit' }
+                    {
+                        text: "«O meu coração compilou contigo, Marta! Viva o nosso amor!»",
+                        nextNode: 'exit',
+                        action: (p) => {
+                            playCutscene('romance_marta');
+                        }
+                    }
                 ]
             }
         }
@@ -5904,10 +5914,15 @@ const DIALOGUE_TREES = {
                 action: (p) => {
                     p.partner = 'zulmira';
                     unlockAchievement('amor_lisboeta');
-                    playCutscene('romance_zulmira');
                 },
                 choices: [
-                    { text: "«É uma honra e uma felicidade enorme, minha querida Zulmira!»", nextNode: 'exit' }
+                    {
+                        text: "«É uma honra e uma felicidade enorme, minha querida Zulmira!»",
+                        nextNode: 'exit',
+                        action: (p) => {
+                            playCutscene('romance_zulmira');
+                        }
+                    }
                 ]
             }
         }
@@ -6137,6 +6152,10 @@ function executeDialogueChoice(c) {
     } else {
         activeDialogueTree.currentNodeId = c.nextNode;
         sfxAction();
+        const nextNodeObj = activeDialogueTree.config.nodes && activeDialogueTree.config.nodes[c.nextNode];
+        if (nextNodeObj && typeof nextNodeObj.action === 'function') {
+            nextNodeObj.action(player);
+        }
     }
 }
 
@@ -9133,6 +9152,21 @@ function drawNpcPortrait(id, x, y, size, targetCtx = null) {
 function renderInteriorScene(ctx, id, animTimer, player, HOUSES, WORKPLACES, getPlayerJob) {
     ctx.save();
 
+    // 1. Cenário Dinâmico de Casa: renderiza exatamente o escalão de habitação do jogador (0..4)
+    if (id === 'casa') {
+        renderInteriorCasa(ctx, animTimer, player, HOUSES);
+        const hr = (player && player.timeHour !== undefined) ? player.timeHour : 12;
+        if (hr >= 20 || hr < 7) {
+            ctx.fillStyle = 'rgba(11, 15, 26, 0.32)';
+            ctx.fillRect(0, 0, 640, 295);
+        } else if (hr >= 17 && hr <= 19) {
+            ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
+            ctx.fillRect(0, 0, 640, 295);
+        }
+        ctx.restore();
+        return;
+    }
+
     const img = interiorImgs[id];
     if (img && img.complete && img.naturalWidth > 0) {
         ctx.imageSmoothingEnabled = false;
@@ -9824,89 +9858,461 @@ function renderInteriorFaculdade(ctx, animTimer) {
     ctx.beginPath(); ctx.arc(46, 158, 4, 0, Math.PI * 2); ctx.fill();
 }
 
-// 7. CASA (O Teu Teto)
+// 7. CASA (O Teu Teto — Cenário Dinâmico 16-Bit por Escalão de Habitação)
 function renderInteriorCasa(ctx, animTimer, player, HOUSES) {
-    const idx = player.houseIndex;
+    const idx = (player && player.houseIndex !== undefined) ? player.houseIndex : 1;
+    const hInfo = (HOUSES && HOUSES[idx]) ? HOUSES[idx] : { name: "O Teu Teto", rent: 0, qual: "Lisboa" };
 
     if (idx === 0) {
-        // Banco de Jardim no Rossio (Ao relento à noite)
-        ctx.fillStyle = '#020617';
-        ctx.fillRect(0, 0, 640, 295);
-        // Estrelas
-        ctx.fillStyle = '#ffffff';
-        for (let i = 0; i < 40; i++) {
-            ctx.fillRect((i * 37) % 640, (i * 23) % 150, 2, 2);
-        }
-        // Candeeiro da CML a alumiar o banco
-        ctx.fillStyle = 'rgba(251, 191, 36, 0.25)';
-        ctx.beginPath(); ctx.arc(100, 180, 80, 0, Math.PI * 2); ctx.fill();
-        // Calçada e banco de ferro
-        ctx.fillStyle = '#334155'; ctx.fillRect(0, 180, 640, 115);
-        ctx.fillStyle = '#1e293b'; ctx.fillRect(40, 210, 120, 14); // Banco
-        return;
-    }
+        // ====================================================================
+        // TIER 0: BANCO DE JARDIM NO ROSSIO (Sem-abrigo / Ao relento)
+        // ====================================================================
+        // Céu noturno estrelado
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, 185);
+        skyGrad.addColorStop(0, '#020617');
+        skyGrad.addColorStop(0.7, '#070f26');
+        skyGrad.addColorStop(1, '#0d1838');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, 640, 185);
 
-    if (idx === 1) {
-        // Beliche Rotativo em Arroios (Hostel superlotado)
+        // Estrelas cintilantes com animTimer
+        for (let i = 0; i < 48; i++) {
+            const sx = (i * 47 + 19) % 640;
+            const sy = (i * 31 + 11) % 120;
+            const starAlpha = 0.4 + Math.sin(animTimer * 3.0 + i) * 0.4;
+            ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.1, starAlpha)})`;
+            ctx.fillRect(sx, sy, (i % 5 === 0) ? 2 : 1, (i % 5 === 0) ? 2 : 1);
+        }
+
+        // Silhueta dos telhados e colinas de Lisboa (Convento do Carmo & Baixa)
+        ctx.fillStyle = '#060b18';
+        ctx.beginPath();
+        ctx.moveTo(0, 185);
+        ctx.lineTo(0, 125);
+        ctx.lineTo(80, 125);
+        ctx.lineTo(110, 105);
+        ctx.lineTo(140, 105);
+        ctx.lineTo(140, 125);
+        ctx.lineTo(260, 125);
+        ctx.lineTo(285, 95);
+        ctx.lineTo(330, 95);
+        ctx.lineTo(345, 125);
+        ctx.lineTo(460, 125);
+        ctx.lineTo(500, 85);
+        ctx.lineTo(550, 85);
+        ctx.lineTo(580, 125);
+        ctx.lineTo(640, 125);
+        ctx.lineTo(640, 185);
+        ctx.closePath();
+        ctx.fill();
+
+        // Janelas acesas no casario noturno
+        ctx.fillStyle = 'rgba(253, 224, 71, 0.75)';
+        const winList = [[25, 140], [55, 140], [170, 135], [200, 135], [230, 135], [375, 135], [405, 135], [435, 135], [515, 105], [535, 105], [605, 135]];
+        winList.forEach(([wx, wy]) => {
+            ctx.fillRect(wx, wy, 8, 12);
+            ctx.fillStyle = '#1e293b'; ctx.fillRect(wx + 3, wy, 2, 12); ctx.fillRect(wx, wy + 5, 8, 2);
+            ctx.fillStyle = 'rgba(253, 224, 71, 0.75)';
+        });
+
+        // Lancil de cantaria e pavimento de paralelepípedos
+        ctx.fillStyle = '#475569'; ctx.fillRect(0, 180, 640, 8); // Lancil
+        ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 188, 640, 107); // Calçada
+        for (let py = 192; py < 295; py += 14) {
+            const rowShift = (Math.floor(py / 14) % 2) * 12;
+            for (let px = -12 + rowShift; px < 640; px += 24) {
+                ctx.fillStyle = '#273549';
+                ctx.fillRect(px, py, 21, 10);
+                ctx.fillStyle = '#0f172a';
+                ctx.strokeRect(px, py, 21, 10);
+            }
+        }
+
+        // Candeeiro clássico de ferro verde da CML (x: 105)
+        ctx.fillStyle = '#064e3b';
+        ctx.fillRect(102, 35, 8, 145);
+        ctx.fillRect(96, 172, 20, 8); // Base do candeeiro
+        ctx.fillRect(98, 30, 16, 6); // Capitel
+        // Lanterna
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.moveTo(96, 36); ctx.lineTo(116, 36); ctx.lineTo(112, 58); ctx.lineTo(100, 58);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#022c22';
+        ctx.beginPath();
+        ctx.moveTo(94, 36); ctx.lineTo(118, 36); ctx.lineTo(106, 20);
+        ctx.closePath();
+        ctx.fill();
+
+        // Cone de iluminação quente âmbar do candeeiro
+        ctx.save();
+        const lightFlicker = 0.18 + Math.sin(animTimer * 4.2) * 0.02;
+        const lampCone = ctx.createRadialGradient(106, 50, 10, 106, 140, 240);
+        lampCone.addColorStop(0, `rgba(251, 191, 36, ${lightFlicker * 1.5})`);
+        lampCone.addColorStop(0.6, `rgba(245, 158, 11, ${lightFlicker})`);
+        lampCone.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = lampCone;
+        ctx.beginPath();
+        ctx.moveTo(106, 45); ctx.lineTo(0, 295); ctx.lineTo(380, 295);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+
+        // Banco de Jardim em ferro forjado e ripas de madeira (x: 210..460)
+        const bx = 210, by = 175, bw = 250, bh = 65;
+        // Pernas de ferro trabalhado
+        ctx.fillStyle = '#022c22';
+        ctx.fillRect(bx + 18, by + 32, 12, bh - 32);
+        ctx.fillRect(bx + bw - 30, by + 32, 12, bh - 32);
+        ctx.strokeStyle = '#065f46'; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.arc(bx + 12, by + 18, 18, Math.PI * 0.5, Math.PI * 1.5); ctx.stroke();
+        ctx.beginPath(); ctx.arc(bx + bw - 12, by + 18, 18, Math.PI * 1.5, Math.PI * 0.5); ctx.stroke();
+        // Ripas de madeira de castanho
+        for (let ry = by; ry < by + 32; ry += 8) {
+            ctx.fillStyle = '#b45309'; ctx.fillRect(bx, ry, bw, 6);
+            ctx.fillStyle = '#78350f'; ctx.fillRect(bx, ry + 4, bw, 2);
+        }
+        // Assento do banco
+        for (let ry = by + 34; ry < by + 50; ry += 5) {
+            ctx.fillStyle = '#92400e'; ctx.fillRect(bx, ry, bw, 4);
+        }
+
+        // Cartão e jornal "Diário de Notícias" a servir de manta
+        ctx.fillStyle = '#ca8a04'; ctx.fillRect(bx + 25, by + 22, 130, 18); // Cartão
+        ctx.fillStyle = '#e2e8f0'; ctx.fillRect(bx + 32, by + 18, 115, 16); // Jornal
+        ctx.fillStyle = '#334155';
+        for (let ly = by + 21; ly < by + 32; ly += 3) {
+            ctx.fillRect(bx + 38, ly, 100, 1);
+        }
+        // Mochila gasta encostada à perna
+        ctx.fillStyle = '#334155'; ctx.fillRect(bx + bw - 65, by + 36, 42, 34);
+        ctx.fillStyle = '#475569'; ctx.fillRect(bx + bw - 60, by + 42, 32, 22);
+
+        // Pombo do Rossio a dormir junto ao banco
+        ctx.fillStyle = '#64748b';
+        ctx.beginPath(); ctx.arc(bx + bw + 24, by + bh - 2, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(bx + bw + 20, by + bh - 5, 2, 2);
+
+    } else if (idx === 1) {
+        // ====================================================================
+        // TIER 1: BELICHE ROTATIVO EM ARROIOS (Hostel / Quarto partilhado 8 pax)
+        // ====================================================================
+        // Parede gasta com mancha de humidade
+        ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, 640, 165);
+        ctx.fillStyle = '#334155'; ctx.fillRect(0, 0, 640, 120);
+
+        // Tubo fluorescente no teto (flicker subtil 16-bit)
+        const tubeFlicker = (Math.sin(animTimer * 18.0) > 0.96) ? 0.4 : 1.0;
+        ctx.fillStyle = `rgba(241, 245, 249, ${tubeFlicker})`;
+        ctx.fillRect(250, 10, 140, 6);
+        ctx.fillStyle = `rgba(241, 245, 249, ${tubeFlicker * 0.15})`;
+        ctx.fillRect(220, 0, 200, 35);
+
+        // Corda da roupa estendida a atravessar o quarto
+        ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(25, 48); ctx.lineTo(615, 56); ctx.stroke();
+        // Roupas e meias a secar
+        const laundry = [
+            { x: 75,  w: 16, h: 26, c: '#ef4444' },
+            { x: 110, w: 12, h: 20, c: '#38bdf8' },
+            { x: 145, w: 22, h: 32, c: '#f59e0b' },
+            { x: 220, w: 14, h: 24, c: '#ffffff' },
+            { x: 420, w: 18, h: 30, c: '#22c55e' },
+            { x: 480, w: 14, h: 22, c: '#c084fc' },
+            { x: 535, w: 20, h: 28, c: '#f43f5e' }
+        ];
+        laundry.forEach(item => {
+            ctx.fillStyle = item.c;
+            ctx.fillRect(item.x, 50, item.w, item.h);
+            ctx.fillStyle = '#0f172a'; ctx.strokeRect(item.x, 50, item.w, item.h);
+        });
+
+        // Chão de linóleo escuro com riscos
+        ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 165, 640, 130);
         ctx.fillStyle = '#1e293b';
-        ctx.fillRect(0, 0, 640, 295);
-        // Paredes simples
-        ctx.fillStyle = '#334155'; ctx.fillRect(0, 0, 640, 150);
-        // Corda de roupa estendida
-        ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(0, 45); ctx.lineTo(640, 55); ctx.stroke();
-        // Meias a secar
-        for (let x = 30; x < 630; x += 45) {
-            ctx.fillStyle = (x % 2 === 0) ? '#ef4444' : '#3b82f6';
-            ctx.fillRect(x, 50, 8, 15);
+        for (let ly = 175; ly < 295; ly += 24) {
+            ctx.fillRect(0, ly, 640, 2);
         }
-        // Chão e beliche metálico
-        ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 160, 640, 135);
-        ctx.fillStyle = '#94a3b8'; ctx.fillRect(25, 90, 8, 160); ctx.fillRect(145, 90, 8, 160);
-        ctx.fillRect(25, 140, 128, 8); ctx.fillRect(25, 210, 128, 8);
-        return;
+
+        // Beliche Esquerdo (Beliche do Zé)
+        const b1x = 30;
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(b1x, 55, 10, 215);
+        ctx.fillRect(b1x + 165, 55, 10, 215);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(b1x, 105, 175, 10); // Cama superior
+        ctx.fillRect(b1x, 205, 175, 10); // Cama inferior
+        // Colchão & Edredom cima (vermelho)
+        ctx.fillStyle = '#dc2626'; ctx.fillRect(b1x + 10, 96, 155, 10);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(b1x + 12, 92, 28, 8); // Almofada
+        // Colchão & Edredom baixo (verde)
+        ctx.fillStyle = '#16a34a'; ctx.fillRect(b1x + 10, 196, 155, 10);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(b1x + 12, 192, 28, 8);
+        // Escada de ferro do beliche
+        for (let ey = 65; ey < 255; ey += 26) {
+            ctx.fillStyle = '#94a3b8'; ctx.fillRect(b1x + 145, ey, 22, 5);
+        }
+
+        // Beliche Direito (Companheiros de quarto)
+        const b2x = 435;
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(b2x, 55, 10, 215);
+        ctx.fillRect(b2x + 165, 55, 10, 215);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(b2x, 105, 175, 10);
+        ctx.fillRect(b2x, 205, 175, 10);
+        ctx.fillStyle = '#2563eb'; ctx.fillRect(b2x + 10, 96, 155, 10);
+        ctx.fillStyle = '#d97706'; ctx.fillRect(b2x + 10, 196, 155, 10);
+
+        // Desarrumação no centro: malas, copos de noodles, ficha tripla com LED
+        ctx.fillStyle = '#78350f'; ctx.fillRect(235, 215, 55, 50); // Mala grande castanha
+        ctx.fillStyle = '#334155'; ctx.fillRect(285, 230, 45, 42); // Mochila cinzenta
+        ctx.fillStyle = '#f59e0b'; ctx.fillRect(345, 222, 15, 18); // Copo de Noodles instantâneo
+        // Extensão elétrica com LED vermelho
+        ctx.fillStyle = '#e2e8f0'; ctx.fillRect(355, 246, 32, 10);
+        ctx.fillStyle = '#ef4444'; ctx.fillRect(380, 249, 3, 3); // LED brilhante
+        ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(355, 251); ctx.quadraticCurveTo(330, 265, 290, 255); ctx.stroke();
+
+    } else if (idx === 2) {
+        // ====================================================================
+        // TIER 2: QUARTO NOS ANJOS (Quarto interior individual · 550€)
+        // ====================================================================
+        // Paredes claras e acolhedoras
+        ctx.fillStyle = '#f1f5f9'; ctx.fillRect(0, 0, 640, 155);
+        ctx.fillStyle = '#e2e8f0'; ctx.fillRect(0, 140, 640, 15);
+        ctx.fillStyle = '#78350f'; ctx.fillRect(0, 150, 640, 8); // Rodapé de madeira
+
+        // Chão de soalho de pinho corrido
+        ctx.fillStyle = '#b45309'; ctx.fillRect(0, 158, 640, 137);
+        for (let py = 160; py < 295; py += 18) {
+            ctx.fillStyle = '#92400e'; ctx.fillRect(0, py + 16, 640, 2);
+        }
+
+        // Poster retro do Elétrico 28 na parede central
+        ctx.fillStyle = '#fef08a'; ctx.fillRect(265, 25, 90, 85);
+        ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 3; ctx.strokeRect(265, 25, 90, 85);
+        ctx.fillStyle = '#eab308'; ctx.fillRect(280, 48, 60, 42); // Elétrico
+        ctx.fillStyle = '#0f172a'; ctx.fillRect(285, 54, 50, 12); // Vidros
+        ctx.fillStyle = '#dc2626'; ctx.fillRect(295, 74, 30, 8); // Faixa vermelha
+
+        // Cama individual à direita (x: 370..600)
+        const cx = 370, cy = 162;
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(cx, cy, 14, 85); // Cabeceira
+        ctx.fillRect(cx, cy + 35, 230, 50); // Estrado
+        ctx.fillRect(cx + 225, cy + 20, 10, 65);
+        // Edredom azul acolhedor e almofada
+        ctx.fillStyle = '#0284c7'; ctx.fillRect(cx + 14, cy + 28, 212, 55);
+        ctx.fillStyle = '#0369a1'; ctx.fillRect(cx + 14, cy + 28, 45, 55); // Dobra
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(cx + 20, cy + 12, 38, 20); // Almofada macia
+
+        // Secretária de estudo e candeeiro à esquerda (x: 45..220)
+        const sx = 45, sy = 148;
+        ctx.fillStyle = '#854d0e'; ctx.fillRect(sx, sy + 32, 175, 12); // Tampo
+        ctx.fillStyle = '#713f12';
+        ctx.fillRect(sx + 12, sy + 44, 12, 75);
+        ctx.fillRect(sx + 152, sy + 44, 12, 75);
+        // Cadeira de estudo
+        ctx.fillStyle = '#334155'; ctx.fillRect(sx + 65, sy + 52, 45, 65);
+        ctx.fillStyle = '#1e293b'; ctx.fillRect(sx + 65, sy + 25, 45, 28); // Costas da cadeira
+        // Computador portátil com ecrã a emitir luz verde
+        ctx.fillStyle = '#0f172a'; ctx.fillRect(sx + 55, sy + 14, 40, 20);
+        ctx.fillStyle = '#22c55e'; ctx.fillRect(sx + 58, sy + 16, 34, 16); // Terminal bash
+        // Candeeiro verde de banqueiro com cone de luz dourada
+        ctx.fillStyle = '#166534'; ctx.fillRect(sx + 130, sy + 6, 22, 12);
+        ctx.fillStyle = '#ca8a04'; ctx.fillRect(sx + 139, sy + 18, 4, 15);
+        // Cone de luz da secretária
+        ctx.save();
+        const deskLight = ctx.createRadialGradient(sx + 140, sy + 18, 5, sx + 140, sy + 45, 75);
+        deskLight.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
+        deskLight.addColorStop(1, 'rgba(254, 240, 138, 0)');
+        ctx.fillStyle = deskLight;
+        ctx.beginPath();
+        ctx.arc(sx + 140, sy + 35, 75, 0, Math.PI);
+        ctx.fill();
+        ctx.restore();
+        // Pilha de apontamentos e livros do IST
+        ctx.fillStyle = '#dc2626'; ctx.fillRect(sx + 15, sy + 20, 28, 12);
+        ctx.fillStyle = '#2563eb'; ctx.fillRect(sx + 16, sy + 12, 26, 8);
+        ctx.fillStyle = '#f59e0b'; ctx.fillRect(sx + 17, sy + 6, 24, 6);
+
+    } else if (idx === 3) {
+        // ====================================================================
+        // TIER 3: CAVE HÚMIDA EM ALFAMA (T0 em cantaria com azulejos · 850€)
+        // ====================================================================
+        // Parede de alvenaria rústica de Alfama
+        ctx.fillStyle = '#292524'; ctx.fillRect(0, 0, 640, 160);
+        // Grande Arco Pombalino de Cantaria de Pedra Maciça
+        ctx.save();
+        ctx.strokeStyle = '#57534e'; ctx.lineWidth = 22;
+        ctx.beginPath(); ctx.arc(320, 185, 270, Math.PI, 0); ctx.stroke();
+        ctx.strokeStyle = '#78716c'; ctx.lineWidth = 14;
+        ctx.beginPath(); ctx.arc(320, 185, 270, Math.PI, 0); ctx.stroke();
+        ctx.restore();
+
+        // Janela de cave ao nível da rua (x: 280..360, y: 15..45)
+        ctx.fillStyle = '#0c0a09'; ctx.fillRect(280, 15, 80, 32);
+        ctx.fillStyle = 'rgba(254, 240, 138, 0.4)'; ctx.fillRect(284, 18, 72, 26);
+        ctx.fillStyle = '#1c1917'; // Grelha de ferro
+        for (let gx = 295; gx < 360; gx += 15) {
+            ctx.fillRect(gx, 15, 3, 32);
+        }
+
+        // Wainscoting de Azulejos Tradicionais Portugueses (azul e branco)
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 115, 640, 48);
+        for (let ax = 0; ax < 640; ax += 20) {
+            ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 1;
+            ctx.strokeRect(ax, 115, 20, 48);
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(ax + 6, 126, 8, 8);
+            ctx.fillRect(ax + 6, 142, 8, 8);
+            ctx.fillStyle = '#60a5fa'; ctx.fillRect(ax + 8, 128, 4, 4);
+        }
+        ctx.fillStyle = '#1e3a8a'; ctx.fillRect(0, 113, 640, 3); // Friso superior azul
+
+        // Chão de tijoleira / lajes de terracota
+        ctx.fillStyle = '#7c2d12'; ctx.fillRect(0, 163, 640, 132);
+        for (let ty = 163; ty < 295; ty += 22) {
+            const shift = (Math.floor(ty / 22) % 2) * 16;
+            for (let tx = -16 + shift; tx < 640; tx += 32) {
+                ctx.fillStyle = '#9a3412'; ctx.fillRect(tx, ty, 30, 20);
+                ctx.fillStyle = '#571c0d'; ctx.strokeRect(tx, ty, 30, 20);
+            }
+        }
+
+        // Cama de ferro forjado e colcha tradicional de retalhos (x: 330..585)
+        const cx = 330, cy = 168;
+        ctx.fillStyle = '#1c1917';
+        ctx.fillRect(cx, cy + 18, 14, 85);
+        ctx.fillRect(cx + 240, cy + 25, 12, 75);
+        // Arabescos da cabeceira
+        ctx.strokeStyle = '#1c1917'; ctx.lineWidth = 3;
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath(); ctx.arc(cx + 25 + i * 44, cy + 12, 16, 0, Math.PI * 2); ctx.stroke();
+        }
+        // Colcha patchwork com padrões coloridos
+        const colors = ['#dc2626', '#2563eb', '#eab308', '#16a34a', '#ec4899'];
+        for (let px = cx + 14; px < cx + 240; px += 24) {
+            for (let py = cy + 28; py < cy + 85; py += 16) {
+                const cIdx = (Math.floor(px / 24) + Math.floor(py / 16)) % colors.length;
+                ctx.fillStyle = colors[cIdx]; ctx.fillRect(px, py, 22, 14);
+            }
+        }
+
+        // Canto de cozinha rústica à esquerda: prateleira, bilha de azeite e candeeiro
+        ctx.fillStyle = '#78716c'; ctx.fillRect(40, 175, 130, 12); // Prateleira de pedra
+        ctx.fillStyle = '#b45309'; ctx.fillRect(55, 145, 20, 30); // Bilha de barro
+        ctx.fillStyle = '#cbd5e1'; ctx.fillRect(95, 150, 18, 25); // Cafeteira moka
+        // Candeeiro de parede com chama oscilante (animTimer)
+        const flameShift = Math.sin(animTimer * 6.0) * 2;
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath(); ctx.arc(195 + flameShift, 85, 9, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath(); ctx.arc(195 + flameShift, 85, 4, 0, Math.PI * 2); ctx.fill();
+
+    } else if (idx === 4) {
+        // ====================================================================
+        // TIER 4: T1 POMBALINO NO CHIADO (Luxo, estuques, varanda e Tejo · 1600€)
+        // ====================================================================
+        // Paredes nobres de estuque Pombalino em tom marfim/bege dourado
+        ctx.fillStyle = '#fef3c7'; ctx.fillRect(0, 0, 640, 160);
+        // Friso dourado Barroco trabalhado no teto
+        ctx.fillStyle = '#ca8a04'; ctx.fillRect(0, 0, 640, 15);
+        ctx.fillStyle = '#fef08a'; ctx.fillRect(0, 15, 640, 5);
+        ctx.fillStyle = '#eab308';
+        for (let fx = 0; fx < 640; fx += 20) {
+            ctx.fillRect(fx + 6, 4, 8, 8);
+        }
+
+        // Chão de tacos de madeira nobre em espinha de peixe (Herringbone Parquet)
+        ctx.fillStyle = '#b45309'; ctx.fillRect(0, 160, 640, 135);
+        ctx.strokeStyle = '#78350f'; ctx.lineWidth = 1;
+        for (let py = 160; py < 295; py += 12) {
+            for (let px = 0; px < 640; px += 24) {
+                ctx.beginPath();
+                ctx.moveTo(px, py); ctx.lineTo(px + 12, py + 12);
+                ctx.moveTo(px + 12, py + 12); ctx.lineTo(px + 24, py);
+                ctx.stroke();
+            }
+        }
+
+        // Portas de Sacada Francesas abertas com vista sobre o Rio Tejo (x: 200..440)
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(195, 20, 250, 195);
+        ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 3; ctx.strokeRect(195, 20, 250, 195);
+
+        // Céu do Entardecer de Lisboa e Rio Tejo dourado
+        const sunsetGrad = ctx.createLinearGradient(0, 25, 0, 170);
+        sunsetGrad.addColorStop(0, '#ea580c');
+        sunsetGrad.addColorStop(0.5, '#f59e0b');
+        sunsetGrad.addColorStop(0.7, '#fde68a');
+        sunsetGrad.addColorStop(0.72, '#0284c7');
+        sunsetGrad.addColorStop(1, '#0369a1');
+        ctx.fillStyle = sunsetGrad;
+        ctx.fillRect(205, 28, 230, 142);
+
+        // Silhueta da Ponte 25 de Abril e Cacilheiro no horizonte
+        ctx.strokeStyle = '#b91c1c'; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(220, 130); ctx.lineTo(270, 75); ctx.lineTo(320, 130);
+        ctx.stroke();
+        // Cacilheiro laranja
+        ctx.fillStyle = '#ea580c'; ctx.fillRect(350, 126, 26, 6);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(355, 122, 14, 4);
+
+        // Gradeamento de ferro trabalhado da varanda pombalina
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(205, 145, 230, 6); // Corrimão
+        ctx.fillRect(205, 172, 230, 4); // Barra inferior
+        for (let gx = 210; gx < 435; gx += 11) {
+            ctx.fillRect(gx, 145, 3, 30);
+        }
+        // Vasos de sardinheiras vermelhas floridas na varanda
+        ctx.fillStyle = '#b45309'; ctx.fillRect(215, 162, 24, 14); ctx.fillRect(395, 162, 24, 14);
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath(); ctx.arc(227, 156, 10, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(407, 156, 10, 0, Math.PI * 2); ctx.fill();
+
+        // Cortinas de linho branco a esvoaçar suavemente ao vento
+        const curtainWave = Math.sin(animTimer * 2.5) * 6;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.78)';
+        ctx.beginPath();
+        ctx.moveTo(195, 25); ctx.lineTo(220, 25); ctx.lineTo(215 + curtainWave, 180); ctx.lineTo(190, 180);
+        ctx.closePath(); ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(420, 25); ctx.lineTo(445, 25); ctx.lineTo(450 - curtainWave, 180); ctx.lineTo(425, 180);
+        ctx.closePath(); ctx.fill();
+
+        // Mobiliário de Luxo: Sofá de veludo azul petróleo e candeeiro dourado
+        const sfx = 35, sfy = 175;
+        ctx.fillStyle = '#0e7490'; ctx.fillRect(sfx, sfy, 140, 70); // Sofá
+        ctx.fillStyle = '#155e75';
+        ctx.fillRect(sfx - 10, sfy + 15, 18, 55); // Braço esquerdo
+        ctx.fillRect(sfx + 132, sfy + 15, 18, 55); // Braço direito
+        ctx.fillStyle = '#f59e0b'; ctx.fillRect(sfx + 22, sfy + 20, 32, 28); // Almofada mostarda
+        // Candeeiro de pé contemporâneo em arco dourado à direita
+        ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 3.5;
+        ctx.beginPath(); ctx.arc(580, 230, 110, Math.PI, Math.PI * 1.5); ctx.stroke();
+        ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(470, 125, 16, 0, Math.PI * 2); ctx.fill();
     }
 
-    if (idx === 2) {
-        // Quarto nos Anjos (Acolhedor com janela)
-        ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, 640, 295);
-        ctx.fillStyle = '#e2e8f0'; ctx.fillRect(0, 0, 640, 155);
-        ctx.fillStyle = '#78350f'; ctx.fillRect(0, 155, 640, 140);
-        // Cama de madeira
-        ctx.fillStyle = '#9a3412'; ctx.fillRect(25, 180, 130, 70);
-        ctx.fillStyle = '#38bdf8'; ctx.fillRect(40, 190, 110, 50); // Edredom azul
-        ctx.fillStyle = '#ffffff'; ctx.fillRect(28, 192, 25, 18); // Almofada
-        return;
-    }
+    // ========================================================================
+    // MOLDURA SUPERIOR COM INFORMAÇÃO DA HABITAÇÃO (Estilo LucasArts SCUMM)
+    // ========================================================================
+    const tagText = `${hInfo.name.toUpperCase()} · ${hInfo.qual.toUpperCase()} (${hInfo.rent}€/MÊS)`;
+    ctx.font = 'bold 9px "Press Start 2P"';
+    const tagW = ctx.measureText(tagText).width + 24;
+    const tagX = (640 - tagW) / 2;
 
-    if (idx === 3) {
-        // Cave Húmida em Alfama (Arco de pedra e azulejos)
-        ctx.fillStyle = '#1c1917'; ctx.fillRect(0, 0, 640, 295);
-        // Arco de cantaria
-        ctx.fillStyle = '#44403c'; ctx.fillRect(0, 0, 640, 160);
-        ctx.strokeStyle = '#78716c'; ctx.lineWidth = 8;
-        ctx.beginPath(); ctx.arc(320, 160, 260, Math.PI, 0); ctx.stroke();
-        // Azulejos azuis
-        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 110, 640, 50);
-        ctx.strokeStyle = '#2563eb'; ctx.strokeRect(0, 110, 640, 50);
-        ctx.fillStyle = '#78350f'; ctx.fillRect(0, 160, 640, 135);
-        return;
-    }
-
-    // idx === 4: T1 Pombalino no Chiado (Luxo, Estuques, Varanda Francesa sobre o Tejo)
-    ctx.fillStyle = '#fef3c7'; ctx.fillRect(0, 0, 640, 295);
-    // Estuques dourados de teto
-    ctx.fillStyle = '#ca8a04'; ctx.fillRect(0, 0, 640, 14);
-    ctx.fillStyle = '#fde68a'; ctx.fillRect(0, 14, 640, 145);
-    // Sacada com vista para o Rio Tejo dourado
-    ctx.fillStyle = '#38bdf8'; ctx.fillRect(240, 35, 160, 120);
-    ctx.fillStyle = '#0284c7'; ctx.fillRect(240, 105, 160, 50); // Rio
-    // Cortinas brancas a esvoaçar
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-    ctx.fillRect(230, 35, 24, 120);
-    ctx.fillRect(386, 35, 24, 120);
-    // Chão de taco de espinha
-    ctx.fillStyle = '#b45309'; ctx.fillRect(0, 160, 640, 135);
+    ctx.fillStyle = 'rgba(10, 15, 26, 0.92)';
+    ctx.fillRect(tagX, 8, tagW, 20);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(tagX, 8, tagW, 20);
+    ctx.fillStyle = '#fef08a';
+    ctx.textAlign = 'center';
+    ctx.fillText(tagText, 320, 22);
 }
 
 // 8. MIRADOURO DE SANTA LUZIA
