@@ -3811,7 +3811,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '8.1';
+const ASSET_VER = '8.2';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3913,6 +3913,20 @@ const ruiHomePortraitImg = new Image();
 ruiHomePortraitImg.src = `assets/portrait_rui_home.png?v=${ASSET_VER}`;
 const goncaloHomePortraitImg = new Image();
 goncaloHomePortraitImg.src = `assets/portrait_goncalo_home.png?v=${ASSET_VER}`;
+
+// Bustos Exclusivos Transparentes dos Companheiros(as) no Lar (Roupa Íntima Sensual)
+const homeBustImgs = {
+    catia: new Image(),
+    marta: new Image(),
+    zulmira: new Image(),
+    rui: new Image(),
+    goncalo: new Image()
+};
+homeBustImgs.catia.src = `assets/bust_catia_home.png?v=${ASSET_VER}`;
+homeBustImgs.marta.src = `assets/bust_marta_home.png?v=${ASSET_VER}`;
+homeBustImgs.zulmira.src = `assets/bust_zulmira_home.png?v=${ASSET_VER}`;
+homeBustImgs.rui.src = `assets/bust_rui_home.png?v=${ASSET_VER}`;
+homeBustImgs.goncalo.src = `assets/bust_goncalo_home.png?v=${ASSET_VER}`;
 
 // Splash Screen Bitmapped 16-Bit Deslumbrante de Lisboa
 const splashImg = new Image();
@@ -9551,31 +9565,32 @@ function drawNpcPortrait(id, x, y, size, targetCtx = null) {
         bustImg = null;
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
-    } else if (id === 'catia_home' && catiaHomePortraitImg.complete && catiaHomePortraitImg.naturalWidth > 0) {
-        bgImg = catiaHomePortraitImg;
-        bustImg = null;
-        bgSx = 0; bgSy = 0;
-        bustSx = 0; bustSy = 0;
-    } else if (id === 'marta_home' && martaHomePortraitImg.complete && martaHomePortraitImg.naturalWidth > 0) {
-        bgImg = martaHomePortraitImg;
-        bustImg = null;
-        bgSx = 0; bgSy = 0;
-        bustSx = 0; bustSy = 0;
-    } else if (id === 'zulmira_home' && zulmiraHomePortraitImg.complete && zulmiraHomePortraitImg.naturalWidth > 0) {
-        bgImg = zulmiraHomePortraitImg;
-        bustImg = null;
-        bgSx = 0; bgSy = 0;
-        bustSx = 0; bustSy = 0;
-    } else if (id === 'rui_home' && ruiHomePortraitImg.complete && ruiHomePortraitImg.naturalWidth > 0) {
-        bgImg = ruiHomePortraitImg;
-        bustImg = null;
-        bgSx = 0; bgSy = 0;
-        bustSx = 0; bustSy = 0;
-    } else if (id === 'goncalo_home' && goncaloHomePortraitImg.complete && goncaloHomePortraitImg.naturalWidth > 0) {
-        bgImg = goncaloHomePortraitImg;
-        bustImg = null;
-        bgSx = 0; bgSy = 0;
-        bustSx = 0; bustSy = 0;
+    } else if (id.endsWith('_home')) {
+        const pKey = id.replace('_home', '');
+        const bust = homeBustImgs[pKey];
+        const hTier = (typeof player !== 'undefined' && player && player.houseIndex !== undefined) ? player.houseIndex : 1;
+        const tierImg = casaTierBgImgs[hTier];
+        if (bust && bust.complete && bust.naturalWidth > 0 && tierImg && tierImg.complete && tierImg.naturalWidth > 0) {
+            bgImg = tierImg;
+            bustImg = bust;
+            bgSx = 0; bgSy = 0;
+            bustSx = 0; bustSy = 0;
+        } else {
+            const fallbackMap = {
+                catia: catiaHomePortraitImg,
+                marta: martaHomePortraitImg,
+                zulmira: zulmiraHomePortraitImg,
+                rui: ruiHomePortraitImg,
+                goncalo: goncaloHomePortraitImg
+            };
+            const fbImg = fallbackMap[pKey] || catiaHomePortraitImg;
+            if (fbImg.complete && fbImg.naturalWidth > 0) {
+                bgImg = fbImg;
+                bustImg = null;
+                bgSx = 0; bgSy = 0;
+                bustSx = 0; bustSy = 0;
+            }
+        }
     } else if (id === 'banco' && bancoBgImg.complete && bancoBgImg.naturalWidth > 0) {
         bgImg = bancoBgImg;
         bustImg = (portraitsBustSheetImg.complete && portraitsBustSheetImg.naturalWidth > 0) ? portraitsBustSheetImg : null;
@@ -11152,6 +11167,41 @@ function renderBuildingModal() {
         borderColor = '#db2777';
         accentColor = '#f472b6';
         headerBg = '#831843';
+    } else if (modalBuilding.id === 'supermercado') {
+        modalBg = 'rgba(8, 28, 16, 0.58)';
+        borderColor = '#16a34a';
+        accentColor = '#86efac';
+        headerBg = '#14532d';
+    } else if (modalBuilding.id === 'tasca') {
+        modalBg = 'rgba(32, 16, 8, 0.58)';
+        borderColor = '#d97706';
+        accentColor = '#fbbf24';
+        headerBg = '#78350f';
+    } else if (modalBuilding.id === 'faculdade') {
+        modalBg = 'rgba(15, 23, 48, 0.58)';
+        borderColor = '#2563eb';
+        accentColor = '#60a5fa';
+        headerBg = '#1e3a8a';
+    } else if (modalBuilding.id === 'startup') {
+        modalBg = 'rgba(6, 32, 24, 0.58)';
+        borderColor = '#059669';
+        accentColor = '#34d399';
+        headerBg = '#064e3b';
+    } else if (modalBuilding.id === 'miradouro') {
+        modalBg = 'rgba(10, 25, 45, 0.58)';
+        borderColor = '#0284c7';
+        accentColor = '#38bdf8';
+        headerBg = '#075985';
+    } else if (modalBuilding.id === 'acampada') {
+        modalBg = 'rgba(36, 12, 12, 0.58)';
+        borderColor = '#dc2626';
+        accentColor = '#f87171';
+        headerBg = '#7f1d1d';
+    } else if (modalBuilding.id === 'senhorio') {
+        modalBg = 'rgba(28, 14, 18, 0.58)';
+        borderColor = '#991b1b';
+        accentColor = '#ef4444';
+        headerBg = '#450a0a';
     } else if (modalBuilding.id === 'casa') {
         const hTier = (typeof player !== 'undefined' && player && player.houseIndex !== undefined) ? player.houseIndex : 1;
         const curHouse = (HOUSES && HOUSES[hTier]) ? HOUSES[hTier] : { name: "O Teu Teto", qual: "Lisboa" };
@@ -11209,17 +11259,62 @@ function renderBuildingModal() {
     ctx.lineTo(mx + mw, my + 32);
     ctx.stroke();
 
-    // Detalhe Exclusivo da Fita Métrica para Modas Chiado!
+    // Detalhes Decorativos Exclusivos de Cada Edifício (16-Bit Trim)
     if (modalBuilding.id === 'loja_roupa') {
         ctx.fillStyle = '#fde047';
         for (let tx = mx + 4; tx < mx + mw - 8; tx += 10) {
             ctx.fillRect(tx, my + 30, 5, 2);
             ctx.fillRect(tx, my + mh - 2, 5, 2);
         }
-    }
-
-    // Detalhe de Azulejo para Casa Tier 3 (Alfama)
-    if (modalBuilding.id === 'casa' && typeof player !== 'undefined' && player && player.houseIndex === 3) {
+    } else if (modalBuilding.id === 'supermercado') {
+        for (let tx = mx + 4; tx < mx + mw - 8; tx += 12) {
+            ctx.fillStyle = (Math.floor(tx / 12) % 2 === 0) ? '#16a34a' : '#f0fdf4';
+            ctx.fillRect(tx, my + 30, 6, 2);
+            ctx.fillRect(tx, my + mh - 2, 6, 2);
+        }
+    } else if (modalBuilding.id === 'tasca') {
+        ctx.fillStyle = '#f59e0b';
+        for (let tx = mx + 4; tx < mx + mw - 8; tx += 14) {
+            ctx.fillRect(tx, my + 30, 7, 2);
+            ctx.fillRect(tx, my + mh - 2, 7, 2);
+        }
+    } else if (modalBuilding.id === 'faculdade') {
+        ctx.fillStyle = '#38bdf8';
+        for (let tx = mx + 4; tx < mx + mw - 8; tx += 16) {
+            ctx.fillRect(tx, my + 30, 8, 2);
+            ctx.fillRect(tx, my + mh - 2, 8, 2);
+        }
+    } else if (modalBuilding.id === 'startup') {
+        ctx.fillStyle = '#10b981';
+        for (let tx = mx + 4; tx < mx + mw - 8; tx += 12) {
+            ctx.fillRect(tx, my + 30, 6, 2);
+            ctx.fillRect(tx, my + mh - 2, 6, 2);
+        }
+    } else if (modalBuilding.id === 'miradouro') {
+        for (let tx = mx + 4; tx < mx + mw - 8; tx += 18) {
+            ctx.fillStyle = (Math.floor(tx / 18) % 2 === 0) ? '#38bdf8' : '#f472b6';
+            ctx.fillRect(tx, my + 30, 5, 2);
+            ctx.fillRect(tx, my + mh - 2, 5, 2);
+        }
+    } else if (modalBuilding.id === 'acampada') {
+        ctx.fillStyle = '#ef4444';
+        for (let tx = mx + 4; tx < mx + mw - 8; tx += 8) {
+            ctx.fillRect(tx, my + 30, 4, 2);
+            ctx.fillRect(tx, my + mh - 2, 4, 2);
+        }
+    } else if (modalBuilding.id === 'senhorio') {
+        ctx.fillStyle = '#fbbf24';
+        for (let tx = mx + 4; tx < mx + mw - 8; tx += 14) {
+            ctx.fillRect(tx, my + 30, 7, 2);
+            ctx.fillRect(tx, my + mh - 2, 7, 2);
+        }
+    } else if (modalBuilding.id === 'banco') {
+        ctx.fillStyle = '#facc15';
+        for (let tx = mx + 4; tx < mx + mw - 8; tx += 12) {
+            ctx.fillRect(tx, my + 30, 6, 2);
+            ctx.fillRect(tx, my + mh - 2, 6, 2);
+        }
+    } else if (modalBuilding.id === 'casa' && typeof player !== 'undefined' && player && player.houseIndex === 3) {
         ctx.fillStyle = '#60a5fa';
         for (let ax = mx + 6; ax < mx + mw - 12; ax += 16) {
             ctx.fillRect(ax, my + 30, 4, 2);
@@ -11261,15 +11356,37 @@ function renderBuildingModal() {
     if (partnerAtHome) {
         const pObj = ROMANCE_PARTNERS[player.partner] || { name: 'Companheiro(a)', role: 'A tua cara-metade' };
         npcName = pObj.name;
-        npcRole = "No Aconchego do Lar · Roupa Informal";
-        const homeQuotes = {
-            catia: "«Ainda bem que vieste, amor! Pus uma camisola de alças quentinha e fiz chá. Vem cá para o meu aconchego...»",
-            marta: "«Olá lindo! Tirei a gabardine do Técnico e pus a camisola larga. Estas calças são vida... Fazes-me companhia?»",
-            zulmira: "«Meu amor... Pedi um vinho do Porto, vesti este robe de seda e estava a contar os minutos para chegares...»",
-            rui: "«Uff, que dia na bike! Que alívio tirar o colete e ficar só de regata no sofá contigo. Senta-te aqui!»",
-            goncalo: "«Nada como despir a capa académica, abrir a camisa e ter o meu porto de abrigo em Lisboa. Dá cá um abraço...»"
+        npcRole = "No Aconchego do Lar · Roupa Descontraída";
+        const homeQuotesLists = {
+            catia: [
+                "«Ainda bem que vieste, amor! Pus a camisola de alças e fiz chá. Trata das tuas coisas à vontade, estou aqui contigo...»",
+                "«Que paz estar aqui no sofá descalça contigo... Se quiseres cozinhar ou ler eu fico só a descansar aqui pertinho.»",
+                "«Deixa a porta trancada e vem cá para o quentinho. O dia no Martim Moniz foi longo, sabe tão bem este porto de abrigo.»"
+            ],
+            marta: [
+                "«Olá lindo! Tirei a gabardine do Técnico e pus a camisola larga. Fica à vontade para as tuas coisas, eu estou só a ler...»",
+                "«Compilei os algoritmos todos por hoje! Agora só quero este sofá e o teu colo... Faz o teu jantar descansado.»",
+                "«Puxei a manta para o sofá. Se quiseres ouvir música comigo é só dizeres, senão relaxa à vontade no teu canto.»"
+            ],
+            zulmira: [
+                "«Meu amor... Pedi um vinho do Porto vintage, vesti este robe de seda e estava a contar os minutos para chegares...»",
+                "«Descontrai, meu querido. Em nossa casa reina a tranquilidade. Faz as tuas coisas, aprecio imenso a tua presença.»",
+                "«Lisboa lá fora que corra como quiser. Aqui dentro somos só nós, o conforto e a nossa cumplicidade...»"
+            ],
+            rui: [
+                "«Uff, que dia na bike! Que alívio tirar o colete e ficar só de regata no sofá contigo. Descansa à vontade, campeão!»",
+                "«Fiz um batido fresco de fruta. Se quiseres tratar das tuas coisas segue em frente, eu estou só a relaxar os músculos.»",
+                "«Sabe tão bem fechar a porta ao trânsito da cidade e ter-te aqui ao meu lado no aconchego de casa...»"
+            ],
+            goncalo: [
+                "«Nada como despir a capa académica, abrir a camisa e ter o meu porto de abrigo em Lisboa. Sê bem-vindo a casa...»",
+                "«Estou só a afinar a viola em surdina. Não te preocupes com conversa, faz a tua vidinha que eu faço a banda sonora.»",
+                "«O Tejo está lindo da janela... Senta-te aqui quando quiseres, sem pressas nem obrigações, só a respirar Lisboa.»"
+            ]
         };
-        quoteText = homeQuotes[player.partner] || "«É tão bom estarmos juntos no aconchego de casa...»";
+        const partnerQuotes = homeQuotesLists[player.partner] || ["«É tão bom estarmos juntos no aconchego de casa...»"];
+        const qIdx = Math.abs((player.day * 7 + (player.timeHour || 12))) % partnerQuotes.length;
+        quoteText = partnerQuotes[qIdx];
     } else {
         const npc = NPC_INFO[modalBuilding.id] || NPC_INFO.senhorio;
         npcName = npc.name;
@@ -11314,55 +11431,179 @@ function renderBuildingActions(id, mx, my, mw, mh) {
     let actions = [];
 
     if (id === 'casa') {
+        const partnerHome = player.partner && isPartnerAtHome(player);
+        const pObj = player.partner ? ROMANCE_PARTNERS[player.partner] : null;
+        const pName = pObj ? pObj.name : 'a tua cara-metade';
+
         if (player.houseIndex === 0) {
             actions = [
                 { label: "Dormitar no Banco", cost: 0, timeH: 1, timeM: 0, sanity: 5, desc: "Descanso leve ao relento. +5 Sanidade." },
                 { label: "Comer Atum de Conserva", cost: 0, timeH: 0, timeM: 15, eatHome: true, desc: `${player.groceries} latas na despensa. +45 Nutrição.` },
-                { label: "Passar Noite no Rossio", cost: 0, timeH: 0, timeM: 0, sleepNight: true, desc: "Passa a noite ao relento até amanhã." }
+                { label: "Passar Noite no Rossio", cost: 0, timeH: 0, timeM: 0, sleepNight: true, desc: "Passa a noite ao relento até amanhã." },
+                { label: "📖 Dossiê: Quem é Quem em Lisboa", cost: 0, timeH: 0, timeM: 5, openCodex: true, desc: "Consulta apontamentos sobre as personagens de Lisboa." }
             ];
         } else {
-            actions = [
-                { label: "Sesta Reparadora (1h)", cost: 0, timeH: 1, timeM: 0, sanity: 20, desc: "Descansa na cama. +20 Sanidade." },
-                { label: "Cozinhar Refeição", cost: 0, timeH: 0, timeM: 30, eatHome: true, desc: `${player.groceries} disponíveis. +45 Nutrição.` },
-                { label: "Dormir / Terminar o Dia", cost: 0, timeH: 0, timeM: 0, sleepNight: true, desc: "Dorme em paz até à manhã seguinte." },
-                { label: "Remendar Roupa (Linha e Agulha)", cost: 12, timeH: 0, timeM: 30, repairClothing: true, desc: `Roupa atual: ${player.clothing.name} (${player.clothing.durability}%). +40% Durabilidade.` }
-            ];
-        }
+            if (partnerHome) {
+                // 1. Dormir a dois no aconchego
+                actions.push({
+                    label: "🛌 Dormir / Aconchego a Dois",
+                    cost: 0,
+                    timeH: 0,
+                    timeM: 0,
+                    sleepNight: true,
+                    cuddleSleep: true,
+                    sanity: 30,
+                    desc: `Dormir abraçados com ${pName} até amanhã. Descanso profundo: +30 Sanidade.`
+                });
 
-        if (player.partner) {
-            const pName = ROMANCE_PARTNERS[player.partner] ? ROMANCE_PARTNERS[player.partner].name : 'a tua cara-metade';
+                // 2. Cozinhar jantar a dois
+                actions.push({
+                    label: "🍲 Cozinhar Jantar a Dois (30m)",
+                    cost: 0,
+                    timeH: 0,
+                    timeM: 30,
+                    eatHome: true,
+                    cookTogether: true,
+                    desc: `${player.groceries} disponíveis. Cozinham juntos e partilham a mesa: +55 Nutrição, +20 Sanidade.`
+                });
+
+                // 3. Autonomia do Jogador: Seguir com as suas coisas em casa
+                actions.push({
+                    label: "📖 Seguir com as Minhas Coisas (30m)",
+                    cost: 0,
+                    timeH: 0,
+                    timeM: 30,
+                    relaxHomeAlone: true,
+                    sanity: 15,
+                    desc: `Lês, descansas ou tratas das tuas contas. ${pName} relaxa ao teu lado em paz e cumplicidade (+15 Sanidade).`
+                });
+
+                // 4. Iniciativa da Companheira / Companheiro (gesto espontâneo carinhoso)
+                const initiativeMap = {
+                    catia: {
+                        label: "☕ Aceitar Chá Quente e Bolinhos da Cátia",
+                        partnerInitiative: 'catia',
+                        timeH: 0,
+                        timeM: 15,
+                        sanity: 25,
+                        hunger: 10,
+                        desc: "Cátia descalça traz duas chávenas fumegantes e encosta-se a ti. (+25 Sanidade, +10 Comida)"
+                    },
+                    marta: {
+                        label: "🎧 Partilhar Música no Sofá c/ Marta",
+                        partnerInitiative: 'marta',
+                        timeH: 0,
+                        timeM: 20,
+                        sanity: 25,
+                        desc: "Marta estende-te um auricular com uma playlist calma de indie acústico. (+25 Sanidade)"
+                    },
+                    zulmira: {
+                        label: "🍷 Brindar c/ Vinho do Porto da Zulmira",
+                        partnerInitiative: 'zulmira',
+                        timeH: 0,
+                        timeM: 15,
+                        sanity: 25,
+                        desc: "D. Zulmira estende-te um cálice de vinho do Porto: «À nossa cumplicidade!» (+25 Sanidade)"
+                    },
+                    rui: {
+                        label: "🚴 Beber Batido Fresco Feito pelo Rui",
+                        partnerInitiative: 'rui',
+                        timeH: 0,
+                        timeM: 15,
+                        sanity: 25,
+                        hunger: 15,
+                        desc: "Rui partilha um batido de fruta fresca para os dois: «Para recuperar energias!» (+25 Sanidade, +15 Comida)"
+                    },
+                    goncalo: {
+                        label: "🎸 Ouvir Fado Dedilhado por Gonçalo",
+                        partnerInitiative: 'goncalo',
+                        timeH: 0,
+                        timeM: 20,
+                        sanity: 25,
+                        desc: "Gonçalo dedilha a guitarra acústica em surdina só para ti na sala. (+25 Sanidade)"
+                    }
+                };
+                if (initiativeMap[player.partner]) {
+                    actions.push(initiativeMap[player.partner]);
+                }
+
+                // 5. Iniciativa do Jogador: Aconchego Íntimo no Sofá
+                actions.push({
+                    label: "🫂 Ficar Abraçado no Sofá em Silêncio (30m)",
+                    cost: 0,
+                    timeH: 0,
+                    timeM: 30,
+                    cuddleSofa: true,
+                    sanity: 30,
+                    desc: `Aconchego íntimo sem pressas nem falatório. O calor e o respirar de ${pName} no teu peito (+30 Sanidade).`
+                });
+
+                // 6. Diálogo Profundo (Opcional, quando o jogador quiser debater a vida a dois)
+                actions.push({
+                    label: `💬 Diálogo Profundo c/ ${pName}`,
+                    cost: 0,
+                    timeH: 0,
+                    timeM: 20,
+                    openDialogueTree: `romance_home_${player.partner}`,
+                    desc: "Conversar sobre ambições, cansaço do quotidiano e o futuro a dois em Lisboa."
+                });
+            } else {
+                // Vida a solo ou companheiro fora de casa no momento
+                actions.push({
+                    label: "Sesta Reparadora (1h)",
+                    cost: 0,
+                    timeH: 1,
+                    timeM: 0,
+                    sanity: 20,
+                    desc: "Descansa na cama a solo. +20 Sanidade."
+                });
+                actions.push({
+                    label: "Cozinhar Refeição",
+                    cost: 0,
+                    timeH: 0,
+                    timeM: 30,
+                    eatHome: true,
+                    desc: `${player.groceries} disponíveis na despensa. +45 Nutrição.`
+                });
+                actions.push({
+                    label: "Dormir / Terminar o Dia",
+                    cost: 0,
+                    timeH: 0,
+                    timeM: 0,
+                    sleepNight: true,
+                    desc: "Dorme em paz na tua cama até à manhã seguinte."
+                });
+            }
+
+            // Ações utilitárias sempre disponíveis no lar
             actions.push({
-                label: `Terminar Namoro c/ ${pName}`,
+                label: "Remendar Roupa (Linha e Agulha)",
+                cost: 12,
+                timeH: 0,
+                timeM: 30,
+                repairClothing: true,
+                desc: `Roupa atual: ${player.clothing.name} (${player.clothing.durability}%). +40% Durabilidade.`
+            });
+
+            actions.push({
+                label: "📖 Dossiê: Quem é Quem em Lisboa",
                 cost: 0,
                 timeH: 0,
-                timeM: 15,
-                endRomance: true,
-                desc: "Conversa séria e amigável para seguir a solo em Lisboa. Voltar a solteiro(a)."
+                timeM: 5,
+                openCodex: true,
+                desc: "Consulta na tua secretária as fichas das personagens de Lisboa, afinidades e retratos desbloqueados."
             });
-        }
 
-        // Dossiê Quem é Quem guardado exclusivamente em Casa
-        actions.push({
-            label: "📖 Dossiê: Quem é Quem em Lisboa",
-            cost: 0,
-            timeH: 0,
-            timeM: 5,
-            openCodex: true,
-            desc: "Consulta na tua secretária as fichas das personagens de Lisboa, níveis de afinidade e fotografias desbloqueadas."
-        });
-
-        // Conversa profunda com a namorada/namorado no aconchego do lar
-        if (player.partner && isPartnerAtHome(player)) {
-            const pObj = ROMANCE_PARTNERS[player.partner];
-            const pName = pObj ? pObj.name : 'a tua cara-metade';
-            actions.unshift({
-                label: `💬 Conversar c/ ${pName} em Casa`,
-                cost: 0,
-                timeH: 0,
-                timeM: 20,
-                openDialogueTree: `romance_home_${player.partner}`,
-                desc: `${pName} está em casa em roupa descontraída. Conversa sobre o futuro, o cansaço e a vida a dois.`
-            });
+            if (player.partner) {
+                actions.push({
+                    label: `💔 Terminar Namoro c/ ${pName}`,
+                    cost: 0,
+                    timeH: 0,
+                    timeM: 15,
+                    endRomance: true,
+                    desc: "Conversa séria e amigável para seguir a solo em Lisboa. Voltar a solteiro(a)."
+                });
+            }
         }
     } else if (id === 'senhorio') {
         const nextHouse = HOUSES[Math.min(HOUSES.length - 1, player.houseIndex + 1)];
@@ -12063,6 +12304,21 @@ function renderBuildingActions(id, mx, my, mw, mh) {
         } else if (act.endRomance) {
             btnText = "TERMINAR";
             btnColor = "#ef4444";
+        } else if (act.partnerInitiative) {
+            btnText = "ACEITAR";
+            btnColor = "#ec4899";
+        } else if (act.cuddleSofa) {
+            btnText = "ACONCHEGO";
+            btnColor = "#ec4899";
+        } else if (act.relaxHomeAlone) {
+            btnText = "RELAXAR";
+            btnColor = "#38bdf8";
+        } else if (act.cookTogether) {
+            btnText = "COZINHAR";
+            btnColor = "#10b981";
+        } else if (act.cuddleSleep) {
+            btnText = "DORMIR";
+            btnColor = "#38bdf8";
         } else {
             btnText = "EXECUTAR";
         }
@@ -13369,20 +13625,68 @@ function executeAction(act) {
         }
     }
 
+    // Iniciativa Espontânea e Carinhosa da Companheira/Companheiro no Lar
+    if (act.partnerInitiative) {
+        sfxWin();
+        triggerHaptic([30, 20, 50]);
+        const pObj = (player.partner && ROMANCE_PARTNERS[player.partner]) ? ROMANCE_PARTNERS[player.partner] : { name: 'Companheiro(a)' };
+        const initToasts = {
+            catia: "☕ Cátia sorri ternamente e encosta a cabeça ao teu ombro enquanto bebem o chá quente. (+25 Sanidade, +10 Comida)",
+            marta: "🎧 Marta fecha os olhos e apoia-se em ti ao som da música acústica no sofá. (+25 Sanidade)",
+            zulmira: "🍷 D. Zulmira toca com o cálice no teu: «Aos nossos momentos de paz neste porto seguro.» (+25 Sanidade)",
+            rui: "🚴 Rui dá-te uma palmada carinhosa nas costas: «Batido de campeões! Sabe tão bem estarmos juntos.» (+25 Sanidade, +15 Comida)",
+            goncalo: "🎸 Os acordes suaves de fado na viola enchem a sala de calma e nostalgia lisboeta. (+25 Sanidade)"
+        };
+        showToast(initToasts[act.partnerInitiative] || `❤️ Momento carinhoso com ${pObj.name}! (+25 Sanidade)`);
+        spawnParticle("✨ Aconchego a Dois", '#ec4899');
+    }
+
+    // Iniciativa do Jogador: Aconchego Íntimo no Sofá (Conforto em Silêncio)
+    if (act.cuddleSofa) {
+        sfxCoin();
+        triggerHaptic([40, 40]);
+        const pObj = (player.partner && ROMANCE_PARTNERS[player.partner]) ? ROMANCE_PARTNERS[player.partner] : { name: 'tua cara-metade' };
+        showToast(`🫂 Ficaste abraçado a ${pObj.name} no sofá em silêncio confortável. O cansaço da cidade desvanece-se.`);
+        spawnParticle("🫂 Aconchego (+30)", '#ec4899');
+    }
+
+    // Autonomia do Jogador: Seguir com as Suas Coisas no Lar (Coexistência Tranquila)
+    if (act.relaxHomeAlone) {
+        sfxAction();
+        triggerHaptic([20]);
+        const pObj = (player.partner && ROMANCE_PARTNERS[player.partner]) ? ROMANCE_PARTNERS[player.partner] : null;
+        const pName = pObj ? pObj.name : 'a tua cara-metade';
+        showToast(`📖 Trataste das tuas coisas em total tranquilidade. ${pName} esteve por perto a relaxar em harmonia silenciosa.`);
+        spawnParticle("📖 Paz no Lar (+15)", '#38bdf8');
+    }
+
     if (act.eatHome) {
         if (player.groceries > 0) {
             player.groceries--;
-            player.hunger = Math.min(100, player.hunger + 45);
-            showToast("Comeste uma refeição da despensa de casa!");
-            spawnParticle("🍲 +45 Comida", '#10b981');
+            if (act.cookTogether) {
+                player.hunger = Math.min(100, player.hunger + 55);
+                player.sanity = Math.min(100, player.sanity + 20);
+                showToast("🍲 Cozinharam juntos um jantar delicioso e partilharam a mesa! (+55 Nutrição, +20 Sanidade)");
+                spawnParticle("🍲 Jantar a Dois!", '#10b981');
+            } else {
+                player.hunger = Math.min(100, player.hunger + 45);
+                showToast("Comeste uma refeição quente da despensa de casa!");
+                spawnParticle("🍲 +45 Comida", '#10b981');
+            }
         } else {
             sfxAlert();
-            showToast("A despensa está vazia! Compra mercearias na Mercearia da Cátia.");
+            showToast("A despensa está vazia! Compra mantimentos na Mercearia da Cátia.");
             return;
         }
     }
 
     if (act.sleepNight) {
+        if (act.cuddleSleep) {
+            player.sanity = Math.min(100, player.sanity + 30);
+            closeModal();
+            endDay("Dormiste abraçado(a) no calor do aconchego do lar.");
+            return;
+        }
         closeModal();
         endDay(player.houseIndex === 0 ? "Passaste a noite no banco de jardim do Rossio." : "Dormiste na tua casa.");
         return;

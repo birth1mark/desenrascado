@@ -254,8 +254,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '8.1', "ASSET_VER incrementado para 8.1");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '8.1' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '8.2', "ASSET_VER incrementado para 8.2");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '8.2' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -911,7 +911,104 @@ vm.runInContext(`
 
 console.log("✓ 18. Fundos Themed, Retratos Neoclássicos de Banco, Alta Costura do Chiado e 5 Escalões Dinâmicos de Casa validados!");
 
+// -----------------------------------------------------------------------------
+// TESTE 19: AUDITORIA DOS 10 EDIFÍCIOS THEMED & NOVO CENÁRIO DO SENHORIO
+// -----------------------------------------------------------------------------
+// 1. Verificar novo interior autêntico do Senhorio e diferenciação absoluta de Casa
+const senhorioPath = path.join(__dirname, '../assets/interiors/senhorio.png');
+const casaPath = path.join(__dirname, '../assets/interiors/casa.png');
+assert(fs.existsSync(senhorioPath), "assets/interiors/senhorio.png existe");
+assert(fs.existsSync(casaPath), "assets/interiors/casa.png existe");
+const senhorioBytes = fs.readFileSync(senhorioPath);
+const casaBytes = fs.readFileSync(casaPath);
+assert(senhorioBytes.length > 5000, "senhorio.png tem tamanho válido");
+assert(!senhorioBytes.equals(casaBytes), "senhorio.png é visualmente distinto de casa.png (não é duplicado!)");
+
+// 2. Renderizar todos os 10 edifícios no modal
+vm.runInContext(`
+    const allBuildingIds = ['banco', 'loja_roupa', 'casa', 'senhorio', 'supermercado', 'tasca', 'faculdade', 'startup', 'miradouro', 'acampada'];
+    allBuildingIds.forEach(bId => {
+        const b = BUILDINGS.find(x => x.id === bId);
+        assert(b, "Edifício " + bId + " encontrado em BUILDINGS");
+        modalBuilding = b;
+        renderBuildingModal();
+    });
+`, sandbox);
+console.log("✓ 19. Auditoria dos 10 Edifícios: Todos os 10 cenários e modais themed renderizados com 100% sucesso!");
+
+// -----------------------------------------------------------------------------
+// TESTE 20: AVATARES ÍNTIMOS DE CASA, COEXISTÊNCIA E INICIATIVAS DO CASAL
+// -----------------------------------------------------------------------------
+// 1. Verificar ficheiros de busto íntimo dos 5 companheiros(as)
+const partnerKeys = ['catia', 'marta', 'zulmira', 'rui', 'goncalo'];
+partnerKeys.forEach(p => {
+    const bPath = path.join(__dirname, `../assets/bust_${p}_home.png`);
+    assert(fs.existsSync(bPath), `bust_${p}_home.png existe no disco`);
+    assert(fs.readFileSync(bPath).length > 2000, `bust_${p}_home.png tem dados válidos`);
+});
+
+// 2. Verificar homeBustImgs no contexto JS
+assert(vm.runInContext("homeBustImgs", sandbox), "homeBustImgs declarado no contexto");
+partnerKeys.forEach(p => {
+    assert(vm.runInContext(`homeBustImgs.${p}`, sandbox), `homeBustImgs.${p} instanciado`);
+});
+
+// 3. Testar coexistência no lar e autonomia quando namorada está em casa
+vm.runInContext(`
+    player.partner = 'catia';
+    player.houseIndex = 2; // T0 em Arroios
+    player.timeHour = 20;  // Noite -> isPartnerAtHome retorna true
+    player.groceries = 2;
+    player.sanity = 50;
+
+    modalBuilding = BUILDINGS.find(b => b.id === 'casa');
+    renderBuildingModal();
+
+    // Ações geradas para a Casa
+    const acts = modalBuilding.currentActions;
+    assert(acts.length >= 6, "Casa tem catálogo alargado de ações no lar");
+
+    // Verificar que as tarefas pessoais continuam acessíveis (autonomia!)
+    const sleepAct = acts.find(a => a.sleepNight);
+    assert(sleepAct, "Ação de dormir sempre disponível");
+    assert(sleepAct.cuddleSleep, "Dormir com parceiro é aconchego a dois");
+
+    const cookAct = acts.find(a => a.eatHome);
+    assert(cookAct, "Ação de cozinhar sempre disponível");
+    assert(cookAct.cookTogether, "Cozinhar com parceiro é jantar a dois");
+
+    const aloneAct = acts.find(a => a.relaxHomeAlone);
+    assert(aloneAct, "Ação 'Seguir com as Minhas Coisas' disponível para autonomia");
+
+    const initAct = acts.find(a => a.partnerInitiative);
+    assert(initAct, "Iniciativa carinhosa espontânea da parceira presente");
+
+    const cuddleAct = acts.find(a => a.cuddleSofa);
+    assert(cuddleAct, "Iniciativa do jogador 'Aconchego no Sofá' presente");
+
+    const dialogueAct = acts.find(a => a.openDialogueTree);
+    assert(dialogueAct, "Diálogo profundo disponível como opção (sem monopolizar)");
+
+    const codexAct = acts.find(a => a.openCodex);
+    assert(codexAct, "Dossiê Quem é Quem acessível a partir de casa");
+
+    // Testar execução de 'Seguir com as Minhas Coisas' (autonomia)
+    const prevSanity = player.sanity;
+    executeAction(aloneAct);
+    assert(player.sanity > prevSanity, "Seguir com as próprias coisas aumenta sanidade");
+
+    // Testar execução de iniciativa da companheira
+    executeAction(initAct);
+    assert.strictEqual(player.groceries, 2, "Iniciativa não gasta mercearias");
+
+    // Testar cozinhar jantar a dois
+    executeAction(cookAct);
+    assert.strictEqual(player.groceries, 1, "Mercearia consumida no jantar a dois");
+`, sandbox);
+
+console.log("✓ 20. Avatares Íntimos no Lar, Autonomia Pessoal, Coexistência e Iniciativas Dinâmicas validados com sucesso!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 18 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 20 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");
