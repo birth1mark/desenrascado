@@ -253,8 +253,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.7', "ASSET_VER incrementado para 7.7");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.7' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.8', "ASSET_VER incrementado para 7.8");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.8' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -604,7 +604,93 @@ assert.strictEqual(vm.runInContext("activeCutscene.id", sandbox), 'graduation', 
 vm.runInContext("renderCutscene();", sandbox);
 console.log("✓ 14. Bênção das Fitas & IST: Cenário cerimonial 16-bit monumental, chuva de fitas e zero mercearia validados!");
 
+// -----------------------------------------------------------------------------
+// TESTE 15: NAMORO C/ D. ZULMIRA, CUTSCENES DE ROMANCE DEDICADAS & AVATAR EM CASA
+// -----------------------------------------------------------------------------
+// 1. Verificar registo de D. Zulmira em ROMANCE_PARTNERS
+const romancePartners = vm.runInContext("ROMANCE_PARTNERS", sandbox);
+assert(romancePartners.zulmira, "D. Zulmira registada em ROMANCE_PARTNERS");
+assert.strictEqual(romancePartners.zulmira.name, 'D. Zulmira', "Nome é D. Zulmira");
+assert.strictEqual(romancePartners.zulmira.gender, 'f', "Género de Zulmira é feminino");
+assert(romancePartners.zulmira.desc.includes("Alfaiataria"), "Descrição reflete a alfaiataria pombalina");
+
+// 2. Verificar CUTSCENES dedicadas para todos os parceiros de romance
+const cutscenes = vm.runInContext("CUTSCENES", sandbox);
+const expectedRomances = [
+    { key: 'romance_catia', portraitId: 'supermercado', speaker: 'Cátia', title: 'AMOR NO ALTO DO TEJO' },
+    { key: 'romance_marta', portraitId: 'marta', speaker: 'Marta', title: 'MATCH NOS ALGORITMOS' },
+    { key: 'romance_zulmira', portraitId: 'loja_roupa', speaker: 'D. Zulmira', title: 'ALFAIATARIA DO CORAÇÃO' },
+    { key: 'romance_rui', portraitId: 'rui', speaker: 'Rui', title: 'SPRINT A DOIS NAS SETE COLINAS' },
+    { key: 'romance_goncalo', portraitId: 'goncalo', speaker: 'Gonçalo', title: 'SERENATA SOB AS ESTRELAS' }
+];
+
+expectedRomances.forEach(rom => {
+    assert(cutscenes[rom.key], `Cutscene '${rom.key}' registada`);
+    assert.strictEqual(cutscenes[rom.key].title, rom.title, `Título correto para '${rom.key}'`);
+    assert(cutscenes[rom.key].slides.length >= 3, `'${rom.key}' possui pelo menos 3 slides`);
+    assert.strictEqual(cutscenes[rom.key].slides[0].speaker, rom.speaker, `Orador do slide 0 é ${rom.speaker}`);
+    assert.strictEqual(cutscenes[rom.key].slides[0].portraitId, rom.portraitId, `PortraitId do slide 0 é ${rom.portraitId}`);
+    
+    // Garantir que Marta não fala de arroz ou mercearia
+    if (rom.key === 'romance_marta') {
+        const text = cutscenes[rom.key].slides.map(s => s.text).join(' ');
+        assert(!text.includes("fardos de arroz"), "Marta não fala de fardos de arroz!");
+        assert(!text.includes("latas de atum"), "Marta não fala de latas de atum!");
+        assert(text.includes("código") || text.includes("Técnico") || text.includes("algoritmos"), "Marta tem diálogo próprio de engenharia!");
+    }
+    // Garantir que Zulmira tem diálogo próprio de alfaiataria
+    if (rom.key === 'romance_zulmira') {
+        const text = cutscenes[rom.key].slides.map(s => s.text).join(' ');
+        assert(text.includes("alfaiataria") || text.includes("Chiado") || text.includes("tecidos"), "Zulmira tem diálogo próprio de alfaiataria!");
+    }
+});
+
+// 3. Verificar Árvore de Diálogo de D. Zulmira
+const allDialogueTrees = vm.runInContext("DIALOGUE_TREES", sandbox);
+assert(allDialogueTrees.zulmira, "DIALOGUE_TREES.zulmira registada");
+assert(allDialogueTrees.zulmira.nodes.start, "Nó start de Zulmira existe");
+assert(allDialogueTrees.zulmira.nodes.flirt_zulmira, "Nó flirt_zulmira existe com dynamicChoices");
+assert(allDialogueTrees.zulmira.nodes.proposta_zulmira_aceite, "Nó proposta_zulmira_aceite existe");
+
+// 4. Testar dinâmica de proposta e aceitação de Marta e Zulmira em DIALOGUE_TREES
+const martaFlirtChoicesHigh = allDialogueTrees.marta.nodes.cafe_flirt.dynamicChoices({ affinity: { marta: 95 } });
+const martaProposal = martaFlirtChoicesHigh.find(c => c.nextNode === 'proposta_marta_aceite');
+assert(martaProposal, "Opção de pedir Marta em namoro disponível com alta afinidade");
+assert.strictEqual(martaProposal.triggerRomance, 'marta', "triggerRomance é 'marta'");
+
+const zulmiraFlirtChoicesHigh = allDialogueTrees.zulmira.nodes.flirt_zulmira.dynamicChoices({ affinity: { loja_roupa: 95 } });
+const zulmiraProposal = zulmiraFlirtChoicesHigh.find(c => c.nextNode === 'proposta_zulmira_aceite');
+assert(zulmiraProposal, "Opção de pedir Zulmira em namoro disponível com alta afinidade");
+assert.strictEqual(zulmiraProposal.triggerRomance, 'zulmira', "triggerRomance é 'zulmira'");
+
+// 5. Verificar ações da Loja de Roupa (Diálogo c/ Zulmira e Ações de Romance)
+const buildingLojaRoupa = vm.runInContext("BUILDINGS.find(b => b.id === 'loja_roupa')", sandbox);
+assert(buildingLojaRoupa, "Edifício loja_roupa existe");
+vm.runInContext("player.partner = null; player.relationships = { zulmira: { points: 0 } };", sandbox);
+vm.runInContext("modalBuilding = BUILDINGS.find(b => b.id === 'loja_roupa'); renderBuildingActions('loja_roupa');", sandbox);
+assert(html.includes("openDialogueTree: 'zulmira'"), "Ação de diálogo com D. Zulmira unshifted em loja_roupa");
+assert(html.includes("getRomanceAction('zulmira')"), "getRomanceAction('zulmira') avaliado em loja_roupa");
+
+// 6. Testar que startRomance aciona a cutscene correspondente a cada parceiro
+['marta', 'zulmira', 'rui', 'goncalo', 'catia'].forEach(pKey => {
+    vm.runInContext(`
+        player.partner = null;
+        player.relationships = { ${pKey}: { points: 100 } };
+        player.romanceAffinity = { ${pKey}: 100 };
+        state = 'BOARD';
+        executeAction({ startRomance: '${pKey}' });
+    `, sandbox);
+    assert.strictEqual(vm.runInContext("player.partner", sandbox), pKey, `player.partner atualizado para '${pKey}'`);
+    assert.strictEqual(vm.runInContext("state", sandbox), 'CUTSCENE', `Cutscene ativada para '${pKey}'`);
+    assert.strictEqual(vm.runInContext("activeCutscene.id", sandbox), `romance_${pKey}`, `Cutscene correta 'romance_${pKey}' ativada!`);
+});
+
+// 7. Verificar correção do avatar em casa (drawNpcPortrait('casa') aponta para zePortraitImg e bust sheet limpa)
+assert(html.includes("(id === 'ze' || id === 'player' || id === 'casa') && zePortraitImg.complete"), "drawNpcPortrait('casa') direcionado para zePortraitImg limpo");
+
+console.log("✓ 15. Romance D. Zulmira & Cutscenes Dedicadas: D. Zulmira 100% cortejável, cutscenes temáticas personalizadas e avatar de casa limpo validados!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 14 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 15 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");
