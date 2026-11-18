@@ -10917,6 +10917,14 @@ function handleCanvasClick(cx, cy) {
             return;
         }
 
+        // Clicar no Slot 3 de Habitação & Renda (x de 212 a 337) -> Caminha para A Tua Casa / O Teu Teto
+        if (cx >= 212 && cx <= 337 && cy >= hy + 8 && cy <= hy + 56) {
+            triggerHaptic([25]);
+            walkToBuilding(BUILDINGS.find(b => b.id === 'casa'));
+            showToast(`A caminhar para casa (${HOUSES[player.houseIndex].name})!`);
+            return;
+        }
+
         // Clicar no Slot 4 de Emprego & Curso (x de 342 a 452) -> Caminha para o IST / Universidade
         if (cx >= 342 && cx <= 452 && cy >= hy + 8 && cy <= hy + 56) {
             triggerHaptic([25]);
