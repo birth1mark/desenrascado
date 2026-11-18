@@ -3811,7 +3811,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '8.0';
+const ASSET_VER = '8.1';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3869,6 +3869,22 @@ acampadaPortraitImg.src = `assets/portrait_acampada.png?v=${ASSET_VER}`;
 // Retrato Exclusivo da Marta (Estudante de Informática do IST / Óculos redondos, auscultadores e hoodie tech)
 const martaPortraitImg = new Image();
 martaPortraitImg.src = `assets/portrait_marta.png?v=${ASSET_VER}`;
+
+// Retrato Exclusivo em Camadas do Banco (Dr. Alcoviteiro / Balcão Neoclássico e Candeeiro de Banqueiro)
+const bancoBgImg = new Image();
+bancoBgImg.src = `assets/portrait_banco_bg.png?v=${ASSET_VER}`;
+
+// Retratos Exclusivos dos 5 Escalões de Habitação em Casa (Tier 0..4)
+const casaTierBgImgs = [
+    new Image(),
+    new Image(),
+    new Image(),
+    new Image(),
+    new Image()
+];
+for (let t = 0; t <= 4; t++) {
+    casaTierBgImgs[t].src = `assets/portrait_casa_tier${t}_bg.png?v=${ASSET_VER}`;
+}
 
 // Retrato Exclusivo do Zé Desenrasca (Protagonista / O Mártir das Sete Colinas)
 const zePortraitImg = new Image();
@@ -9560,11 +9576,25 @@ function drawNpcPortrait(id, x, y, size, targetCtx = null) {
         bustImg = null;
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
-    } else if ((id === 'ze' || id === 'player' || id === 'casa') && zePortraitImg.complete && zePortraitImg.naturalWidth > 0) {
-        bgImg = zePortraitImg;
-        bustImg = null;
+    } else if (id === 'banco' && bancoBgImg.complete && bancoBgImg.naturalWidth > 0) {
+        bgImg = bancoBgImg;
+        bustImg = (portraitsBustSheetImg.complete && portraitsBustSheetImg.naturalWidth > 0) ? portraitsBustSheetImg : null;
         bgSx = 0; bgSy = 0;
-        bustSx = 0; bustSy = 0;
+        bustSx = coord.col * 128; bustSy = coord.row * 128;
+    } else if (id === 'ze' || id === 'player' || id === 'casa') {
+        const hTier = (typeof player !== 'undefined' && player && player.houseIndex !== undefined) ? player.houseIndex : 1;
+        const tierImg = casaTierBgImgs[hTier];
+        if (tierImg && tierImg.complete && tierImg.naturalWidth > 0) {
+            bgImg = tierImg;
+            bustImg = (portraitsBustSheetImg.complete && portraitsBustSheetImg.naturalWidth > 0) ? portraitsBustSheetImg : null;
+            bgSx = 0; bgSy = 0;
+            bustSx = 3 * 128; bustSy = 1 * 128;
+        } else if (zePortraitImg.complete && zePortraitImg.naturalWidth > 0) {
+            bgImg = zePortraitImg;
+            bustImg = null;
+            bgSx = 0; bgSy = 0;
+            bustSx = 0; bustSy = 0;
+        }
     } else if (portraitsBgSheetImg.complete && portraitsBgSheetImg.naturalWidth > 0) {
         bgImg = portraitsBgSheetImg;
         bustImg = (portraitsBustSheetImg.complete && portraitsBustSheetImg.naturalWidth > 0) ? portraitsBustSheetImg : null;
@@ -11097,7 +11127,7 @@ function renderInteriorMiradouro(ctx, animTimer) {
 
 function renderBuildingModal() {
     // Vinheta suave sobre o interior (o interior da loja permanece visível a toda a volta)
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
     ctx.fillRect(0, 0, canvas.width, 295);
 
     const mx = 40;
@@ -11105,21 +11135,101 @@ function renderBuildingModal() {
     const mw = 560;
     const mh = 275;
 
+    // Cores e Estética Themed Personalizada por Edifício
+    let modalBg = 'rgba(11, 15, 25, 0.58)';
+    let borderColor = modalBuilding.color || '#3b82f6';
+    let accentColor = modalBuilding.accent || '#60a5fa';
+    let headerBg = modalBuilding.color || '#1e3a8a';
+    let headerTitle = `${modalBuilding.icon} ${modalBuilding.name.toUpperCase()} — ${modalBuilding.tag}`;
+
+    if (modalBuilding.id === 'banco') {
+        modalBg = 'rgba(15, 23, 42, 0.58)';
+        borderColor = '#facc15';
+        accentColor = '#facc15';
+        headerBg = '#854d0e';
+    } else if (modalBuilding.id === 'loja_roupa') {
+        modalBg = 'rgba(32, 10, 22, 0.58)';
+        borderColor = '#db2777';
+        accentColor = '#f472b6';
+        headerBg = '#831843';
+    } else if (modalBuilding.id === 'casa') {
+        const hTier = (typeof player !== 'undefined' && player && player.houseIndex !== undefined) ? player.houseIndex : 1;
+        const curHouse = (HOUSES && HOUSES[hTier]) ? HOUSES[hTier] : { name: "O Teu Teto", qual: "Lisboa" };
+        headerTitle = `🛌 ${curHouse.name.toUpperCase()} — ${curHouse.qual.toUpperCase()}`;
+        if (hTier === 0) {
+            modalBg = 'rgba(2, 6, 23, 0.58)';
+            borderColor = '#64748b';
+            accentColor = '#38bdf8';
+            headerBg = '#1e293b';
+        } else if (hTier === 1) {
+            modalBg = 'rgba(24, 20, 28, 0.58)';
+            borderColor = '#78350f';
+            accentColor = '#fbbf24';
+            headerBg = '#451a03';
+        } else if (hTier === 2) {
+            modalBg = 'rgba(28, 22, 32, 0.58)';
+            borderColor = '#0284c7';
+            accentColor = '#38bdf8';
+            headerBg = '#0369a1';
+        } else if (hTier === 3) {
+            modalBg = 'rgba(15, 28, 48, 0.58)';
+            borderColor = '#2563eb';
+            accentColor = '#60a5fa';
+            headerBg = '#1e3a8a';
+        } else if (hTier === 4) {
+            modalBg = 'rgba(34, 26, 14, 0.58)';
+            borderColor = '#eab308';
+            accentColor = '#facc15';
+            headerBg = '#854d0e';
+        }
+    }
+
     // Caixa Principal em vidro fosco elegante (translucent glass)
-    ctx.fillStyle = 'rgba(11, 15, 25, 0.88)';
-    ctx.strokeStyle = modalBuilding.color;
+    ctx.fillStyle = modalBg;
+    ctx.strokeStyle = borderColor;
     ctx.lineWidth = 2;
     ctx.fillRect(mx, my, mw, mh);
     ctx.strokeRect(mx, my, mw, mh);
 
+    // Cantos decorativos estilizados
+    ctx.fillStyle = accentColor;
+    const cornerSize = 4;
+    ctx.fillRect(mx - 1, my - 1, cornerSize, cornerSize);
+    ctx.fillRect(mx + mw - cornerSize + 1, my - 1, cornerSize, cornerSize);
+    ctx.fillRect(mx - 1, my + mh - cornerSize + 1, cornerSize, cornerSize);
+    ctx.fillRect(mx + mw - cornerSize + 1, my + mh - cornerSize + 1, cornerSize, cornerSize);
+
     // Cabeçalho da Loja
-    ctx.fillStyle = modalBuilding.color;
+    ctx.fillStyle = headerBg;
     ctx.fillRect(mx, my, mw, 32);
+    ctx.strokeStyle = accentColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(mx, my + 32);
+    ctx.lineTo(mx + mw, my + 32);
+    ctx.stroke();
+
+    // Detalhe Exclusivo da Fita Métrica para Modas Chiado!
+    if (modalBuilding.id === 'loja_roupa') {
+        ctx.fillStyle = '#fde047';
+        for (let tx = mx + 4; tx < mx + mw - 8; tx += 10) {
+            ctx.fillRect(tx, my + 30, 5, 2);
+            ctx.fillRect(tx, my + mh - 2, 5, 2);
+        }
+    }
+
+    // Detalhe de Azulejo para Casa Tier 3 (Alfama)
+    if (modalBuilding.id === 'casa' && typeof player !== 'undefined' && player && player.houseIndex === 3) {
+        ctx.fillStyle = '#60a5fa';
+        for (let ax = mx + 6; ax < mx + mw - 12; ax += 16) {
+            ctx.fillRect(ax, my + 30, 4, 2);
+        }
+    }
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '9px "Press Start 2P"';
     ctx.textAlign = 'left';
-    ctx.fillText(`${modalBuilding.icon} ${modalBuilding.name.toUpperCase()} — ${modalBuilding.tag}`, mx + 14, my + 21);
+    ctx.fillText(headerTitle, mx + 14, my + 21);
 
     // Botão Fechar X
     const isHoverX = (mouse.x >= mx + mw - 32 && mouse.x <= mx + mw - 6 && mouse.y >= my + 4 && mouse.y <= my + 28);
@@ -11136,6 +11246,13 @@ function renderBuildingModal() {
     const isCasa = modalBuilding.id === 'casa';
     const partnerAtHome = isCasa && player.partner && isPartnerAtHome(player);
     const portraitId = partnerAtHome ? (player.partner + '_home') : modalBuilding.id;
+
+    // Moldura Themed do Retrato
+    ctx.fillStyle = '#090d16';
+    ctx.fillRect(px - 2, py - 2, pSize + 4, pSize + 4);
+    ctx.strokeStyle = accentColor;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(px - 2, py - 2, pSize + 4, pSize + 4);
 
     drawNpcPortrait(portraitId, px, py, pSize);
 
@@ -11175,9 +11292,9 @@ function renderBuildingModal() {
     const quoteW = pSize + 16;
     const quoteH = 74;
 
-    ctx.fillStyle = '#090d16';
+    ctx.fillStyle = 'rgba(9, 13, 22, 0.70)';
     ctx.fillRect(px - 4, quoteY, quoteW, quoteH);
-    ctx.strokeStyle = '#334155';
+    ctx.strokeStyle = accentColor;
     ctx.lineWidth = 1;
     ctx.strokeRect(px - 4, quoteY, quoteW, quoteH);
 
@@ -11828,15 +11945,16 @@ function renderBuildingActions(id, mx, my, mw, mh) {
             action: act
         });
 
-        // Fundo do cartão de ação
-        ctx.fillStyle = isHover ? '#1e293b' : '#0f172a';
+        // Fundo do cartão de ação com vidro fosco translúcido
+        const cardAccent = (typeof modalBuilding !== 'undefined' && modalBuilding && modalBuilding.accent) ? modalBuilding.accent : '#38bdf8';
+        ctx.fillStyle = isHover ? 'rgba(30, 41, 59, 0.78)' : 'rgba(15, 23, 42, 0.62)';
         ctx.fillRect(ax, ay, aw, cardH);
-        ctx.strokeStyle = isHover ? '#38bdf8' : '#1e293b';
+        ctx.strokeStyle = isHover ? cardAccent : 'rgba(51, 65, 85, 0.60)';
         ctx.lineWidth = isHover ? 1.5 : 1;
         ctx.strokeRect(ax, ay, aw, cardH);
 
         if (isHover) {
-            ctx.fillStyle = '#38bdf8';
+            ctx.fillStyle = cardAccent;
             ctx.fillRect(ax, ay, 3, cardH);
         }
 

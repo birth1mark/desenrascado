@@ -254,8 +254,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '8.0', "ASSET_VER incrementado para 8.0");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '8.0' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '8.1', "ASSET_VER incrementado para 8.1");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '8.1' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -703,8 +703,9 @@ assert(html.includes("getRomanceAction('zulmira')"), "getRomanceAction('zulmira'
     assert.strictEqual(vm.runInContext("activeCutscene.id", sandbox), `romance_${pKey}`, `Cutscene correta 'romance_${pKey}' ativada!`);
 });
 
-// 7. Verificar correção do avatar em casa (drawNpcPortrait('casa') aponta para zePortraitImg e bust sheet limpa)
-assert(html.includes("(id === 'ze' || id === 'player' || id === 'casa') && zePortraitImg.complete"), "drawNpcPortrait('casa') direcionado para zePortraitImg limpo");
+// 7. Verificar correção do avatar em casa (drawNpcPortrait('casa') aponta para retrato dinâmico de casa por escalão e Zé)
+assert(html.includes("(id === 'ze' || id === 'player' || id === 'casa')"), "drawNpcPortrait('casa') direcionado para retrato dinâmico de casa / Zé");
+assert(html.includes("casaTierBgImgs"), "drawNpcPortrait('casa') utiliza casaTierBgImgs por escalão");
 
 console.log("✓ 15. Romance D. Zulmira & Cutscenes Dedicadas: D. Zulmira 100% cortejável, cutscenes temáticas personalizadas e avatar de casa limpo validados!");
 
@@ -866,7 +867,51 @@ assert(vm.runInContext("player.sanity", sandbox) < 80, "Sanidade penalizada por 
 
 console.log("✓ 17. Alta Sociedade D. Zulmira, Cooldown 7 Dias Ex-Parceiros, Desvio Caixotes, Códex Caseiro & Diálogos Domésticos validados!");
 
+// -----------------------------------------------------------------------------
+// TESTE 18: FUNDOS EXCLUSIVOS E THEMED PARA BANCO, MODAS CHIADO E CASA
+// -----------------------------------------------------------------------------
+// 1. Ficheiros de Retrato dedicados
+const bancoBgPath = path.join(__dirname, '../assets/portrait_banco_bg.png');
+assert(fs.existsSync(bancoBgPath), "portrait_banco_bg.png existe no disco");
+assert(fs.readFileSync(bancoBgPath).length > 1000, "portrait_banco_bg.png tem dados válidos");
+
+const zulmiraBgPath = path.join(__dirname, '../assets/portrait_zulmira_bg.png');
+assert(fs.existsSync(zulmiraBgPath), "portrait_zulmira_bg.png existe no disco");
+assert(fs.readFileSync(zulmiraBgPath).length > 1000, "portrait_zulmira_bg.png tem dados válidos");
+
+// 2. Os 5 Escalões de Casa (Tier 0..4)
+for (let t = 0; t <= 4; t++) {
+    const tPath = path.join(__dirname, `../assets/portrait_casa_tier${t}_bg.png`);
+    assert(fs.existsSync(tPath), `portrait_casa_tier${t}_bg.png existe no disco`);
+    assert(fs.readFileSync(tPath).length > 1000, `portrait_casa_tier${t}_bg.png tem dados válidos`);
+}
+
+// 3. Imagens declaradas no contexto
+assert(vm.runInContext("bancoBgImg", sandbox), "bancoBgImg instanciada");
+assert(vm.runInContext("casaTierBgImgs", sandbox), "casaTierBgImgs instanciada");
+assert.strictEqual(vm.runInContext("casaTierBgImgs.length", sandbox), 5, "casaTierBgImgs possui 5 escalões");
+
+// 4. Teste de renderBuildingModal e drawNpcPortrait para banco, loja_roupa e casa
+vm.runInContext(`
+    // Testar banco
+    modalBuilding = BUILDINGS.find(b => b.id === 'banco');
+    renderBuildingModal();
+    
+    // Testar loja_roupa
+    modalBuilding = BUILDINGS.find(b => b.id === 'loja_roupa');
+    renderBuildingModal();
+    
+    // Testar casa em cada tier
+    modalBuilding = BUILDINGS.find(b => b.id === 'casa');
+    for (let t = 0; t <= 4; t++) {
+        player.houseIndex = t;
+        renderBuildingModal();
+    }
+`, sandbox);
+
+console.log("✓ 18. Fundos Themed, Retratos Neoclássicos de Banco, Alta Costura do Chiado e 5 Escalões Dinâmicos de Casa validados!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 17 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 18 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");
