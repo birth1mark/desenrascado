@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Desenrascado | A Aventura Gráfica da Sobrevivência em Lisboa (16-Bit Retro)</title>
     <meta name="description" content="Sobrevive 30 dias em Lisboa no jogo retro 16-bit estilo LucasArts SCUMM. Estuda no IST, trabalha na Tasca Ti Zé, compra roupa no Chiado, negoceia com o Senhorio e resiste à crise da habitação.">
     <meta name="keywords" content="desenrascado, jogo lisboa, aventura grafica portugal, lucasarts lisboa, scumm jogo retro, crise habitacao lisboa, ist tecnico alfacinha, mercearia de bairro jogo, tasca ti ze, jogos indie portugueses, retro pixel art game">
@@ -3811,7 +3814,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '8.2';
+const ASSET_VER = '8.3';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -9488,6 +9491,9 @@ NPC_INFO.catia = NPC_INFO.supermercado;
 
 // Renderizador de Retratos em Pixel Art 16-Bit em Camadas (Fundo Estático + Busto Transparente)
 function drawNpcPortrait(id, x, y, size, targetCtx = null) {
+    if (typeof id === 'string' && id.endsWith('_home')) {
+        id = id.replace('_home', '');
+    }
     const renderCtx = targetCtx || ctx;
     const npc = NPC_INFO[id] || NPC_INFO.senhorio;
 
@@ -9520,14 +9526,24 @@ function drawNpcPortrait(id, x, y, size, targetCtx = null) {
     let bgSx = 0, bgSy = 0;
     let bustSx = 0, bustSy = 0;
 
-    if ((id === 'supermercado' || id === 'catia') && catiaBgImg.complete && catiaBgImg.naturalWidth > 0) {
-        bgImg = catiaBgImg;
-        bustImg = (catiaBustImg.complete && catiaBustImg.naturalWidth > 0) ? catiaBustImg : null;
+    if ((id === 'supermercado' || id === 'catia') && ((catiaPortraitImg.complete && catiaPortraitImg.naturalWidth > 0) || (catiaBgImg.complete && catiaBgImg.naturalWidth > 0))) {
+        if (catiaPortraitImg.complete && catiaPortraitImg.naturalWidth > 0) {
+            bgImg = catiaPortraitImg;
+            bustImg = null;
+        } else {
+            bgImg = catiaBgImg;
+            bustImg = (catiaBustImg.complete && catiaBustImg.naturalWidth > 0) ? catiaBustImg : null;
+        }
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
-    } else if ((id === 'loja_roupa' || id === 'zulmira') && zulmiraBgImg.complete && zulmiraBgImg.naturalWidth > 0) {
-        bgImg = zulmiraBgImg;
-        bustImg = (zulmiraBustImg.complete && zulmiraBustImg.naturalWidth > 0) ? zulmiraBustImg : null;
+    } else if ((id === 'loja_roupa' || id === 'zulmira') && ((zulmiraPortraitImg.complete && zulmiraPortraitImg.naturalWidth > 0) || (zulmiraBgImg.complete && zulmiraBgImg.naturalWidth > 0))) {
+        if (zulmiraPortraitImg.complete && zulmiraPortraitImg.naturalWidth > 0) {
+            bgImg = zulmiraPortraitImg;
+            bustImg = null;
+        } else {
+            bgImg = zulmiraBgImg;
+            bustImg = (zulmiraBustImg.complete && zulmiraBustImg.naturalWidth > 0) ? zulmiraBustImg : null;
+        }
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
     } else if (id === 'acampada' && ((acampadaPortraitImg.complete && acampadaPortraitImg.naturalWidth > 0) || (acampadaBgImg.complete && acampadaBgImg.naturalWidth > 0))) {
@@ -9565,32 +9581,6 @@ function drawNpcPortrait(id, x, y, size, targetCtx = null) {
         bustImg = null;
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
-    } else if (id.endsWith('_home')) {
-        const pKey = id.replace('_home', '');
-        const bust = homeBustImgs[pKey];
-        const hTier = (typeof player !== 'undefined' && player && player.houseIndex !== undefined) ? player.houseIndex : 1;
-        const tierImg = casaTierBgImgs[hTier];
-        if (bust && bust.complete && bust.naturalWidth > 0 && tierImg && tierImg.complete && tierImg.naturalWidth > 0) {
-            bgImg = tierImg;
-            bustImg = bust;
-            bgSx = 0; bgSy = 0;
-            bustSx = 0; bustSy = 0;
-        } else {
-            const fallbackMap = {
-                catia: catiaHomePortraitImg,
-                marta: martaHomePortraitImg,
-                zulmira: zulmiraHomePortraitImg,
-                rui: ruiHomePortraitImg,
-                goncalo: goncaloHomePortraitImg
-            };
-            const fbImg = fallbackMap[pKey] || catiaHomePortraitImg;
-            if (fbImg.complete && fbImg.naturalWidth > 0) {
-                bgImg = fbImg;
-                bustImg = null;
-                bgSx = 0; bgSy = 0;
-                bustSx = 0; bustSy = 0;
-            }
-        }
     } else if (id === 'banco' && bancoBgImg.complete && bancoBgImg.naturalWidth > 0) {
         bgImg = bancoBgImg;
         bustImg = (portraitsBustSheetImg.complete && portraitsBustSheetImg.naturalWidth > 0) ? portraitsBustSheetImg : null;
@@ -9755,9 +9745,20 @@ function drawNpcPortrait(id, x, y, size, targetCtx = null) {
 function renderInteriorScene(ctx, id, animTimer, player, HOUSES, WORKPLACES, getPlayerJob) {
     ctx.save();
 
-    // 1. Cenário Dinâmico de Casa: renderiza exatamente o escalão de habitação do jogador (0..4)
+    // 1. Cenário Dinâmico de Casa: renderiza o cenário autêntico 16-bit de habitação
     if (id === 'casa') {
-        renderInteriorCasa(ctx, animTimer, player, HOUSES);
+        const hTier = (player && player.houseIndex !== undefined) ? player.houseIndex : 1;
+        if (hTier === 0) {
+            renderInteriorCasa(ctx, animTimer, player, HOUSES);
+        } else {
+            const img = interiorImgs.casa;
+            if (img && img.complete && img.naturalWidth > 0) {
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(img, 0, 0, 640, 295);
+            } else {
+                renderInteriorCasa(ctx, animTimer, player, HOUSES);
+            }
+        }
         const hr = (player && player.timeHour !== undefined) ? player.timeHour : 12;
         if (hr >= 20 || hr < 7) {
             ctx.fillStyle = 'rgba(11, 15, 26, 0.32)';
@@ -11340,7 +11341,7 @@ function renderBuildingModal() {
 
     const isCasa = modalBuilding.id === 'casa';
     const partnerAtHome = isCasa && player.partner && isPartnerAtHome(player);
-    const portraitId = partnerAtHome ? (player.partner + '_home') : modalBuilding.id;
+    const portraitId = partnerAtHome ? player.partner : modalBuilding.id;
 
     // Moldura Themed do Retrato
     ctx.fillStyle = '#090d16';
@@ -11356,7 +11357,7 @@ function renderBuildingModal() {
     if (partnerAtHome) {
         const pObj = ROMANCE_PARTNERS[player.partner] || { name: 'Companheiro(a)', role: 'A tua cara-metade' };
         npcName = pObj.name;
-        npcRole = "No Aconchego do Lar · Roupa Descontraída";
+        npcRole = "No Aconchego do Lar · " + pObj.name;
         const homeQuotesLists = {
             catia: [
                 "«Ainda bem que vieste, amor! Pus a camisola de alças e fiz chá. Trata das tuas coisas à vontade, estou aqui contigo...»",
