@@ -26,7 +26,8 @@ NPC_CONFIG = {
     'miradouro':    {'name': 'Zé Fadista (Miradouro)',    'coords': (2, 1), 'face_box': (45, 30, 85, 70)},
     'casa':         {'name': 'O Teu Teto (Quarto)',       'coords': (3, 1), 'face_box': (45, 30, 85, 70)},
     'startup':      {'name': 'D. Mariana (IEFP)',         'coords': (2, 0), 'face_box': (45, 30, 85, 70), 'dedicated': 'portrait_iefp.png'},
-    'loja_roupa':   {'name': 'D. Zulmira (Modas Chiado)', 'coords': (3, 0), 'face_box': (45, 30, 85, 70), 'dedicated': 'portrait_zulmira.png'}
+    'loja_roupa':   {'name': 'D. Zulmira (Modas Chiado)', 'coords': (3, 0), 'face_box': (45, 30, 85, 70), 'dedicated': 'portrait_zulmira.png'},
+    'marta':        {'name': 'Marta (Estudante IST)',     'coords': (1, 1), 'face_box': (45, 30, 85, 70), 'dedicated': 'portrait_marta.png'}
 }
 
 def render_portrait(loc_id, sheet_full, sheet_bg, sheet_bust):
@@ -146,6 +147,8 @@ def validate_all():
     interiors_dir = os.path.join(ASSETS_DIR, "interiors")
     interiors_ok = True
     for loc_id in NPC_CONFIG.keys():
+        if loc_id == 'marta':
+            continue
         interior_path = os.path.join(interiors_dir, f"{loc_id}.png")
         if not os.path.exists(interior_path):
             print(f"❌ [FALHA] Cenário interior em falta: {interior_path}")
@@ -157,19 +160,19 @@ def validate_all():
 
     # 5. Gerar Painel Visual de Prova (Audit Contact Sheet)
     print("\n--- 4. GERAÇÃO DO PAINEL VISUAL DE PROVA ---")
-    sheet_w = 5 * 136 + 16
+    sheet_w = 6 * 136 + 16
     sheet_h = 2 * 170 + 200 + 40
     audit_canvas = Image.new('RGB', (sheet_w, sheet_h), (20, 24, 32))
     draw = ImageDraw.Draw(audit_canvas)
     
     # Cabeçalho
     draw.rectangle([(0, 0), (sheet_w, 40)], fill=(15, 18, 25))
-    draw.text((16, 12), "DESENRASCADO - AUDITORIA VISUAL COMPLETA (v6.5)", fill=(245, 158, 11))
+    draw.text((16, 12), "DESENRASCADO - AUDITORIA VISUAL COMPLETA (v7.4)", fill=(245, 158, 11))
     
-    # Desenhar os 10 retratos com moldura e etiquetas
+    # Desenhar os retratos com moldura e etiquetas
     for i, (loc_id, cfg) in enumerate(NPC_CONFIG.items()):
-        col = i % 5
-        row = i // 5
+        col = i % 6
+        row = i // 6
         x = 16 + col * 136
         y = 50 + row * 170
         

@@ -2261,7 +2261,7 @@ const ROMANCE_PARTNERS = {
     marta: {
         id: 'marta',
         name: 'Marta',
-        fullName: 'Marta (IST)',
+        fullName: 'Marta',
         gender: 'f',
         role: 'Estudante de Engenharia no IST',
         desc: 'Brilhante, focada, companheira de noitadas de estudo e cafés no Técnico.',
@@ -3723,7 +3723,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '7.3';
+const ASSET_VER = '7.4';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3777,6 +3777,10 @@ const acampadaBustImg = new Image();
 acampadaBustImg.src = `assets/portrait_acampada_bust.png?v=${ASSET_VER}`;
 const acampadaPortraitImg = new Image();
 acampadaPortraitImg.src = `assets/portrait_acampada.png?v=${ASSET_VER}`;
+
+// Retrato Exclusivo da Marta (Estudante de Informática do IST / Óculos redondos, auscultadores e hoodie tech)
+const martaPortraitImg = new Image();
+martaPortraitImg.src = `assets/portrait_marta.png?v=${ASSET_VER}`;
 
 // Splash Screen Bitmapped 16-Bit Deslumbrante de Lisboa
 const splashImg = new Image();
@@ -5551,6 +5555,69 @@ const DIALOGUE_TREES = {
                 choices: [
                     { text: "«Aumentou a minha motivação para os exames!»", nextNode: 'start' },
                     { text: "«Vou já estudar. Com licença!»", nextNode: 'exit' }
+                ]
+            }
+        }
+    },
+
+    marta: {
+        id: 'marta',
+        name: 'Marta',
+        role: 'Estudante de Engenharia no IST',
+        portraitId: 'marta',
+        color: '#38bdf8',
+        initialNode: 'start',
+        nodes: {
+            start: {
+                text: "«Olá Zé! Fiz uma pausa na biblioteca para apanhar ar. Estava aqui a lutar com uns apontamentos de Sistemas... Em que posso ajudar?»",
+                choices: [
+                    { text: "«Estás a estudar para que cadeiras agora?»", nextNode: 'cadeiras' },
+                    { text: "«Que tal uma pausa para um café e dois dedos de conversa no Arco do Cego?»", nextNode: 'cafe_flirt' },
+                    { text: "«Precisava de ajuda com os meus métodos de estudo no IST.»", nextNode: 'dicas_estudo' },
+                    { text: "«Deixo-te concentrada no código. Até logo, Marta!»", nextNode: 'exit' }
+                ]
+            },
+            cadeiras: {
+                text: "«Compiladores e Redes de Computadores! O professor não perdoa nos prazos de entrega. Mas se precisares de apontamentos ou partilhar uma bancada de estudo, avisa!»",
+                action: (p) => {
+                    p.knowledge = Math.min(100, (p.knowledge || 0) + 6);
+                    if (typeof changeNpcAffinity === 'function') changeNpcAffinity('marta', 5, 'Partilha de apontamentos no IST');
+                },
+                choices: [
+                    { text: "«Muito obrigado, Marta! A tua ajuda vale ouro.»", nextNode: 'start' },
+                    { text: "«Vou já rever a matéria. Até já!»", nextNode: 'exit' }
+                ]
+            },
+            dicas_estudo: {
+                text: "«O segredo é consistência diária: não deixes acumular matéria antes dos testes! Dorme bem antes dos exames e bebe água. E se o terminal der Segmentation Fault, respira fundo e usa o gdb!»",
+                action: (p) => {
+                    p.sanity = Math.min(100, (p.sanity || 0) + 10);
+                    if (typeof changeNpcAffinity === 'function') changeNpcAffinity('marta', 4, 'Conselhos pedagógicos partilhados');
+                },
+                choices: [
+                    { text: "«Sábias palavras de quem percebe disto. Obrigado!»", nextNode: 'start' },
+                    { text: "«Vou aplicar isso já hoje. Até logo!»", nextNode: 'exit' }
+                ]
+            },
+            cafe_flirt: {
+                dynamicText: (p) => {
+                    const aff = (typeof getNpcAffinity === 'function') ? getNpcAffinity('marta') : ((p.affinity && p.affinity.marta) || 20);
+                    if (aff < 35) {
+                        return "«Ahahah, agradeço o convite, Zé! Mas hoje o prazo de entrega aperta mesmo. Mais logo, quando fechar este commit, alinho num galão!»";
+                    } else if (aff < 65) {
+                        return "«Sabes que nunca digo que não a uma bica contigo! É o meu momento favorito do dia para descomprimir dos algoritmos e rir um bocado.»";
+                    } else if (aff < 85) {
+                        return "«Zé... admito que quando estou a programar, fico a olhar para a porta da biblioteca a ver se apareces. Fazes-me um bem enorme...»";
+                    } else {
+                        return "«Contigo vou até ao fim do mundo, Zé. Já não imagino as minhas noitadas nem Lisboa sem ti ao meu lado. Juntos compilamos qualquer sonho!»";
+                    }
+                },
+                action: (p) => {
+                    if (typeof changeNpcAffinity === 'function') changeNpcAffinity('marta', 8, 'Cumplicidade e carinho na faculdade');
+                },
+                choices: [
+                    { text: "«És incrível, Marta. Fico sempre feliz por te ver.»", nextNode: 'start' },
+                    { text: "«Até já, Marta! Bom código.»", nextNode: 'exit' }
                 ]
             }
         }
@@ -8377,6 +8444,17 @@ const NPC_INFO = {
             return "Bem-vindo às Modas Chiado! Deixa-me passar a fita métrica pelas tuas medidas... O bom gosto veste-se aqui.";
         },
         color: "#db2777"
+    },
+    marta: {
+        name: "Marta",
+        role: "Estudante de Informática (IST)",
+        quote: () => {
+            if (player.partner === 'marta') {
+                return "Olá meu amor! Guardei um lugar na biblioteca para estudarmos juntos. O nosso código faz sempre match!";
+            }
+            return "Olá Zé! A compilar algoritmos até de madrugada... Se precisares de apontamentos para passar às cadeiras, avisa!";
+        },
+        color: "#38bdf8"
     }
 };
 
@@ -8433,6 +8511,11 @@ function drawNpcPortrait(id, x, y, size, targetCtx = null) {
     } else if (id === 'startup' && iefpBgImg.complete && iefpBgImg.naturalWidth > 0) {
         bgImg = iefpBgImg;
         bustImg = (iefpBustImg.complete && iefpBustImg.naturalWidth > 0) ? iefpBustImg : null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
+    } else if (id === 'marta' && martaPortraitImg.complete && martaPortraitImg.naturalWidth > 0) {
+        bgImg = martaPortraitImg;
+        bustImg = null;
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
     } else if (portraitsBgSheetImg.complete && portraitsBgSheetImg.naturalWidth > 0) {
@@ -9687,6 +9770,8 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                 });
             }
         }
+        actions.unshift({ label: "💬 Diálogo c/ a Marta (Biblioteca)", openDialogueTree: 'marta', desc: "Conversa com a estudante de informática: código, exames e cumplicidade." });
+        actions.unshift({ label: "💬 Gabinete do Prof. Leitão", openDialogueTree: 'faculdade', desc: "Conselhos pedagógicos de cátedra e métodos estoicos de estudo no IST." });
     } else if (id === 'banco') {
         // ====================================================================
         // BANCO (CAIXA GERAL): DEPÓSITO, MULTIBANCO & CARREIRAS BANCÁRIAS
@@ -12009,12 +12094,12 @@ const LISBON_CHARACTERS = {
     marta: {
         id: 'marta',
         name: 'Marta',
-        fullName: 'Marta Esteves (IST)',
+        fullName: 'Marta Esteves',
         epithet: 'O Prodígio do Terminal e dos Algoritmos',
         role: 'Estudante de Engenharia Informática no IST',
         location: 'Biblioteca & Laboratórios de Redes (IST)',
         color: '#38bdf8',
-        portraitId: 'faculdade',
+        portraitId: 'marta',
         interiorKey: 'faculdade',
         baseAffinity: 20,
         howToIncrease: 'Estuda na faculdade (+5%), avança nas cadeiras do curso (+8%) e partilha noitadas de código e romance (+15%).',

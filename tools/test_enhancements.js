@@ -253,8 +253,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.3', "ASSET_VER incrementado para 7.3");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.3' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.4', "ASSET_VER incrementado para 7.4");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.4' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -451,7 +451,34 @@ assert.strictEqual(cvEl.style.display, 'none', "Currículo fecha com toggle");
 
 console.log("✓ 10. Acessibilidade de Saída do Códex: Botões no cabeçalho e rodapé visíveis, backdrop click e toggle validados!");
 
+// -----------------------------------------------------------------------------
+// TESTE 11: SEPARAÇÃO E RETRATO DEDICADO DA MARTA (IST)
+// -----------------------------------------------------------------------------
+assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/portrait_marta.png'), "assets/portrait_marta.png existe em disco");
+
+const dialogueTrees = vm.runInContext("DIALOGUE_TREES", sandbox);
+assert(dialogueTrees.marta, "DIALOGUE_TREES.marta existe");
+assert.strictEqual(dialogueTrees.marta.portraitId, 'marta', "DIALOGUE_TREES.marta usa portraitId 'marta'");
+assert(dialogueTrees.marta.nodes.start, "Nó 'start' existe no diálogo da Marta");
+assert(dialogueTrees.marta.nodes.cadeiras, "Nó 'cadeiras' existe no diálogo da Marta");
+assert(dialogueTrees.marta.nodes.cafe_flirt, "Nó 'cafe_flirt' existe no diálogo da Marta");
+
+assert.strictEqual(LISBON_CHARACTERS.marta.portraitId, 'marta', "LISBON_CHARACTERS.marta usa portraitId 'marta' (não o professor!)");
+
+const martaNpcInfo = vm.runInContext("NPC_INFO", sandbox);
+assert(martaNpcInfo.marta, "NPC_INFO.marta existe e está registada");
+assert.strictEqual(martaNpcInfo.marta.name, "Marta", "Nome em NPC_INFO é 'Marta'");
+
+// Testar abertura de diálogo com Marta
+vm.runInContext("openDialogueTree('marta');", sandbox);
+const activeTree = vm.runInContext("activeDialogueTree", sandbox);
+assert(activeTree, "activeDialogueTree ativo");
+assert.strictEqual(activeTree.treeId, 'marta', "activeDialogueTree é da Marta");
+assert.strictEqual(activeTree.config.portraitId, 'marta', "activeDialogueTree usa portraitId 'marta'");
+
+console.log("✓ 11. Marta vs Professor: Retrato 16-bit próprio, diálogo SCUMM e Códex validados com distinção total do catedrático!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 10 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 11 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");
