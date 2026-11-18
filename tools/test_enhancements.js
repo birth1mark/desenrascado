@@ -51,39 +51,46 @@ const sandbox = {
             removeItem() {}
         }
     },
-    document: {
-        getElementById(id) {
-            return {
-                getContext() {
-                    return {
-                        measureText(text) { return { width: (text || '').length * 6 }; },
-                        fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}, rect() {}, clip() {}
+    document: (() => {
+        const elemMap = {};
+        return {
+            getElementById(id) {
+                if (!elemMap[id]) {
+                    elemMap[id] = {
+                        id,
+                        getContext() {
+                            return {
+                                measureText(text) { return { width: (text || '').length * 6 }; },
+                                fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}, rect() {}, clip() {}
+                            };
+                        },
+                        addEventListener() {},
+                        getBoundingClientRect() { return { left: 0, top: 0, width: 640, height: 360 }; },
+                        style: {},
+                        classList: { add() {}, remove() {}, contains() { return false; } },
+                        width: 640,
+                        height: 360
                     };
-                },
-                addEventListener() {},
-                getBoundingClientRect() { return { left: 0, top: 0, width: 640, height: 360 }; },
-                style: {},
-                classList: { add() {}, remove() {}, contains() { return false; } },
-                width: 640,
-                height: 360
-            };
-        },
-        querySelectorAll() { return []; },
-        createElement(tag) {
-            return {
-                getContext() {
-                    return {
-                        measureText(text) { return { width: (text || '').length * 6 }; },
-                        fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}, rect() {}, clip() {}
-                    };
-                },
-                style: {},
-                width: 640,
-                height: 360
-            };
-        },
-        addEventListener() {}
-    },
+                }
+                return elemMap[id];
+            },
+            querySelectorAll() { return []; },
+            createElement(tag) {
+                return {
+                    getContext() {
+                        return {
+                            measureText(text) { return { width: (text || '').length * 6 }; },
+                            fillRect() {}, strokeRect() {}, fillText() {}, beginPath() {}, moveTo() {}, lineTo() {}, arc() {}, fill() {}, stroke() {}, save() {}, restore() {}, drawImage() {}, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, clearRect() {}, quadraticCurveTo() {}, bezierCurveTo() {}, closePath() {}, setLineDash() {}, rect() {}, clip() {}
+                        };
+                    },
+                    style: {},
+                    width: 640,
+                    height: 360
+                };
+            },
+            addEventListener() {}
+        };
+    })(),
     fetch: () => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }),
     Image: class {
         constructor() { this.width = 640; this.height = 295; }
@@ -246,8 +253,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.2', "ASSET_VER incrementado para 7.2");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.2' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.3', "ASSET_VER incrementado para 7.3");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.3' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -390,7 +397,61 @@ scenarios.forEach(sc => {
 assert.strictEqual(buildingOverflows.length, 0, "Nenhum cartão ou barra de paginação transborda do modal!");
 console.log(`✓ 9. Auditoria Exaustiva de Menus: ${totalChoicesChecked} opções de diálogo e ${totalActionCardsChecked} ações testadas com ZERO OVERFLOW!`);
 
+// -----------------------------------------------------------------------------
+// TESTE 10: ACESSIBILIDADE E SAÍDAS DO CÓDEX E MODAIS (DISMISSAL, TOGGLE, ZERO CLIPPING)
+// -----------------------------------------------------------------------------
+// 1. Verificar dismiss por backdrop em todos os modais
+assert(html.includes('id="codex-modal" class="game-overlay" style="display: none;" onclick="if(event.target === this) closeCodexModal()"'), "codex-modal tem dismiss por clique no backdrop");
+assert(html.includes('id="curriculum-modal" class="game-overlay" style="display: none;" onclick="if(event.target === this) closeCurriculumModal()"'), "curriculum-modal tem dismiss por clique no backdrop");
+assert(html.includes('id="achievements-modal" class="game-overlay" style="display: none;" onclick="if(event.target === this) closeAchievementsModal()"'), "achievements-modal tem dismiss por clique no backdrop");
+assert(html.includes('id="leaderboard-modal" class="game-overlay" style="display: none;" onclick="if(event.target === this) closeLeaderboard()"'), "leaderboard-modal tem dismiss por clique no backdrop");
+assert(html.includes('id="submit-score-modal" class="game-overlay" style="display: none;" onclick="if(event.target === this) closeSubmitModal()"'), "submit-score-modal tem dismiss por clique no backdrop");
+
+// 2. Verificar botões de fechar no cabeçalho com texto explícito
+assert(html.includes('class="overlay-close" onclick="closeCodexModal()" title="Fechar e Voltar ao Jogo [ESC]">✕ FECHAR [ESC]</button>'), "Botão superior FECHAR explícito no Códex");
+assert(html.includes('class="retro-btn btn-amber codex-return-btn" onclick="closeCodexModal()">⬅️ VOLTAR AO JOGO [ESC]</button>'), "Botão inferior destacado VOLTAR AO JOGO no Códex");
+
+// 3. Verificar ausência de alturas vh que causavam clipping vertical
+assert(!html.includes('.codex-box {\n            max-width: 630px;\n            width: 96%;\n            max-height: 88vh;'), "codex-box não usa mais 88vh");
+assert(!html.includes('max-height: 64vh;'), "codex-layout não usa mais 64vh");
+assert(html.includes('.codex-box {') && html.includes('height: calc(100% - 16px);'), "codex-box contido na moldura com height: calc(100% - 16px)");
+assert(html.includes('.overlay-actions {') && html.includes('flex-shrink: 0;'), "overlay-actions tem flex-shrink: 0 prevenindo ocultação");
+
+// 4. Testar lógica de toggle funcional em sandbox
+const codexEl = sandbox.document.getElementById('codex-modal');
+assert(codexEl, "Elemento codex-modal mockado no sandbox");
+
+// Abrir códex
+vm.runInContext("openCodexModal();", sandbox);
+assert.strictEqual(codexEl.style.display, 'flex', "Códex abre com openCodexModal()");
+
+// Clicar novamente no botão de toolbar deve fazer toggle (fechar)
+vm.runInContext("openCodexModal();", sandbox);
+assert.strictEqual(codexEl.style.display, 'none', "Códex fecha com segundo clique em openCodexModal() [toggle]");
+
+// Abrir e fechar com closeCodexModal()
+vm.runInContext("openCodexModal('catia');", sandbox);
+assert.strictEqual(codexEl.style.display, 'flex', "Códex abre para personagem específico");
+vm.runInContext("closeCodexModal();", sandbox);
+assert.strictEqual(codexEl.style.display, 'none', "Códex fecha com closeCodexModal()");
+
+// Testar toggle de Conquistas
+const achEl = sandbox.document.getElementById('achievements-modal');
+vm.runInContext("openAchievementsModal();", sandbox);
+assert.strictEqual(achEl.style.display, 'flex', "Conquistas abre");
+vm.runInContext("openAchievementsModal();", sandbox);
+assert.strictEqual(achEl.style.display, 'none', "Conquistas fecha com toggle");
+
+// Testar toggle de Currículo
+const cvEl = sandbox.document.getElementById('curriculum-modal');
+vm.runInContext("openCurriculumModal();", sandbox);
+assert.strictEqual(cvEl.style.display, 'flex', "Currículo abre");
+vm.runInContext("openCurriculumModal();", sandbox);
+assert.strictEqual(cvEl.style.display, 'none', "Currículo fecha com toggle");
+
+console.log("✓ 10. Acessibilidade de Saída do Códex: Botões no cabeçalho e rodapé visíveis, backdrop click e toggle validados!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 9 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 10 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");

@@ -415,13 +415,14 @@
         .game-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(8, 11, 18, 0.9);
+            background: rgba(8, 11, 18, 0.92);
             backdrop-filter: blur(5px);
             z-index: 50;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px;
+            padding: 10px;
+            cursor: pointer;
         }
 
         .overlay-box {
@@ -431,9 +432,12 @@
             box-shadow: 0 0 35px rgba(245, 158, 11, 0.3), 0 20px 40px rgba(0, 0, 0, 0.9);
             width: 100%;
             max-width: 580px;
+            height: calc(100% - 16px);
+            max-height: calc(100% - 16px);
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            cursor: default;
             animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -447,8 +451,9 @@
             justify-content: space-between;
             align-items: center;
             background: #1e293b;
-            padding: 10px 16px;
+            padding: 8px 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
         }
 
         .overlay-title {
@@ -459,15 +464,29 @@
         }
 
         .overlay-close {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 1.1rem;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.55);
+            border-radius: 4px;
+            color: #fecaca;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.52rem;
+            font-weight: 700;
             cursor: pointer;
-            padding: 2px 6px;
-            font-family: inherit;
+            padding: 5px 10px;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-        .overlay-close:hover { color: #ef4444; }
+        .overlay-close:hover {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #f87171;
+            transform: translateY(-1px);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+        }
 
         .lb-tagline {
             font-size: 0.68rem;
@@ -521,12 +540,23 @@
         .rank-bronze { color: #d97706; font-weight: bold; }
 
         .overlay-actions {
-            padding: 10px 16px;
+            padding: 8px 14px;
             background: #141e30;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
             gap: 10px;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+
+        .modal-exit-tip {
+            font-size: 0.56rem;
+            color: #94a3b8;
+            font-family: 'Fira Code', monospace;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .retro-btn {
@@ -596,7 +626,8 @@
         /* Modal do Dossier Curricular (Estilo LucasArts SCUMM / Pergaminho de Lisboa) */
         .cv-box {
             max-width: 610px;
-            max-height: 88vh;
+            height: calc(100% - 16px);
+            max-height: calc(100% - 16px);
             background: #0f172a;
             border: 2px solid #d97706;
             box-shadow: 0 0 35px rgba(217, 119, 6, 0.35), 0 20px 50px rgba(0, 0, 0, 0.95);
@@ -609,11 +640,13 @@
             background: rgba(217, 119, 6, 0.12);
             border-bottom: 1px solid rgba(217, 119, 6, 0.25);
             letter-spacing: 0.5px;
+            flex-shrink: 0;
         }
         .cv-container {
             padding: 12px 16px;
             overflow-y: auto;
-            max-height: 60vh;
+            flex: 1 1 0;
+            min-height: 0;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -688,7 +721,8 @@
         /* Modal de Conquistas (Estilo Medalhas & Selos de Lisboa) */
         .ach-box {
             max-width: 630px;
-            max-height: 88vh;
+            height: calc(100% - 16px);
+            max-height: calc(100% - 16px);
             background: #0f172a;
             border: 2px solid #f59e0b;
             box-shadow: 0 0 35px rgba(245, 158, 11, 0.35), 0 20px 50px rgba(0, 0, 0, 0.95);
@@ -703,11 +737,13 @@
             letter-spacing: 0.5px;
             display: flex;
             justify-content: space-between;
+            flex-shrink: 0;
         }
         .ach-container {
             padding: 12px 16px;
             overflow-y: auto;
-            max-height: 58vh;
+            flex: 1 1 0;
+            min-height: 0;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 10px;
@@ -796,12 +832,14 @@
         .codex-box {
             max-width: 630px;
             width: 96%;
-            max-height: 88vh;
+            height: calc(100% - 16px);
+            max-height: calc(100% - 16px);
             background: #090d16;
             border: 2px solid #f59e0b;
             box-shadow: 0 0 40px rgba(245, 158, 11, 0.4), 0 25px 60px rgba(0, 0, 0, 0.96);
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         .codex-tagline {
             font-family: 'Press Start 2P', monospace;
@@ -814,13 +852,45 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
         .codex-layout {
             display: flex;
-            flex: 1;
+            flex: 1 1 0;
             overflow: hidden;
             min-height: 0;
-            max-height: 64vh;
+        }
+        .codex-actions {
+            padding: 8px 14px;
+            background: #141e30;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(245, 158, 11, 0.3);
+            flex-shrink: 0;
+        }
+        .codex-return-btn {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.55rem;
+            padding: 8px 16px;
+            background: linear-gradient(180deg, #f59e0b, #d97706);
+            color: #0b0f19;
+            font-weight: 800;
+            border: 2px solid #fbbf24;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.45);
+            letter-spacing: 0.5px;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .codex-return-btn:hover {
+            background: linear-gradient(180deg, #fbbf24, #f59e0b);
+            color: #000;
+            transform: translateY(-1px);
+            box-shadow: 0 0 18px rgba(245, 158, 11, 0.75);
         }
         .codex-sidebar {
             width: 205px;
@@ -1224,17 +1294,18 @@
             <div id="toast">Notificação</div>
 
             <!-- Modal: Dossier Curricular do Jogador (LucasArts SCUMM Dossier) -->
-            <div id="curriculum-modal" class="game-overlay" style="display: none;">
-                <div class="overlay-box cv-box">
+            <div id="curriculum-modal" class="game-overlay" style="display: none;" onclick="if(event.target === this) closeCurriculumModal()">
+                <div class="overlay-box cv-box" onclick="event.stopPropagation()">
                     <div class="overlay-header">
                         <span class="overlay-title">📜 DOSSIER CURRICULAR · ZÉ DESENRASCA</span>
-                        <button class="overlay-close" onclick="closeCurriculumModal()">✕</button>
+                        <button class="overlay-close" onclick="closeCurriculumModal()" title="Fechar Dossier [ESC]">✕ FECHAR [ESC]</button>
                     </div>
                     <div class="cv-tagline">REGISTO ACADÉMICO, CARREIRAS & TALENTOS NO PURGATÓRIO DE LISBOA</div>
                     <div class="cv-container" id="cv-content">
                         <!-- Conteúdo curricular gerado dinamicamente via JS -->
                     </div>
                     <div class="overlay-actions">
+                        <span class="modal-exit-tip">💡 Clica fora ou usa a tecla [ESC]</span>
                         <button class="retro-btn" onclick="closeCurriculumModal()">FECHAR DOSSIER [ESC]</button>
                     </div>
                 </div>
@@ -1242,11 +1313,11 @@
 
 
             <!-- Modal: Códex "Quem é Quem em Lisboa" & Álbum de Instantâneos -->
-            <div id="codex-modal" class="game-overlay" style="display: none;">
-                <div class="overlay-box codex-box">
+            <div id="codex-modal" class="game-overlay" style="display: none;" onclick="if(event.target === this) closeCodexModal()">
+                <div class="overlay-box codex-box" onclick="event.stopPropagation()">
                     <div class="overlay-header">
                         <span class="overlay-title">👥 QUEM É QUEM EM LISBOA · DOSSIER & ÁLBUM</span>
-                        <button class="overlay-close" onclick="closeCodexModal()">✕</button>
+                        <button class="overlay-close" onclick="closeCodexModal()" title="Fechar e Voltar ao Jogo [ESC]">✕ FECHAR [ESC]</button>
                     </div>
                     <div class="codex-tagline">
                         <span id="codex-summary">0 / 48 FOTOGRAFIAS NO ÁLBUM</span>
@@ -1256,18 +1327,19 @@
                         <div class="codex-sidebar" id="codex-list"></div>
                         <div class="codex-main" id="codex-detail"></div>
                     </div>
-                    <div class="overlay-actions">
-                        <button class="retro-btn" onclick="closeCodexModal()">VOLTAR AO JOGO [ESC]</button>
+                    <div class="overlay-actions codex-actions">
+                        <span class="modal-exit-tip">💡 Clica fora ou prime [ESC] / [Q]</span>
+                        <button class="retro-btn btn-amber codex-return-btn" onclick="closeCodexModal()">⬅️ VOLTAR AO JOGO [ESC]</button>
                     </div>
                 </div>
             </div>
 
             <!-- Modal: Livro de Conquistas da Odisseia Alfacinha -->
-            <div id="achievements-modal" class="game-overlay" style="display: none;">
-                <div class="overlay-box ach-box">
+            <div id="achievements-modal" class="game-overlay" style="display: none;" onclick="if(event.target === this) closeAchievementsModal()">
+                <div class="overlay-box ach-box" onclick="event.stopPropagation()">
                     <div class="overlay-header">
                         <span class="overlay-title">🎖️ LIVRO DE CONQUISTAS · LISBOA</span>
-                        <button class="overlay-close" onclick="closeAchievementsModal()">✕</button>
+                        <button class="overlay-close" onclick="closeAchievementsModal()" title="Fechar Conquistas [ESC]">✕ FECHAR [ESC]</button>
                     </div>
                     <div class="ach-tagline">
                         <span id="ach-summary">0 / 10 CONQUISTAS DESBLOQUEADAS</span>
@@ -1277,17 +1349,18 @@
                         <!-- Gerado dinamicamente via JS -->
                     </div>
                     <div class="overlay-actions">
+                        <span class="modal-exit-tip">💡 Clica fora ou usa a tecla [ESC]</span>
                         <button class="retro-btn" onclick="closeAchievementsModal()">VOLTAR AO JOGO [ESC]</button>
                     </div>
                 </div>
             </div>
 
             <!-- Modal: Tabela de Recordes (Hall of Fame) -->
-            <div id="leaderboard-modal" class="game-overlay" style="display: none;">
-                <div class="overlay-box lb-box">
+            <div id="leaderboard-modal" class="game-overlay" style="display: none;" onclick="if(event.target === this) closeLeaderboard()">
+                <div class="overlay-box lb-box" onclick="event.stopPropagation()">
                     <div class="overlay-header">
                         <span class="overlay-title">🏆 REGISTO NACIONAL DE DESPEJADOS</span>
-                        <button class="overlay-close" onclick="closeLeaderboard()">✕</button>
+                        <button class="overlay-close" onclick="closeLeaderboard()" title="Fechar Ranking [ESC]">✕ FECHAR [ESC]</button>
                     </div>
                     <div class="lb-tagline">OS 10 MAIORES SOBREVIVENTES DO PURGATÓRIO DE LISBOA</div>
                     <div class="lb-table-container">
@@ -1308,17 +1381,18 @@
                         </table>
                     </div>
                     <div class="overlay-actions">
-                        <button class="retro-btn" onclick="closeLeaderboard()">VOLTAR AO JOGO</button>
+                        <span class="modal-exit-tip">💡 Clica fora ou usa a tecla [ESC]</span>
+                        <button class="retro-btn" onclick="closeLeaderboard()">VOLTAR AO JOGO [ESC]</button>
                     </div>
                 </div>
             </div>
 
             <!-- Modal: Submeter Recorde -->
-            <div id="submit-score-modal" class="game-overlay" style="display: none;">
-                <div class="overlay-box submit-box">
+            <div id="submit-score-modal" class="game-overlay" style="display: none;" onclick="if(event.target === this) closeSubmitModal()">
+                <div class="overlay-box submit-box" onclick="event.stopPropagation()">
                     <div class="overlay-header">
                         <span class="overlay-title">📜 REGISTO OFICIAL DE DESPEJO</span>
-                        <button class="overlay-close" onclick="closeSubmitModal()">✕</button>
+                        <button class="overlay-close" onclick="closeSubmitModal()" title="Fechar [ESC]">✕ FECHAR</button>
                     </div>
                     <p class="submit-desc">
                         Sobreviveste <b id="sub-days-text" style="color:var(--amber);">0</b> dias na labuta com um património final de <b id="sub-money-text" style="color:#10b981;">0€</b>.
@@ -3649,7 +3723,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '7.2';
+const ASSET_VER = '7.3';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -6130,6 +6204,12 @@ function unlockAchievement(id) {
 }
 
 function openAchievementsModal() {
+    const modal = document.getElementById('achievements-modal');
+    if (!modal) return;
+    if (modal.style.display === 'flex') {
+        closeAchievementsModal();
+        return;
+    }
     speechBubbles = [];
     sfxAction();
     loadAchievements();
@@ -6155,8 +6235,7 @@ function openAchievementsModal() {
             `;
         }).join('');
     }
-    const modal = document.getElementById('achievements-modal');
-    if (modal) modal.style.display = 'flex';
+    modal.style.display = 'flex';
 }
 
 function closeAchievementsModal() {
@@ -11549,12 +11628,17 @@ function shareImageCard() {
 // 8.1 DOSSIER CURRICULAR (ESTILO AVENTURA LUCASARTS SCUMM)
 // ============================================================================
 function openCurriculumModal() {
+    const modal = document.getElementById('curriculum-modal');
+    if (!modal) return;
+    if (modal.style.display === 'flex') {
+        closeCurriculumModal();
+        return;
+    }
     speechBubbles = [];
     initAudio();
     sfxAction();
-    const modal = document.getElementById('curriculum-modal');
     const container = document.getElementById('cv-content');
-    if (!modal || !container) return;
+    if (!container) return;
 
     const curJob = getPlayerJob();
     const curDegree = getCurriculumDegree();
@@ -12065,14 +12149,18 @@ function changeNpcAffinity(charId, delta, reason = "") {
 let selectedCodexChar = 'senhorio';
 
 function openCodexModal(charId = null) {
+    const modal = document.getElementById('codex-modal');
+    if (!modal) return;
+    if (modal.style.display === 'flex' && (!charId || charId === selectedCodexChar)) {
+        closeCodexModal();
+        return;
+    }
     if (charId && LISBON_CHARACTERS[charId]) {
         selectedCodexChar = charId;
     }
     speechBubbles = [];
     if (typeof initAudio === 'function') initAudio();
     if (typeof sfxAction === 'function') sfxAction();
-    const modal = document.getElementById('codex-modal');
-    if (!modal) return;
     renderCodexModal();
     modal.style.display = 'flex';
 }
@@ -12429,9 +12517,13 @@ function drawPolaroidSnapshot(c, charId, pIdx, aff, isUnlocked) {
 let isScoreSubmitted = false;
 
 function openLeaderboard() {
-    speechBubbles = [];
     const modal = document.getElementById('leaderboard-modal');
     if (!modal) return;
+    if (modal.style.display === 'flex') {
+        closeLeaderboard();
+        return;
+    }
+    speechBubbles = [];
     modal.style.display = 'flex';
     fetchLeaderboard();
 }
