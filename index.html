@@ -3723,7 +3723,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '7.5';
+const ASSET_VER = '7.6';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -3785,6 +3785,18 @@ martaPortraitImg.src = `assets/portrait_marta.png?v=${ASSET_VER}`;
 // Retrato Exclusivo do Zé Desenrasca (Protagonista / O Mártir das Sete Colinas)
 const zePortraitImg = new Image();
 zePortraitImg.src = `assets/portrait_ze.png?v=${ASSET_VER}`;
+
+// Retrato Exclusivo do Rui Peixoto (Estafeta Ciclista da Baixa)
+const ruiPortraitImg = new Image();
+ruiPortraitImg.src = `assets/portrait_rui.png?v=${ASSET_VER}`;
+
+// Retrato Exclusivo do Gonçalo de Vasconcelos (Boémio da Tuna Académica & Solista)
+const goncaloPortraitImg = new Image();
+goncaloPortraitImg.src = `assets/portrait_goncalo.png?v=${ASSET_VER}`;
+
+// Retrato Exclusivo da D. Rosa (A Varina de Lisboa / Peixeira Tradicional)
+const varinaPortraitImg = new Image();
+varinaPortraitImg.src = `assets/portrait_varina.png?v=${ASSET_VER}`;
 
 // Splash Screen Bitmapped 16-Bit Deslumbrante de Lisboa
 const splashImg = new Image();
@@ -4569,8 +4581,8 @@ function renderStreetWalkers(ctx, animTimer) {
                 ctx.moveTo(-1, py - 5); ctx.lineTo(13, py - 5); ctx.lineTo(9, py - 20); ctx.stroke();
             }
 
-            // Sprite base de marcha 16-bit de Lisboa
-            if (hasZeSprites) {
+            // Sprite base de marcha 16-bit de Lisboa (Peões masculinos padrão; a Varina tem sprite 100% feminina artesanal)
+            if (hasZeSprites && w.type !== 'varina') {
                 ctx.drawImage(zeSheetImg, walkFrame * 32, 2 * 40, 32, 40, -16, py - 38, 32, 40);
             }
 
@@ -4658,16 +4670,112 @@ function renderStreetWalkers(ctx, animTimer) {
                 ctx.fillStyle = '#d97706';
                 ctx.fillRect(-10, py - 25, 3, 2);
             } else if (w.type === 'varina') {
-                // Canastra de peixe fresco à cabeça
-                ctx.fillStyle = '#78350f';
-                ctx.fillRect(-7, py - 43, 14, 5);
-                ctx.fillStyle = '#94a3b8';
-                ctx.fillRect(-5, py - 45, 10, 2);
-                // Xaile tradicional cruzado no peito
+                // ============================================================
+                // A VARINA DE LISBOA (100% Feminina, Tradicional e Graciosa)
+                // ============================================================
+                const legStep = (walkFrame === 1) ? 2 : (walkFrame === 3 ? -2 : 0);
+                const skirtSway = Math.sin(animTimer * 7.5) * 1.5;
+
+                // 1. Chinelas pretas tradicionais e tornozelos femininos
                 ctx.fillStyle = '#0f172a';
-                ctx.fillRect(-5, py - 26, 10, 10);
-                ctx.fillStyle = '#b91c1c';
-                ctx.fillRect(-3, py - 24, 6, 4);
+                ctx.fillRect(-6 + legStep, py - 3, 5, 3);
+                ctx.fillRect(2 - legStep, py - 3, 5, 3);
+                ctx.fillStyle = '#fed7aa';
+                ctx.fillRect(-5 + legStep, py - 5, 3, 2);
+                ctx.fillRect(3 - legStep, py - 5, 3, 2);
+
+                // 2. Saia Rodada Tradicional Alfacinha (Flared Skirt de Pregas - SEM CALÇAS!)
+                ctx.fillStyle = '#1e1b4b';
+                ctx.beginPath();
+                ctx.moveTo(-9 + skirtSway, py - 5);
+                ctx.lineTo(9 + skirtSway, py - 5);
+                ctx.lineTo(6, py - 22);
+                ctx.lineTo(-6, py - 22);
+                ctx.closePath();
+                ctx.fill();
+
+                // Debrum bordô de veludo na barra da saia
+                ctx.fillStyle = '#991b1b';
+                ctx.fillRect(-9 + skirtSway, py - 6, 18, 2);
+
+                // Avental branco tradicional de peixeira com folhos e barras
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(-5 + skirtSway * 0.5, py - 20, 10, 13);
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(-5 + skirtSway * 0.5, py - 16, 10, 1.5);
+                ctx.fillRect(-5 + skirtSway * 0.5, py - 10, 10, 1.5);
+
+                // 3. Tronco Feminino: Blusa Branca & Xaile Traçado em V
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-5, py - 29, 10, 8);
+
+                // Xaile de lã preta traçado em V cruzado sobre o peito
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath();
+                ctx.moveTo(-6, py - 29);
+                ctx.lineTo(0, py - 21);
+                ctx.lineTo(6, py - 29);
+                ctx.lineTo(7, py - 26);
+                ctx.lineTo(0, py - 19);
+                ctx.lineTo(-7, py - 26);
+                ctx.closePath();
+                ctx.fill();
+
+                // Braço feminino a segurar a canastra à cabeça
+                ctx.fillStyle = '#fed7aa';
+                ctx.fillRect(4, py - 37, 3, 11);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(4, py - 28, 4, 3);
+
+                // 4. Cabeça Feminina & Rosto Delicado
+                ctx.fillStyle = '#fed7aa';
+                ctx.fillRect(-3, py - 36, 7, 7);
+
+                // Bochechas rosadas da maresia
+                ctx.fillStyle = '#fb7185';
+                ctx.fillRect(1, py - 33, 2, 2);
+
+                // Olho expressivo e lábio rosado
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(1, py - 35, 1.5, 1.5);
+                ctx.fillStyle = '#e11d48';
+                ctx.fillRect(1, py - 31, 2, 1);
+
+                // Argolas de Ouro de Rainha (Brincos tradicionais alfacinhas)
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(-4, py - 34, 2, 3);
+                ctx.fillRect(-4, py - 32, 3, 1);
+
+                // Lenço de cabeça floral tradicional (atado à nuca)
+                ctx.fillStyle = '#312e81';
+                ctx.fillRect(-4, py - 38, 9, 3);
+                ctx.fillRect(-5, py - 37, 2, 6);
+                ctx.fillStyle = '#f43f5e';
+                ctx.fillRect(-1, py - 38, 2, 2);
+                ctx.fillRect(2, py - 37, 2, 1.5);
+
+                // 5. Rodilha & Canastra de Peixe Fresco à Cabeça
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(-4, py - 40, 8, 2);
+
+                // Canastra de verga tecida (larga)
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(-10, py - 45, 20, 5);
+                ctx.fillStyle = '#92400e';
+                ctx.fillRect(-9, py - 44, 18, 1);
+                ctx.fillRect(-9, py - 42, 18, 1);
+
+                // Sardinhas frescas prateadas a reluzir
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillRect(-8, py - 47, 16, 2);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(-6, py - 48, 5, 2);
+                ctx.fillRect(1, py - 48, 5, 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-4, py - 47, 2, 1);
+                ctx.fillRect(3, py - 47, 2, 1);
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(4, py - 48, 1, 1);
             }
 
             ctx.restore();
@@ -4704,6 +4812,10 @@ function openStreetWalkerEncounter(w) {
         walker: w,
         name: w.name,
         type: w.type,
+        portraitId: (w.type === 'estafeta' ? 'rui' :
+                    (w.type === 'tuna' ? 'goncalo' :
+                    (w.type === 'varina' ? 'varina' :
+                    (w.type === 'estudante' ? 'marta' : null)))),
         icon: (w.type === 'castanheiro' ? "🌰" :
               (w.type === 'trotinete' ? "🛴" :
               (w.type === 'turista_mala' ? "🧳" :
@@ -5039,24 +5151,28 @@ function openStreetWalkerEncounter(w) {
         };
     } else if (w.type === 'varina') {
         encounter.prompt = "«Olha a sardinha fresquinha da lota! Salta que nem viva para a brasa, rapaz!»";
-        encounter.opt1Text = "► 1. Comprar sardinha fresca para a despensa (-3.00€, +2 Mercearias)";
+        encounter.opt1Text = "► 1. Comprar sardinha fresca para a despensa (-3.00€, +2 Mercearias, +8% Afinidade)";
         encounter.opt1Action = () => {
             if (player.wallet >= 3.00) {
                 player.wallet -= 3.00;
                 player.groceries += 2;
+                if (!player.affinity) player.affinity = {};
+                player.affinity.varina = Math.min(100, (player.affinity.varina !== undefined ? player.affinity.varina : 30) + 8);
                 sfxCoin();
-                spawnParticle("🐟 +2 Refeições", "#38bdf8", w.x, w.y - 45);
+                spawnParticle("🐟 +2 Refeições (+8% Afinidade)", "#38bdf8", w.x, w.y - 45);
                 spawnSpeechBubble(w.x, w.y - 48, "«Sardinha gorda que pinga no pão! Bom proveito, Zé!»", w.name);
             } else {
                 sfxAlert();
                 spawnSpeechBubble(w.x, w.y - 48, "«Sem 3 euros para o peixe? Volta quando tiveres troco, rapaz!»", w.name);
             }
         };
-        encounter.opt2Text = "► 2. Elogiar o pregão tradicional de Lisboa (+10 Sanidade)";
+        encounter.opt2Text = "► 2. Elogiar o pregão tradicional de Lisboa (+10 Sanidade, +5% Afinidade)";
         encounter.opt2Action = () => {
             player.sanity = Math.min(100, player.sanity + 10);
+            if (!player.affinity) player.affinity = {};
+            player.affinity.varina = Math.min(100, (player.affinity.varina !== undefined ? player.affinity.varina : 30) + 5);
             sfxAction();
-            spawnParticle("🐟 +10 Sanidade", "#10b981", w.x, w.y - 45);
+            spawnParticle("🐟 +10 Sanidade (+5% Afinidade)", "#10b981", w.x, w.y - 45);
             spawnSpeechBubble(w.x, w.y - 48, "«Bem hajas, rapaz! A voz da varina é a alma desta cidade!»", w.name);
         };
     }
@@ -5068,9 +5184,9 @@ function renderStreetEncounter(ctx, animTimer) {
     if (!activeEncounter) return;
 
     const ex = 40;
-    const ey = 180;
+    const ey = 172;
     const ew = 560;
-    const eh = 102;
+    const eh = 112;
 
     // Fundo SCUMM Translúcido Elegante
     ctx.fillStyle = 'rgba(9, 13, 22, 0.95)';
@@ -5103,46 +5219,64 @@ function renderStreetEncounter(ctx, animTimer) {
     ctx.textAlign = 'center';
     ctx.fillText("✕", ex + ew - 16, ey + 16);
 
+    const hasPort = !!activeEncounter.portraitId;
+    const portSize = 74;
+
+    // Retrato SCUMM 16-Bit quando disponível (Rui, Gonçalo, D. Rosa / Varina, Marta)
+    if (hasPort) {
+        ctx.fillStyle = '#090d16';
+        ctx.fillRect(ex + 10, ey + 28, portSize, portSize);
+        drawNpcPortrait(activeEncounter.portraitId, ex + 10, ey + 28, portSize, ctx);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(ex + 10, ey + 28, portSize, portSize);
+    }
+
+    const textX = hasPort ? ex + 10 + portSize + 10 : ex + 12;
+    const textW = hasPort ? ew - (portSize + 32) : ew - 24;
+    const optX = hasPort ? ex + 10 + portSize + 10 : ex + 10;
+    const optW = hasPort ? ew - (portSize + 30) : ew - 20;
+
     // Linha de Diálogo do NPC
     ctx.fillStyle = '#fef08a';
-    ctx.font = 'bold 9.5px "Fira Code"';
+    ctx.font = 'bold 9px "Fira Code"';
     ctx.textAlign = 'left';
-    ctx.fillText(activeEncounter.prompt, ex + 12, ey + 38, ew - 24);
+    ctx.fillText(activeEncounter.prompt, textX, ey + 40, textW);
 
     // Opção 1
-    const opt1Y = ey + 48;
-    const isHoverOpt1 = (mouse.x >= ex + 10 && mouse.x <= ex + ew - 10 && mouse.y >= opt1Y && mouse.y <= opt1Y + 22);
+    const opt1Y = ey + 50;
+    const isHoverOpt1 = (mouse.x >= optX && mouse.x <= optX + optW && mouse.y >= opt1Y && mouse.y <= opt1Y + 22);
     ctx.fillStyle = isHoverOpt1 ? '#0369a1' : 'rgba(30, 41, 59, 0.85)';
-    ctx.fillRect(ex + 10, opt1Y, ew - 20, 22);
+    ctx.fillRect(optX, opt1Y, optW, 22);
     ctx.strokeStyle = isHoverOpt1 ? '#38bdf8' : '#475569';
     ctx.lineWidth = 1;
-    ctx.strokeRect(ex + 10, opt1Y, ew - 20, 22);
+    ctx.strokeRect(optX, opt1Y, optW, 22);
 
     ctx.fillStyle = isHoverOpt1 ? '#ffffff' : '#86efac';
-    ctx.font = 'bold 9px "Fira Code"';
-    ctx.fillText(activeEncounter.opt1Text, ex + 18, opt1Y + 15, ew - 36);
+    ctx.font = 'bold 8.5px "Fira Code"';
+    ctx.fillText(activeEncounter.opt1Text, optX + 8, opt1Y + 15, optW - 16);
 
     // Opção 2
-    const opt2Y = ey + 73;
-    const isHoverOpt2 = (mouse.x >= ex + 10 && mouse.x <= ex + ew - 10 && mouse.y >= opt2Y && mouse.y <= opt2Y + 22);
+    const opt2Y = ey + 76;
+    const isHoverOpt2 = (mouse.x >= optX && mouse.x <= optX + optW && mouse.y >= opt2Y && mouse.y <= opt2Y + 22);
     ctx.fillStyle = isHoverOpt2 ? '#0369a1' : 'rgba(30, 41, 59, 0.85)';
-    ctx.fillRect(ex + 10, opt2Y, ew - 20, 22);
+    ctx.fillRect(optX, opt2Y, optW, 22);
     ctx.strokeStyle = isHoverOpt2 ? '#38bdf8' : '#475569';
     ctx.lineWidth = 1;
-    ctx.strokeRect(ex + 10, opt2Y, ew - 20, 22);
+    ctx.strokeRect(optX, opt2Y, optW, 22);
 
     ctx.fillStyle = isHoverOpt2 ? '#ffffff' : '#38bdf8';
-    ctx.font = 'bold 9px "Fira Code"';
-    ctx.fillText(activeEncounter.opt2Text, ex + 18, opt2Y + 15, ew - 36);
+    ctx.font = 'bold 8.5px "Fira Code"';
+    ctx.fillText(activeEncounter.opt2Text, optX + 8, opt2Y + 15, optW - 16);
 }
 
 function handleStreetEncounterClick(cx, cy) {
     if (!activeEncounter) return false;
 
     const ex = 40;
-    const ey = 180;
+    const ey = 172;
     const ew = 560;
-    const eh = 102;
+    const eh = 112;
 
     // Botão Fechar ✕
     if (cx >= ex + ew - 26 && cx <= ex + ew - 6 && cy >= ey + 2 && cy <= ey + 20) {
@@ -5150,17 +5284,22 @@ function handleStreetEncounterClick(cx, cy) {
         return true;
     }
 
+    const hasPort = !!activeEncounter.portraitId;
+    const portSize = 74;
+    const optX = hasPort ? ex + 10 + portSize + 10 : ex + 10;
+    const optW = hasPort ? ew - (portSize + 30) : ew - 20;
+
     // Opção 1
-    const opt1Y = ey + 48;
-    if (cx >= ex + 10 && cx <= ex + ew - 10 && cy >= opt1Y && cy <= opt1Y + 22) {
+    const opt1Y = ey + 50;
+    if (cx >= optX && cx <= optX + optW && cy >= opt1Y && cy <= opt1Y + 22) {
         if (activeEncounter.opt1Action) activeEncounter.opt1Action();
         activeEncounter = null;
         return true;
     }
 
     // Opção 2
-    const opt2Y = ey + 73;
-    if (cx >= ex + 10 && cx <= ex + ew - 10 && cy >= opt2Y && cy <= opt2Y + 22) {
+    const opt2Y = ey + 76;
+    if (cx >= optX && cx <= optX + optW && cy >= opt2Y && cy <= opt2Y + 22) {
         if (activeEncounter.opt2Action) activeEncounter.opt2Action();
         activeEncounter = null;
         return true;
@@ -8459,6 +8598,34 @@ const NPC_INFO = {
             return "Olá Zé! A compilar algoritmos até de madrugada... Se precisares de apontamentos para passar às cadeiras, avisa!";
         },
         color: "#38bdf8"
+    },
+    rui: {
+        name: "Rui Peixoto",
+        role: "Estafeta Ciclista",
+        quote: () => {
+            if (player.partner === 'rui') {
+                return "Olá meu amor! Guardei esta bifana quentinha para nós e pedalar por Lisboa contigo é outra alegria!";
+            }
+            return "A pedalar pelas sete colinas de Lisboa! Entre carris de elétrico e subidas a pique, entrego sempre a horas!";
+        },
+        color: "#16a34a"
+    },
+    goncalo: {
+        name: "Gonçalo",
+        role: "Tuna Académica & Solista",
+        quote: () => {
+            if (player.partner === 'goncalo') {
+                return "O meu amor no meio da multidão! A minha capa negra pertence-te e esta serenata é toda tua!";
+            }
+            return "O luar de Alfama e as cordas do bandolim aquecem a alma. Esta noite a serenata é no Largo do Carmo!";
+        },
+        color: "#c084fc"
+    },
+    varina: {
+        name: "D. Rosa",
+        role: "A Varina de Lisboa",
+        quote: "Olha a sardinha fresquinha da lota! Salta que parece viva, freguês! Quem compra da canastra não passa fome!",
+        color: "#0284c7"
     }
 };
 
@@ -8484,7 +8651,9 @@ function drawNpcPortrait(id, x, y, size, targetCtx = null) {
         loja_roupa: { col: 3, row: 0 },
         marta: { col: 1, row: 1 },
         rui: { col: 3, row: 1 },
-        goncalo: { col: 2, row: 1 }
+        goncalo: { col: 2, row: 1 },
+        varina: { col: 3, row: 0 },
+        peixeira: { col: 3, row: 0 }
     };
     const coord = npcCoords[id] || npcCoords.senhorio;
 
@@ -8519,6 +8688,21 @@ function drawNpcPortrait(id, x, y, size, targetCtx = null) {
         bustSx = 0; bustSy = 0;
     } else if (id === 'marta' && martaPortraitImg.complete && martaPortraitImg.naturalWidth > 0) {
         bgImg = martaPortraitImg;
+        bustImg = null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
+    } else if (id === 'rui' && ruiPortraitImg.complete && ruiPortraitImg.naturalWidth > 0) {
+        bgImg = ruiPortraitImg;
+        bustImg = null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
+    } else if (id === 'goncalo' && goncaloPortraitImg.complete && goncaloPortraitImg.naturalWidth > 0) {
+        bgImg = goncaloPortraitImg;
+        bustImg = null;
+        bgSx = 0; bgSy = 0;
+        bustSx = 0; bustSy = 0;
+    } else if ((id === 'varina' || id === 'peixeira') && varinaPortraitImg.complete && varinaPortraitImg.naturalWidth > 0) {
+        bgImg = varinaPortraitImg;
         bustImg = null;
         bgSx = 0; bgSy = 0;
         bustSx = 0; bustSy = 0;
@@ -12677,7 +12861,7 @@ const LISBON_CHARACTERS = {
         role: 'Estafeta Ciclista da Baixa & Marginal',
         location: 'Ciclovias do Tejo & Baixa Pombalina',
         color: '#22c55e',
-        portraitId: 'miradouro',
+        portraitId: 'rui',
         interiorKey: 'supermercado',
         baseAffinity: 25,
         howToIncrease: 'Encontra-o na marginal, compra abastecimentos rápidos e avança na afinidade amorosa (+15%).',
@@ -12702,7 +12886,7 @@ const LISBON_CHARACTERS = {
         role: 'Boémio da Tuna Académica & Solista',
         location: 'Largo do Carmo & Ruelas de Alfama',
         color: '#c084fc',
-        portraitId: 'miradouro',
+        portraitId: 'goncalo',
         interiorKey: 'miradouro',
         baseAffinity: 25,
         howToIncrease: 'Aprecia serenatas noturnas, apoia as tradições académicas e avança no romance boémio (+15%).',
@@ -12716,6 +12900,31 @@ const LISBON_CHARACTERS = {
             { id: 2, title: 'Serenata no Carmo', caption: 'A cantar versos apaixonados sob os arcos góticos do convento iluminados pela lua.', date: 'NOITE DE FADO', minAffinity: 35, type: 'work' },
             { id: 3, title: 'Festa da Tuna (2018)', caption: 'Fotografia nostálgica a brindar com púcaros de barro entre colegas de capa negra.', date: 'MAIO 2018', minAffinity: 65, type: 'vintage' },
             { id: 4, title: 'Brinde ao Luar', caption: 'Gonçalo e Zé abraçados junto ao Tejo prateado: «Aos que cantam para não chorar: viva a vida!»', date: 'TROVA ETERNA', minAffinity: 85, type: 'intimate' }
+        ]
+    },
+
+    varina: {
+        id: 'varina',
+        name: 'D. Rosa',
+        fullName: 'Rosa Fernandes (A Varina de Lisboa)',
+        epithet: 'A Alma Dourada da Ribeira',
+        role: 'Varina Tradicional & Mestre da Canastra',
+        location: 'Ribeira das Naus & Cais do Sodré',
+        color: '#0284c7',
+        portraitId: 'varina',
+        interiorKey: null,
+        baseAffinity: 30,
+        howToIncrease: 'Compra peixe fresco nos encontros de rua (+8%), apoia o comércio tradicional e defende as gentes da faina.',
+        howToDecrease: 'Recusar com desdém o peixe fresco, comer refeições ultraprocessadas ou desrespeitar as tradições do Tejo (-10%).',
+        bioPublic: 'Com mais de cinquenta anos de passos ligeiros pela calçada, D. Rosa é das últimas varinas autênticas de Lisboa. Equilibra à cabeça a canastra de vime carregada de sardinha prateada e carapau acabado de sair da lota.',
+        bioNeighbour: 'Com as suas chinelas pretas, saia rodada alfacinha, avental axadrezado e os brincos de filigrana da Rainha a balançar, o seu pregão ecoa da Ribeira ao Chiado: «Olha o peixe fresquinho que ainda salta!» Conhece todas as famílias dos pescadores e os segredos da maré.',
+        bioConfidential: 'Criou quatro filhos e netos a vender peixe de sol a sol, com as mãos dormentes da água salgada e do gelo. Guarda no peito a saudade do marido que se perdeu nas fainas do mar alto, mas recusa dobrar a espinha: a sua alegria no cais é a sua homenagem à vida.',
+        bioSecretPact: 'Reconhece no Zé a raça dos desenrascados que nunca desistem. Oferece-lhe sempre a melhor posta de peixe fresco da faina e abençoa a sua jornada: «Com sardinha no bucho e coragem no peito, nenhum senhorio te deita abaixo, rapaz!»',
+        photos: [
+            { id: 1, title: 'A Canastra Real', caption: 'D. Rosa de xaile cruzado, lenço à cabeça e canastra de sardinhas cintilantes.', date: 'RIBEIRA 2026', minAffinity: 0, type: 'portrait' },
+            { id: 2, title: 'Pregão na Calçada', caption: 'A descer a calçada da Ribeira com passo firme e o peixe mais fresco da capital.', date: 'FAINA DO DIA', minAffinity: 35, type: 'work' },
+            { id: 3, title: 'Lota de 1985', caption: 'Fotografia a preto e branco na antiga lota de peixe entre cestos de cana e redes.', date: 'JUNHO 1985', minAffinity: 65, type: 'vintage' },
+            { id: 4, title: 'Bênção da Faina', caption: 'D. Rosa e Zé a brindar com um copo de três junto ao Tejo: «Viva o mar e quem trabalha!»', date: 'ALMA DE LISBOA', minAffinity: 85, type: 'intimate' }
         ]
     }
 };

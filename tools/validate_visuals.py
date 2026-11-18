@@ -27,7 +27,10 @@ NPC_CONFIG = {
     'casa':         {'name': 'O Teu Teto (Quarto)',       'coords': (3, 1), 'face_box': (45, 30, 85, 70)},
     'startup':      {'name': 'D. Mariana (IEFP)',         'coords': (2, 0), 'face_box': (45, 30, 85, 70), 'dedicated': 'portrait_iefp.png'},
     'loja_roupa':   {'name': 'D. Zulmira (Modas Chiado)', 'coords': (3, 0), 'face_box': (45, 30, 85, 70), 'dedicated': 'portrait_zulmira.png'},
-    'marta':        {'name': 'Marta (Estudante IST)',     'coords': (1, 1), 'face_box': (45, 30, 85, 70), 'dedicated': 'portrait_marta.png'}
+    'marta':        {'name': 'Marta (Estudante IST)',     'coords': (1, 1), 'face_box': (45, 30, 85, 70), 'dedicated': 'portrait_marta.png'},
+    'rui':          {'name': 'Rui (Estafeta Ciclista)',   'coords': (3, 1), 'face_box': (45, 30, 85, 70), 'dedicated': 'portrait_rui.png'},
+    'goncalo':      {'name': 'Gonçalo (Tuna Académica)',  'coords': (2, 1), 'face_box': (45, 30, 85, 70), 'dedicated': 'portrait_goncalo.png'},
+    'varina':       {'name': 'D. Rosa (Varina de Lisboa)','coords': (3, 0), 'face_box': (45, 30, 85, 70), 'dedicated': 'portrait_varina.png'}
 }
 
 def render_portrait(loc_id, sheet_full, sheet_bg, sheet_bust):
@@ -121,6 +124,13 @@ def validate_all():
             bust_std = bust_crop.std()
             assert bust_std > 20, f"D. Zulmira sem detalhe no busto/renda! (std={bust_std})"
 
+        # Teste específico para Rui vs Gonçalo (Avatares 100% distintos):
+        if loc_id == 'goncalo' and 'rui' in rendered_portraits:
+            rui_arr = np.array(rendered_portraits['rui'])
+            goncalo_arr = np.array(rendered_portraits['goncalo'])
+            diff_rg = np.abs(rui_arr[:, :, :3].astype(int) - goncalo_arr[:, :, :3].astype(int)).mean()
+            assert diff_rg > 20, f"Rui e Gonçalo têm imagens demasiado parecidas! diff={diff_rg:.1f}"
+
         print(f"✓ {cfg['name']:32}: OK! (Cores: {unique_colors:4d}, Rosto Std: {face_std:4.1f})")
         results[loc_id] = True
         
@@ -147,7 +157,7 @@ def validate_all():
     interiors_dir = os.path.join(ASSETS_DIR, "interiors")
     interiors_ok = True
     for loc_id in NPC_CONFIG.keys():
-        if loc_id == 'marta':
+        if loc_id in ('marta', 'rui', 'goncalo', 'varina'):
             continue
         interior_path = os.path.join(interiors_dir, f"{loc_id}.png")
         if not os.path.exists(interior_path):
@@ -160,19 +170,19 @@ def validate_all():
 
     # 5. Gerar Painel Visual de Prova (Audit Contact Sheet)
     print("\n--- 4. GERAÇÃO DO PAINEL VISUAL DE PROVA ---")
-    sheet_w = 6 * 136 + 16
+    sheet_w = 7 * 136 + 16
     sheet_h = 2 * 170 + 200 + 40
     audit_canvas = Image.new('RGB', (sheet_w, sheet_h), (20, 24, 32))
     draw = ImageDraw.Draw(audit_canvas)
     
     # Cabeçalho
     draw.rectangle([(0, 0), (sheet_w, 40)], fill=(15, 18, 25))
-    draw.text((16, 12), "DESENRASCADO - AUDITORIA VISUAL COMPLETA (v7.4)", fill=(245, 158, 11))
+    draw.text((16, 12), "DESENRASCADO - AUDITORIA VISUAL COMPLETA (v7.6)", fill=(245, 158, 11))
     
     # Desenhar os retratos com moldura e etiquetas
     for i, (loc_id, cfg) in enumerate(NPC_CONFIG.items()):
-        col = i % 6
-        row = i // 6
+        col = i % 7
+        row = i // 7
         x = 16 + col * 136
         y = 50 + row * 170
         

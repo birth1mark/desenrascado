@@ -253,8 +253,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.5', "ASSET_VER incrementado para 7.5");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.5' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '7.6', "ASSET_VER incrementado para 7.6");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '7.6' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -264,10 +264,10 @@ assert(LISBON_CHARACTERS, "Catálogo LISBON_CHARACTERS existe");
 
 const expectedChars = [
     'senhorio', 'tasca', 'supermercado', 'loja_roupa', 'acampada',
-    'faculdade', 'banco', 'startup', 'miradouro', 'marta', 'rui', 'goncalo'
+    'faculdade', 'banco', 'startup', 'miradouro', 'marta', 'rui', 'goncalo', 'varina'
 ];
 
-assert.strictEqual(Object.keys(LISBON_CHARACTERS).length, 12, "Existem exatamente 12 personagens em LISBON_CHARACTERS");
+assert.strictEqual(Object.keys(LISBON_CHARACTERS).length, 13, "Existem exatamente 13 personagens em LISBON_CHARACTERS");
 expectedChars.forEach(key => {
     const c = LISBON_CHARACTERS[key];
     assert(c, `Personagem '${key}' existe no códex`);
@@ -522,7 +522,63 @@ assert.strictEqual(storyCanvasVictory.height, 1920, "Altura do canvas de vitóri
 
 console.log("✓ 12.2 Certidão Oficial 9:16: Estética notarial arquivística, selo fiscal de 50$00, foto, grelha forense, assinaturas e CTA gerados com sucesso!");
 
+// -----------------------------------------------------------------------------
+// TESTE 13: DISTINÇÃO DE AVATARES (RUI vs GONÇALO) E SPRITE FEMININA DA VARINA
+// -----------------------------------------------------------------------------
+// 1. Verificar ficheiros de retratos em disco
+assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/portrait_rui.png'), "assets/portrait_rui.png existe em disco");
+assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/portrait_goncalo.png'), "assets/portrait_goncalo.png existe em disco");
+assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/portrait_varina.png'), "assets/portrait_varina.png existe em disco");
+
+// 2. Verificar catálogo LISBON_CHARACTERS
+assert(LISBON_CHARACTERS.rui, "LISBON_CHARACTERS.rui existe");
+assert(LISBON_CHARACTERS.goncalo, "LISBON_CHARACTERS.goncalo existe");
+assert(LISBON_CHARACTERS.varina, "LISBON_CHARACTERS.varina existe");
+
+assert.strictEqual(LISBON_CHARACTERS.rui.portraitId, 'rui', "Rui usa portraitId 'rui' (não 'miradouro')");
+assert.strictEqual(LISBON_CHARACTERS.goncalo.portraitId, 'goncalo', "Gonçalo usa portraitId 'goncalo' (não 'miradouro')");
+assert.strictEqual(LISBON_CHARACTERS.varina.portraitId, 'varina', "Varina usa portraitId 'varina'");
+
+// Garantir que Rui e Gonçalo NÃO partilham avatar
+assert.notStrictEqual(LISBON_CHARACTERS.rui.portraitId, LISBON_CHARACTERS.goncalo.portraitId, "Rui e Gonçalo têm portraitIds distintos!");
+assert.notStrictEqual(LISBON_CHARACTERS.rui.portraitId, LISBON_CHARACTERS.miradouro.portraitId, "Rui não partilha portraitId com o Miradouro!");
+assert.notStrictEqual(LISBON_CHARACTERS.goncalo.portraitId, LISBON_CHARACTERS.miradouro.portraitId, "Gonçalo não partilha portraitId com o Miradouro!");
+
+// 3. Verificar registo de NPC_INFO
+const allNpcInfo = vm.runInContext("NPC_INFO", sandbox);
+assert(allNpcInfo.rui, "NPC_INFO.rui registado");
+assert(allNpcInfo.goncalo, "NPC_INFO.goncalo registado");
+assert(allNpcInfo.varina, "NPC_INFO.varina registado");
+assert.strictEqual(allNpcInfo.varina.name, "D. Rosa", "Nome da varina é D. Rosa");
+
+// 4. Verificar sprite feminina da Varina nos peões de rua (renderStreetWalkers)
+assert(html.includes("hasZeSprites && w.type !== 'varina'"), "Varina NUNCA desenha o sprite masculino de calças do Zé!");
+assert(html.includes("Saia Rodada Tradicional Alfacinha"), "Varina desenha saia rodada alfacinha com pregas");
+assert(html.includes("Avental branco tradicional de peixeira"), "Varina desenha avental tradicional de peixeira");
+assert(html.includes("Xaile de lã preta traçado em V"), "Varina desenha xaile traçado em V");
+assert(html.includes("Argolas de Ouro de Rainha"), "Varina desenha brincos tradicionais de filigrana");
+assert(html.includes("Canastra de Peixe Fresco à Cabeça"), "Varina desenha canastra com sardinhas cintilantes");
+
+// 5. Verificar encontros interativos com retratos SCUMM
+const testWalkerVarina = { name: "D. Rosa", type: "varina", x: 100, y: 150 };
+vm.runInContext("openStreetWalkerEncounter", sandbox)(testWalkerVarina);
+const encVarina = vm.runInContext("activeEncounter", sandbox);
+assert(encVarina, "Encontro da varina ativado");
+assert.strictEqual(encVarina.portraitId, 'varina', "Encontro da varina define portraitId 'varina'");
+
+const testWalkerEstafeta = { name: "Rui Peixoto", type: "estafeta", x: 100, y: 150 };
+vm.runInContext("openStreetWalkerEncounter", sandbox)(testWalkerEstafeta);
+const encEstafeta = vm.runInContext("activeEncounter", sandbox);
+assert.strictEqual(encEstafeta.portraitId, 'rui', "Encontro do estafeta define portraitId 'rui'");
+
+const testWalkerTuna = { name: "Gonçalo", type: "tuna", x: 100, y: 150 };
+vm.runInContext("openStreetWalkerEncounter", sandbox)(testWalkerTuna);
+const encTuna = vm.runInContext("activeEncounter", sandbox);
+assert.strictEqual(encTuna.portraitId, 'goncalo', "Encontro da tuna define portraitId 'goncalo'");
+
+console.log("✓ 13. Avatares & Varina: Rui e Gonçalo 100% individualizados e D. Rosa com arte feminina tradicional e retrato SCUMM!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 12 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 13 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");
