@@ -254,8 +254,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '8.6', "ASSET_VER incrementado para 8.6");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '8.6' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '8.7', "ASSET_VER incrementado para 8.7");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '8.7' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -1033,7 +1033,74 @@ assert.strictEqual(bLoja.indicatorY, 185, "Indicador de Modas Chiado na porta da
 
 console.log("✓ 21. Geometria de Toque e Separação de Hitboxes: Zero sobreposições entre Casa/Modas Chiado/Senhorio/Tasca e indicadores visuais validados com sucesso!");
 
+// -----------------------------------------------------------------------------
+// TESTE 22: ENCONTROS ROMÂNTICOS CINEMÁTICOS, ESCOLHAS SCUMM & CASAL
+// -----------------------------------------------------------------------------
+vm.runInContext(`
+    // 1. Verificar catálogo completo de cutscenes românticas
+    const expectedCutscenes = [
+        'date_first_catia', 'date_first_marta', 'date_first_zulmira', 'date_first_goncalo', 'date_first_rui',
+        'couple_catia', 'couple_marta', 'couple_zulmira', 'couple_goncalo', 'couple_rui'
+    ];
+    expectedCutscenes.forEach(k => {
+        assert(CUTSCENES[k], "Cutscene romântica presente: " + k);
+        assert(CUTSCENES[k].slides.length >= 3, "Cutscene " + k + " tem pelo menos 3 slides");
+        const choiceSlide = CUTSCENES[k].slides.find(s => s.choices);
+        assert(choiceSlide, "Cutscene " + k + " possui slide com escolhas SCUMM interativas");
+        assert.strictEqual(choiceSlide.choices.length, 3, "Cutscene " + k + " tem exatamente 3 escolhas de diálogo");
+    });
+
+    // 2. Testar execução de playCutscene com slide de escolhas
+    state = 'BOARD';
+    previousGameState = 'BOARD';
+    playCutscene('date_first_catia', { partnerId: 'catia', partnerName: 'Cátia' });
+    assert.strictEqual(state, 'CUTSCENE', "Estado CUTSCENE ativo");
+    assert.strictEqual(activeCutscene.id, 'date_first_catia', "ID da cutscene date_first_catia");
+
+    // Avançar slide 0
+    advanceCutscene(true);
+    assert.strictEqual(activeCutscene.currentSlide, 1, "Avançou para o slide de escolhas");
+
+    // Simular que o texto acabou de datilografar
+    const choiceSlide = activeCutscene.config.slides[1];
+    activeCutscene.charIndex = choiceSlide.text.length;
+
+    // Tentar avançar com espaço (deve ser bloqueado porque há escolhas pendentes)
+    advanceCutscene(false);
+    assert.strictEqual(activeCutscene.currentSlide, 1, "Não avançou com espaço genérico (aguarda escolha SCUMM)");
+
+    // Testar seleção da escolha 0
+    const sanityBeforeChoice = player.sanity;
+    const choice0 = choiceSlide.choices[0];
+    const initialSlideCount = activeCutscene.config.slides.length;
+    selectCutsceneChoice(choice0);
+
+    // Deve ter ganho sanidade e inserido slide de reação dinâmico
+    assert(player.sanity >= sanityBeforeChoice, "Sanidade aumentou com escolha romântica");
+    assert.strictEqual(activeCutscene.currentSlide, 2, "Avançou para o slide de reação inserido");
+    assert.strictEqual(activeCutscene.config.slides.length, initialSlideCount + 1, "Slide de reação inserido dinamicamente");
+    assert.strictEqual(activeCutscene.config.slides[2].speaker, 'Cátia', "Orador da reação é a Cátia");
+
+    // Concluir os slides restantes
+    advanceCutscene(true); // da reação para o narrador
+    advanceCutscene(true); // conclusão
+    assert.strictEqual(activeCutscene, null, "Cutscene finalizada com sucesso");
+    assert.strictEqual(state, 'BOARD', "Retornou ao estado anterior");
+
+    // 3. Testar ação de casal em Casa quando parceiro está em casa
+    player.partner = 'catia';
+    player.day = 1;
+    player.timeHour = 20; // noite -> isPartnerAtHome = true
+    modalBuilding = BUILDINGS.find(b => b.id === 'casa');
+    modalBuilding.actionPage = 0;
+    renderBuildingActions('casa', 10, 10, 620, 340);
+    const coupleDateAct = modalBuilding.currentActions.find(a => a.datePartner);
+    assert(coupleDateAct, "Ação de encontro romântico especial de casal presente em Casa");
+`, sandbox);
+
+console.log("✓ 22. Encontros Românticos Cinemáticos, Escolhas SCUMM & Casal validados com sucesso!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 21 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 22 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");

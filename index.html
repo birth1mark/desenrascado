@@ -3815,7 +3815,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '8.6';
+const ASSET_VER = '8.7';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -6937,7 +6937,533 @@ const CUTSCENES = {
                 text: "O tilintar das chaves no bolso ecoa como uma vitória triunfal. Cada metro quadrado conquistado na capital é um marco na tua emancipação!"
             }
         ]
+    },
+    // ========================================================================
+    // ENCONTROS ROMÂNTICOS: OS PRIMEIROS GRANDES ENCONTROS (50% AFINIDADE)
+    // ========================================================================
+    date_first_catia: {
+        id: 'date_first_catia',
+        title: 'ENCONTRO NO MIRADOURO',
+        subTitle: 'PÔR-DO-SOL, CASTANHAS E O TEJO COM A CÁTIA',
+        sfxCue: 'win',
+        bgImgKey: 'miradouro',
+        bgTint: 'rgba(234, 88, 12, 0.35)',
+        slides: [
+            {
+                speaker: "Cátia",
+                portraitId: 'catia',
+                text: "«Zé! Que bom que aceitaste vir aqui ter acima! O dia na mercearia foi uma correria com as caixas de fruta... Mas olhar para o Tejo a esta hora faz esquecer o cansaço todo.»"
+            },
+            {
+                speaker: "Zé",
+                portraitId: 'ze',
+                text: "Como queres responder à Cátia?",
+                choices: [
+                    {
+                        text: "«A vista sobre o rio é linda, mas empalidece perante a doçura do teu sorriso.»",
+                        bonusSanity: 15,
+                        bonusAffinity: 5,
+                        speakerReaction: "Cátia",
+                        reactionPortrait: 'catia',
+                        reactionText: "Cátia cora, dá uma risada tímida e encosta suavemente o ombro ao teu: «Ai Zé, tu com essas falas mansas ainda me tiras do sério... Mas soube-me tão bem ouvir isso!»"
+                    },
+                    {
+                        text: "«Trouxe um cartucho de castanhas assadas e fatias de queijo de Azeitão para nós.»",
+                        bonusSanity: 20,
+                        bonusAffinity: 5,
+                        speakerReaction: "Cátia",
+                        reactionPortrait: 'catia',
+                        reactionText: "Cátia abre um sorriso rasgado e prova uma castanha quente: «Estão estaladiças e no ponto! Tu sabes mesmo como mimar uma rapariga trabalhadora.»"
+                    },
+                    {
+                        text: "«Sabias que daqui consigo contar pelo menos vinte telhados a precisar de calha nova?»",
+                        bonusSanity: 25,
+                        bonusAffinity: 3,
+                        speakerReaction: "Cátia",
+                        reactionPortrait: 'catia',
+                        reactionText: "Cátia desata a rir com gosto: «Só tu para estares num miradouro romântico a fazer orçamentos de obras! És uma figura única, Zé!»"
+                    }
+                ]
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "A brisa fresca do Tejo sopra sobre o Miradouro de Santa Catarina. Entre partilhas simples e olhares cúmplices, a cidade parece acolher-vos num abraço caloroso."
+            }
+        ]
+    },
+
+    date_first_marta: {
+        id: 'date_first_marta',
+        title: 'ENCONTRO NA ALAMEDA',
+        subTitle: 'CAFÉS, EQUAÇÕES E OLHARES CÚMPLICES COM A MARTA',
+        sfxCue: 'win',
+        bgImgKey: 'faculdade',
+        bgTint: 'rgba(14, 165, 233, 0.30)',
+        slides: [
+            {
+                speaker: "Marta",
+                portraitId: 'marta',
+                text: "«Zé! Conseguiste escapar às tuas correrias para vir ao IST? Acabei agora um relatório infernal de sistemas de controlo... A minha cabeça ia explodir se não bebesse um galão contigo.»"
+            },
+            {
+                speaker: "Zé",
+                portraitId: 'ze',
+                text: "Como queres responder à Marta?",
+                choices: [
+                    {
+                        text: "«A tua determinação e inteligência são a coisa mais magnética de todo este campus.»",
+                        bonusSanity: 15,
+                        bonusAffinity: 5,
+                        speakerReaction: "Marta",
+                        reactionPortrait: 'marta',
+                        reactionText: "Marta ajeita os óculos comovida e sorri com ternura: «Passo os dias rodeada de equações frias... Ouvir isso de ti aqueceu-me a alma, Zé.»"
+                    },
+                    {
+                        text: "«Passei na pastelaria da esquina e trouxe pastéis de nata ainda a escaldar!»",
+                        bonusSanity: 20,
+                        bonusAffinity: 5,
+                        speakerReaction: "Marta",
+                        reactionPortrait: 'marta',
+                        reactionText: "Marta dá uma trinca gulosa: «Massa folhada perfeita e canela na dose certa! Aprovado pelo departamento de engenharias com nota máxima!»"
+                    },
+                    {
+                        text: "«Se calculares o atrito da calçada da Alameda em dia de chuva, o tombo é inevitável!»",
+                        bonusSanity: 25,
+                        bonusAffinity: 3,
+                        speakerReaction: "Marta",
+                        reactionPortrait: 'marta',
+                        reactionText: "Marta desenha um gráfico num guardanapo e ri-se: «Teorema da Derrapagem Alfacinha comprovado experimentalmente! Adoro o teu sentido de humor.»"
+                    }
+                ]
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "À sombra da imponente torre de pedra do Técnico, as fórmulas dão lugar a risos partilhados e à certeza de que a melhor química não se aprende nos compêndios."
+            }
+        ]
+    },
+
+    date_first_zulmira: {
+        id: 'date_first_zulmira',
+        title: 'ENCONTRO NO CHIADO',
+        subTitle: 'ALTA COSTURA E TAÇAS DE ESPUMANTE COM D. ZULMIRA',
+        sfxCue: 'win',
+        bgImgKey: 'loja_roupa',
+        bgTint: 'rgba(168, 85, 247, 0.32)',
+        slides: [
+            {
+                speaker: "D. Zulmira",
+                portraitId: 'zulmira',
+                text: "«Oh, Zé Querido! Que pontualidade exemplar. Estava a ultimar a nova coleção de sedas na Modas Chiado... Mas a tarde pede um intervalo civilizado com a tua agradável companhia.»"
+            },
+            {
+                speaker: "Zé",
+                portraitId: 'ze',
+                text: "Como queres responder a D. Zulmira?",
+                choices: [
+                    {
+                        text: "«A sua elegância faz qualquer recanto da Rua Garrett parecer um salão imperial.»",
+                        bonusSanity: 15,
+                        bonusAffinity: 5,
+                        speakerReaction: "D. Zulmira",
+                        reactionPortrait: 'zulmira',
+                        reactionText: "D. Zulmira abre o leque e sorri com vaidade distinta: «Tens a galhardia e o charme dos grandes cavalheiros pombalinos, Zé. Fascinas-me imenso!»"
+                    },
+                    {
+                        text: "«Mandei vir queijadas finas de Sintra e duas taças de espumante para brindarmos.»",
+                        bonusSanity: 20,
+                        bonusAffinity: 5,
+                        speakerReaction: "D. Zulmira",
+                        reactionPortrait: 'zulmira',
+                        reactionText: "D. Zulmira ergue a taça encantada: «Que bom gosto irrepreensível! Um brinde à nossa amizade e a tudo o que o destino nos reserva.»"
+                    },
+                    {
+                        text: "«Cobraram-me quatro euros pela bica... Mas estar consigo vale cada cêntimo da inflação!»",
+                        bonusSanity: 25,
+                        bonusAffinity: 3,
+                        speakerReaction: "D. Zulmira",
+                        reactionPortrait: 'zulmira',
+                        reactionText: "D. Zulmira solta uma gargalhada elegante: «O Chiado tem o seu preço, meu querido! Mas o teu desembaraço e vivacidade não se compram em boutique nenhuma.»"
+                    }
+                ]
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "Entre o tilintar dos copos de cristal e a passagem distante do elétrico, o Chiado torna-se o palco de uma cumplicidade refinada e irresistível."
+            }
+        ]
+    },
+
+    date_first_goncalo: {
+        id: 'date_first_goncalo',
+        title: 'NOITE DE FADO EM ALFAMA',
+        subTitle: 'A GUITARRA PORTUGUESA E A SERENATA DO GONÇALO',
+        sfxCue: 'win',
+        bgImgKey: 'tasca',
+        bgTint: 'rgba(217, 119, 6, 0.40)',
+        slides: [
+            {
+                speaker: "Gonçalo",
+                portraitId: 'goncalo',
+                text: "«Zé! Chegaste mesmo a tempo da tertúlia. Aqui na tasca à meia-luz, longe do reboliço dos turistas, a guitarra portuguesa tem outra alma... Puxa um banco e ouve este fado corrido.»"
+            },
+            {
+                speaker: "Zé",
+                portraitId: 'ze',
+                text: "Como queres responder ao Gonçalo?",
+                choices: [
+                    {
+                        text: "«A tua voz e o tocar das tuas cordas fazem vibrar o coração de quem te ouve.»",
+                        bonusSanity: 15,
+                        bonusAffinity: 5,
+                        speakerReaction: "Gonçalo",
+                        reactionPortrait: 'goncalo',
+                        reactionText: "Gonçalo fita-te nos olhos com emoção e dedilha um acorde doce: «O meu fado só ganhou verdadeira melodia depois de te cruzar no caminho, Zé.»"
+                    },
+                    {
+                        text: "«Pedi um jarro de tinto da casa e um chouriço assado na canoa de barro!»",
+                        bonusSanity: 20,
+                        bonusAffinity: 5,
+                        speakerReaction: "Gonçalo",
+                        reactionPortrait: 'goncalo',
+                        reactionText: "Gonçalo ergue o copo de barro com entusiasmo: «És cá dos meus! Tradição, petisco e boa conversa... Não há luxo no mundo que pague isto!»"
+                    },
+                    {
+                        text: "«Se este fado fosse mais triste, até o galheteiro do azeite se desfazia em lágrimas!»",
+                        bonusSanity: 25,
+                        bonusAffinity: 3,
+                        speakerReaction: "Gonçalo",
+                        reactionPortrait: 'goncalo',
+                        reactionText: "Gonçalo dá uma gargalhada genuína que ecoa pela taberna: «És um castiço de primeira apanha! Essa graça alfacinha é a melhor cantiga de Lisboa!»"
+                    }
+                ]
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "O fado desenrola-se noite dentro pelas vielas antigas de Alfama, unindo dois boémios sob o luar e a magia eterna da cidade."
+            }
+        ]
+    },
+
+    date_first_rui: {
+        id: 'date_first_rui',
+        title: 'SUNSET NO SALDANHA',
+        subTitle: 'COLD BREW, PROJETOS E AMBIÇÕES COM O RUI',
+        sfxCue: 'win',
+        bgImgKey: 'startup',
+        bgTint: 'rgba(6, 182, 212, 0.35)',
+        slides: [
+            {
+                speaker: "Rui",
+                portraitId: 'rui',
+                text: "«Boas, Zé! Desculpa o fôlego curto, acabei de subir as sete colinas a pedalar para entregar encomendas! Mas aqui no terraço do Saldanha a vista é brutal. Toma lá uma garrafa de cold brew fresquinha.»"
+            },
+            {
+                speaker: "Zé",
+                portraitId: 'ze',
+                text: "Como queres responder ao Rui?",
+                choices: [
+                    {
+                        text: "«A tua garra e energia positiva iluminam qualquer dia cinzento em Lisboa.»",
+                        bonusSanity: 15,
+                        bonusAffinity: 5,
+                        speakerReaction: "Rui",
+                        reactionPortrait: 'rui',
+                        reactionText: "Rui sorri abertamente e segura na tua mão com firmeza: «Com um apoio desses, sinto que consigo sprintar qualquer desafio nesta cidade!»"
+                    },
+                    {
+                        text: "«Trouxe umas tostas artesanais com queijo fresco para recarregares baterias!»",
+                        bonusSanity: 20,
+                        bonusAffinity: 5,
+                        speakerReaction: "Rui",
+                        reactionPortrait: 'rui',
+                        reactionText: "Rui devora a tosta com satisfação: «És o melhor companheiro de equipa do universo! Estava a ver a vida a andar para trás de tanta fome.»"
+                    },
+                    {
+                        text: "«Subir a Avenida da Liberdade de bicicleta devia constar como prova olímpica!»",
+                        bonusSanity: 25,
+                        bonusAffinity: 3,
+                        speakerReaction: "Rui",
+                        reactionPortrait: 'rui',
+                        reactionText: "Rui desata a rir e bate uma gargalhada com a mão na testa: «Nem me fales nos carris do elétrico molhados! Mas valeu a pena cada gota de suor para estar contigo.»"
+                    }
+                ]
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "No topo do edifício, com a rotunda do Saldanha em movimento perpétuo lá em baixo, partilham visões de futuro e a cumplicidade de quem luta pelo seu lugar ao sol."
+            }
+        ]
+    },
+
+    // ========================================================================
+    // ENCONTROS ROMÂNTICOS: MOMENTOS ESPECIAIS DE CASAL (QUANDO JÁ MORAM JUNTOS)
+    // ========================================================================
+    couple_catia: {
+        id: 'couple_catia',
+        title: 'ESCAPADINHA NA BAIXA',
+        subTitle: 'PASSEIO NOTURNO E GINJINHA NO ROSSIO COM A CÁTIA',
+        sfxCue: 'win',
+        bgImgKey: 'miradouro',
+        bgTint: 'rgba(15, 23, 42, 0.55)',
+        slides: [
+            {
+                speaker: "Cátia",
+                portraitId: 'catia',
+                text: "«Que maravilha sairmos os dois de casa esta noite, Zé! Fechámos a porta, esquecemos as contas e viemos passear pelo Rossio iluminado... Parece que estamos em lua-de-mel perpétua.»"
+            },
+            {
+                speaker: "Zé",
+                portraitId: 'ze',
+                text: "Como respondes à tua cara-metade?",
+                choices: [
+                    {
+                        text: "«Viver contigo sob o mesmo teto transformou Lisboa no meu verdadeiro lar.»",
+                        bonusSanity: 25,
+                        bonusAffinity: 5,
+                        speakerReaction: "Cátia",
+                        reactionPortrait: 'catia',
+                        reactionText: "Cátia aperta-te a mão com imenso amor: «Quando me deito a teu lado todas as noites, sinto que não preciso de mais nada no mundo.»"
+                    },
+                    {
+                        text: "«Vamos beber dois copos de ginjinha com elas e brindar à nossa vida a dois!»",
+                        bonusSanity: 30,
+                        bonusAffinity: 5,
+                        speakerReaction: "Cátia",
+                        reactionPortrait: 'catia',
+                        reactionText: "Cátia bebe um gole e sorri deliciada: «O travo doce da cereja e a tua companhia... O casal mais feliz das colinas de Lisboa!»"
+                    },
+                    {
+                        text: "«Prometo que amanhã limpo eu a cozinha toda sem protestar contra a louça!»",
+                        bonusSanity: 35,
+                        bonusAffinity: 3,
+                        speakerReaction: "Cátia",
+                        reactionPortrait: 'catia',
+                        reactionText: "Cátia ri-se às gargalhadas: «Olha que vou cobrar essa promessa amanhã de manhã cedinho! És o meu maior tesouro.»"
+                    }
+                ]
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "Mãos dadas sob a iluminação clássica do Rossio, o calor do vosso amor afasta qualquer preocupação do dia-a-dia."
+            }
+        ]
+    },
+
+    couple_marta: {
+        id: 'couple_marta',
+        title: 'NOITE NO MIRADOURO DA GRAÇA',
+        subTitle: 'CÚMPLICES SOBRE A CIDADE COM A MARTA',
+        sfxCue: 'win',
+        bgImgKey: 'miradouro',
+        bgTint: 'rgba(30, 27, 75, 0.60)',
+        slides: [
+            {
+                speaker: "Marta",
+                portraitId: 'marta',
+                text: "«Que noite incrível, Zé. Olhar cá de cima da Graça para o Castelo de São Jorge iluminado e as luzes de Lisboa... Sabes que sou uma mulher de lógica, mas contigo o meu coração não segue regras.»"
+            },
+            {
+                speaker: "Zé",
+                portraitId: 'ze',
+                text: "Como respondes à Marta?",
+                choices: [
+                    {
+                        text: "«Partilhar o mesmo teto contigo fez-me perceber o verdadeiro significado de parceria.»",
+                        bonusSanity: 25,
+                        bonusAffinity: 5,
+                        speakerReaction: "Marta",
+                        reactionPortrait: 'marta',
+                        reactionText: "Marta encosta a cabeça no teu peito: «Somos a equipa mais sólida de Lisboa. Não há algoritmo que supere o que sinto por ti.»"
+                    },
+                    {
+                        text: "«Vem cá para debaixo do meu casaco, que a nortada da colina está a apertar!»",
+                        bonusSanity: 30,
+                        bonusAffinity: 5,
+                        speakerReaction: "Marta",
+                        reactionPortrait: 'marta',
+                        reactionText: "Marta aconchega-se ao teu corpo com um suspiro calmo: «O teu abraço é o melhor isolamento térmico que a ciência alguma vez inventou.»"
+                    },
+                    {
+                        text: "«Se a CP tivesse a nossa estabilidade emocional, o país já estava salvo!»",
+                        bonusSanity: 35,
+                        bonusAffinity: 3,
+                        speakerReaction: "Marta",
+                        reactionPortrait: 'marta',
+                        reactionText: "Marta solta uma gargalhada límpida: «Essa vai direta para o meu arquivo de piadas de engenharia! És impagável, Zé.»"
+                    }
+                ]
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "Sob o manto de estrelas e a muralha iluminada do castelo, o amor e o intelecto celebram uma harmonia perfeita."
+            }
+        ]
+    },
+
+    couple_zulmira: {
+        id: 'couple_zulmira',
+        title: 'NOITE DE GALA NO TEATRO',
+        subTitle: 'BRILHO, HISTÓRIA E PAIXÃO COM D. ZULMIRA',
+        sfxCue: 'win',
+        bgImgKey: 'loja_roupa',
+        bgTint: 'rgba(88, 28, 135, 0.50)',
+        slides: [
+            {
+                speaker: "D. Zulmira",
+                portraitId: 'zulmira',
+                text: "«Meu doce Zé! Todos no São Carlos nos olhavam com admiração e inveja! Quem diria que a rainha do Chiado e o rapaz mais desenrascado da capital formariam a união mais cintilante da sociedade?»"
+            },
+            {
+                speaker: "Zé",
+                portraitId: 'ze',
+                text: "Como respondes a D. Zulmira?",
+                choices: [
+                    {
+                        text: "«A Zulmira ensinou-me a ter classe, mas o meu amor por si vem do fundo da alma.»",
+                        bonusSanity: 25,
+                        bonusAffinity: 5,
+                        speakerReaction: "D. Zulmira",
+                        reactionPortrait: 'zulmira',
+                        reactionText: "D. Zulmira acaricia o teu rosto com ternura: «A tua sinceridade vale mais que todas as jóias da coroa, meu eterno cavalheiro.»"
+                    },
+                    {
+                        text: "«Trouxe esta rosa vermelha colhida a preceito para enfeitar o seu vestido de gala.»",
+                        bonusSanity: 30,
+                        bonusAffinity: 5,
+                        speakerReaction: "D. Zulmira",
+                        reactionPortrait: 'zulmira',
+                        reactionText: "D. Zulmira coloca a rosa no decote com um brilho no olhar: «Que gesto romântico e intemporal! Deixaste-me sem palavras.»"
+                    },
+                    {
+                        text: "«Se o Sr. Jerónimo nos visse aqui assim, até nos aumentava a renda para o dobro!»",
+                        bonusSanity: 35,
+                        bonusAffinity: 3,
+                        speakerReaction: "D. Zulmira",
+                        reactionPortrait: 'zulmira',
+                        reactionText: "D. Zulmira ri com charme irresistível: «Aquele sovina que tente! Com o meu estatuto e a tua esperteza, ninguém mexe com o nosso ninho!»"
+                    }
+                ]
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "Pelos passeios de calçada artística do Chiado, a vossa história desafia convenções e torna-se lenda viva na capital."
+            }
+        ]
+    },
+
+    couple_goncalo: {
+        id: 'couple_goncalo',
+        title: 'SERENATA NO MIRADOURO',
+        subTitle: 'FADO ÍNTIMO E CUMPLICIDADE COM O GONÇALO',
+        sfxCue: 'win',
+        bgImgKey: 'miradouro',
+        bgTint: 'rgba(30, 41, 59, 0.65)',
+        slides: [
+            {
+                speaker: "Gonçalo",
+                portraitId: 'goncalo',
+                text: "«Zé... fugir da confusão das tascas para vir cantar só para ti à beira do Tejo era tudo o que eu precisava. O nosso lar tem sido o meu porto de abrigo e a minha maior inspiração.»"
+            },
+            {
+                speaker: "Zé",
+                portraitId: 'ze',
+                text: "Como respondes ao Gonçalo?",
+                choices: [
+                    {
+                        text: "«A tua voz e o som da tua guitarra são o abraço mais quente que tenho nesta vida.»",
+                        bonusSanity: 25,
+                        bonusAffinity: 5,
+                        speakerReaction: "Gonçalo",
+                        reactionPortrait: 'goncalo',
+                        reactionText: "Gonçalo pousa a mão sobre o teu peito: «Enquanto tiver dedos para tanger cordas e ar no peito, a minha cantiga será sempre tua.»"
+                    },
+                    {
+                        text: "«Trouxe um termo com café quente e dois pastéis de Belém para o nosso serão.»",
+                        bonusSanity: 30,
+                        bonusAffinity: 5,
+                        speakerReaction: "Gonçalo",
+                        reactionPortrait: 'goncalo',
+                        reactionText: "Gonçalo sorri grato: «Tens um coração generoso como não há igual em sete colinas! Que serão tão perfeito.»"
+                    },
+                    {
+                        text: "«Ainda bem que viemos para aqui, se cantasses fado em casa à meia-noite o senhorio expulsava-nos!»",
+                        bonusSanity: 35,
+                        bonusAffinity: 3,
+                        speakerReaction: "Gonçalo",
+                        reactionPortrait: 'goncalo',
+                        reactionText: "Gonçalo ri com brio fadista: «Aquele velho não percebe nada de arte boémia! Mas aqui com as gaivotas e o Tejo estamos no céu.»"
+                    }
+                ]
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "O som melodioso da guitarra portuguesa flutua sobre as águas calmas do Tejo, celebrando uma cumplicidade inabalável."
+            }
+        ]
+    },
+
+    couple_rui: {
+        id: 'couple_rui',
+        title: 'PASSEIO RIBEIRINHO AO PÔR-DO-SOL',
+        subTitle: 'BRISA DO TEJO E SONHOS DE FUTURO COM O RUI',
+        sfxCue: 'win',
+        bgImgKey: 'miradouro',
+        bgTint: 'rgba(249, 115, 22, 0.40)',
+        slides: [
+            {
+                speaker: "Rui",
+                portraitId: 'rui',
+                text: "«Zé! Que alívio encostar a bicicleta e vir caminhar contigo junto ao rio. Dividir a casa e os dias contigo tirou-me um peso brutal dos ombros. Lisboa até parece mais leve.»"
+            },
+            {
+                speaker: "Zé",
+                portraitId: 'ze',
+                text: "Como respondes ao Rui?",
+                choices: [
+                    {
+                        text: "«Não há subida íngreme nesta cidade que me custe se estiver a caminhar ao teu lado.»",
+                        bonusSanity: 25,
+                        bonusAffinity: 5,
+                        speakerReaction: "Rui",
+                        reactionPortrait: 'rui',
+                        reactionText: "Rui abraça-te pelos ombros com um sorriso gigante: «É isso mesmo! Juntos somos uma força da natureza imparável!»"
+                    },
+                    {
+                        text: "«Pára um bocadinho a correria e vem cá provar esta água de coco fresca comigo.»",
+                        bonusSanity: 30,
+                        bonusAffinity: 5,
+                        speakerReaction: "Rui",
+                        reactionPortrait: 'rui',
+                        reactionText: "Rui dá um gole longo e fecha os olhos: «Que frescura inacreditável! Tu sabes sempre quando é hora de desacelerar.»"
+                    },
+                    {
+                        text: "«A única sprint review que me interessa hoje é decidirmos quem vai buscar as bifanas!»",
+                        bonusSanity: 35,
+                        bonusAffinity: 3,
+                        speakerReaction: "Rui",
+                        reactionPortrait: 'rui',
+                        reactionText: "Rui solta uma risada esfuziante: «Fechado! Mas com mostarda à antiga e carcaça fresca, senão não conta como commit aprovado!»"
+                    }
+                ]
+            },
+            {
+                speaker: "Narrador",
+                portraitId: null,
+                text: "Ao longo do passeio ribeirinho, a brisa suave do Tejo e o calor dos vossos risos selam o triunfo da vida a dois na capital."
+            }
+        ]
     }
+
 };
 
 function playCutscene(id, options = {}) {
@@ -6950,13 +7476,20 @@ function playCutscene(id, options = {}) {
     activeEncounter = null;
     speechBubbles = [];
 
+    // Clonar slides profundamente para que inserções de reações dinâmicas não mutem o template estático
+    const clonedSlides = cs.slides.map(s => ({
+        ...s,
+        choices: s.choices ? s.choices.map(c => ({ ...c })) : undefined
+    }));
+
     activeCutscene = {
         id,
-        config: cs,
+        config: { ...cs, slides: clonedSlides },
         currentSlide: 0,
         charIndex: 0,
         charTimer: 0,
         blipCooldown: 0,
+        choiceRects: [],
         options,
         onComplete: options.onComplete || null
     };
@@ -6996,6 +7529,9 @@ function renderCutscene() {
     if (cs.bgImg && cs.bgImg.complete && cs.bgImg.naturalWidth > 0) {
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(cs.bgImg, 0, 0, 640, 295);
+    } else if (cs.bgImgKey && typeof interiorImgs !== 'undefined' && interiorImgs[cs.bgImgKey] && interiorImgs[cs.bgImgKey].complete && interiorImgs[cs.bgImgKey].naturalWidth > 0) {
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(interiorImgs[cs.bgImgKey], 0, 0, 640, 295);
     } else if (previousGameState === 'MODAL' && modalBuilding) {
         renderInteriorScene(ctx, modalBuilding.id, animTimer, player, HOUSES, WORKPLACES, getPlayerJob);
     } else {
@@ -7041,11 +7577,16 @@ function renderCutscene() {
     ctx.fillText(cs.subTitle, 320, 35);
 
     // Barra Inferior com Indicador Pulsante
+    const hasChoices = !!(slide.choices && activeCutscene.charIndex >= slide.text.length);
     const pulseAlpha = 0.65 + Math.sin(animTimer * 5.0) * 0.35;
     ctx.fillStyle = `rgba(254, 240, 138, ${pulseAlpha})`;
     ctx.font = 'bold 9px "Press Start 2P"';
     ctx.textAlign = 'center';
-    ctx.fillText("[ ESPAÇO ou CLIQUE para Avançar ▶ ]", 320, 342);
+    if (hasChoices) {
+        ctx.fillText("[ ESCOLHE UMA RESPOSTA (1, 2 OU 3) OU CLICA NA OPÇÃO ]", 320, 342);
+    } else {
+        ctx.fillText("[ ESPAÇO ou CLIQUE para Avançar ▶ ]", 320, 342);
+    }
 
     // ÁREA CENTRAL DE DIÁLOGO CINEMATOGRÁFICO
     const hasPortrait = !!slide.portraitId;
@@ -7074,7 +7615,7 @@ function renderCutscene() {
     const boxX = hasPortrait ? 152 : 60;
     const boxY = 85;
     const boxW = hasPortrait ? 448 : 520;
-    const boxH = 140;
+    const boxH = hasChoices ? 135 : 140;
 
     ctx.fillStyle = 'rgba(10, 15, 26, 0.96)';
     ctx.fillRect(boxX, boxY, boxW, boxH);
@@ -7105,12 +7646,93 @@ function renderCutscene() {
         '#fef08a',
         'left'
     );
+
+    // SISTEMA SCUMM DE ESCOLHAS DE DIÁLOGO INTERATIVAS
+    activeCutscene.choiceRects = [];
+    if (hasChoices) {
+        const cH = 25;
+        const cGap = 3;
+        const startCY = 228;
+
+        slide.choices.forEach((c, idx) => {
+            const cY = startCY + idx * (cH + cGap);
+            const cX = boxX;
+            const cW = boxW;
+            const isHover = (mouse.x >= cX && mouse.x <= cX + cW && mouse.y >= cY && mouse.y <= cY + cH);
+
+            activeCutscene.choiceRects.push({
+                x: cX,
+                y: cY,
+                w: cW,
+                h: cH,
+                choice: c,
+                index: idx
+            });
+
+            // Fundo da opção com destaque ao passar o rato
+            ctx.fillStyle = isHover ? 'rgba(30, 58, 138, 0.95)' : 'rgba(15, 23, 42, 0.92)';
+            ctx.fillRect(cX, cY, cW, cH);
+            ctx.strokeStyle = isHover ? '#facc15' : 'rgba(56, 189, 248, 0.45)';
+            ctx.lineWidth = isHover ? 1.5 : 1;
+            ctx.strokeRect(cX, cY, cW, cH);
+
+            // Texto da opção formatado em Fira Code com prefixo
+            ctx.fillStyle = isHover ? '#fef08a' : '#e2e8f0';
+            ctx.font = isHover ? 'bold 9px "Fira Code"' : '8.5px "Fira Code"';
+            ctx.textAlign = 'left';
+            const prefix = isHover ? `▶ [${idx + 1}] ` : `  [${idx + 1}] `;
+            ctx.fillText(prefix + c.text, cX + 10, cY + 16, cW - 20);
+        });
+    }
+}
+
+function selectCutsceneChoice(choice) {
+    if (!activeCutscene || !choice) return;
+    const cs = activeCutscene.config;
+    const slide = cs.slides[activeCutscene.currentSlide];
+
+    sfxWin();
+
+    // 1. Bónus de Sanidade Mental
+    if (choice.bonusSanity) {
+        player.sanity = Math.min(100, (player.sanity || 0) + choice.bonusSanity);
+        spawnParticle(`+${choice.bonusSanity} Sanidade!`, '#38bdf8');
+    }
+
+    // 2. Bónus de Afinidade Amorosa se houver pretendente/parceiro
+    const partnerId = activeCutscene.options.partnerId;
+    if (choice.bonusAffinity && partnerId) {
+        const rel = getRomanceStage(partnerId);
+        rel.points = Math.min(100, (rel.points || 0) + choice.bonusAffinity);
+        if (!player.romanceAffinity) player.romanceAffinity = {};
+        player.romanceAffinity[partnerId] = rel.points;
+        spawnParticle(`❤️ +${choice.bonusAffinity}% Afinidade!`, '#ec4899');
+    }
+
+    // 3. Inserir slide dinâmico com a reação personalizada da personagem
+    if (choice.reactionText) {
+        const pObj = partnerId ? ROMANCE_PARTNERS[partnerId] : null;
+        const speaker = choice.speakerReaction || (pObj ? pObj.name : (slide.speaker || "Companheiro(a)"));
+        const portrait = choice.reactionPortrait || (partnerId || slide.portraitId);
+        cs.slides.splice(activeCutscene.currentSlide + 1, 0, {
+            speaker: speaker,
+            portraitId: portrait,
+            text: choice.reactionText
+        });
+    }
+
+    // 4. Avançar imediatamente para o slide de reação
+    activeCutscene.currentSlide++;
+    activeCutscene.charIndex = 0;
+    activeCutscene.charTimer = 0;
+    activeCutscene.choiceRects = [];
 }
 
 function advanceCutscene(forceSkip = false) {
     if (!activeCutscene) return;
     const cs = activeCutscene.config;
     const slide = cs.slides[activeCutscene.currentSlide];
+    if (!slide) return;
 
     if (!forceSkip && activeCutscene.charIndex < slide.text.length) {
         // Se ainda está a datilografar, completa instantaneamente o slide atual
@@ -7120,10 +7742,16 @@ function advanceCutscene(forceSkip = false) {
         return;
     }
 
+    // Se o slide tem escolhas ativas, impede avanço sem seleção a menos que forceSkip seja true
+    if (!forceSkip && slide.choices && activeCutscene.charIndex >= slide.text.length) {
+        return;
+    }
+
     // Avança para o próximo slide
     activeCutscene.currentSlide++;
     activeCutscene.charIndex = 0;
     activeCutscene.charTimer = 0;
+    activeCutscene.choiceRects = [];
     sfxAction();
 
     // Se concluiu todos os slides, encerra a cutscene
@@ -7136,6 +7764,32 @@ function advanceCutscene(forceSkip = false) {
 }
 
 function handleCutsceneClick(cx, cy) {
+    if (!activeCutscene) return false;
+    const cs = activeCutscene.config;
+    const slide = cs.slides[activeCutscene.currentSlide];
+    if (!slide) return false;
+
+    // Se ainda está a datilografar, completa instantaneamente o slide atual
+    if (activeCutscene.charIndex < slide.text.length) {
+        activeCutscene.charIndex = slide.text.length;
+        activeCutscene.charTimer = slide.text.length;
+        sfxAction();
+        return true;
+    }
+
+    // Se o slide tem escolhas e já acabou a datilografia, verificar clique numa opção
+    if (slide.choices && activeCutscene.choiceRects && activeCutscene.choiceRects.length > 0) {
+        for (let i = 0; i < activeCutscene.choiceRects.length; i++) {
+            const cr = activeCutscene.choiceRects[i];
+            if (cx >= cr.x && cx <= cr.x + cr.w && cy >= cr.y && cy <= cr.y + cr.h) {
+                selectCutsceneChoice(cr.choice);
+                return true;
+            }
+        }
+        // Clicou fora das opções: impede avanço genérico para forçar a escolha
+        return true;
+    }
+
     advanceCutscene();
     return true;
 }
@@ -11529,7 +12183,18 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                     actions.push(initiativeMap[player.partner]);
                 }
 
-                // 5. Iniciativa do Jogador: Aconchego Íntimo no Sofá
+                // 5. Iniciativa do Jogador: Sair num Encontro Romântico Especial de Casal
+                actions.push({
+                    label: `🌹 Sair num Encontro Especial em Lisboa (1h30, 10€)`,
+                    cost: 10,
+                    timeH: 1,
+                    timeM: 30,
+                    sanity: 40,
+                    datePartner: player.partner,
+                    desc: `Sair da rotina da casa com ${pName} para um serão romântico especial pela capital (+40 Sanidade, pura felicidade a dois).`
+                });
+
+                // 6. Iniciativa do Jogador: Aconchego Íntimo no Sofá
                 actions.push({
                     label: "🫂 Ficar Abraçado no Sofá em Silêncio (30m)",
                     cost: 0,
@@ -11985,6 +12650,21 @@ function renderBuildingActions(id, mx, my, mw, mh) {
                 label: "Candidatar: Estagiário Tech Hub",
                 applyJob: 'startup',
                 desc: "Requer matrícula em Informática e 20 ECTS. 8.50€/h!"
+            });
+        }
+
+        const romActRui = getRomanceAction('rui');
+        if (romActRui) {
+            actions.push(romActRui);
+        } else if (player.partner === 'rui') {
+            actions.push({
+                label: "Passeio Romântico com o Rui (1h, +30 Sanidade)",
+                cost: 0,
+                timeH: 1,
+                timeM: 0,
+                sanity: 30,
+                datePartner: 'rui',
+                desc: "Pausa criativa a dois e batidos frescos. +30 Sanidade e cumplicidade!"
             });
         }
     } else if (id === 'miradouro') {
@@ -12749,6 +13429,12 @@ canvas.addEventListener('mousemove', (e) => {
     mouse.x = c.x;
     mouse.y = c.y;
 
+    if (state === 'CUTSCENE') {
+        const isChoiceHover = activeCutscene && activeCutscene.choiceRects && activeCutscene.choiceRects.some(r => c.x >= r.x && c.x <= r.x + r.w && c.y >= r.y && c.y <= r.y + r.h);
+        canvas.style.cursor = isChoiceHover ? 'pointer' : 'default';
+        return;
+    }
+
     if (state === 'BOARD') {
         const isNight = typeof player !== 'undefined' && player && (player.timeHour >= 20 || player.timeHour < 7);
         const isTramHover = (c.x >= 368 && c.x <= 478 && c.y >= 190 && c.y <= 236);
@@ -12772,6 +13458,20 @@ canvas.addEventListener('click', (e) => {
 
 window.addEventListener('keydown', (e) => {
     if (state === 'CUTSCENE') {
+        const cs = activeCutscene ? activeCutscene.config : null;
+        const slide = (cs && cs.slides) ? cs.slides[activeCutscene.currentSlide] : null;
+        if (slide && slide.choices && activeCutscene.charIndex >= slide.text.length) {
+            if (e.key === '1' && slide.choices[0]) {
+                selectCutsceneChoice(slide.choices[0]);
+                return;
+            } else if (e.key === '2' && slide.choices[1]) {
+                selectCutsceneChoice(slide.choices[1]);
+                return;
+            } else if (e.key === '3' && slide.choices[2]) {
+                selectCutsceneChoice(slide.choices[2]);
+                return;
+            }
+        }
         if (e.key === ' ' || e.key === 'Enter') {
             advanceCutscene();
         } else if (e.key === 'Escape') {
@@ -13398,17 +14098,22 @@ function executeAction(act) {
         rel.points = Math.min(100, (rel.points || 0) + 25);
         if (!player.romanceAffinity) player.romanceAffinity = {};
         player.romanceAffinity[target] = rel.points;
-        const pObj = ROMANCE_PARTNERS[target];
+        const pObj = ROMANCE_PARTNERS[target] || { name: 'Companheiro(a)' };
         sfxWin();
-        const quotes = {
-            catia: "Cátia encosta a cabeça no teu ombro: «O pôr-do-sol no Tejo contigo foi maravilhoso... Sinto uma química enorme entre nós!»",
-            marta: "Marta dá-te a mão no miradouro: «Esqueci os exames por duas horas... Foi o melhor momento que passei em Lisboa este mês!»",
-            goncalo: "Gonçalo canta um fado baixinho: «Que sintonia perfeita! As cordas da guitarra vibram quando estamos juntos.»",
-            zulmira: "D. Zulmira passa o braço pelo teu: «O Chiado ao luar contigo ganha outro encanto... Sinto o meu coração renascer, meu querido.»",
-            rui: "Rui encosta a bicicleta e senta-se junto a ti: «Ver o Tejo assim ao teu lado... Lisboa nunca me pareceu tão bonita!»"
-        };
-        showToast(`💖 Afinidade com ${pObj.name}: ${rel.points}%! Cumplicidade total atingida! Já podes pedir em namoro!`);
-        spawnParticle(`💖 Afinidade ${rel.points}%!`, '#ec4899');
+        const cutKey = `date_first_${target}`;
+        if (typeof CUTSCENES !== 'undefined' && CUTSCENES[cutKey]) {
+            playCutscene(cutKey, {
+                partnerId: target,
+                partnerName: pObj.name,
+                onComplete: () => {
+                    modalBuilding = null;
+                    state = 'BOARD';
+                }
+            });
+        } else {
+            showToast(`💖 Afinidade com ${pObj.name}: ${rel.points}%! Cumplicidade total atingida! Já podes pedir em namoro!`);
+            spawnParticle(`💖 Afinidade ${rel.points}%!`, '#ec4899');
+        }
         return;
     }
 
@@ -13457,10 +14162,24 @@ function executeAction(act) {
     }
 
     if (act.datePartner) {
-        const pObj = (player.partner && ROMANCE_PARTNERS[player.partner]) ? ROMANCE_PARTNERS[player.partner] : { name: 'a tua cara-metade' };
+        const target = (typeof act.datePartner === 'string') ? act.datePartner : player.partner;
+        const pObj = (target && ROMANCE_PARTNERS[target]) ? ROMANCE_PARTNERS[target] : { name: 'a tua cara-metade' };
         sfxWin();
-        showToast(`❤️ Encontro maravilhoso com ${pObj.name}! +${act.sanity || 25} Sanidade!`);
-        spawnParticle(`❤️ ${pObj.name}`, '#ec4899');
+        const cutKey = `couple_${target}`;
+        if (typeof CUTSCENES !== 'undefined' && CUTSCENES[cutKey]) {
+            playCutscene(cutKey, {
+                partnerId: target,
+                partnerName: pObj.name,
+                onComplete: () => {
+                    modalBuilding = null;
+                    state = 'BOARD';
+                }
+            });
+        } else {
+            showToast(`❤️ Encontro maravilhoso com ${pObj.name}! +${act.sanity || 25} Sanidade!`);
+            spawnParticle(`❤️ ${pObj.name}`, '#ec4899');
+        }
+        return;
     }
 
     if (act.endRomance) {
