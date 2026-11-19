@@ -379,6 +379,27 @@
             border: 1px solid rgba(245, 158, 11, 0.4);
         }
 
+        .kofi-plaque-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: rgba(255, 94, 91, 0.15);
+            border: 1px solid rgba(255, 94, 91, 0.4);
+            border-radius: 12px;
+            color: #ff8583;
+            text-decoration: none;
+            font-size: 0.60rem;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .kofi-plaque-btn:hover {
+            background: #ff5e5b;
+            color: #ffffff;
+            border-color: #ff5e5b;
+            transform: translateY(-1px);
+        }
+
         @media (max-width: 640px) {
             body { padding: 4px; }
             #arcade-cabinet { border-radius: 0; border: none; padding: 2px; }
@@ -1414,6 +1435,7 @@
         <div id="arcade-plaque">
             <span class="plaque-badge">LARGO DO DESENRASCO</span>
             <span>« És o Zé Desenrasca, estás em Lisboa sem um tostão. O que vais fazer? » · <b>Pedro Ribeiro</b> (birth1mark)</span>
+            <a href="https://ko-fi.com/birth1mark" target="_blank" rel="noopener noreferrer" class="kofi-plaque-btn" title="Pagar um café ao criador no Ko-fi">☕ Apoiar no Ko-fi</a>
             <span style="font-size:0.6rem; color:#f59e0b;">🇵🇹 LISBOA 2026</span>
         </div>
     </div>

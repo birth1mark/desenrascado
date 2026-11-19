@@ -3,6 +3,9 @@
 > **Simulador retro de sobrevivência urbana e finanças em Lisboa.**  
 > Joga ao vivo em: **[https://desenrascado.pormenores.net](https://desenrascado.pormenores.net)**
 
+[![Apoiar no Ko-fi](https://img.shields.io/badge/Ko--fi-Apoiar-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/birth1mark)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 ---
 
 ## 🎮 Sobre o Jogo
@@ -66,10 +69,12 @@ Navega para `http://localhost:8080`.
 
 ---
 
-## 👤 Autor
+## 👤 Autor & Apoio
 
 Desenvolvido por **Pedro Ribeiro** ([birth1mark](https://github.com/birth1mark)).  
 Portfolio & Engenharia: [pormenores.net](https://pormenores.net)
+
+☕ **Apoiar o Criador**: Se gostas do *Desenrascado* e queres apoiar o desenvolvimento de novos jogos e ferramentas independentes, podes [pagar um café no Ko-fi](https://ko-fi.com/birth1mark). Qualquer apoio faz uma diferença enorme!
 
 ---
 
