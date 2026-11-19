@@ -3077,7 +3077,7 @@ const EVENTOS_LISBOA = []; // Alias de compatibilidade retroativa
 const BUILDINGS = [
     { id: 'miradouro', name: 'Miradouro', x: 0, y: 220, w: 140, h: 75, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 65, doorY: 245, desc: 'O Boémio — Vista sobre o Tejo, descanso, fado à guitarra e tertúlias.' },
     { id: 'faculdade', name: 'Politec / IST', x: 0, y: 15, w: 146, h: 175, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 72, doorY: 185, desc: 'Prof. Leitão — Aulas, cadeiras sequenciais e exames para o canudo no IST.' },
-    { id: 'startup', name: 'IEFP / Emprego', x: 175, y: 35, w: 48, h: 155, color: '#065f46', accent: '#10b981', tag: 'IEFP & CARREIRAS', icon: '💼', doorX: 198, doorY: 195, desc: 'D. Mariana (IEFP, 45 anos) — Centro de Emprego, Orientação e Dossier Curricular.' },
+    { id: 'startup', name: 'IEFP / Emprego', x: 148, y: 35, w: 73, h: 160, color: '#065f46', accent: '#10b981', tag: 'IEFP & CARREIRAS', icon: '💼', doorX: 193, doorY: 195, desc: 'D. Mariana (IEFP, 45 anos) — Centro de Emprego, Orientação e Dossier Curricular.' },
     { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, desc: 'Inês — Vigília popular, a tua tenda Quechua, cantina solidária e luta pelo direito à habitação.' },
     { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco, depósitos e carreiras financeiras.' },
     { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira — Mestre alfaiate voluptuosa, elegante, sexy e atrevida. Top de renda, blazer chique e ateliê pombalino.' },
@@ -3814,7 +3814,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '8.3';
+const ASSET_VER = '8.4';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -8613,7 +8613,7 @@ function drawBuilding(b) {
         ctx.fillStyle = '#06b6d4';
         ctx.fillRect(b.x + b.w / 2 - 8, b.y + b.h - 20, 16, 20);
 
-        drawStoreSign(b, isHovered, '#10b981', 'STARTUP HUB');
+        drawStoreSign(b, isHovered, '#10b981', 'IEFP / EMPREGO');
         return;
     }
 
