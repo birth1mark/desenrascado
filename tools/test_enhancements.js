@@ -254,8 +254,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '8.5', "ASSET_VER incrementado para 8.5");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '8.5' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '8.6', "ASSET_VER incrementado para 8.6");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '8.6' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
@@ -1008,7 +1008,32 @@ vm.runInContext(`
 
 console.log("✓ 20. Avatares Íntimos no Lar, Autonomia Pessoal, Coexistência e Iniciativas Dinâmicas validados com sucesso!");
 
+// -----------------------------------------------------------------------------
+// TESTE 21: GEOMETRIA RIGOROSA DE HITBOXES (ZERO OVERLAPS CASA / MODAS CHIADO / SENHORIO / TASCA)
+// -----------------------------------------------------------------------------
+const bList = vm.runInContext("BUILDINGS", sandbox);
+function intersects(a, b) {
+    return !(a.x + a.w <= b.x || b.x + b.w <= a.x ||
+             a.y + a.h <= b.y || b.y + b.h <= a.y);
+}
+
+for (let i = 0; i < bList.length; i++) {
+    for (let j = i + 1; j < bList.length; j++) {
+        assert(!intersects(bList[i], bList[j]), `Edifícios ${bList[i].id} e ${bList[j].id} não se sobrepõem no tabuleiro!`);
+    }
+}
+
+const bCasa = bList.find(b => b.id === 'casa');
+const bLoja = bList.find(b => b.id === 'loja_roupa');
+assert.strictEqual(bCasa.x, 326, "Casa perfeitamente alinhada em x=326");
+assert.strictEqual(bCasa.w, 100, "Casa com largura de 100px (sem invadir a mercearia)");
+assert.strictEqual(bCasa.h, 100, "Casa com altura generosa de 100px (mansarda e varanda)");
+assert.strictEqual(bCasa.indicatorY, 75, "Indicador da casa no andar residencial (y=75)");
+assert.strictEqual(bLoja.indicatorY, 185, "Indicador de Modas Chiado na porta da loja (y=185)");
+
+console.log("✓ 21. Geometria de Toque e Separação de Hitboxes: Zero sobreposições entre Casa/Modas Chiado/Senhorio/Tasca e indicadores visuais validados com sucesso!");
+
 console.log("\n=================================================================");
-console.log("RESULTADO FINAL: TODOS OS 20 TESTES PASSARAM COM 100% SUCESSO!");
+console.log("RESULTADO FINAL: TODOS OS 21 TESTES PASSARAM COM 100% SUCESSO!");
 process.exit(0);
 console.log("=================================================================");

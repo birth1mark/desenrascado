@@ -338,6 +338,7 @@
             image-rendering: -webkit-crisp-edges;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
+            touch-action: none;
         }
 
         #game-wrapper.crt-active::after {
@@ -3075,16 +3076,16 @@ const EVENTOS_LISBOA = []; // Alias de compatibilidade retroativa
 
 // Edifícios no Tabuleiro (Posições Físicas Exatas & Coordenadas Separadas Sem Sobreposição)
 const BUILDINGS = [
-    { id: 'miradouro', name: 'Miradouro', x: 0, y: 220, w: 140, h: 75, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 65, doorY: 245, desc: 'O Boémio — Vista sobre o Tejo, descanso, fado à guitarra e tertúlias.' },
-    { id: 'faculdade', name: 'Politec / IST', x: 0, y: 15, w: 146, h: 175, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 72, doorY: 185, desc: 'Prof. Leitão — Aulas, cadeiras sequenciais e exames para o canudo no IST.' },
-    { id: 'startup', name: 'IEFP / Emprego', x: 148, y: 35, w: 73, h: 160, color: '#065f46', accent: '#10b981', tag: 'IEFP & CARREIRAS', icon: '💼', doorX: 193, doorY: 195, desc: 'D. Mariana (IEFP, 45 anos) — Centro de Emprego, Orientação e Dossier Curricular.' },
-    { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, desc: 'Inês — Vigília popular, a tua tenda Quechua, cantina solidária e luta pelo direito à habitação.' },
-    { id: 'banco', name: 'Caixa / Banco', x: 222, y: 70, w: 104, h: 125, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, desc: 'Dr. Alcoviteiro — Poupança, Multibanco, depósitos e carreiras financeiras.' },
-    { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 70, w: 100, h: 125, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, desc: 'D. Zulmira — Mestre alfaiate voluptuosa, elegante, sexy e atrevida. Top de renda, blazer chique e ateliê pombalino.' },
-    { id: 'supermercado', name: 'Mercearia da Cátia', x: 426, y: 70, w: 104, h: 125, color: '#15803d', accent: '#86efac', tag: 'MERCEARIA TRADICIONAL', icon: '🛒', doorX: 470, doorY: 195, desc: 'Cátia — Encarregada da mercearia. Mantimentos frescos, conservas e bens essenciais.' },
-    { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 70, w: 110, h: 125, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 195, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' },
-    { id: 'casa', name: 'O Teu Teto', x: 340, y: 15, w: 120, h: 65, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 376, doorY: 195, desc: 'Dorme para recuperar sanidade, fome e energia.' },
-    { id: 'senhorio', name: 'Senhorio', x: 530, y: 15, w: 110, h: 65, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 585, doorY: 195, desc: 'Sr. Jerónimo — Rendas, contratos de habitação e biscates de manutenção.' }
+    { id: 'miradouro', name: 'Miradouro', x: 0, y: 220, w: 140, h: 75, color: '#0369a1', accent: '#38bdf8', tag: 'DESCANSO & BOÉMIA', icon: '🌅', doorX: 65, doorY: 245, indicatorX: 65, indicatorY: 245, desc: 'O Boémio — Vista sobre o Tejo, descanso, fado à guitarra e tertúlias.' },
+    { id: 'faculdade', name: 'Politec / IST', x: 0, y: 15, w: 146, h: 175, color: '#1e3a8a', accent: '#38bdf8', tag: 'ESTUDOS / ECTS', icon: '🎓', doorX: 72, doorY: 185, indicatorX: 72, indicatorY: 185, desc: 'Prof. Leitão — Aulas, cadeiras sequenciais e exames para o canudo no IST.' },
+    { id: 'startup', name: 'IEFP / Emprego', x: 148, y: 35, w: 73, h: 160, color: '#065f46', accent: '#10b981', tag: 'IEFP & CARREIRAS', icon: '💼', doorX: 193, doorY: 195, indicatorX: 193, indicatorY: 195, desc: 'D. Mariana (IEFP, 45 anos) — Centro de Emprego, Orientação e Dossier Curricular.' },
+    { id: 'acampada', name: 'Acampada da Habitação', x: 282, y: 232, w: 66, h: 28, color: '#dc2626', accent: '#f87171', tag: 'HABITAÇÃO & LUTA', icon: '⛺', doorX: 342, doorY: 247, indicatorX: 315, indicatorY: 246, desc: 'Inês — Vigília popular, a tua tenda Quechua, cantina solidária e luta pelo direito à habitação.' },
+    { id: 'banco', name: 'Caixa / Banco', x: 222, y: 35, w: 104, h: 160, color: '#854d0e', accent: '#facc15', tag: 'BANCA & CRÉDITO', icon: '🏦', doorX: 275, doorY: 195, indicatorX: 275, indicatorY: 190, desc: 'Dr. Alcoviteiro — Poupança, Multibanco, depósitos e carreiras financeiras.' },
+    { id: 'casa', name: 'O Teu Teto', x: 326, y: 15, w: 100, h: 100, color: '#312e81', accent: '#818cf8', tag: 'A TUA CASA', icon: '🛌', doorX: 376, doorY: 195, indicatorX: 376, indicatorY: 75, desc: 'Dorme para recuperar sanidade, fome e energia.' },
+    { id: 'loja_roupa', name: 'Loja de Roupa', x: 326, y: 115, w: 100, h: 80, color: '#db2777', accent: '#f472b6', tag: 'MODAS CHIADO', icon: '👗', doorX: 376, doorY: 195, indicatorX: 376, indicatorY: 185, desc: 'D. Zulmira — Mestre alfaiate voluptuosa, elegante, sexy e atrevida. Top de renda, blazer chique e ateliê pombalino.' },
+    { id: 'supermercado', name: 'Mercearia da Cátia', x: 426, y: 35, w: 104, h: 160, color: '#15803d', accent: '#86efac', tag: 'MERCEARIA TRADICIONAL', icon: '🛒', doorX: 470, doorY: 195, indicatorX: 470, indicatorY: 190, desc: 'Cátia — Encarregada da mercearia. Mantimentos frescos, conservas e bens essenciais.' },
+    { id: 'senhorio', name: 'Senhorio', x: 530, y: 15, w: 110, h: 100, color: '#991b1b', accent: '#ef4444', tag: 'RENDAS & CASAS', icon: '🏠', doorX: 585, doorY: 195, indicatorX: 585, indicatorY: 75, desc: 'Sr. Jerónimo — Rendas, contratos de habitação e biscates de manutenção.' },
+    { id: 'tasca', name: 'Tasca Ti Zé', x: 530, y: 115, w: 110, h: 80, color: '#9a3412', accent: '#f59e0b', tag: 'COMIDA / BALCÃO', icon: '🍲', doorX: 585, doorY: 195, indicatorX: 585, indicatorY: 185, desc: 'Ti Zé — Prato do dia, bitoque e turnos de balcão.' }
 ];
 
 // Pombos do Rossio a debicar na calçada
@@ -3814,7 +3815,7 @@ ctx.imageSmoothingEnabled = false;
 // ============================================================================
 // 16-BIT BITMAPPED RETRO ASSETS (STARDEW VALLEY / EASTWARD FIDELITY)
 // ============================================================================
-const ASSET_VER = '8.5';
+const ASSET_VER = '8.6';
 const boardImg = new Image();
 boardImg.src = `assets/board.png?v=${ASSET_VER}`;
 
@@ -8196,24 +8197,24 @@ function renderBuildingOverlays() {
         if (isHovered) {
             hoveredBuilding = b;
 
-            // 1. Halo suave de luz dourada na porta do edifício
-            const doorX = b.doorX || (b.x + b.w / 2);
-            const doorY = b.doorY || (b.y + b.h);
-            const grad = ctx.createRadialGradient(doorX, doorY - 10, 2, doorX, doorY - 10, 28);
+            // 1. Halo suave de luz dourada no ponto de entrada/foco do edifício
+            const targetX = b.indicatorX || b.doorX || (b.x + b.w / 2);
+            const targetY = b.indicatorY || b.doorY || (b.y + b.h);
+            const grad = ctx.createRadialGradient(targetX, targetY - 10, 2, targetX, targetY - 10, 28);
             grad.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
             grad.addColorStop(0.55, 'rgba(245, 158, 11, 0.15)');
             grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
             ctx.fillStyle = grad;
             ctx.beginPath();
-            ctx.arc(doorX, doorY - 10, 28, 0, Math.PI * 2);
+            ctx.arc(targetX, targetY - 10, 28, 0, Math.PI * 2);
             ctx.fill();
 
-            // 2. Indicador retro saltitante na porta (apenas quando hovered!)
+            // 2. Indicador retro saltitante no ponto de foco (apenas quando hovered!)
             const arrowBob = Math.sin(animTimer * 6.5) * 2.5;
             ctx.fillStyle = '#f59e0b';
             ctx.font = 'bold 11px "Press Start 2P"';
             ctx.textAlign = 'center';
-            ctx.fillText("▼", doorX, doorY - 18 + arrowBob);
+            ctx.fillText("▼", targetX, targetY - 18 + arrowBob);
         }
     });
 
@@ -13035,12 +13036,12 @@ function handleCanvasClick(cx, cy) {
             }
         }
 
-        BUILDINGS.forEach(b => {
-            if (cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h) {
-                triggerHaptic([20]);
-                walkToBuilding(b);
-            }
-        });
+        const clickedBuilding = BUILDINGS.find(b => cx >= b.x && cx <= b.x + b.w && cy >= b.y && cy <= b.y + b.h);
+        if (clickedBuilding) {
+            triggerHaptic([20]);
+            walkToBuilding(clickedBuilding);
+            return;
+        }
     }
 }
 
