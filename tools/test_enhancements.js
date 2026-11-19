@@ -254,8 +254,8 @@ console.log("✓ 6. Vinhetas Cinematográficas 16-bit: Efeitos de letterbox, typ
 // -----------------------------------------------------------------------------
 // TESTE 6: VERSÃO DE ASSETS
 // -----------------------------------------------------------------------------
-assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '8.4', "ASSET_VER incrementado para 8.4");
-console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '8.4' confirmado!");
+assert.strictEqual(vm.runInContext("ASSET_VER", sandbox), '8.5', "ASSET_VER incrementado para 8.5");
+console.log("✓ 7. Protocolo de Cache-Busting: ASSET_VER = '8.5' confirmado!");
 
 // -----------------------------------------------------------------------------
 // TESTE 8: CÓDEX "QUEM É QUEM EM LISBOA" & ÁLBUM DE FOTOGRAFIAS DINÂMICAS
