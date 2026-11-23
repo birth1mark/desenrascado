@@ -1335,6 +1335,65 @@
             white-space: nowrap;
             border: 0;
         }
+
+        /* Modo App Nativa Android (WebViewAssetLoader · Fullscreen Landscape) */
+        #btn-notif {
+            display: none;
+        }
+        body.android-app {
+            background: #020617 !important;
+            background-image: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            overscroll-behavior: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body.android-app #arcade-cabinet {
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            background: #020617;
+            padding: 2px 6px 4px;
+            justify-content: center;
+        }
+        body.android-app #arcade-marquee,
+        body.android-app .arcade-link,
+        body.android-app #btn-wiki,
+        body.android-app #arcade-plaque,
+        body.android-app #arcade-kofi-bar,
+        body.android-app .kb-hint,
+        body.android-app .modal-exit-tip {
+            display: none !important;
+        }
+        body.android-app #btn-notif {
+            display: inline-flex;
+        }
+        body.android-app #arcade-toolbar {
+            padding: 2px 4px 4px;
+            flex-shrink: 0;
+        }
+        body.android-app .arcade-btn {
+            min-height: 28px;
+            padding: 5px 10px;
+            font-size: 0.44rem;
+        }
+        body.android-app #game-wrapper {
+            flex: 1 1 auto;
+            min-height: 0;
+            height: 100%;
+            width: auto;
+            max-width: 100%;
+            aspect-ratio: 16 / 9;
+            border-width: 1px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -1359,11 +1418,12 @@
                 <button class="arcade-btn btn-codex" onclick="openCodexModal()" id="btn-codex" style="display: none;">👥 Quem é Quem</button>
                 <button class="arcade-btn btn-achievements" onclick="openAchievementsModal()" id="btn-achievements">🎖️ Conquistas</button>
                 <button class="arcade-btn btn-leaderboard" onclick="openLeaderboard()" id="btn-leaderboard">🏆 Top 10</button>
-                <a href="/wiki" target="_blank" class="arcade-btn" style="text-decoration:none;border-color:#06b6d4;color:#67e8f9;" title="Wiki Oficial, Mapa de Lisboa, Guia &amp; FAQ">📖 Wiki</a>
+                <a href="/wiki" target="_blank" id="btn-wiki" class="arcade-btn" style="text-decoration:none;border-color:#06b6d4;color:#67e8f9;" title="Wiki Oficial, Mapa de Lisboa, Guia &amp; FAQ">📖 Wiki</a>
                 <div class="toolbar-divider"></div>
                 <button class="arcade-btn btn-sys" onclick="toggleMusic()" id="btn-music" title="Motor de Áudio Interativo LucasArts iMUSE">🎵 iMUSE: ON</button>
                 <button class="arcade-btn btn-sys" onclick="toggleAudio()" id="btn-audio">🔊 SFX: ON</button>
                 <button class="arcade-btn btn-sys" onclick="toggleCRT()" id="btn-crt">📺 CRT: ON</button>
+                <button class="arcade-btn btn-sys" onclick="toggleNotifications()" id="btn-notif">🔕 Avisos: OFF</button>
             </div>
         </div>
 
@@ -1376,7 +1436,7 @@
                 <div class="overlay-box cv-box" onclick="event.stopPropagation()">
                     <div class="overlay-header">
                         <span class="overlay-title">📜 DOSSIER CURRICULAR · ZÉ DESENRASCA</span>
-                        <button class="overlay-close" onclick="closeCurriculumModal()" title="Fechar Dossier [ESC]">✕ FECHAR [ESC]</button>
+                        <button class="overlay-close" onclick="closeCurriculumModal()" title="Fechar Dossier">✕ FECHAR <span class="kb-hint">[ESC]</span></button>
                     </div>
                     <div class="cv-tagline">REGISTO ACADÉMICO, CARREIRAS & TALENTOS NO PURGATÓRIO DE LISBOA</div>
                     <div class="cv-container" id="cv-content">
@@ -1384,7 +1444,7 @@
                     </div>
                     <div class="overlay-actions">
                         <span class="modal-exit-tip">💡 Clica fora ou usa a tecla [ESC]</span>
-                        <button class="retro-btn" onclick="closeCurriculumModal()">FECHAR DOSSIER [ESC]</button>
+                        <button class="retro-btn" onclick="closeCurriculumModal()">FECHAR DOSSIER <span class="kb-hint">[ESC]</span></button>
                     </div>
                 </div>
             </div>
@@ -1395,7 +1455,7 @@
                 <div class="overlay-box codex-box" onclick="event.stopPropagation()">
                     <div class="overlay-header">
                         <span class="overlay-title">👥 QUEM É QUEM EM LISBOA · DOSSIER & ÁLBUM</span>
-                        <button class="overlay-close" onclick="closeCodexModal()" title="Fechar e Voltar ao Jogo [ESC]">✕ FECHAR [ESC]</button>
+                        <button class="overlay-close" onclick="closeCodexModal()" title="Fechar e Voltar ao Jogo">✕ FECHAR <span class="kb-hint">[ESC]</span></button>
                     </div>
                     <div class="codex-tagline">
                         <span id="codex-summary">0 / 48 FOTOGRAFIAS NO ÁLBUM</span>
@@ -1407,7 +1467,7 @@
                     </div>
                     <div class="overlay-actions codex-actions">
                         <span class="modal-exit-tip">💡 Clica fora ou prime [ESC] / [Q]</span>
-                        <button class="retro-btn btn-amber codex-return-btn" onclick="closeCodexModal()">⬅️ VOLTAR AO JOGO [ESC]</button>
+                        <button class="retro-btn btn-amber codex-return-btn" onclick="closeCodexModal()">⬅️ VOLTAR AO JOGO <span class="kb-hint">[ESC]</span></button>
                     </div>
                 </div>
             </div>
@@ -1417,10 +1477,10 @@
                 <div class="overlay-box ach-box" onclick="event.stopPropagation()">
                     <div class="overlay-header">
                         <span class="overlay-title">🎖️ LIVRO DE CONQUISTAS · LISBOA</span>
-                        <button class="overlay-close" onclick="closeAchievementsModal()" title="Fechar Conquistas [ESC]">✕ FECHAR [ESC]</button>
+                        <button class="overlay-close" onclick="closeAchievementsModal()" title="Fechar Conquistas">✕ FECHAR <span class="kb-hint">[ESC]</span></button>
                     </div>
                     <div class="ach-tagline">
-                        <span id="ach-summary">0 / 10 CONQUISTAS DESBLOQUEADAS</span>
+                        <span id="ach-summary">0 / 11 CONQUISTAS DESBLOQUEADAS</span>
                         <span style="color:#fbbf24;">🇵🇹 O PURGATÓRIO DE LISBOA</span>
                     </div>
                     <div class="ach-container" id="ach-content">
@@ -1428,7 +1488,7 @@
                     </div>
                     <div class="overlay-actions">
                         <span class="modal-exit-tip">💡 Clica fora ou usa a tecla [ESC]</span>
-                        <button class="retro-btn" onclick="closeAchievementsModal()">VOLTAR AO JOGO [ESC]</button>
+                        <button class="retro-btn" onclick="closeAchievementsModal()">VOLTAR AO JOGO <span class="kb-hint">[ESC]</span></button>
                     </div>
                 </div>
             </div>
@@ -1438,7 +1498,7 @@
                 <div class="overlay-box lb-box" onclick="event.stopPropagation()">
                     <div class="overlay-header">
                         <span class="overlay-title">🏆 REGISTO NACIONAL DE DESPEJADOS</span>
-                        <button class="overlay-close" onclick="closeLeaderboard()" title="Fechar Ranking [ESC]">✕ FECHAR [ESC]</button>
+                        <button class="overlay-close" onclick="closeLeaderboard()" title="Fechar Ranking">✕ FECHAR <span class="kb-hint">[ESC]</span></button>
                     </div>
                     <div class="lb-tagline">OS 10 MAIORES SOBREVIVENTES DO PURGATÓRIO DE LISBOA</div>
                     <div class="lb-table-container">
@@ -1460,7 +1520,7 @@
                     </div>
                     <div class="overlay-actions">
                         <span class="modal-exit-tip">💡 Clica fora ou usa a tecla [ESC]</span>
-                        <button class="retro-btn" onclick="closeLeaderboard()">VOLTAR AO JOGO [ESC]</button>
+                        <button class="retro-btn" onclick="closeLeaderboard()">VOLTAR AO JOGO <span class="kb-hint">[ESC]</span></button>
                     </div>
                 </div>
             </div>
@@ -1525,6 +1585,6 @@
         </article>
     </main>
 
-<script src="/game.min.js?v=8.8"></script>
+<script src="/game.min.js?v=8.9"></script>
 </body>
 </html>

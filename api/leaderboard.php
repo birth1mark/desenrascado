@@ -17,6 +17,7 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 $allowedOrigins = [
     'https://desenrascado.pormenores.net',
     'https://pormenores.net',
+    'https://appassets.androidplatform.net',
     'http://localhost:8080',
     'http://127.0.0.1:8080'
 ];
@@ -137,18 +138,18 @@ try {
         $postOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
         $postRef = $_SERVER['HTTP_REFERER'] ?? '';
         $validOrigin = ($postOrigin !== '' && in_array($postOrigin, $allowedOrigins, true))
-            || ($postOrigin === '' && $postRef !== '' && preg_match('#^https?://(desenrascado\.pormenores\.net|localhost:8080|127\.0\.0\.1:8080)(/|$)#i', $postRef));
+            || ($postOrigin === '' && $postRef !== '' && preg_match('#^https?://(desenrascado\.pormenores\.net|appassets\.androidplatform\.net|localhost:8080|127\.0\.0\.1:8080)(/|$)#i', $postRef));
         if (!$validOrigin) {
             http_response_code(403);
             echo json_encode(['status' => 'error', 'message' => 'Origem não autorizada pelo Sr. Jerónimo.']);
             exit;
         }
 
-        // Validação numérica rígida & Anti-Cheat de Plausibilidade
+        // Validação numérica rígida & Anti-Cheat de Plausibilidade (inclui Modo Purgatório Infinito até 365 dias)
         $days = filter_var($data['days'] ?? null, FILTER_VALIDATE_INT);
         $money = filter_var($data['money'] ?? null, FILTER_VALIDATE_INT);
 
-        if ($days === false || $days < 1 || $days > 60) {
+        if ($days === false || $days < 1 || $days > 365) {
             http_response_code(422);
             echo json_encode(['status' => 'error', 'message' => 'Dias implausíveis! O Sr. Jerónimo desconfiou e chamou a Autoridade Tributária.']);
             exit;
