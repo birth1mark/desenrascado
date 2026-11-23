@@ -6,6 +6,9 @@
 *.db-wal
 data/
 
+# Source bundle kept locally (production serves minified IIFE game.min.js)
+game.src.js
+
 # Environment & Credentials
 .env*
 *.key

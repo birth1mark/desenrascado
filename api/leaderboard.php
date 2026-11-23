@@ -133,14 +133,33 @@ try {
         }
         $name = mb_substr($cleanName, 0, 16, 'UTF-8');
 
-        // Validação numérica rígida
-        $days = filter_var($data['days'] ?? 1, FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1, 'max_range' => 999, 'default' => 1]
-        ]);
+        // Validação de origem no POST (rejeitar submissões externas diretas)
+        $postOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        $postRef = $_SERVER['HTTP_REFERER'] ?? '';
+        $validOrigin = ($postOrigin !== '' && in_array($postOrigin, $allowedOrigins, true))
+            || ($postOrigin === '' && $postRef !== '' && preg_match('#^https?://(desenrascado\.pormenores\.net|localhost:8080|127\.0\.0\.1:8080)(/|$)#i', $postRef));
+        if (!$validOrigin) {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'Origem não autorizada pelo Sr. Jerónimo.']);
+            exit;
+        }
 
-        $money = filter_var($data['money'] ?? 0, FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 0, 'max_range' => 999999, 'default' => 0]
-        ]);
+        // Validação numérica rígida & Anti-Cheat de Plausibilidade
+        $days = filter_var($data['days'] ?? null, FILTER_VALIDATE_INT);
+        $money = filter_var($data['money'] ?? null, FILTER_VALIDATE_INT);
+
+        if ($days === false || $days < 1 || $days > 60) {
+            http_response_code(422);
+            echo json_encode(['status' => 'error', 'message' => 'Dias implausíveis! O Sr. Jerónimo desconfiou e chamou a Autoridade Tributária.']);
+            exit;
+        }
+
+        $maxPlausibleMoney = 1200 + ($days * 650);
+        if ($money === false || $money < 0 || $money > $maxPlausibleMoney) {
+            http_response_code(422);
+            echo json_encode(['status' => 'error', 'message' => 'Fortuna súbita suspeita! O Sr. Jerónimo chamou a Autoridade Tributária.']);
+            exit;
+        }
 
         $rawCause = $data['cause'] ?? 'Despejado pelo Senhorio';
         $cleanCause = preg_replace('/[^\p{L}\p{N}\s\.\-_]/u', '', (string)$rawCause);
