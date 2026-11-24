@@ -1,0 +1,18 @@
+# O Desenrascado — Sobrevivência Urbana em Lisboa (16-Bit RPG)
+
+> Jogo satírico de sobrevivência urbana inspirado na crise da habitação e custo de vida em Lisboa. Construído em 100% Vanilla JavaScript (zero frameworks) com estética pixel art 16-bit LucasArts, disponível para Web e Android.
+
+- Jogo Web Oficial: https://desenrascado.pormenores.net/
+- Almanaque & Wiki Oficial (Guia de Sobrevivência): https://desenrascado.pormenores.net/wiki
+- Política de Privacidade (Web & Android): https://desenrascado.pormenores.net/privacy
+- Sitemap XML: https://desenrascado.pormenores.net/sitemap.xml
+- Autor / Portfólio: https://pormenores.net/ (birth1mark)
+- Repositório GitHub: https://github.com/birth1mark/desenrascado
+
+## Funcionalidades Principais
+- **Campanha de Sobrevivência (4 Semanas em Lisboa):** gere Euros, Energia, Sanidade e Prestígio/Cunha enquanto pagas rendas absurdas, enfrentas a Carris, Finanças, senhorios e turistas.
+- **Modo Purgatório Infinito (Endless Mode):** continua após a 4ª semana com inflação de +10%/semana na renda.
+- **Sistema de Auto-Save & Retoma:** guarda o progresso automaticamente em `localStorage` (funciona 100% offline).
+- **Leaderboard Global:** tabela de classificações em tempo real dos maiores desenrascados.
+- **Partilha 9:16 Story PNG com QR Code:** gera automaticamente um cartão retro 16-bit com estatísticas e QR code para partilhar.
+- **Zero Anúncios & Privacidade Total:** 100% gratuito, sem trackers invasivos e sem recolha de dados pessoais.

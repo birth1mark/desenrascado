@@ -2,5 +2,6 @@
 User-agent: *
 Allow: /
 
-# Sitemaps
+# Sitemaps & AI Context
 Sitemap: https://desenrascado.pormenores.net/sitemap.xml
+LLMs-txt: https://desenrascado.pormenores.net/llms.txt
