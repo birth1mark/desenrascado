@@ -1,8 +1,9 @@
+import os
 import numpy as np
 from PIL import Image
 
-brain_dir = "/home/pedro/.gemini/antigravity-cli/brain/f8dfaf40-46b8-4851-bb9f-8d4902a5a358"
-assets_dir = "/home/pedro/Projects/desenrascado/assets"
+brain_dir = "/tmp/desenrascado_preview"
+assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 
 files = {
     'catia': f"{brain_dir}/bust_catia_home_1795013100668.jpg",

@@ -1,6 +1,7 @@
+import os
 from PIL import Image
 
-assets_dir = "/home/pedro/Projects/desenrascado/assets"
+assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 # Default to Tier 2 (cozy Lisbon bedroom) or Tier 1 for fallback
 t_bg = Image.open(f"{assets_dir}/portrait_casa_tier2_bg.png").convert('RGBA')
 

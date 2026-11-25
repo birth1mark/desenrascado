@@ -12,9 +12,9 @@ import sys
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
-WORKSPACE = "/home/pedro/Projects/desenrascado"
+WORKSPACE = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ASSETS_DIR = os.path.join(WORKSPACE, "assets")
-ARTIFACT_DIR = "/home/pedro/.gemini/antigravity-cli/brain/f8dfaf40-46b8-4851-bb9f-8d4902a5a358"
+ARTIFACT_DIR = "/tmp/desenrascado_preview"
 
 NPC_CONFIG = {
     'senhorio':     {'name': 'Sr. Jerónimo (Senhorio)',   'coords': (0, 0), 'face_box': (45, 30, 85, 75)},

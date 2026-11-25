@@ -1,8 +1,8 @@
 import os
 from PIL import Image, ImageDraw
 
-art_dir = "/home/pedro/.gemini/antigravity-cli/brain/f8dfaf40-46b8-4851-bb9f-8d4902a5a358"
-assets_dir = "/home/pedro/Projects/desenrascado/assets"
+art_dir = "/tmp/desenrascado_preview"
+assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 
 # Create a composite canvas for the 5 partners: Cátia, Marta, Zulmira, Rui, Gonçalo
 # Each 128x128

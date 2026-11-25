@@ -1,8 +1,9 @@
+import os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
-assets_dir = "/home/pedro/Projects/desenrascado/assets"
-art_dir = "/home/pedro/.gemini/antigravity-cli/brain/f8dfaf40-46b8-4851-bb9f-8d4902a5a358"
+assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
+art_dir = "/tmp/desenrascado_preview"
 
 # 1. CÁTIA HOME
 # Replace grocery apron/green uniform with warm cozy lavender/rose camisole with spaghetti straps & bare shoulders

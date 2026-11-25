@@ -1,7 +1,8 @@
+import os
 import numpy as np
 from PIL import Image
 
-assets_dir = "/home/pedro/Projects/desenrascado/assets"
+assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 im_g_orig = Image.open(f"{assets_dir}/portrait_goncalo.png").convert("RGBA")
 arr_orig = np.array(im_g_orig)
 
@@ -32,5 +33,5 @@ for idx, (p, name) in enumerate([
     comp.paste(im, (ox, 8))
     d.text((ox + 4, 138), p, fill=(250, 204, 21, 255))
 
-comp.save("/home/pedro/.gemini/antigravity-cli/brain/f8dfaf40-46b8-4851-bb9f-8d4902a5a358/preview_recolor_portraits.png")
+comp.save(os.path.join("/tmp", "preview_recolor_portraits.png"))
 print("Fixed Goncalo!")

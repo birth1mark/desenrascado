@@ -7,7 +7,7 @@ console.log("=================================================================")
 console.log("SUITE DE TESTES AUTOMATIZADOS: DESENRASCADO v7.5");
 console.log("=================================================================\n");
 
-const html = fs.readFileSync('/home/pedro/Projects/desenrascado/index.html', 'utf8');
+const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 
 const scriptMatch = html.match(/<script(?![^>]*ld\+json)[^>]*>([\s\S]*?)<\/script>/i);
 assert(scriptMatch, "Script tag encontrada");
@@ -462,7 +462,7 @@ console.log("✓ 10. Acessibilidade de Saída do Códex: Botões no cabeçalho e
 // -----------------------------------------------------------------------------
 // TESTE 11: SEPARAÇÃO E RETRATO DEDICADO DA MARTA (IST)
 // -----------------------------------------------------------------------------
-assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/portrait_marta.png'), "assets/portrait_marta.png existe em disco");
+assert(fs.existsSync(path.join(ROOT, 'assets/portrait_marta.png')), "assets/portrait_marta.png existe em disco");
 
 const dialogueTrees = vm.runInContext("DIALOGUE_TREES", sandbox);
 assert(dialogueTrees.marta, "DIALOGUE_TREES.marta existe");
@@ -490,7 +490,7 @@ console.log("✓ 11. Marta vs Professor: Retrato 16-bit próprio, diálogo SCUMM
 // TESTE 12: OBITUÁRIO IN-GAME & CERTIDÃO OFICIAL DE ÓBITO / DESPEJO (9:16)
 // -----------------------------------------------------------------------------
 // 1. Verificar ficheiro do retrato do Zé em disco
-assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/portrait_ze.png'), "assets/portrait_ze.png existe em disco");
+assert(fs.existsSync(path.join(ROOT, 'assets/portrait_ze.png')), "assets/portrait_ze.png existe em disco");
 
 // 2. Verificar elementos do ecrã de derrota (renderGameOverScreen)
 assert(html.includes("CEMITÉRIO DOS PRAZERES · SECÇÃO DE ÓBITOS E DESPEJOS"), "Cabeçalho do Cemitério dos Prazeres presente");
@@ -534,9 +534,9 @@ console.log("✓ 12.2 Certidão Oficial 9:16: Estética notarial arquivística, 
 // TESTE 13: DISTINÇÃO DE AVATARES (RUI vs GONÇALO) E SPRITE FEMININA DA VARINA
 // -----------------------------------------------------------------------------
 // 1. Verificar ficheiros de retratos em disco
-assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/portrait_rui.png'), "assets/portrait_rui.png existe em disco");
-assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/portrait_goncalo.png'), "assets/portrait_goncalo.png existe em disco");
-assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/portrait_varina.png'), "assets/portrait_varina.png existe em disco");
+assert(fs.existsSync(path.join(ROOT, 'assets/portrait_rui.png')), "assets/portrait_rui.png existe em disco");
+assert(fs.existsSync(path.join(ROOT, 'assets/portrait_goncalo.png')), "assets/portrait_goncalo.png existe em disco");
+assert(fs.existsSync(path.join(ROOT, 'assets/portrait_varina.png')), "assets/portrait_varina.png existe em disco");
 
 // 2. Verificar catálogo LISBON_CHARACTERS
 assert(LISBON_CHARACTERS.rui, "LISBON_CHARACTERS.rui existe");
@@ -590,8 +590,8 @@ console.log("✓ 13. Avatares & Varina: Rui e Gonçalo 100% individualizados e D
 // TESTE 14: BÊNÇÃO DAS FITAS & ANFITEATRO DO IST (SEM FUNDO DE MERCEARIA)
 // -----------------------------------------------------------------------------
 // 1. Verificar ficheiros de arte do IST e Bênção das Fitas em disco
-assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/interiors/faculdade.png'), "assets/interiors/faculdade.png existe em disco");
-assert(fs.existsSync('/home/pedro/Projects/desenrascado/assets/bencao_fitas.png'), "assets/bencao_fitas.png existe em disco");
+assert(fs.existsSync(path.join(ROOT, 'assets/interiors/faculdade.png')), "assets/interiors/faculdade.png existe em disco");
+assert(fs.existsSync(path.join(ROOT, 'assets/bencao_fitas.png')), "assets/bencao_fitas.png existe em disco");
 
 // 2. Verificar que CUTSCENES.graduation usa a imagem dedicada da Bênção das Fitas
 const graduationCutscene = vm.runInContext("CUTSCENES.graduation", sandbox);

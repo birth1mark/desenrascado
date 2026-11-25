@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from PIL import Image, ImageDraw
 
@@ -272,7 +273,7 @@ tiers = [create_tier0(), create_tier1(), create_tier2(), create_tier3(), create_
 # Save individual tier files and quantize to 128 colors with Floyd-Steinberg pixel art dithering
 for idx, im in enumerate(tiers):
     px_im = im.quantize(colors=128, dither=Image.Dither.FLOYDSTEINBERG).convert('RGB')
-    p = f'/home/pedro/Projects/desenrascado/assets/portrait_casa_tier{idx}_bg.png'
+    p = os.path.join(os.path.dirname(__file__), "..", "assets", f"portrait_casa_tier{idx}_bg.png")
     px_im.save(p)
     print(f'Saved {p}')
 
@@ -280,5 +281,5 @@ for idx, im in enumerate(tiers):
 comb = Image.new('RGB', (128 * 5, 128))
 for idx, im in enumerate(tiers):
     comb.paste(im, (idx * 128, 0))
-comb.resize((128 * 5 * 2, 256), Image.NEAREST).save('/home/pedro/.gemini/antigravity-cli/brain/f8dfaf40-46b8-4851-bb9f-8d4902a5a358/casa_5_tiers_portraits.png')
+comb.resize((128 * 5 * 2, 256), Image.NEAREST).save(os.path.join("/tmp", "casa_5_tiers_portraits.png"))
 print('Saved casa_5_tiers_portraits.png')

@@ -1,8 +1,9 @@
+import os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-art_dir = '/home/pedro/.gemini/antigravity-cli/brain/f8dfaf40-46b8-4851-bb9f-8d4902a5a358'
-assets_dir = '/home/pedro/Projects/desenrascado/assets'
+art_dir = "/tmp/desenrascado_preview"
+assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 
 # Load interior images
 banco_int = Image.open(f'{assets_dir}/interiors/banco.png').convert('RGBA')
