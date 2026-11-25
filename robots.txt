@@ -1,7 +1,7 @@
-# robots.txt for https://desenrascado.pormenores.net/
+# robots.txt for https://desenrascado.pt/
 User-agent: *
 Allow: /
 
 # Sitemaps & AI Context
-Sitemap: https://desenrascado.pormenores.net/sitemap.xml
-LLMs-txt: https://desenrascado.pormenores.net/llms.txt
+Sitemap: https://desenrascado.pt/sitemap.xml
+LLMs-txt: https://desenrascado.pt/llms.txt

@@ -1,7 +1,7 @@
 # 🎲 Desenrascado — Sobrevivência Urbana em Lisboa (16-bit)
 
 > **Simulador retro de sobrevivência urbana e finanças em Lisboa.**  
-> Joga ao vivo em: **[https://desenrascado.pormenores.net](https://desenrascado.pormenores.net)**
+> Joga ao vivo em: **[https://desenrascado.pt](https://desenrascado.pt)**
 
 [![Pagar um café](https://img.shields.io/badge/☕_Pagar_um_café-f59e0b?style=flat-square)](https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -71,7 +71,7 @@ Navega para `http://localhost:8080`.
 
 ## 👤 Autor & Apoio
 
-Desenvolvido por **Pedro Ribeiro** ([birth1mark](https://github.com/birth1mark)).  
+Desenvolvido por **[birth1mark](https://github.com/birth1mark)**.  
 Portfolio & Engenharia: [pormenores.net](https://pormenores.net)
 
 ☕ **Apoiar o Criador**: Se gostas do *Desenrascado* e queres apoiar o desenvolvimento de novos jogos e ferramentas independentes, podes [pagar um café](https://donate.stripe.com/14AfZh8sC6bagMa0dte3e00). Qualquer apoio faz uma diferença enorme!

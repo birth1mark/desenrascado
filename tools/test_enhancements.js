@@ -513,7 +513,7 @@ console.log("✓ 12.1 Ecrã de Obituário in-game: Layout 2 colunas, retrato do 
 assert(html.includes("CONSERVATÓRIA DO REGISTO CIVIL DE LISBOA"), "Conservatória do Registo Civil de Lisboa na certidão 9:16");
 assert(html.includes("IMPOSTO DO SELO") && html.includes("50$00"), "Estâmpilha Fiscal de 50$00 presente na certidão 9:16");
 assert(html.includes("DR. JERÓNIMO DA SILVA") && html.includes("PROF. DR. MARCELO LEITÃO"), "Assinaturas notariais do Senhorio e do Perito Médico-Legal presentes");
-assert(html.includes("desenrascado.pormenores.net"), "CTA viral para desenrascado.pormenores.net presente na certidão");
+assert(html.includes("desenrascado.pt"), "CTA viral para desenrascado.pt presente na certidão");
 
 // 5. Executar generateStoryCanvas() no sandbox para GAMEOVER e VICTORY
 vm.runInContext("state = 'GAMEOVER';", sandbox);

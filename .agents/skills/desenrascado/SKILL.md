@@ -12,8 +12,8 @@ description: >-
 - **Título**: *O Desenrascado — Sobrevivência Urbana em Lisboa (16-bit)*
 - **Conceito**: Simulador retro de sobrevivência urbana, carreira e finanças em Lisboa, com estética de aventura gráfica 16-bit LucasArts SCUMM (ao estilo de *Monkey Island 2*, *Fate of Atlantis* e *Day of the Tentacle*).
 - **Repositório Git**: `birth1mark/desenrascado` (`https://github.com/birth1mark/desenrascado.git`)
-- **URL em Produção**: `https://desenrascado.pormenores.net/`
-- **Servidor Remoto**: Host SSH `webtuga` (`webtuga:desenrascado.pormenores.net/`)
+- **URL em Produção**: `https://desenrascado.pt/` (via Cloudflare Worker `desenrascado` reverse proxy)
+- **Servidor Remoto (Origem WebTuga)**: Host SSH `webtuga` (`webtuga:desenrascado.pormenores.net/`)
 - **Identidade do Autor**: Manter sempre `birth1mark` (`birth1mark@users.noreply.github.com`) em commits, pull requests, comentários e documentação pública. Nunca divulgar nomes reais ou dados locais privados da máquina.
 
 ---
@@ -157,5 +157,5 @@ Antes de publicar:
    ```
 4. Verificação live com `curl`:
    ```bash
-   curl -sI "https://desenrascado.pormenores.net/assets/board.png?v=${ASSET_VER}"
+   curl -sI "https://desenrascado.pt/assets/board.png?v=${ASSET_VER}"
    ```

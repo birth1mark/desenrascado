@@ -2,10 +2,10 @@
 
 > Jogo satírico de sobrevivência urbana inspirado na crise da habitação e custo de vida em Lisboa. Construído em 100% Vanilla JavaScript (zero frameworks) com estética pixel art 16-bit LucasArts, disponível para Web e Android.
 
-- Jogo Web Oficial: https://desenrascado.pormenores.net/
-- Almanaque & Wiki Oficial (Guia de Sobrevivência): https://desenrascado.pormenores.net/wiki
-- Política de Privacidade (Web & Android): https://desenrascado.pormenores.net/privacy
-- Sitemap XML: https://desenrascado.pormenores.net/sitemap.xml
+- Jogo Web Oficial: https://desenrascado.pt/
+- Almanaque & Wiki Oficial (Guia de Sobrevivência): https://desenrascado.pt/wiki
+- Política de Privacidade (Web & Android): https://desenrascado.pt/privacy
+- Sitemap XML: https://desenrascado.pt/sitemap.xml
 - Autor / Portfólio: https://pormenores.net/ (birth1mark)
 - Repositório GitHub: https://github.com/birth1mark/desenrascado
 

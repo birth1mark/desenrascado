@@ -15,6 +15,7 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 
 // 1. Validação Estrita de CORS (Apenas origens autorizadas)
 $allowedOrigins = [
+    'https://desenrascado.pt',
     'https://desenrascado.pormenores.net',
     'https://pormenores.net',
     'https://appassets.androidplatform.net',
@@ -138,7 +139,7 @@ try {
         $postOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
         $postRef = $_SERVER['HTTP_REFERER'] ?? '';
         $validOrigin = ($postOrigin !== '' && in_array($postOrigin, $allowedOrigins, true))
-            || ($postOrigin === '' && $postRef !== '' && preg_match('#^https?://(desenrascado\.pormenores\.net|appassets\.androidplatform\.net|localhost:8080|127\.0\.0\.1:8080)(/|$)#i', $postRef));
+            || ($postOrigin === '' && $postRef !== '' && preg_match('#^https?://(desenrascado\.pt|desenrascado\.pormenores\.net|appassets\.androidplatform\.net|localhost:8080|127\.0\.0\.1:8080)(/|$)#i', $postRef));
         if (!$validOrigin) {
             http_response_code(403);
             echo json_encode(['status' => 'error', 'message' => 'Origem não autorizada pelo Sr. Jerónimo.']);
@@ -167,8 +168,12 @@ try {
         $cleanCause = trim(preg_replace('/\s+/', ' ', $cleanCause));
         $cause = mb_substr($cleanCause, 0, 32, 'UTF-8');
 
-        // 4. Rate-Limiting por IP Hash
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        // 4. Rate-Limiting por IP Hash (respeita IP real encaminhado pelo Cloudflare Edge Proxy)
+        $isEdgeProxy = stripos($_SERVER['HTTP_USER_AGENT'] ?? '', 'Desenrascado-Edge-Proxy') === 0;
+        $forwardedIp = ($isEdgeProxy && !empty($_SERVER['HTTP_X_DESENRASCADO_CLIENT_IP']))
+            ? trim($_SERVER['HTTP_X_DESENRASCADO_CLIENT_IP'])
+            : '';
+        $ip = filter_var($forwardedIp, FILTER_VALIDATE_IP) ? $forwardedIp : ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
         $ipHash = hash('sha256', $ip . 'desenrascado_salt_v3_2026');
 
         $rateCheck = $db->prepare("SELECT COUNT(*) FROM leaderboard WHERE ip_hash = :ip AND created_at > datetime('now', '-20 seconds')");

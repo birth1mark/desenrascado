@@ -8,8 +8,8 @@ Este ficheiro é a fonte da verdade para o desenvolvimento, manutenção e evolu
 ## 1. Identidade e Repositórios
 - **Título**: *O Desenrascado — Sobrevivência Urbana em Lisboa (16-bit)*
 - **Repositório Git**: `birth1mark/desenrascado` (`https://github.com/birth1mark/desenrascado.git`)
-- **Produção (Live)**: `https://desenrascado.pormenores.net/`
-- **Servidor Remoto**: `webtuga:desenrascado.pormenores.net/`
+- **Produção (Live)**: `https://desenrascado.pt/` (via Cloudflare Worker `desenrascado` reverse proxy)
+- **Servidor Remoto (Origem WebTuga)**: `webtuga:desenrascado.pormenores.net/`
 - **Identidade do Autor**: Manter sempre `birth1mark` (`birth1mark@users.noreply.github.com`). Nunca vazar nomes reais pessoais ou caminhos de diretório privados da máquina de desenvolvimento.
 
 ---
@@ -126,5 +126,5 @@ const ASSET_VER = '3.4';
    ```
 4. Confirmar live:
    ```bash
-   curl -sI "https://desenrascado.pormenores.net/assets/board.png?v=${ASSET_VER}"
+   curl -sI "https://desenrascado.pt/assets/board.png?v=${ASSET_VER}"
    ```
