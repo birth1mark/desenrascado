@@ -36,15 +36,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // 2. Base de Dados Isolada Fora da Raiz Web (Impossível de descarregar via HTTP)
-$serverDbDir = '/home/pedrori1/desenrascado_data';
+$serverDbDir = dirname(__DIR__, 2) . '/desenrascado_data';
 if (is_dir($serverDbDir)) {
-    $dbPath = $serverDbDir . '/leaderboard.sqlite';
+    $dataDir = $serverDbDir;
 } else {
     // Ambiente local de desenvolvimento
-    $localDir = __DIR__ . '/../data';
-    if (!is_dir($localDir)) @mkdir($localDir, 0755, true);
-    $dbPath = $localDir . '/leaderboard.sqlite';
+    $dataDir = __DIR__ . '/../data';
+    if (!is_dir($dataDir)) @mkdir($dataDir, 0755, true);
 }
+$dbPath = $dataDir . '/leaderboard.sqlite';
 
 try {
     $db = new PDO("sqlite:$dbPath");
@@ -168,8 +168,14 @@ try {
         $cleanCause = trim(preg_replace('/\s+/', ' ', $cleanCause));
         $cause = mb_substr($cleanCause, 0, 32, 'UTF-8');
 
-        // 4. Rate-Limiting por IP Hash (respeita IP real encaminhado pelo Cloudflare Edge Proxy)
+        // 4. Rate-Limiting por IP Hash (respeita IP real encaminhado pelo Cloudflare Edge Proxy validado por segredo)
         $isEdgeProxy = stripos($_SERVER['HTTP_USER_AGENT'] ?? '', 'Desenrascado-Edge-Proxy') === 0;
+        $edgeSecretFile = $dataDir . '/edge_secret';
+        if ($isEdgeProxy && is_readable($edgeSecretFile)) {
+            $expectedSecret = trim((string)file_get_contents($edgeSecretFile));
+            $providedSecret = (string)($_SERVER['HTTP_X_EDGE_SECRET'] ?? '');
+            $isEdgeProxy = ($expectedSecret !== '' && hash_equals($expectedSecret, $providedSecret));
+        }
         $forwardedIp = ($isEdgeProxy && !empty($_SERVER['HTTP_X_DESENRASCADO_CLIENT_IP']))
             ? trim($_SERVER['HTTP_X_DESENRASCADO_CLIENT_IP'])
             : '';
